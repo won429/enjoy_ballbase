@@ -1129,7 +1129,24 @@
 
             const wrapper = document.createElement('div'); wrapper.className = 'flex flex-col gap-6 w-full pb-6';
 
+            // 🔥 현재 날짜 파악을 위한 로직 추가 🔥
+            let foundCurrentWeek = false;
+            const now = new Date();
+            const realTodayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
             for (const [weekKey, matches] of Object.entries(groupedMatches)) {
+                // 🔥 주차가 끝났는지 확인 (해당 주의 일요일 날짜 계산) 🔥
+                const firstMatchDate = new Date(matches[0].date);
+                const dayOfWeek = (firstMatchDate.getDay() + 6) % 7; 
+                const sundayOfThisWeek = new Date(firstMatchDate);
+                sundayOfThisWeek.setDate(firstMatchDate.getDate() - dayOfWeek + 6);
+                const sundayStr = `${sundayOfThisWeek.getFullYear()}-${String(sundayOfThisWeek.getMonth() + 1).padStart(2, '0')}-${String(sundayOfThisWeek.getDate()).padStart(2, '0')}`;
+
+                // 이번 주 일요일이 이미 지났다면 목록에서 렌더링 제외 (주차 종료)
+                if (sundayStr < realTodayStr) {
+                    continue;
+                }
+
                 matches.sort((a, b) => {
                     const statusA = liveDataStore[a.id] ? liveDataStore[a.id].gameStatus : '경기전';
                     const statusB = liveDataStore[b.id] ? liveDataStore[b.id].gameStatus : '경기전';
@@ -1139,7 +1156,15 @@
                 });
 
                 const weekGroup = document.createElement('div');
-                weekGroup.className = 'flex flex-col gap-3';
+                // 🔥 스크롤 여백(scroll-mt-28) 추가 🔥
+                weekGroup.className = 'flex flex-col gap-3 scroll-mt-28';
+                
+                // 🔥 현재/다가오는 주차 식별 (id 부여) 🔥
+                if (!foundCurrentWeek && matches.some(m => m.date >= realTodayStr)) {
+                    weekGroup.id = 'current-week-group';
+                    foundCurrentWeek = true;
+                }
+
                 weekGroup.innerHTML = `<div class="flex items-center gap-2 px-1"><h3 class="text-lg font-bold text-white">${weekKey}</h3><span class="text-[10px] font-bold text-point bg-point-sub px-2 py-0.5 rounded-full">${matches.length}경기</span></div>`;
                 
                 const cardsContainer = document.createElement('div');
@@ -1195,10 +1220,26 @@
                         </div>`;
                     cardsContainer.appendChild(card);
                 });
-                weekGroup.appendChild(card);
+                
+                // 🔥 [버그 수정] card 대신 cardsContainer를 append 해야 함 🔥
+                weekGroup.appendChild(cardsContainer); 
                 wrapper.appendChild(weekGroup);
             }
+            
+            if (wrapper.children.length === 0) {
+                container.innerHTML = `<div class="flex flex-col items-center justify-center py-10 text-gray-500"><p class="text-sm">예정된 경기가 없습니다.</p></div>`;
+                return;
+            }
+            
             container.appendChild(wrapper);
+
+            // 🔥 목록 렌더링 직후 현재 주차로 자동 스크롤 🔥
+            setTimeout(() => {
+                const currentGroup = document.getElementById('current-week-group');
+                if (currentGroup) {
+                    currentGroup.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
         }
 
         function renderRanking() {
