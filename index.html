@@ -1224,6 +1224,38 @@
         let currentSongTitle = '';
         let currentSongCover = '';
 
+        // =========================================================================
+        // 🔥 [안드로이드 앱 통신용 브릿지 코드 추가됨] 🔥
+        // 앱(상단바 컨트롤러)에서 웹사이트의 음악을 제어하기 위해 추가된 함수들입니다.
+        // =========================================================================
+        
+        // 1. 앱에서 [재생] 버튼을 눌렀을 때 실행됨
+        window.appPlayMusic = function() {
+            if (audioPlayer && audioPlayer.src) {
+                audioPlayer.play();
+                const btn = document.getElementById('mini-player-btn');
+                if (btn) btn.className = 'fa-solid fa-pause text-base';
+            }
+        };
+
+        // 2. 앱에서 [일시정지] 버튼을 눌렀을 때 실행됨
+        window.appPauseMusic = function() {
+            if (audioPlayer) {
+                audioPlayer.pause();
+                const btn = document.getElementById('mini-player-btn');
+                if (btn) btn.className = 'fa-solid fa-play text-base ml-0.5';
+            }
+        };
+
+        // 3. 웹에서 음악 상태가 변할 때 안드로이드(앱)로 상태를 보내줌
+        function sendStateToAndroid(state, title) {
+            // 안드로이드에 연결된 'AndroidBridge'가 있을 때만 메세지를 보냅니다.
+            if (window.AndroidBridge && window.AndroidBridge.updateMusicState) {
+                window.AndroidBridge.updateMusicState(state, title);
+            }
+        }
+        // =========================================================================
+
         function initAudioPlayer() {
             audioPlayer = document.getElementById('audio-player');
             
@@ -1231,11 +1263,17 @@
                 const btn = document.getElementById('mini-player-btn');
                 if (btn) btn.className = 'fa-solid fa-pause text-base';
                 updateMediaSession();
+                
+                // 앱 상단바에 "나 지금 노래 재생 중이야!" 라고 알려줌
+                sendStateToAndroid("PLAYING", currentSongTitle);
             });
             
             audioPlayer.addEventListener('pause', () => {
                 const btn = document.getElementById('mini-player-btn');
                 if (btn) btn.className = 'fa-solid fa-play text-base ml-0.5';
+                
+                // 앱 상단바에 "나 지금 노래 일시정지했어!" 라고 알려줌
+                sendStateToAndroid("PAUSED", currentSongTitle);
             });
             
             audioPlayer.addEventListener('timeupdate', () => {
@@ -1249,6 +1287,9 @@
                 const btn = document.getElementById('mini-player-btn');
                 if (btn) btn.className = 'fa-solid fa-play text-base ml-0.5';
                 document.getElementById('mini-player-progress').style.width = '0%';
+                
+                // 앱 상단바에 노래 끝났다고 알려줌
+                sendStateToAndroid("PAUSED", currentSongTitle);
             });
             
             audioPlayer.addEventListener('error', () => {
