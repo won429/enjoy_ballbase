@@ -203,9 +203,12 @@
                 
                 <!-- KIA 응원가 목록 -->
                 <div class="cheer-team cheer-KIA w-full flex-col gap-2 mt-2">
-                    <div class="flex items-center gap-2.5 mb-1.5 px-1">
-                        <img src="https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg" class="w-7 h-7 object-contain drop-shadow-md">
-                        <h2 class="text-lg font-extrabold text-white tracking-tight">KIA 응원가</h2>
+                    <div class="flex items-center justify-between mb-1.5 px-1 w-full">
+                        <div class="flex items-center gap-2.5">
+                            <img src="https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg" class="w-7 h-7 object-contain drop-shadow-md">
+                            <h2 class="text-lg font-extrabold text-white tracking-tight">KIA 응원가</h2>
+                        </div>
+                        <button onclick="playActiveTabSongs('kia')" class="bg-white/10 hover:bg-white/20 border border-white/10 text-white text-[11px] font-bold py-1.5 px-3 rounded-full flex items-center gap-1.5 transition-all active:scale-95 shadow-sm"><i class="fa-solid fa-play text-[10px]"></i>전체 재생</button>
                     </div>
 
                     <!-- 탭 메뉴 추가 (구단 / 선수) -->
@@ -263,7 +266,7 @@
                         </div>
                     </div>
 
-                    <!-- 선수 응원가 리스트 (기본 숨김) -->
+                    <!-- 선수 응원가 리스트 -->
                     <div id="content-cheer-kia-player" class="hidden flex-col gap-2">
                         <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('kia/kia_kimdoyoung.mp3', 'KIA 김도영')">
                             <div class="flex items-center gap-3">
@@ -288,12 +291,329 @@
                         </div>
                     </div>
 
-                    <!-- 안타/아웃송 리스트 (기본 숨김) -->
+                    <div id="content-cheer-kia-hitout" class="hidden flex-col gap-2">
+                        <div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div>
+                    </div>
+
+                    <div id="content-cheer-kia-entrance" class="hidden flex-col gap-2">
+                        <div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div>
+                    </div>
+                </div>
+
+                <!-- 🔥 삼성 응원가 목록 (추가됨) 🔥 -->
+                <div class="cheer-team cheer-삼성 w-full flex-col gap-2 mt-2">
+                    <div class="flex items-center justify-between mb-1.5 px-1 w-full">
+                        <div class="flex items-center gap-2.5">
+                            <img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-7 h-7 object-contain drop-shadow-md">
+                            <h2 class="text-lg font-extrabold text-white tracking-tight">삼성 응원가</h2>
+                        </div>
+                        <button onclick="playActiveTabSongs('samsung')" class="bg-white/10 hover:bg-white/20 border border-white/10 text-white text-[11px] font-bold py-1.5 px-3 rounded-full flex items-center gap-1.5 transition-all active:scale-95 shadow-sm"><i class="fa-solid fa-play text-[10px]"></i>전체 재생</button>
+                    </div>
+
+                    <!-- 탭 메뉴 추가 (구단 / 선수) -->
+                    <div class="flex bg-white/5 p-1 rounded-xl mb-1">
+                        <button onclick="switchCheerTab('samsung', 'team')" id="btn-cheer-samsung-team" class="flex-1 py-1.5 text-xs font-bold bg-[#2563eb] text-white rounded-lg transition-all shadow-sm">구단</button>
+                        <button onclick="switchCheerTab('samsung', 'player')" id="btn-cheer-samsung-player" class="flex-1 py-1.5 text-xs font-medium text-gray-400 hover:text-white rounded-lg transition-all">선수</button>
+                        <button onclick="switchCheerTab('samsung', 'hitout')" id="btn-cheer-samsung-hitout" class="flex-1 py-1.5 text-xs font-medium text-gray-400 hover:text-white rounded-lg transition-all">안타/아웃</button>
+                        <button onclick="switchCheerTab('samsung', 'entrance')" id="btn-cheer-samsung-entrance" class="flex-1 py-1.5 text-xs font-medium text-gray-400 hover:text-white rounded-lg transition-all">등장곡</button>
+                    </div>
+                    
+                    <!-- 구단 응원가 리스트 -->
+                    <div id="content-cheer-samsung-team" class="flex flex-col gap-2">
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_lineup.mp3', '삼성 라인업송')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">라인업송</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">팀 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_eldorado.mp3', '삼성 엘도라도')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">엘도라도</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">팀 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- 선수 응원가 리스트 -->
+                    <div id="content-cheer-samsung-player" class="hidden flex-col gap-2">
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_gu_jawook.mp3', '삼성 구자욱')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">구자욱</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_gu_jawook_moonlight.mp3', '삼성 구자욱(달빛소년)')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">구자욱(달빛소년)</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_choi_hyoungwoo.mp3', '삼성 최형우')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">최형우</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_diaz.mp3', '삼성 디아즈')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">디아즈</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_lee_jaehyun.mp3', '삼성 이재현')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">이재현</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_kim_hyunjun.mp3', '삼성 김현준')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">김현준</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_kim_sungyoon.mp3', '삼성 김성윤')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">김성윤</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_kim_jichan.mp3', '삼성 김지찬')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">김지찬</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_kang_minho.mp3', '삼성 강민호')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">강민호</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_shim_jaehun.mp3', '삼성 심재훈')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">심재훈</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_kim_jaesung.mp3', '삼성 김재성')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">김재성</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_ryu_jihyuk.mp3', '삼성 류지혁')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">류지혁</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_lee_byunghun.mp3', '삼성 이병헌')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">이병헌</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_lee_sunggyu1.mp3', '삼성 이성규1')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">이성규1</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_lee_sunggyu2.mp3', '삼성 이성규2')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">이성규2</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_kim_youngwoong.mp3', '삼성 김영웅')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">김영웅</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_kim_taehun.mp3', '삼성 김태훈')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">김태훈</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_lee_haeseung.mp3', '삼성 이해승')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">이해승</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_park_seunggyu.mp3', '삼성 박승규')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">박승규</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_park_byungho.mp3', '삼성 박병호')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">박병호</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_yoon_jungbin.mp3', '삼성 윤정빈')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">윤정빈</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_kim_heongon.mp3', '삼성 김헌곤')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">김헌곤</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_yang_woohyun.mp3', '삼성 양우현')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">양우현</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('samsung/samsung_jeon_byungwoo.mp3', '삼성 전병우')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-full h-full object-contain opacity-90"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[14px] font-bold text-white mb-0.5">전병우</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">선수 응원가</span>
+                                </div>
+                            </div>
+                            <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                        </div>
+                    </div>
+
                     <div id="content-cheer-samsung-hitout" class="hidden flex-col gap-2">
                         <div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div>
                     </div>
 
-                    <!-- 등장곡 리스트 (기본 숨김) -->
                     <div id="content-cheer-samsung-entrance" class="hidden flex-col gap-2">
                         <div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div>
                     </div>
@@ -404,8 +724,8 @@
             'LG': 'https://i.namu.wiki/i/gexLKDhp3QSYk-bDjR8YkwNDmm7D17CPmgE7ixadcVIHdLs22JOQwgP2riDC85Kl7d5GEJQOyLQutsvB-Koc8DCDRAhp-n-Cx9AJ88fJ5Ki_JsLYlK7dFvs4NqECDr2fOxipLwf9PlAgDEqBWFsZxw.svg',
             '두산': 'https://i.namu.wiki/i/qkTbw6qa14fjG0aTU5QL-uhCe_D9gwIGiyTV6l7jYo5DSzl6GwEr-eC-b_I1jIkZgDpF-ARyujk4qPQ0MZqHACoDg9dc3OtyrkZcnwZ5n66T0FR7TDJLvEMWkH8Uh9Z_yubxflY426vm3XvhsUF_MA.svg',
             'SSG': 'https://i.namu.wiki/i/X91DumdvUw7RDajMJ7nMRWGsbwd62jUhLShdLTuGu4FTbqMD9m_UHcNVTHEF9Cr-C1BahIZMvHc21r065oSPvEShTnuCOg1ksdxuTNY2BQXI46WOwPfVJssZo5nJk18dT2wQls6s5ZAzAC8_Wywy6g.svg',
-            'KT': 'https://i.namu.wiki/i/XrZb9d2-lmtnFa3VUoeWHl_FkVJEORj3YrzPiVPbWX0WFyGTQsSo78QEQK1FZUt071Ybqw4bPKv7-ohVfQOqSA.svg',
-            '한화': 'https://i.namu.wiki/i/GfqvYyhGtdDGBvhA_Ghvg9hOxBxzCgC26x07Q_2ouBB2sx3PMKdl1qcSLvqGKVqte1EC71ovtFWmyUMsag2lMQ.svg',
+            'KT': 'https://i.namu.wiki/i/BUchd6SAA3IJFpdMMsRklFdMFq50Dvz-rIla5f0RLUlGLkfTdo5ZSzyUf9PioBjC_a6QY8eFGU6FX_56yUsK4g.svg',
+            '한화': 'https://i.namu.wiki/i/XdMKX3M_SZZGW_ReTUO8ecJXpZ07OJ9dQqgnsJo_Nm_mW2LOhPDtcxen8eqU7ApAVQutmHidv9v6kR1Zsn_LXA.svg',
             '키움': 'https://i.namu.wiki/i/qNJ-4pGmvhJmKVoGIAR9uce83_Mayu1vsHyd37yK6raEmYcHSiW3MGgFqkihanigvyFK3LVoAwIgZvGr5ymW4ksC5bB643HgAHTkEGoLyrqiL1TRzXrzrNhN1PJPi7I8pGTDfLbyUyNEDj65MsNedw.svg'
         };
 
@@ -875,7 +1195,7 @@
                         </div>`;
                     cardsContainer.appendChild(card);
                 });
-                weekGroup.appendChild(cardsContainer);
+                weekGroup.appendChild(card);
                 wrapper.appendChild(weekGroup);
             }
             container.appendChild(wrapper);
@@ -1223,6 +1543,8 @@
         let audioPlayer;
         let currentSongTitle = '';
         let currentSongCover = '';
+        let currentPlaylist = [];
+        let currentSongIndex = -1;
 
         // =========================================================================
         // 🔥 [안드로이드 앱 통신용 브릿지 코드 추가됨] 🔥
@@ -1284,12 +1606,18 @@
             });
             
             audioPlayer.addEventListener('ended', () => {
-                const btn = document.getElementById('mini-player-btn');
-                if (btn) btn.className = 'fa-solid fa-play text-base ml-0.5';
-                document.getElementById('mini-player-progress').style.width = '0%';
-                
-                // 앱 상단바에 노래 끝났다고 알려줌
-                sendStateToAndroid("PAUSED", currentSongTitle);
+                if (currentPlaylist.length > 0 && currentSongIndex >= 0 && currentSongIndex + 1 < currentPlaylist.length) {
+                    // 리스트에 다음 곡이 있으면 자동으로 재생
+                    currentSongIndex++;
+                    const nextSong = currentPlaylist[currentSongIndex];
+                    executePlay(nextSong.url, nextSong.title);
+                } else {
+                    // 모든 곡을 재생했거나 단일 곡일 경우 정지 처리
+                    const btn = document.getElementById('mini-player-btn');
+                    if (btn) btn.className = 'fa-solid fa-play text-base ml-0.5';
+                    document.getElementById('mini-player-progress').style.width = '0%';
+                    sendStateToAndroid("PAUSED", currentSongTitle);
+                }
             });
             
             audioPlayer.addEventListener('error', () => {
@@ -1339,7 +1667,65 @@
             if(progressBar) progressBar.style.width = '0%';
         }
 
+        // 전체 재생 버튼 로직
+        function playAllSongs(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            const songElements = container.querySelectorAll(`[onclick*="playCheerSong"]`);
+            currentPlaylist = Array.from(songElements).map(el => {
+                const onclickStr = el.getAttribute('onclick');
+                const match = onclickStr.match(/playCheerSong\(['"]([^'"]+)['"],\s*['"]([^'"]+)['"]\)/);
+                if (match) return { url: match[1], title: match[2] };
+                return null;
+            }).filter(item => item !== null);
+
+            if (currentPlaylist.length > 0) {
+                currentSongIndex = 0;
+                executePlay(currentPlaylist[0].url, currentPlaylist[0].title);
+            } else {
+                showToast('재생할 곡이 없습니다.');
+            }
+        }
+
+        // 현재 활성화된 탭의 곡들 전체 재생 (상단 알약 버튼용)
+        function playActiveTabSongs(teamPrefix) {
+            const activeContainer = document.querySelector(`div[id^="content-cheer-${teamPrefix}-"]:not(.hidden)`);
+            if (activeContainer) {
+                playAllSongs(activeContainer.id);
+            } else {
+                showToast('재생할 곡이 없습니다.');
+            }
+        }
+
+        // 개별 곡 재생 시 주변 목록 스캔하여 자동 재생 준비
         function playCheerSong(url, title) {
+            const allSongElements = document.querySelectorAll(`[onclick*="playCheerSong"]`);
+            let clickedElement = Array.from(allSongElements).find(el => el.getAttribute('onclick').includes(`'${url}'`) || el.getAttribute('onclick').includes(`"${url}"`));
+            
+            if (clickedElement) {
+                const parentContainer = clickedElement.closest('[id^="content-cheer-"]');
+                if (parentContainer) {
+                    const siblingElements = parentContainer.querySelectorAll(`[onclick*="playCheerSong"]`);
+                    currentPlaylist = Array.from(siblingElements).map(el => {
+                        const onclickStr = el.getAttribute('onclick');
+                        const match = onclickStr.match(/playCheerSong\(['"]([^'"]+)['"],\s*['"]([^'"]+)['"]\)/);
+                        if (match) return { url: match[1], title: match[2] };
+                        return null;
+                    }).filter(item => item !== null);
+                    
+                    currentSongIndex = currentPlaylist.findIndex(item => item.url === url);
+                }
+            } else {
+                currentPlaylist = [{url, title}];
+                currentSongIndex = 0;
+            }
+
+            executePlay(url, title);
+        }
+
+        // 실제 음악 실행 엔진
+        function executePlay(url, title) {
             if (!audioPlayer) initAudioPlayer();
 
             audioPlayer.src = url;
