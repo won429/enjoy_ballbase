@@ -1617,6 +1617,36 @@
                 window.AndroidBridge.updateMusicState(state, title);
             }
         }
+
+        // ⭐ 4. 앱에서 [이전 곡] 버튼을 눌렀을 때 실행됨
+        window.appPrevMusic = function() {
+            if (currentPlaylist.length > 0 && currentSongIndex >= 0) {
+                currentSongIndex--;
+                if (currentSongIndex < 0) {
+                    currentSongIndex = currentPlaylist.length - 1; // 처음이면 맨 마지막 곡으로
+                }
+                const prevSong = currentPlaylist[currentSongIndex];
+                executePlay(prevSong.url, prevSong.title);
+            } else {
+                // 재생 목록이 없으면 처음부터 다시 재생
+                if (audioPlayer && audioPlayer.src) {
+                    audioPlayer.currentTime = 0;
+                    audioPlayer.play();
+                }
+            }
+        };
+
+        // ⭐ 5. 앱에서 [다음 곡] 버튼을 눌렀을 때 실행됨
+        window.appNextMusic = function() {
+            if (currentPlaylist.length > 0 && currentSongIndex >= 0) {
+                currentSongIndex++;
+                if (currentSongIndex >= currentPlaylist.length) {
+                    currentSongIndex = 0; // 마지막이면 맨 처음 곡으로
+                }
+                const nextSong = currentPlaylist[currentSongIndex];
+                executePlay(nextSong.url, nextSong.title);
+            }
+        };
         // =========================================================================
 
         function initAudioPlayer() {
@@ -1685,6 +1715,9 @@
 
                 navigator.mediaSession.setActionHandler('play', () => { if(audioPlayer) audioPlayer.play(); });
                 navigator.mediaSession.setActionHandler('pause', () => { if(audioPlayer) audioPlayer.pause(); });
+                // ⭐ 추가됨: 잠금화면이나 이어폰에서 다음/이전 버튼 눌렀을 때도 동작하게 만듦
+                navigator.mediaSession.setActionHandler('previoustrack', () => { window.appPrevMusic(); });
+                navigator.mediaSession.setActionHandler('nexttrack', () => { window.appNextMusic(); });
             }
         }
 
