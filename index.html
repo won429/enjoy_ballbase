@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>KBO(엔조이)</title>
+    <title>KBO League Schedule</title>
     
     <!-- 🔥 홈 화면 추가 시 적용될 앱 아이콘 설정 🔥 -->
     <link rel="icon" href="logo.png">
@@ -1256,17 +1256,17 @@
             if (!container) return;
 
             let html = `
-                <div class="px-5">
+                <div class="px-3 sm:px-5">
                     <div>
-                        <div class="flex justify-between items-center p-3 border-b border-white/20">
-                            <div class="w-10 text-center text-xs font-bold text-gray-400">순위</div>
-                            <div class="flex-1 text-left text-xs font-bold text-gray-400 pl-2">팀명</div>
-                            <div class="w-8 text-center text-xs font-bold text-gray-400">경기</div>
-                            <div class="w-8 text-center text-xs font-bold text-gray-400">승</div>
-                            <div class="w-8 text-center text-xs font-bold text-gray-400">무</div>
-                            <div class="w-8 text-center text-xs font-bold text-gray-400">패</div>
-                            <div class="w-12 text-center text-xs font-bold text-gray-400">승률</div>
-                            <div class="w-10 text-center text-xs font-bold text-gray-400">승차</div>
+                        <div class="flex justify-between items-center py-3 px-1 border-b border-white/20">
+                            <div class="w-7 text-center text-[11px] font-bold text-gray-400 shrink-0">순위</div>
+                            <div class="flex-1 text-left text-[11px] font-bold text-gray-400 pl-2">팀명</div>
+                            <div class="w-7 text-center text-[11px] font-bold text-gray-400 shrink-0">경기</div>
+                            <div class="w-6 text-center text-[11px] font-bold text-gray-400 shrink-0">승</div>
+                            <div class="w-6 text-center text-[11px] font-bold text-gray-400 shrink-0">무</div>
+                            <div class="w-6 text-center text-[11px] font-bold text-gray-400 shrink-0">패</div>
+                            <div class="w-10 text-center text-[11px] font-bold text-gray-400 shrink-0">승률</div>
+                            <div class="w-8 text-center text-[11px] font-bold text-gray-400 shrink-0">승차</div>
                         </div>`;
 
             rankingData.forEach((team, i) => {
@@ -1276,15 +1276,15 @@
                 let gamesPlayed = team.w + (team.d || 0) + team.l;
 
                 html += `
-                        <div class="flex justify-between items-center p-3 border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
-                            <div class="w-10 text-center text-sm font-bold ${rClass}">${team.rank}</div>
-                            <div class="flex-1 flex items-center gap-2 pl-2">${teamIconHtml}<span class="text-sm font-bold text-white">${team.team}</span></div>
-                            <div class="w-8 text-center text-sm font-medium text-gray-300">${gamesPlayed}</div>
-                            <div class="w-8 text-center text-sm font-medium text-gray-300">${team.w}</div>
-                            <div class="w-8 text-center text-sm font-medium text-gray-300">${team.d || 0}</div>
-                            <div class="w-8 text-center text-sm font-medium text-gray-300">${team.l}</div>
-                            <div class="w-12 text-center text-sm font-medium text-point">${team.winRate}</div>
-                            <div class="w-10 text-center text-[11px] font-medium text-gray-500">${team.gb}</div>
+                        <div class="flex justify-between items-center py-3 px-1 border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
+                            <div class="w-7 text-center text-sm font-bold ${rClass} shrink-0">${team.rank}</div>
+                            <div class="flex-1 flex items-center gap-1.5 pl-2 overflow-hidden">${teamIconHtml}<span class="text-[13px] font-bold text-white whitespace-nowrap">${team.team}</span></div>
+                            <div class="w-7 text-center text-[12px] font-medium text-gray-300 shrink-0">${gamesPlayed}</div>
+                            <div class="w-6 text-center text-[12px] font-medium text-gray-300 shrink-0">${team.w}</div>
+                            <div class="w-6 text-center text-[12px] font-medium text-gray-300 shrink-0">${team.d || 0}</div>
+                            <div class="w-6 text-center text-[12px] font-medium text-gray-300 shrink-0">${team.l}</div>
+                            <div class="w-10 text-center text-[12px] font-medium text-point shrink-0">${team.winRate}</div>
+                            <div class="w-8 text-center text-[11px] font-medium text-gray-500 shrink-0">${team.gb}</div>
                     </div>`;
             });
             html += `</div></div>`;
