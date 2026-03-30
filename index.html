@@ -193,11 +193,6 @@
             </div>
         </main>
 
-        <!-- 2. 목록 화면 -->
-        <main id="list-screen" class="hidden flex-1 min-h-0 relative w-full flex-col app-bg overflow-y-auto scrollbar-hide pb-24">
-            <div class="px-5 pt-main flex flex-col gap-4" id="match-list-container"></div>
-        </main>
-
         <!-- 3. 순위 화면 -->
         <main id="ranking-screen" class="hidden flex-1 min-h-0 relative w-full flex-col app-bg overflow-y-auto scrollbar-hide pb-24">
             <div class="w-full pt-main pb-10" id="ranking-container"></div>
@@ -674,12 +669,9 @@
                     <div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-calendar-days text-base text-white"></i><span class="text-[10px] font-bold text-white">야구</span></div>
                 </button>
                 <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(1)">
-                    <div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-list-ul text-base text-gray-300"></i><span class="text-[10px] font-medium text-gray-300">목록</span></div>
-                </button>
-                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(2)">
                     <div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-trophy text-base text-gray-300"></i><span class="text-[10px] font-medium text-gray-300">순위</span></div>
                 </button>
-                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(3)">
+                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(2)">
                     <div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-headphones text-base text-gray-300"></i><span class="text-[10px] font-medium text-gray-300">응원가</span></div>
                 </button>
             </div>
@@ -797,7 +789,7 @@
                             return parseInt(a.rank) - parseInt(b.rank);
                         });
                     }
-                    if (currentTabIndex === 2) renderRanking();
+                    if (currentTabIndex === 1) renderRanking();
                 });
 
                 db.collection("lineups").onSnapshot((snapshot) => {
@@ -806,7 +798,6 @@
                     });
                     
                     if (currentTabIndex === 0) renderCalendar();
-                    else if (currentTabIndex === 1) renderList();
                     
                     if (currentPopupMatchId) {
                         renderPopupContent(currentPopupMatchId);
@@ -827,7 +818,6 @@
             
             const screens = [
                 document.getElementById('calendar-screen'), 
-                document.getElementById('list-screen'), 
                 document.getElementById('ranking-screen'),
                 document.getElementById('cheer-screen')
             ];
@@ -846,9 +836,8 @@
                 if (icon && label) {
                     let iconName = 'fa-gear';
                     if(i === 0) iconName = 'fa-calendar-days';
-                    else if(i === 1) iconName = 'fa-list-ul';
-                    else if(i === 2) iconName = 'fa-trophy';
-                    else if(i === 3) iconName = 'fa-headphones';
+                    else if(i === 1) iconName = 'fa-trophy';
+                    else if(i === 2) iconName = 'fa-headphones';
                     
                     icon.className = `fa-solid ${iconName} text-base ${i===index?'text-white':'text-gray-300 transition-colors'}`;
                     label.className = `text-[10px] whitespace-nowrap transition-colors ${i===index?'text-white font-bold':'text-gray-300 font-medium'}`;
@@ -859,17 +848,15 @@
             const ctrlWrapper = document.getElementById('ctrl-wrapper'); const mainText = document.getElementById('di-main-text');
 
             if (index === 0) mainText.innerHTML = `KBO 리그<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
-            else if (index === 1) mainText.innerHTML = `전체 일정 목록<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
-            else if (index === 2) mainText.innerHTML = `정규리그 순위<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
-            else if (index === 3) mainText.innerHTML = `구단별 응원가<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
+            else if (index === 1) mainText.innerHTML = `정규리그 순위<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
+            else if (index === 2) mainText.innerHTML = `구단별 응원가<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
 
             if (index === 0) { ctrlTeam.className='ctrl-item ctrl-show flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.remove('opacity-0'); }
-            else if (index === 1) { ctrlTeam.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-show flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.remove('opacity-0'); }
-            else if (index === 2) { ctrlTeam.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.add('opacity-0'); }
-            else if (index === 3) { ctrlTeam.className='ctrl-item ctrl-show flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.remove('opacity-0'); }
+            else if (index === 1) { ctrlTeam.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.add('opacity-0'); }
+            else if (index === 2) { ctrlTeam.className='ctrl-item ctrl-show flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.remove('opacity-0'); }
 
             const btnTeamAll = document.getElementById('btn-team-all');
-            if (index === 3) {
+            if (index === 2) {
                 btnTeamAll.style.display = 'none';
                 if (selectedTeam === 'all') setTeamFilter('KIA');
             } else {
@@ -879,8 +866,7 @@
             screens.forEach((screen, i) => { screen.classList.toggle('hidden', i !== index); screen.classList.toggle('flex', i === index); });
 
             if (index === 0) renderCalendar(); 
-            else if (index === 1) renderList(); 
-            else if (index === 2) renderRanking();
+            else if (index === 1) renderRanking();
         }
 
         function setViewMode(mode) { 
@@ -905,7 +891,7 @@
             const btns = ['all', 'KIA', '삼성'].map(id => document.getElementById(`btn-team-${id}`));
             btns.forEach(btn => btn.className = 'px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 hover:text-white transition-all active:scale-95 cursor-pointer shrink-0 z-10');
             document.getElementById(`btn-team-${team}`).className = 'px-3.5 py-1.5 text-[11px] font-bold rounded-full bg-point text-white shadow-sm transition-all active:scale-95 cursor-pointer shrink-0 z-10';
-            renderCalendar(); if(currentTabIndex === 1) renderList(); closeBottomSheet(); renderBanners();
+            renderCalendar(); closeBottomSheet(); renderBanners();
         }
 
         // --- UI 렌더링 함수들 ---
