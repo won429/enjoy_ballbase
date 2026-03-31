@@ -125,9 +125,9 @@
                 </div>
                 <div id="ctrl-wrapper" class="grid bg-[#151515] rounded-full shadow-lg border border-white/5 h-[36px] shrink-0 overflow-hidden relative transition-all duration-500 origin-right">
                     <div id="ctrl-team" class="ctrl-item ctrl-show flex items-center justify-center gap-1 h-full" style="grid-area: 1/1;">
-                        <button onclick="setTeamFilter('all')" id="btn-team-all" class="px-3.5 py-1.5 text-[11px] font-bold rounded-full bg-gray-600 text-white shadow-sm transition-all active:scale-95 cursor-pointer shrink-0 z-10">전체</button>
-                        <button onclick="setTeamFilter('KIA')" id="btn-team-KIA" class="px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 hover:text-white transition-all active:scale-95 cursor-pointer shrink-0 z-10">KIA</button>
-                        <button onclick="setTeamFilter('삼성')" id="btn-team-삼성" class="px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 hover:text-white transition-all active:scale-95 cursor-pointer shrink-0 z-10">삼성</button>
+                        <button onclick="setTeamFilter('all')" id="btn-team-all" class="px-3.5 py-1.5 text-[11px] font-bold rounded-full bg-point text-white shadow-sm transition-all active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto">전체</button>
+                        <button onclick="setTeamFilter('KIA')" id="btn-team-KIA" class="px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 transition-all active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto">KIA</button>
+                        <button onclick="setTeamFilter('삼성')" id="btn-team-삼성" class="px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 transition-all active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto">삼성</button>
                     </div>
                     <div id="ctrl-sort" class="ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full" style="grid-area: 1/1;">
                         <span id="sort-text" class="text-[12px] font-bold text-gray-400">날짜순</span>
@@ -586,7 +586,7 @@
                 btnTeamAll.style.display = 'none';
                 if (selectedTeam === 'all') setTeamFilter('KIA');
             } else {
-                btnTeamAll.style.display = 'block';
+                btnTeamAll.style.display = '';
             }
 
             screens.forEach((screen, i) => { screen.classList.toggle('hidden', i !== index); screen.classList.toggle('flex', i === index); });
@@ -626,8 +626,8 @@
         function setTeamFilter(team) {
             selectedTeam = team; localStorage.setItem('kbo_selected_team', team); document.body.setAttribute('data-theme', team);
             const btns = ['all', 'KIA', '삼성'].map(id => document.getElementById(`btn-team-${id}`));
-            btns.forEach(btn => btn.className = 'px-3.5 py-1.5 text-[11px] font-medium rounded-full bg-transparent text-gray-400 hover:text-white transition-all active:scale-95 cursor-pointer shrink-0 z-10');
-            document.getElementById(`btn-team-${team}`).className = 'px-3.5 py-1.5 text-[11px] font-bold rounded-full bg-point text-white shadow-sm transition-all active:scale-95 cursor-pointer shrink-0 z-10';
+            btns.forEach(btn => btn.className = 'px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 transition-all active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto');
+            document.getElementById(`btn-team-${team}`).className = 'px-3.5 py-1.5 text-[11px] font-bold rounded-full bg-point text-white shadow-sm transition-all active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto';
             renderCalendar(); closeBottomSheet(); renderBanners();
         }
 
