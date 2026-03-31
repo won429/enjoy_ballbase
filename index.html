@@ -1512,7 +1512,19 @@
         // 개별 곡 재생 시 주변 목록 스캔하여 자동 재생 준비
         function playCheerSong(url, title) {
             const allSongElements = document.querySelectorAll(`[onclick*="playCheerSong"]`);
-            let clickedElement = Array.from(allSongElements).find(el => el.getAttribute('onclick').includes(`'${url}'`) || el.getAttribute('onclick').includes(`"${url}"`));
+            
+            // 🔥 현재 화면에 '보이는(숨겨지지 않은)' 탭에 있는 요소를 우선적으로 찾도록 똑똑하게 수정 🔥
+            let clickedElement = Array.from(allSongElements).find(el => {
+                const isMatch = el.getAttribute('onclick').includes(`'${url}'`) || el.getAttribute('onclick').includes(`"${url}"`);
+                if (!isMatch) return false;
+                const parent = el.closest('[id^="content-cheer-"]');
+                return parent && !parent.classList.contains('hidden'); // hidden이 없는(켜져 있는) 탭인지 확인
+            });
+
+            // 만약 못 찾았다면 기존 방식(첫 번째 요소)으로 폴백
+            if (!clickedElement) {
+                clickedElement = Array.from(allSongElements).find(el => el.getAttribute('onclick').includes(`'${url}'`) || el.getAttribute('onclick').includes(`"${url}"`));
+            }
             
             if (clickedElement) {
                 const parentContainer = clickedElement.closest('[id^="content-cheer-"]');
