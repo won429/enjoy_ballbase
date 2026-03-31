@@ -1278,23 +1278,25 @@
                 }
 
                 lineup.forEach((playerName, index) => {
-                    // 선수 이름으로 응원가 찾기 (예: "김도영"을 검색해서 "5. 김도영" 파일을 매칭)
-                    const song = playerSongs.find(s => s.label.includes(playerName) || s.title.includes(playerName));
+                    // 🔥 선수 이름으로 응원가 모두 찾기 (구자욱 등 여러 곡인 경우 모두 포함하도록 filter 사용) 🔥
+                    const matchedSongs = playerSongs.filter(s => s.label.includes(playerName) || s.title.includes(playerName));
                     
-                    if (song) {
-                        html += `
-                            <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('${song.url}', '${song.title}')">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-5 text-center text-[13px] font-black text-point opacity-90">${index + 1}</div>
-                                    <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="${logoUrl}" class="w-full h-full object-contain opacity-90"></div>
-                                    <div class="flex flex-col">
-                                        <span class="text-[14px] font-bold text-white mb-0.5">${song.label}</span>
-                                        <span class="text-[10px] text-gray-400 font-medium">라인업 응원가</span>
+                    if (matchedSongs.length > 0) {
+                        matchedSongs.forEach(song => {
+                            html += `
+                                <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('${song.url}', '${song.title}')">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-5 text-center text-[13px] font-black text-point opacity-90">${index + 1}</div>
+                                        <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="${logoUrl}" class="w-full h-full object-contain opacity-90"></div>
+                                        <div class="flex flex-col">
+                                            <span class="text-[14px] font-bold text-white mb-0.5">${song.label}</span>
+                                            <span class="text-[10px] text-gray-400 font-medium">라인업 응원가</span>
+                                        </div>
                                     </div>
+                                    <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
                                 </div>
-                                <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
-                            </div>
-                        `;
+                            `;
+                        });
                     } else {
                         // 응원가가 등록되지 않은 선수는 재생 버튼 없이 흐리게 표시
                         html += `
