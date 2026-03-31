@@ -1282,6 +1282,7 @@
                 // 3. 라인업 선수들과 응원가 매칭하기
                 const playerSongs = cheerData[teamId]?.player || [];
                 const teamSongs = cheerData[teamId]?.team || []; // 🔥 구단 응원가 데이터 추가
+                const entranceSongs = cheerData[teamId]?.entrance || []; // 🔥 등장곡 데이터 추가
                 const logoUrl = teamLogos[teamName];
                 let html = '';
 
@@ -1304,10 +1305,31 @@
                 }
 
                 lineup.forEach((playerName, index) => {
-                    // 🔥 선수 이름으로 응원가 모두 찾기 (구자욱 등 여러 곡인 경우 모두 포함하도록 filter 사용) 🔥
+                    // 🔥 1. 선수 등장곡 찾기
+                    const matchedEntrance = entranceSongs.find(s => s.label.includes(playerName) || s.title.includes(playerName));
+                    
+                    // 🔥 2. 선수 이름으로 응원가 모두 찾기 (구자욱 등 여러 곡인 경우 모두 포함하도록 filter 사용)
                     const matchedSongs = playerSongs.filter(s => s.label.includes(playerName) || s.title.includes(playerName));
                     
-                    if (matchedSongs.length > 0) {
+                    if (matchedEntrance || matchedSongs.length > 0) {
+                        // 🔥 등장곡이 있으면 먼저 추가
+                        if (matchedEntrance) {
+                            html += `
+                                <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('${matchedEntrance.url}', '${matchedEntrance.title}')">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-5 text-center text-[13px] font-black text-point opacity-90">${index + 1}</div>
+                                        <div class="w-8 h-8 bg-black/40 rounded-lg flex items-center justify-center shadow-inner p-1"><img src="${logoUrl}" class="w-full h-full object-contain opacity-90"></div>
+                                        <div class="flex flex-col">
+                                            <span class="text-[14px] font-bold text-white mb-0.5">${matchedEntrance.label}</span>
+                                            <span class="text-[10px] text-gray-400 font-medium">등장곡</span>
+                                        </div>
+                                    </div>
+                                    <button class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-play text-sm"></i></button>
+                                </div>
+                            `;
+                        }
+
+                        // 🔥 그 다음 기본 응원가들 추가
                         matchedSongs.forEach(song => {
                             html += `
                                 <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl active:scale-[0.98] transition-transform cursor-pointer" onclick="playCheerSong('${song.url}', '${song.title}')">
