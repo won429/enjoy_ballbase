@@ -110,7 +110,7 @@
 <body class="w-full h-[100dvh] bg-[#0a0a0a] flex justify-center items-center overflow-hidden" data-theme="all">
 
     <!-- 🔥 MP3 재생용 오디오 태그 (유튜브 대체) 🔥 -->
-    <audio id="audio-player" style="display:none;" preload="metadata"></audio>
+    <audio id="audio-player" style="display:none;" preload="auto" autoplay playsinline></audio>
 
     <div id="mobile-wrapper" class="w-full h-full max-w-[430px] relative z-10 flex flex-col overflow-hidden sm:border-x border-white/10 sm:shadow-2xl app-bg">
 
@@ -1404,7 +1404,9 @@
         function executePlay(url, title) {
             if (!audioPlayer) initAudioPlayer();
 
+            audioPlayer.autoplay = true; // 🔥 스마트폰이 백그라운드에서 자동재생 권한을 뺏지 못하도록 강제 부여
             audioPlayer.src = url;
+            audioPlayer.load(); // 🔥 화면이 꺼져 있어도 다음 곡 파일을 즉시 다운로드하라고 강제 명령
             audioPlayer.play().catch(e => {
                 showToast('음원 재생 중 오류가 발생했습니다. (파일 확인 필요)');
             });
