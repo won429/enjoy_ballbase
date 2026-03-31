@@ -586,7 +586,7 @@
                 btnTeamAll.style.display = 'none';
                 if (selectedTeam === 'all') setTeamFilter('KIA');
             } else {
-                btnTeamAll.style.display = '';
+                btnTeamAll.style.display = 'block';
             }
 
             screens.forEach((screen, i) => { screen.classList.toggle('hidden', i !== index); screen.classList.toggle('flex', i === index); });
@@ -626,7 +626,7 @@
         function setTeamFilter(team) {
             selectedTeam = team; localStorage.setItem('kbo_selected_team', team); document.body.setAttribute('data-theme', team);
             const btns = ['all', 'KIA', '삼성'].map(id => document.getElementById(`btn-team-${id}`));
-            btns.forEach(btn => btn.className = 'px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 hover:text-white transition-all active:scale-95 cursor-pointer shrink-0 z-10');
+            btns.forEach(btn => btn.className = 'px-3.5 py-1.5 text-[11px] font-medium rounded-full bg-transparent text-gray-400 hover:text-white transition-all active:scale-95 cursor-pointer shrink-0 z-10');
             document.getElementById(`btn-team-${team}`).className = 'px-3.5 py-1.5 text-[11px] font-bold rounded-full bg-point text-white shadow-sm transition-all active:scale-95 cursor-pointer shrink-0 z-10';
             renderCalendar(); closeBottomSheet(); renderBanners();
         }
