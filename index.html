@@ -44,8 +44,8 @@
             --point-bg: rgba(49, 130, 246, 0.15);
             --app-bg: #000000;
         }
-        body[data-theme="KIA"] { --point-color: #ea0029; --point-bg: rgba(234, 0, 41, 0.15); --app-bg: #140003; }
-        body[data-theme="삼성"] { --point-color: #2563eb; --point-bg: rgba(37, 99, 235, 0.15); --app-bg: #000514; }
+        body[data-theme="KIA"] { --point-color: #EA0029; --point-bg: rgba(234, 0, 41, 0.15); --app-bg: #140003; }
+        body[data-theme="삼성"] { --point-color: #074CA1; --point-bg: rgba(7, 76, 161, 0.15); --app-bg: #000514; }
         body[data-theme="all"] { --point-color: #3182F6; --point-bg: rgba(49, 130, 246, 0.15); --app-bg: #000000; }
 
         .app-bg { background-color: var(--app-bg) !important; transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -202,7 +202,7 @@
         <main id="cheer-screen" class="hidden flex-1 min-h-0 relative w-full flex-col app-bg overflow-y-auto scrollbar-hide">
             <div class="w-full pt-main pb-[220px] flex flex-col items-center px-5">
                 
-                <!-- KIA 응원가 목록 -->
+                <!-- 🔥 KIA 응원가 목록 완벽 복구 🔥 -->
                 <div class="cheer-team cheer-KIA w-full flex-col gap-2 mt-2">
                     <div class="flex items-center justify-between mb-1.5 px-1 w-full">
                         <div class="flex items-center gap-2.5">
@@ -212,35 +212,30 @@
                         <button onclick="playActiveTabSongs('kia')" class="bg-white/10 hover:bg-white/20 border border-white/10 text-white text-[11px] font-bold py-1.5 px-3 rounded-full flex items-center gap-1.5 transition-all active:scale-95 shadow-sm"><i class="fa-solid fa-play text-[10px]"></i>전체 재생</button>
                     </div>
 
-                    <!-- 탭 메뉴 추가 (구단 / 선수) -->
+                    <!-- KIA 탭 메뉴 -->
                     <div class="flex bg-white/5 p-1 rounded-full mb-1">
-                        <button onclick="switchCheerTab('kia', 'team')" id="btn-cheer-kia-team" class="flex-1 py-1.5 text-[11px] font-bold bg-[#ea0029] text-white rounded-full transition-all shadow-sm">구단</button>
+                        <button onclick="switchCheerTab('kia', 'team')" id="btn-cheer-kia-team" class="flex-1 py-1.5 text-[11px] font-bold bg-[#EA0029] text-white rounded-full transition-all shadow-sm">구단</button>
                         <button onclick="switchCheerTab('kia', 'player')" id="btn-cheer-kia-player" class="flex-1 py-1.5 text-[11px] font-medium text-gray-400 hover:text-white rounded-full transition-all">선수</button>
                         <button onclick="switchCheerTab('kia', 'lineup')" id="btn-cheer-kia-lineup" class="flex-1 py-1.5 text-[11px] font-medium text-gray-400 hover:text-white rounded-full transition-all">라인업</button>
                         <button onclick="switchCheerTab('kia', 'hitout')" id="btn-cheer-kia-hitout" class="flex-1 py-1.5 text-[11px] font-medium text-gray-400 hover:text-white rounded-full transition-all">안타/아웃</button>
                         <button onclick="switchCheerTab('kia', 'entrance')" id="btn-cheer-kia-entrance" class="flex-1 py-1.5 text-[11px] font-medium text-gray-400 hover:text-white rounded-full transition-all">등장곡</button>
                     </div>
                     
-                    <!-- 구단 응원가 리스트 (JS에서 자동 생성) -->
+                    <!-- KIA 컨텐츠 -->
                     <div id="content-cheer-kia-team" class="flex flex-col gap-2"></div>
-
-                    <!-- 선수 응원가 리스트 (JS에서 자동 생성) -->
                     <div id="content-cheer-kia-player" class="hidden flex-col gap-2"></div>
-
                     <div id="content-cheer-kia-lineup" class="hidden flex-col gap-2">
                         <div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div>
                     </div>
-
                     <div id="content-cheer-kia-hitout" class="hidden flex-col gap-2">
                         <div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div>
                     </div>
-
                     <div id="content-cheer-kia-entrance" class="hidden flex-col gap-2">
                         <div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div>
                     </div>
                 </div>
 
-                <!-- 🔥 삼성 응원가 목록 (추가됨) 🔥 -->
+                <!-- 🔥 삼성 응원가 목록 완벽 복구 🔥 -->
                 <div class="cheer-team cheer-삼성 w-full flex-col gap-2 mt-2">
                     <div class="flex items-center justify-between mb-1.5 px-1 w-full">
                         <div class="flex items-center gap-2.5">
@@ -250,29 +245,24 @@
                         <button onclick="playActiveTabSongs('samsung')" class="bg-white/10 hover:bg-white/20 border border-white/10 text-white text-[11px] font-bold py-1.5 px-3 rounded-full flex items-center gap-1.5 transition-all active:scale-95 shadow-sm"><i class="fa-solid fa-play text-[10px]"></i>전체 재생</button>
                     </div>
 
-                    <!-- 탭 메뉴 추가 (구단 / 선수) -->
+                    <!-- 삼성 탭 메뉴 -->
                     <div class="flex bg-white/5 p-1 rounded-full mb-1">
-                        <button onclick="switchCheerTab('samsung', 'team')" id="btn-cheer-samsung-team" class="flex-1 py-1.5 text-[11px] font-bold bg-[#2563eb] text-white rounded-full transition-all shadow-sm">구단</button>
+                        <button onclick="switchCheerTab('samsung', 'team')" id="btn-cheer-samsung-team" class="flex-1 py-1.5 text-[11px] font-bold bg-[#074CA1] text-white rounded-full transition-all shadow-sm">구단</button>
                         <button onclick="switchCheerTab('samsung', 'player')" id="btn-cheer-samsung-player" class="flex-1 py-1.5 text-[11px] font-medium text-gray-400 hover:text-white rounded-full transition-all">선수</button>
                         <button onclick="switchCheerTab('samsung', 'lineup')" id="btn-cheer-samsung-lineup" class="flex-1 py-1.5 text-[11px] font-medium text-gray-400 hover:text-white rounded-full transition-all">라인업</button>
                         <button onclick="switchCheerTab('samsung', 'hitout')" id="btn-cheer-samsung-hitout" class="flex-1 py-1.5 text-[11px] font-medium text-gray-400 hover:text-white rounded-full transition-all">안타/아웃</button>
                         <button onclick="switchCheerTab('samsung', 'entrance')" id="btn-cheer-samsung-entrance" class="flex-1 py-1.5 text-[11px] font-medium text-gray-400 hover:text-white rounded-full transition-all">등장곡</button>
                     </div>
                     
-                    <!-- 구단 응원가 리스트 (JS에서 자동 생성) -->
+                    <!-- 삼성 컨텐츠 -->
                     <div id="content-cheer-samsung-team" class="flex flex-col gap-2"></div>
-
-                    <!-- 선수 응원가 리스트 (JS에서 자동 생성) -->
                     <div id="content-cheer-samsung-player" class="hidden flex-col gap-2"></div>
-
                     <div id="content-cheer-samsung-lineup" class="hidden flex-col gap-2">
                         <div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div>
                     </div>
-
                     <div id="content-cheer-samsung-hitout" class="hidden flex-col gap-2">
                         <div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div>
                     </div>
-
                     <div id="content-cheer-samsung-entrance" class="hidden flex-col gap-2">
                         <div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div>
                     </div>
@@ -372,9 +362,9 @@
             { rank: '-', team: '키움', w: 0, d: 0, l: 0, winRate: '-', gb: '-' }
         ];
 
-        // 팀 메타 정보
-        const teamColors = { 'LG': 'bg-pink-600', '두산': 'bg-blue-800', 'KIA': 'bg-red-600', '삼성': 'bg-blue-600', 'SSG': 'bg-red-500', '롯데': 'bg-orange-600', '한화': 'bg-orange-500', 'KT': 'bg-black', 'NC': 'bg-teal-600', '키움': 'bg-red-800' };
-        const teamHex = { 'LG': '#C30452', '두산': '#131230', 'KIA': '#EA0029', '삼성': '#2563eb', 'SSG': '#CE0E2D', '롯데': '#041e42', '한화': '#FF6600', 'KT': '#333333', 'NC': '#315288', '키움': '#820024' };
+        // 팀 메타 정보 (🔥 모든 구단 색상 앱 전체 일괄 변경 🔥)
+        const teamColors = { 'LG': 'bg-[#C30452]', '두산': 'bg-[#1A1748]', 'KIA': 'bg-[#EA0029]', '삼성': 'bg-[#074CA1]', 'SSG': 'bg-[#CE0E2D]', '롯데': 'bg-[#041E42]', '한화': 'bg-[#FC4E00]', 'KT': 'bg-[#000000]', 'NC': 'bg-[#315288]', '키움': 'bg-[#570514]' };
+        const teamHex = { 'LG': '#C30452', '두산': '#1A1748', 'KIA': '#EA0029', '삼성': '#074CA1', 'SSG': '#CE0E2D', '롯데': '#041E42', '한화': '#FC4E00', 'KT': '#000000', 'NC': '#315288', '키움': '#570514' };
         const teamLogos = {
             '삼성': 'https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg',
             'KIA': 'https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg',
@@ -858,36 +848,74 @@
             const container = document.getElementById('ranking-container');
             if (!container) return;
 
+            // 🔥 공동 순위 계산 로직 (같은 순위가 2개 이상이면 T를 붙이기 위함) 🔥
+            const rankCounts = {};
+            rankingData.forEach(t => {
+                if (t.rank !== '-') {
+                    rankCounts[t.rank] = (rankCounts[t.rank] || 0) + 1;
+                }
+            });
+
             let html = `
-                <div class="px-3 sm:px-5">
-                    <div>
-                        <div class="flex justify-between items-center py-3 px-1 border-b border-white/20">
-                            <div class="w-7 text-center text-[11px] font-bold text-gray-400 shrink-0">순위</div>
-                            <div class="flex-1 text-left text-[11px] font-bold text-gray-400 pl-2">팀명</div>
-                            <div class="w-7 text-center text-[11px] font-bold text-gray-400 shrink-0">경기</div>
-                            <div class="w-6 text-center text-[11px] font-bold text-gray-400 shrink-0">승</div>
-                            <div class="w-6 text-center text-[11px] font-bold text-gray-400 shrink-0">무</div>
-                            <div class="w-6 text-center text-[11px] font-bold text-gray-400 shrink-0">패</div>
-                            <div class="w-10 text-center text-[11px] font-bold text-gray-400 shrink-0">승률</div>
-                            <div class="w-8 text-center text-[11px] font-bold text-gray-400 shrink-0">승차</div>
-                        </div>`;
+                <div class="px-2 sm:px-4">
+                    <div class="flex items-center py-2 px-1 border-b border-white/20 mb-2 pr-[86px]">
+                        <div class="w-[34px] text-center text-[11px] font-bold text-gray-400 shrink-0">순위</div>
+                        <div class="w-[42px] text-center text-[11px] font-bold text-gray-400 shrink-0">팀명</div>
+                        <div class="flex-1 flex justify-between items-center px-1">
+                            <div class="w-6 text-center text-[10px] font-bold text-gray-400">경기</div>
+                            <div class="w-6 text-center text-[10px] font-bold text-gray-400">승</div>
+                            <div class="w-6 text-center text-[10px] font-bold text-gray-400">무</div>
+                            <div class="w-6 text-center text-[10px] font-bold text-gray-400">패</div>
+                            <div class="w-[36px] text-center text-[10px] font-bold text-gray-400">승률</div>
+                            <div class="w-[30px] text-center text-[10px] font-bold text-gray-400">게임차</div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-[5px] pb-2">`;
 
             rankingData.forEach((team, i) => {
-                let rClass = team.rank === '-' ? 'text-gray-400' : (i === 0 ? 'text-yellow-400' : (i <= 4 ? 'text-white' : 'text-gray-400'));
-                let logo = teamLogos[team.team];
-                let teamIconHtml = logo ? `<img src="${logo}" class="w-6 h-6 object-contain shrink-0">` : `<div class="w-3 h-3 rounded-full ${teamColors[team.team] || 'bg-gray-500'} shrink-0"></div>`;
+                let rClass = team.rank === '-' ? 'text-gray-400' : (String(team.rank).replace('T','') === '1' ? 'text-[#e11d48]' : 'text-[#1a1a1a]');
+                
+                // 🔥 T 추가 로직 (랭크가 여러 개면 앞에 T 붙임) 🔥
+                let displayRank = team.rank;
+                if (team.rank !== '-' && !String(team.rank).includes('T') && rankCounts[team.rank] > 1) {
+                    displayRank = 'T' + team.rank;
+                }
+
                 let gamesPlayed = team.w + (team.d || 0) + team.l;
+                let hex = teamHex[team.team] || '#888888';
 
                 html += `
-                        <div class="flex justify-between items-center py-3 px-1 border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
-                            <div class="w-7 text-center text-sm font-bold ${rClass} shrink-0">${team.rank}</div>
-                            <div class="flex-1 flex items-center gap-1.5 pl-2 overflow-hidden">${teamIconHtml}<span class="text-[13px] font-bold text-white whitespace-nowrap">${team.team}</span></div>
-                            <div class="w-7 text-center text-[12px] font-medium text-gray-300 shrink-0">${gamesPlayed}</div>
-                            <div class="w-6 text-center text-[12px] font-medium text-gray-300 shrink-0">${team.w}</div>
-                            <div class="w-6 text-center text-[12px] font-medium text-gray-300 shrink-0">${team.d || 0}</div>
-                            <div class="w-6 text-center text-[12px] font-medium text-gray-300 shrink-0">${team.l}</div>
-                            <div class="w-10 text-center text-[12px] font-medium text-point shrink-0">${team.winRate}</div>
-                            <div class="w-8 text-center text-[11px] font-medium text-gray-500 shrink-0">${team.gb}</div>
+                    <div class="flex items-center bg-white h-[38px] rounded-[4px] shadow-sm relative overflow-hidden border border-gray-200">
+                        
+                        <!-- Content Container (팀명은 왼쪽, 로고 공간 확보를 위해 pr-[86px] 적용) -->
+                        <div class="relative z-10 flex items-center w-full pr-[86px]">
+                            <!-- Rank -->
+                            <div class="w-[34px] text-center text-[16px] font-black ${rClass} shrink-0 tracking-tighter">${displayRank}</div>
+                            <!-- Team Name (사진처럼 팀 컬러 텍스트 적용) -->
+                            <div class="w-[42px] text-center text-[15px] font-black shrink-0 tracking-tighter" style="color: ${hex}">${team.team}</div>
+                            
+                            <!-- Stats (승/무/패 순서로 완벽 교체) -->
+                            <div class="flex-1 flex justify-between items-center px-1 text-black text-[13px] font-bold tracking-tighter">
+                                <div class="w-6 text-center text-gray-800">${gamesPlayed}</div>
+                                <div class="w-6 text-center text-gray-800">${team.w}</div>
+                                <div class="w-6 text-center text-gray-800">${team.d || 0}</div>
+                                <div class="w-6 text-center text-gray-800">${team.l}</div>
+                                <div class="w-[36px] text-center text-gray-600 font-black tracking-tight">${team.winRate}</div>
+                                <div class="w-[30px] text-center text-gray-500">${team.gb}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 🔥 Far Right Slanted Logo Area (박스 사이즈 살짝 줄임) 🔥 -->
+                        <div class="absolute top-0 bottom-0 right-0 w-[96px] z-0" style="filter: drop-shadow(-3px 0 5px rgba(0,0,0,0.3));">
+                            <!-- Slanted Background (상하 반전 완벽 적용: \ 모양으로 수정) -->
+                            <div class="absolute inset-0" style="background-color: ${hex}; clip-path: polygon(0 0, 100% 0, 100% 100%, 22px 100%);">
+                                <div class="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent"></div>
+                            </div>
+                            <!-- Centered Logo inside the slanted box (기아 로고 살짝 더 내리고, KT 로고 살짝 올림) -->
+                            <div class="absolute inset-0 flex items-center justify-center pl-2.5">
+                                <img src="${teamLogos[team.team]}" class="w-[54px] h-[54px] object-contain scale-[1.2] drop-shadow-md ${team.team === 'KIA' ? 'translate-y-[6px]' : ''} ${team.team === 'KT' ? '-translate-y-[3px]' : ''}">
+                            </div>
+                        </div>
                     </div>`;
             });
             html += `</div></div>`;
@@ -1184,7 +1212,7 @@
 
         function switchCheerTab(team, type) {
             const types = ['team', 'player', 'lineup', 'hitout', 'entrance'];
-            const pointColor = team === 'kia' ? 'bg-[#ea0029]' : 'bg-[#2563eb]';
+            const pointColor = team === 'kia' ? 'bg-[#EA0029]' : 'bg-[#074CA1]';
 
             types.forEach(t => {
                 const btn = document.getElementById(`btn-cheer-${team}-${t}`);
