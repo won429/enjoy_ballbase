@@ -40,13 +40,17 @@
 
         /* 🔥 구단별 다이내믹 테마 색상 🔥 */
         :root {
-            --point-color: #3182F6;
-            --point-bg: rgba(49, 130, 246, 0.15);
+            --point-color: #FFFFFF;
+            --point-bg: rgba(255, 255, 255, 0.15);
             --app-bg: #000000;
         }
         body[data-theme="KIA"] { --point-color: #EA0029; --point-bg: rgba(234, 0, 41, 0.15); --app-bg: #140003; }
         body[data-theme="삼성"] { --point-color: #074CA1; --point-bg: rgba(7, 76, 161, 0.15); --app-bg: #000514; }
-        body[data-theme="all"] { --point-color: #3182F6; --point-bg: rgba(49, 130, 246, 0.15); --app-bg: #000000; }
+        body[data-theme="all"] { --point-color: #FFFFFF; --point-bg: rgba(255, 255, 255, 0.15); --app-bg: #000000; }
+
+        /* 🔥 전체 탭(화이트)일 때 버튼 텍스트가 안보이는 현상 방지 (검은색 텍스트로 반전) 🔥 */
+        body[data-theme="all"] .bg-point.text-white,
+        body[data-theme="all"] #bottom-nav .text-white { color: #000000 !important; }
 
         .app-bg { background-color: var(--app-bg) !important; transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         .text-point { color: var(--point-color) !important; transition: color 0.5s ease; }
