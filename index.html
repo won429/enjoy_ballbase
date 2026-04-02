@@ -264,12 +264,12 @@
                     </div>
 
                     <!-- KIA 탭 메뉴 -->
-                    <div class="flex bg-white/5 p-1 rounded-full mb-1">
-                        <button onclick="switchCheerTab('kia', 'team')" id="btn-cheer-kia-team" class="flex-1 py-1.5 text-[11px] font-bold bg-[#EA0029] text-white rounded-full transition-all shadow-sm">구단</button>
-                        <button onclick="switchCheerTab('kia', 'player')" id="btn-cheer-kia-player" class="flex-1 py-1.5 text-[11px] font-medium text-gray-400 hover:text-white rounded-full transition-all">선수</button>
-                        <button onclick="switchCheerTab('kia', 'lineup')" id="btn-cheer-kia-lineup" class="flex-1 py-1.5 text-[11px] font-medium text-gray-400 hover:text-white rounded-full transition-all">라인업</button>
-                        <button onclick="switchCheerTab('kia', 'hitout')" id="btn-cheer-kia-hitout" class="flex-1 py-1.5 text-[11px] font-medium text-gray-400 hover:text-white rounded-full transition-all">안타/아웃</button>
-                        <button onclick="switchCheerTab('kia', 'entrance')" id="btn-cheer-kia-entrance" class="flex-1 py-1.5 text-[11px] font-medium text-gray-400 hover:text-white rounded-full transition-all">등장곡</button>
+                    <div class="flex items-baseline gap-4 mb-3 overflow-x-auto scrollbar-hide px-1 w-full shrink-0">
+                        <button onclick="switchCheerTab('kia', 'team')" id="btn-cheer-kia-team" class="text-[22px] font-black text-white transition-all whitespace-nowrap">구단<span class="text-[#EA0029] ml-0.5">.</span></button>
+                        <button onclick="switchCheerTab('kia', 'player')" id="btn-cheer-kia-player" class="text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap">선수</button>
+                        <button onclick="switchCheerTab('kia', 'lineup')" id="btn-cheer-kia-lineup" class="text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap">라인업</button>
+                        <button onclick="switchCheerTab('kia', 'hitout')" id="btn-cheer-kia-hitout" class="text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap">안타/아웃</button>
+                        <button onclick="switchCheerTab('kia', 'entrance')" id="btn-cheer-kia-entrance" class="text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap">등장곡</button>
                     </div>
                     
                     <!-- KIA 컨텐츠 -->
@@ -297,12 +297,12 @@
                     </div>
 
                     <!-- 삼성 탭 메뉴 -->
-                    <div class="flex bg-white/5 p-1 rounded-full mb-1">
-                        <button onclick="switchCheerTab('samsung', 'team')" id="btn-cheer-samsung-team" class="flex-1 py-1.5 text-[11px] font-bold bg-[#074CA1] text-white rounded-full transition-all shadow-sm">구단</button>
-                        <button onclick="switchCheerTab('samsung', 'player')" id="btn-cheer-samsung-player" class="flex-1 py-1.5 text-[11px] font-medium text-gray-400 hover:text-white rounded-full transition-all">선수</button>
-                        <button onclick="switchCheerTab('samsung', 'lineup')" id="btn-cheer-samsung-lineup" class="flex-1 py-1.5 text-[11px] font-medium text-gray-400 hover:text-white rounded-full transition-all">라인업</button>
-                        <button onclick="switchCheerTab('samsung', 'hitout')" id="btn-cheer-samsung-hitout" class="flex-1 py-1.5 text-[11px] font-medium text-gray-400 hover:text-white rounded-full transition-all">안타/아웃</button>
-                        <button onclick="switchCheerTab('samsung', 'entrance')" id="btn-cheer-samsung-entrance" class="flex-1 py-1.5 text-[11px] font-medium text-gray-400 hover:text-white rounded-full transition-all">등장곡</button>
+                    <div class="flex items-baseline gap-4 mb-3 overflow-x-auto scrollbar-hide px-1 w-full shrink-0">
+                        <button onclick="switchCheerTab('samsung', 'team')" id="btn-cheer-samsung-team" class="text-[22px] font-black text-white transition-all whitespace-nowrap">구단<span class="text-[#074CA1] ml-0.5">.</span></button>
+                        <button onclick="switchCheerTab('samsung', 'player')" id="btn-cheer-samsung-player" class="text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap">선수</button>
+                        <button onclick="switchCheerTab('samsung', 'lineup')" id="btn-cheer-samsung-lineup" class="text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap">라인업</button>
+                        <button onclick="switchCheerTab('samsung', 'hitout')" id="btn-cheer-samsung-hitout" class="text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap">안타/아웃</button>
+                        <button onclick="switchCheerTab('samsung', 'entrance')" id="btn-cheer-samsung-entrance" class="text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap">등장곡</button>
                     </div>
                     
                     <!-- 삼성 컨텐츠 -->
@@ -363,12 +363,14 @@
         <!-- 🔥 풀 플레이어 창 (신규 추가) 🔥 -->
         <div id="full-player" class="fixed inset-0 z-[100] flex flex-col justify-start bg-[#121212] transition-transform duration-300 translate-y-full pointer-events-none px-7 pt-10 pb-10 sm:w-[430px] sm:mx-auto" ontouchstart="fpTouchStart(event)" ontouchmove="fpTouchMove(event)" ontouchend="fpTouchEnd(event)">
             <!-- 닫기 핸들러 -->
-            <div class="w-full flex justify-center mb-6" onclick="closeFullPlayer()">
-                <div class="w-10 h-1.5 bg-gray-600 rounded-full cursor-pointer opacity-70"></div>
+            <div class="w-full flex justify-center mb-6">
+                <button onclick="closeFullPlayer()" class="text-gray-400 hover:text-white active:scale-95 transition-all p-2">
+                    <i class="fa-solid fa-chevron-down text-2xl"></i>
+                </button>
             </div>
             
             <!-- 큰 앨범 아트 (모서리가 둥근 사각형, 사진처럼 크기 축소 및 중앙 정렬) -->
-            <div class="w-[85%] max-w-[320px] mx-auto aspect-square bg-white rounded-[32px] mb-10 flex items-center justify-center overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.5)] border border-white/5">
+            <div class="w-[65%] max-w-[256px] mx-auto aspect-square bg-white rounded-[32px] mb-10 flex items-center justify-center overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.5)] border border-white/5">
                 <img id="full-player-cover" src="" class="w-full h-full object-contain p-6">
             </div>
 
@@ -1364,19 +1366,23 @@
         }
 
         function switchCheerTab(team, type) {
-            const types = ['team', 'player', 'lineup', 'hitout', 'entrance'];
-            const pointColor = team === 'kia' ? 'bg-[#EA0029]' : 'bg-[#074CA1]';
+            const typeNames = {
+                'team': '구단', 'player': '선수', 'lineup': '라인업', 'hitout': '안타/아웃', 'entrance': '등장곡'
+            };
+            const pointColor = team === 'kia' ? 'text-[#EA0029]' : 'text-[#074CA1]';
 
-            types.forEach(t => {
+            Object.keys(typeNames).forEach(t => {
                 const btn = document.getElementById(`btn-cheer-${team}-${t}`);
                 const content = document.getElementById(`content-cheer-${team}-${t}`);
                 if (!btn || !content) return;
 
                 if (t === type) {
-                    btn.className = `flex-1 py-1.5 text-[11px] font-bold ${pointColor} text-white rounded-full transition-all shadow-sm`;
+                    btn.className = `text-[22px] font-black text-white transition-all whitespace-nowrap`;
+                    btn.innerHTML = `${typeNames[t]}<span class="${pointColor} ml-0.5">.</span>`;
                     content.classList.remove('hidden'); content.classList.add('flex');
                 } else {
-                    btn.className = `flex-1 py-1.5 text-[11px] font-medium text-gray-400 hover:text-white rounded-full transition-all`;
+                    btn.className = `text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap`;
+                    btn.innerHTML = typeNames[t];
                     content.classList.add('hidden'); content.classList.remove('flex');
                 }
             });
