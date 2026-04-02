@@ -889,7 +889,8 @@
                 let hex = teamHex[team.team] || '#888888';
 
                 html += `
-                    <div class="flex items-center bg-white h-[38px] rounded-[4px] shadow-sm relative overflow-hidden border border-gray-200">
+                    <!-- 🔥 옥에 티였던 흰색/회색 테두리(border) 완전히 제거하여 로고 박스가 상하 끝까지 꽉 차도록 수정 🔥 -->
+                    <div class="flex items-center bg-white h-[38px] rounded-[4px] shadow-sm relative overflow-hidden">
                         
                         <!-- Content Container (팀명은 왼쪽, 로고 공간 확보를 위해 pr-[86px] 적용) -->
                         <div class="relative z-10 flex items-center w-full pr-[86px]">
@@ -909,8 +910,8 @@
                             </div>
                         </div>
                         
-                        <!-- 🔥 Far Right Slanted Logo Area (박스 사이즈 살짝 줄임) 🔥 -->
-                        <div class="absolute top-0 bottom-0 right-0 w-[96px] z-0" style="filter: drop-shadow(-3px 0 5px rgba(0,0,0,0.3));">
+                        <!-- 🔥 Far Right Slanted Logo Area (흰색 테두리 안 보이게 우측으로 살짝 늘려서 여백 완벽히 덮음) 🔥 -->
+                        <div class="absolute top-0 bottom-0 -right-[2px] w-[98px] z-0" style="filter: drop-shadow(-3px 0 5px rgba(0,0,0,0.3));">
                             <!-- Slanted Background (상하 반전 완벽 적용: \ 모양으로 수정) -->
                             <div class="absolute inset-0" style="background-color: ${hex}; clip-path: polygon(0 0, 100% 0, 100% 100%, 22px 100%);">
                                 <div class="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent"></div>
