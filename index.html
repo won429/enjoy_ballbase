@@ -361,26 +361,26 @@
         </div>
 
         <!-- 🔥 풀 플레이어 창 (신규 추가) 🔥 -->
-        <div id="full-player" class="fixed inset-0 z-[100] flex flex-col justify-start bg-[#121212] transition-transform duration-300 translate-y-full pointer-events-none px-7 pt-10 pb-10 sm:w-[430px] sm:mx-auto">
+        <div id="full-player" class="fixed inset-0 z-[100] flex flex-col justify-start bg-[#121212] transition-transform duration-300 translate-y-full pointer-events-none px-7 pt-10 pb-10 sm:w-[430px] sm:mx-auto" ontouchstart="fpTouchStart(event)" ontouchmove="fpTouchMove(event)" ontouchend="fpTouchEnd(event)">
             <!-- 닫기 핸들러 -->
-            <div class="w-full flex justify-center mb-10" onclick="closeFullPlayer()">
+            <div class="w-full flex justify-center mb-6" onclick="closeFullPlayer()">
                 <div class="w-10 h-1.5 bg-gray-600 rounded-full cursor-pointer opacity-70"></div>
             </div>
             
-            <!-- 큰 앨범 아트 (모서리가 둥근 사각형, 사진처럼) -->
-            <div class="w-full aspect-square bg-white rounded-[40px] mb-10 flex items-center justify-center overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.5)] border border-white/5">
-                <img id="full-player-cover" src="" class="w-full h-full object-contain p-8">
+            <!-- 큰 앨범 아트 (모서리가 둥근 사각형, 사진처럼 크기 축소 및 중앙 정렬) -->
+            <div class="w-[85%] max-w-[320px] mx-auto aspect-square bg-white rounded-[32px] mb-10 flex items-center justify-center overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.5)] border border-white/5">
+                <img id="full-player-cover" src="" class="w-full h-full object-contain p-6">
             </div>
 
             <!-- 곡 정보 (좌측 정렬) -->
-            <div class="flex flex-col mb-10 w-full">
-                <h2 id="full-player-title" class="text-[26px] font-black text-white mb-1.5 tracking-tight">곡 제목</h2>
+            <div class="flex flex-col mb-8 w-full">
+                <h2 id="full-player-title" class="text-[24px] font-black text-white mb-1.5 tracking-tight">곡 제목</h2>
                 <!-- 사진처럼 파란색 계열 팀/소속 강조 -->
-                <span id="full-player-artist" class="text-[15px] text-[#5588ff] font-bold tracking-tight">KBO 리그 응원가</span>
+                <span id="full-player-artist" class="text-[14px] text-[#5588ff] font-bold tracking-tight">KBO 리그 응원가</span>
             </div>
 
             <!-- 진행 바 (커스텀 range) -->
-            <div class="flex flex-col mb-10 w-full">
+            <div class="flex flex-col mb-8 w-full">
                 <input type="range" id="full-player-range" min="0" max="100" value="0" class="w-full mb-3" style="background: rgba(255,255,255,0.2);">
                 <div class="flex justify-between text-[11px] font-bold text-gray-500 font-mono tracking-widest px-1">
                     <span id="full-player-current">0:00</span>
@@ -388,17 +388,17 @@
                 </div>
             </div>
 
-            <!-- 컨트롤러 -->
+            <!-- 컨트롤러 (아이콘 디자인 변경) -->
             <div class="flex justify-center items-center gap-10">
-                <button onclick="appPrevMusic()" class="text-white hover:text-gray-300 active:scale-95 transition-transform"><i class="fa-solid fa-backward-step text-3xl"></i></button>
-                <button onclick="toggleMiniPlayerPlay()" class="text-white active:scale-95 transition-transform"><i id="full-player-btn" class="fa-solid fa-pause text-5xl"></i></button>
-                <button onclick="appNextMusic()" class="text-white hover:text-gray-300 active:scale-95 transition-transform"><i class="fa-solid fa-forward-step text-3xl"></i></button>
+                <button onclick="appPrevMusic()" class="text-white hover:text-gray-300 active:scale-95 transition-transform"><i class="fa-solid fa-backward text-[32px]"></i></button>
+                <button onclick="toggleMiniPlayerPlay()" class="text-white active:scale-95 transition-transform"><i id="full-player-btn" class="fa-solid fa-pause text-[46px]"></i></button>
+                <button onclick="appNextMusic()" class="text-white hover:text-gray-300 active:scale-95 transition-transform"><i class="fa-solid fa-forward text-[32px]"></i></button>
             </div>
             
             <!-- 하단 아이콘 (장식) -->
-            <div class="absolute bottom-10 left-8 right-8 flex justify-between items-center text-gray-500">
-                <button class="hover:text-white transition-colors active:scale-95"><i class="fa-regular fa-message text-xl"></i></button>
-                <button class="hover:text-white transition-colors active:scale-95"><i class="fa-solid fa-list-ul text-xl"></i></button>
+            <div class="absolute bottom-8 left-8 right-8 flex justify-between items-center text-gray-500">
+                <button class="hover:text-white transition-colors active:scale-95"><i class="fa-regular fa-message text-[22px]"></i></button>
+                <button class="hover:text-white transition-colors active:scale-95"><i class="fa-solid fa-list-ul text-[22px]"></i></button>
             </div>
         </div>
 
@@ -1873,10 +1873,54 @@
             playerUI.classList.remove('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
         }
 
-        // 🔥 새로 추가된 풀 플레이어 UI 관련 함수 🔥
+        // 🔥 새로 추가된 풀 플레이어 UI 관련 함수 (터치 드래그 기능 포함) 🔥
+        let fpStartY = 0;
+        let fpCurrentY = 0;
+        let fpIsDragging = false;
+
+        function fpTouchStart(e) {
+            // 터치 시작 시, 볼륨/진행바 등 input 조작 중이면 창 닫기 드래그 막음
+            if(e.target.tagName.toLowerCase() === 'input') return;
+            
+            const player = document.getElementById('full-player');
+            player.style.transition = 'none'; // 드래그 중 딜레이 방지
+            fpStartY = e.touches[0].clientY;
+            fpCurrentY = fpStartY;
+            fpIsDragging = true;
+        }
+
+        function fpTouchMove(e) {
+            if (!fpIsDragging) return;
+            fpCurrentY = e.touches[0].clientY;
+            let diffY = fpCurrentY - fpStartY;
+            
+            // 위로 올리는 드래그는 막음
+            if (diffY < 0) diffY = 0;
+            
+            const player = document.getElementById('full-player');
+            player.style.transform = `translateY(${diffY}px)`;
+        }
+
+        function fpTouchEnd(e) {
+            if (!fpIsDragging) return;
+            fpIsDragging = false;
+            let diffY = fpCurrentY - fpStartY;
+            
+            const player = document.getElementById('full-player');
+            player.style.transition = ''; // CSS 기본 transition으로 원복
+            
+            // 100px 이상 아래로 내렸으면 닫기, 아니면 원상복구
+            if (diffY > 100) {
+                closeFullPlayer();
+            } else {
+                player.style.transform = ''; // 인라인 transform 제거해서 원래 위치로
+            }
+        }
+
         function openFullPlayer() {
             const fullPlayer = document.getElementById('full-player');
             if(fullPlayer) {
+                fullPlayer.style.transform = ''; // 열릴 때는 인라인 스타일 초기화
                 fullPlayer.classList.remove('translate-y-full', 'pointer-events-none');
                 fullPlayer.classList.add('translate-y-0', 'pointer-events-auto');
             }
@@ -1885,6 +1929,7 @@
         function closeFullPlayer() {
             const fullPlayer = document.getElementById('full-player');
             if(fullPlayer) {
+                fullPlayer.style.transform = ''; // 인라인 스타일 초기화
                 fullPlayer.classList.remove('translate-y-0', 'pointer-events-auto');
                 fullPlayer.classList.add('translate-y-full', 'pointer-events-none');
             }
