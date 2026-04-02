@@ -370,31 +370,34 @@
             </div>
             
             <!-- 큰 앨범 아트 (모서리가 둥근 사각형, 사진처럼 크기 축소 및 중앙 정렬) -->
-            <div class="w-[65%] max-w-[256px] mx-auto aspect-square bg-white rounded-[32px] mb-10 flex items-center justify-center overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.5)] border border-white/5">
+            <div class="w-[65%] max-w-[256px] mx-auto aspect-square bg-white rounded-[32px] shrink-0 mt-2 mb-4 flex items-center justify-center overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.5)] border border-white/5">
                 <img id="full-player-cover" src="" class="w-full h-full object-contain p-6">
             </div>
 
-            <!-- 곡 정보 (좌측 정렬) -->
-            <div class="flex flex-col mb-8 w-full">
-                <h2 id="full-player-title" class="text-[24px] font-black text-white mb-1.5 tracking-tight">곡 제목</h2>
-                <!-- 사진처럼 파란색 계열 팀/소속 강조 -->
-                <span id="full-player-artist" class="text-[14px] text-[#5588ff] font-bold tracking-tight">KBO 리그 응원가</span>
-            </div>
-
-            <!-- 진행 바 (커스텀 range) -->
-            <div class="flex flex-col mb-8 w-full">
-                <input type="range" id="full-player-range" min="0" max="100" value="0" class="w-full mb-3" style="background: rgba(255,255,255,0.2);">
-                <div class="flex justify-between text-[11px] font-bold text-gray-500 font-mono tracking-widest px-1">
-                    <span id="full-player-current">0:00</span>
-                    <span id="full-player-duration">0:00</span>
+            <!-- 하단 묶음 컨테이너: flex-1과 justify-center를 주어 남은 공간 중앙에 곡 정보/진행바/컨트롤러를 고르게 배치 -->
+            <div class="flex-1 flex flex-col justify-center w-full gap-8 mb-10">
+                <!-- 곡 정보 (좌측 정렬) -->
+                <div class="flex flex-col w-full">
+                    <h2 id="full-player-title" class="text-[24px] font-black text-white mb-1.5 tracking-tight">곡 제목</h2>
+                    <!-- 사진처럼 파란색 계열 팀/소속 강조 -->
+                    <span id="full-player-artist" class="text-[14px] text-[#5588ff] font-bold tracking-tight">KBO 리그 응원가</span>
                 </div>
-            </div>
 
-            <!-- 컨트롤러 (아이콘 디자인 변경) -->
-            <div class="flex justify-center items-center gap-10">
-                <button onclick="appPrevMusic()" class="text-white hover:text-gray-300 active:scale-95 transition-transform"><i class="fa-solid fa-backward text-[32px]"></i></button>
-                <button onclick="toggleMiniPlayerPlay()" class="text-white active:scale-95 transition-transform"><i id="full-player-btn" class="fa-solid fa-pause text-[46px]"></i></button>
-                <button onclick="appNextMusic()" class="text-white hover:text-gray-300 active:scale-95 transition-transform"><i class="fa-solid fa-forward text-[32px]"></i></button>
+                <!-- 진행 바 (커스텀 range) -->
+                <div class="flex flex-col w-full">
+                    <input type="range" id="full-player-range" min="0" max="100" value="0" class="w-full mb-3" style="background: rgba(255,255,255,0.2);">
+                    <div class="flex justify-between text-[11px] font-bold text-gray-500 font-mono tracking-widest px-1">
+                        <span id="full-player-current">0:00</span>
+                        <span id="full-player-duration">0:00</span>
+                    </div>
+                </div>
+
+                <!-- 컨트롤러 (아이콘 디자인 변경) -->
+                <div class="flex justify-center items-center gap-10">
+                    <button onclick="appPrevMusic()" class="text-white hover:text-gray-300 active:scale-95 transition-transform"><i class="fa-solid fa-backward text-[32px]"></i></button>
+                    <button onclick="toggleMiniPlayerPlay()" class="text-white active:scale-95 transition-transform"><i id="full-player-btn" class="fa-solid fa-pause text-[46px]"></i></button>
+                    <button onclick="appNextMusic()" class="text-white hover:text-gray-300 active:scale-95 transition-transform"><i class="fa-solid fa-forward text-[32px]"></i></button>
+                </div>
             </div>
             
             <!-- 하단 아이콘 (장식) -->
