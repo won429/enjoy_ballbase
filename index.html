@@ -84,7 +84,8 @@
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .ctrl-item { transition: max-width 0.5s cubic-bezier(0.25, 1, 0.5, 1), padding 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease; overflow: hidden; white-space: nowrap; width: max-content; justify-self: end; }
+        /* 🔥 상단 모션 속도 및 곡선을 전체 버튼(0.7s)과 완벽하게 통일 🔥 */
+        .ctrl-item { transition: max-width 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), padding 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.7s ease; overflow: hidden; white-space: nowrap; width: max-content; justify-self: end; }
         .ctrl-show { max-width: 200px; opacity: 1; padding-left: 16px; padding-right: 16px; }
         .ctrl-hide { max-width: 0px; opacity: 0; padding-left: 0px; padding-right: 0px; pointer-events: none; }
 
@@ -109,6 +110,24 @@
         .cheer-team { display: none; flex-direction: column; gap: 16px; }
         body[data-theme="KIA"] .cheer-KIA { display: flex; }
         body[data-theme="삼성"] .cheer-삼성 { display: flex; }
+
+        /* 🔥 전체 버튼 숨김 애니메이션용 🔥 */
+        .btn-collapse {
+            max-width: 0px !important;
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            margin-right: -4px !important; /* 버튼 사이의 간격(gap) 완벽 상쇄 */
+            border-width: 0px !important;
+        }
+        .team-btn-anim {
+            /* 🔥 모션 속도를 0.4초에서 0.7초로 늘려서 훨씬 더 부드럽고 여유롭게 스르륵 닫히도록 수정 🔥 */
+            transition: all 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+            overflow: hidden;
+            max-width: 60px;
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body class="w-full h-[100dvh] bg-[#0a0a0a] flex justify-center items-center overflow-hidden" data-theme="all">
@@ -127,11 +146,12 @@
                         <span class="text-[11px] text-gray-400 font-medium whitespace-nowrap">2026시즌</span>
                     </div>
                 </div>
-                <div id="ctrl-wrapper" class="grid bg-[#151515] rounded-full shadow-lg border border-white/5 h-[36px] shrink-0 overflow-hidden relative transition-all duration-500 origin-right">
+                <!-- 🔥 컨트롤 박스 전체(wrapper)의 애니메이션 시간도 duration-700 (0.7초)로 완벽 통일 🔥 -->
+                <div id="ctrl-wrapper" class="grid bg-[#151515] rounded-full shadow-lg border border-white/5 h-[36px] shrink-0 overflow-hidden relative transition-all duration-700 origin-right">
                     <div id="ctrl-team" class="ctrl-item ctrl-show flex items-center justify-center gap-1 h-full" style="grid-area: 1/1;">
-                        <button onclick="setTeamFilter('all')" id="btn-team-all" class="px-3.5 py-1.5 text-[11px] font-bold rounded-full bg-point text-white shadow-sm transition-all active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto">전체</button>
-                        <button onclick="setTeamFilter('KIA')" id="btn-team-KIA" class="px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 transition-all active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto">KIA</button>
-                        <button onclick="setTeamFilter('삼성')" id="btn-team-삼성" class="px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 transition-all active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto">삼성</button>
+                        <button onclick="setTeamFilter('all')" id="btn-team-all" class="team-btn-anim px-3.5 py-1.5 text-[11px] font-bold rounded-full bg-point text-white shadow-sm active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto">전체</button>
+                        <button onclick="setTeamFilter('KIA')" id="btn-team-KIA" class="team-btn-anim px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto">KIA</button>
+                        <button onclick="setTeamFilter('삼성')" id="btn-team-삼성" class="team-btn-anim px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto">삼성</button>
                     </div>
                     <div id="ctrl-sort" class="ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full" style="grid-area: 1/1;">
                         <span id="sort-text" class="text-[12px] font-bold text-gray-400">날짜순</span>
@@ -624,10 +644,10 @@
 
             const btnTeamAll = document.getElementById('btn-team-all');
             if (index === 2) {
-                btnTeamAll.style.display = 'none';
+                btnTeamAll.classList.add('btn-collapse');
                 if (selectedTeam === 'all') setTeamFilter('KIA');
             } else {
-                btnTeamAll.style.display = '';
+                btnTeamAll.classList.remove('btn-collapse');
             }
 
             screens.forEach((screen, i) => { screen.classList.toggle('hidden', i !== index); screen.classList.toggle('flex', i === index); });
@@ -667,8 +687,15 @@
         function setTeamFilter(team) {
             selectedTeam = team; localStorage.setItem('kbo_selected_team', team); document.body.setAttribute('data-theme', team);
             const btns = ['all', 'KIA', '삼성'].map(id => document.getElementById(`btn-team-${id}`));
-            btns.forEach(btn => btn.className = 'px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 transition-all active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto');
-            document.getElementById(`btn-team-${team}`).className = 'px-3.5 py-1.5 text-[11px] font-bold rounded-full bg-point text-white shadow-sm transition-all active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto';
+            
+            btns.forEach(btn => {
+                btn.classList.remove('font-bold', 'bg-point', 'text-white', 'shadow-sm');
+                btn.classList.add('font-medium', 'text-gray-400');
+            });
+            const targetBtn = document.getElementById(`btn-team-${team}`);
+            targetBtn.classList.remove('font-medium', 'text-gray-400');
+            targetBtn.classList.add('font-bold', 'bg-point', 'text-white', 'shadow-sm');
+            
             renderCalendar(); closeBottomSheet(); renderBanners();
         }
 
