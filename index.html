@@ -361,17 +361,17 @@
         </div>
 
         <!-- 🔥 풀 플레이어 창 (신규 추가) 🔥 -->
-        <div id="full-player" class="fixed inset-0 z-[100] flex flex-col justify-start bg-[#121212] transition-transform duration-300 translate-y-full pointer-events-none px-7 pt-12 pb-10 sm:w-[430px] sm:mx-auto" ontouchstart="fpTouchStart(event)" ontouchmove="fpTouchMove(event)" ontouchend="fpTouchEnd(event)">
-            <!-- 닫기 핸들러 (터치 이벤트 충돌 방지 적용) -->
-            <div class="w-full flex justify-center mb-6 relative z-50">
-                <button onclick="closeFullPlayer()" ontouchstart="event.stopPropagation()" class="text-gray-400 hover:text-white active:scale-95 transition-all w-16 h-12 flex items-center justify-center -mt-4 cursor-pointer">
-                    <i class="fa-solid fa-chevron-down text-[32px]"></i>
+        <div id="full-player" class="fixed inset-0 z-[100] flex flex-col justify-start bg-[#121212] transition-transform duration-300 translate-y-full pointer-events-none px-7 pt-6 pb-10 sm:w-[430px] sm:mx-auto" ontouchstart="fpTouchStart(event)" ontouchmove="fpTouchMove(event)" ontouchend="fpTouchEnd(event)">
+            <!-- 닫기 핸들러 (터치 이벤트 충돌 완벽 방지, 상단 여백 대폭 축소) -->
+            <div class="w-full flex justify-center mb-2 relative z-[150]">
+                <button onclick="closeFullPlayer()" ontouchstart="event.stopPropagation()" ontouchend="closeFullPlayer(); event.stopPropagation(); event.preventDefault();" class="text-gray-400 hover:text-white active:scale-95 transition-all p-4 cursor-pointer">
+                    <i class="fa-solid fa-chevron-down text-[32px] pointer-events-none"></i>
                 </button>
             </div>
             
-            <!-- 큰 앨범 아트 (안쪽 여백 제거하여 크기 대폭 확대) -->
+            <!-- 큰 앨범 아트 (패딩(p-12)을 확 늘려서 박스 안의 로고 크기만 대폭 축소) -->
             <div class="w-[95%] max-w-[360px] mx-auto aspect-square bg-white rounded-[40px] shrink-0 flex items-center justify-center overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5">
-                <img id="full-player-cover" src="" class="w-full h-full object-contain p-1">
+                <img id="full-player-cover" src="" class="w-full h-full object-contain p-12">
             </div>
 
             <!-- 하단 묶음 컨테이너: 간격 명확하게 강제 분리 -->
