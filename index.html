@@ -616,56 +616,136 @@
             }, 2500);
         }
 
+        // 🔥 문서 합치기(Chunking) 유틸리티 함수 (1MB 초과 방지) 🔥
+        function chunkDataForFirestore(dataArray, maxSize = 800000) {
+            let chunks = [];
+            let currentChunk = [];
+            let currentSize = 0;
+
+            dataArray.forEach(item => {
+                const itemStr = JSON.stringify(item);
+                // 한글 등 멀티바이트 문자를 고려해 바이트 크기 대략 계산
+                let itemSize = 0;
+                for (let i = 0; i < itemStr.length; i++) {
+                    const c = itemStr.charCodeAt(i);
+                    itemSize += c >> 11 ? 3 : c >> 7 ? 2 : 1;
+                }
+                
+                if (currentSize + itemSize > maxSize && currentChunk.length > 0) {
+                    chunks.push(currentChunk);
+                    currentChunk = [item];
+                    currentSize = itemSize;
+                } else {
+                    currentChunk.push(item);
+                    currentSize += itemSize;
+                }
+            });
+            if (currentChunk.length > 0) chunks.push(currentChunk);
+            return chunks;
+        }
+
         // 🔥 서버 통신 및 실시간 점수 리스너 등록 🔥
         async function syncWithFirestore() {
             try {
-                const matchesSnap = await db.collection("matches").get();
+                // 1. 경기 일정 합치기 (matches_merged)
+                const mergedMatchesSnap = await db.collection("matches_merged").get();
 
-                if (matchesSnap.empty) {
-                    scheduleData = [...initialScheduleData];
-                    const batch = db.batch();
-                    initialScheduleData.forEach(match => batch.set(db.collection("matches").doc(match.id.toString()), match));
-                    await batch.commit();
-                } else {
-                    scheduleData = matchesSnap.docs.map(doc => doc.data());
-                    if (scheduleData.length < initialScheduleData.length) {
-                        const batch = db.batch();
-                        initialScheduleData.forEach(match => batch.set(db.collection("matches").doc(match.id.toString()), match));
-                        await batch.commit();
-                        scheduleData = [...initialScheduleData];
-                    }
-                    scheduleData.sort((a, b) => {
-                        if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00");
-                        return a.date.localeCompare(b.date);
+                if (!mergedMatchesSnap.empty) {
+                    scheduleData = [];
+                    mergedMatchesSnap.forEach(doc => {
+                        const chunkData = doc.data().data || [];
+                        scheduleData.push(...chunkData);
                     });
+                } else {
+                    // 구버전(matches) 읽기 및 자동 마이그레이션(합치기)
+                    const oldMatchesSnap = await db.collection("matches").get();
+                    if (!oldMatchesSnap.empty) {
+                        scheduleData = oldMatchesSnap.docs.map(doc => doc.data());
+                        
+                        // 🔥 구버전 데이터를 읽어서 1MB 단위로 청크 분할하여 자동 저장 (합치기)
+                        const chunks = chunkDataForFirestore(scheduleData);
+                        const batch = db.batch();
+                        chunks.forEach((chunk, index) => {
+                            batch.set(db.collection("matches_merged").doc(`chunk_${index}`), { data: chunk });
+                        });
+                        await batch.commit();
+                    } else {
+                        // DB가 완전 비어있을 때 임시 데이터 입력
+                        scheduleData = [...initialScheduleData];
+                        if (scheduleData.length > 0) {
+                            const chunks = chunkDataForFirestore(scheduleData);
+                            const batch = db.batch();
+                            chunks.forEach((chunk, index) => {
+                                batch.set(db.collection("matches_merged").doc(`chunk_${index}`), { data: chunk });
+                            });
+                            await batch.commit();
+                        }
+                    }
                 }
 
-                db.collection("rankings").onSnapshot((snapshot) => {
-                    if (snapshot.empty) {
-                        rankingData = [...initialRankingData];
-                    } else {
-                        rankingData = snapshot.docs.map(doc => doc.data()).sort((a, b) => {
+                // 일정 정렬
+                scheduleData.sort((a, b) => {
+                    if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00");
+                    return a.date.localeCompare(b.date);
+                });
+
+                // 2. 순위 합치기 (rankings_merged)
+                db.collection("rankings_merged").onSnapshot((snapshot) => {
+                    if (!snapshot.empty) {
+                        rankingData = [];
+                        snapshot.forEach(doc => rankingData.push(...(doc.data().data || [])));
+                        rankingData.sort((a, b) => {
                             if (a.rank === '-') return 1;
                             if (b.rank === '-') return -1;
                             return parseInt(a.rank) - parseInt(b.rank);
                         });
+                        if (currentTabIndex === 1) renderRanking();
+                    } else {
+                        // 구버전 호환용 (rankings)
+                        db.collection("rankings").onSnapshot((oldSnap) => {
+                            if (oldSnap.empty) {
+                                rankingData = [...initialRankingData];
+                            } else {
+                                rankingData = oldSnap.docs.map(doc => doc.data()).sort((a, b) => {
+                                    if (a.rank === '-') return 1;
+                                    if (b.rank === '-') return -1;
+                                    return parseInt(a.rank) - parseInt(b.rank);
+                                });
+                            }
+                            if (currentTabIndex === 1) renderRanking();
+                        });
                     }
-                    if (currentTabIndex === 1) renderRanking();
                 });
 
-                db.collection("lineups").onSnapshot((snapshot) => {
-                    snapshot.forEach(doc => {
-                        liveDataStore[doc.id] = doc.data(); 
-                    });
-                    
-                    if (currentTabIndex === 0) renderCalendar();
-                    
-                    if (currentPopupMatchId) {
-                        renderPopupContent(currentPopupMatchId);
+                // 3. 라인업 및 실시간 점수 합치기 (lineups_merged)
+                db.collection("lineups_merged").onSnapshot((snapshot) => {
+                    if (!snapshot.empty) {
+                        liveDataStore = {};
+                        snapshot.forEach(doc => {
+                            const chunkData = doc.data();
+                            // 문서 안의 필드들을 꺼내서 liveDataStore에 합침
+                            Object.keys(chunkData).forEach(key => {
+                                liveDataStore[key] = chunkData[key];
+                            });
+                        });
+                        
+                        if (currentTabIndex === 0) renderCalendar();
+                        if (currentPopupMatchId) renderPopupContent(currentPopupMatchId);
+                        renderBanners(); 
+                        renderLineupCheerSongs();
+                    } else {
+                        // 구버전 호환용 (lineups)
+                        db.collection("lineups").onSnapshot((oldSnap) => {
+                            oldSnap.forEach(doc => {
+                                liveDataStore[doc.id] = doc.data(); 
+                            });
+                            
+                            if (currentTabIndex === 0) renderCalendar();
+                            if (currentPopupMatchId) renderPopupContent(currentPopupMatchId);
+                            renderBanners(); 
+                            renderLineupCheerSongs();
+                        });
                     }
-                    
-                    renderBanners(); 
-                    renderLineupCheerSongs(); // 🔥 라인업 응원가 자동 생성 호출
                 });
 
             } catch (error) {
