@@ -888,14 +888,20 @@
                                 </div>`;
                         } else {
                             const live = liveDataStore[matchesToday[0].id];
-                            if (live && live.gameStatus === '종료') {
-                                let awayScore = parseInt(live.awayScore || 0);
-                                let homeScore = parseInt(live.homeScore || 0);
-                                let isWin = (matchesToday[0].team1 === selectedTeam && awayScore > homeScore) || (matchesToday[0].team2 === selectedTeam && homeScore > awayScore);
-                                let isLose = (matchesToday[0].team1 === selectedTeam && awayScore < homeScore) || (matchesToday[0].team2 === selectedTeam && homeScore < awayScore);
-                                
-                                if (isWin) stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 -rotate-[15deg] text-[11px] font-black text-red-500/80 border-2 border-red-500/80 rounded px-1 tracking-widest pointer-events-none z-20">WIN</div>`;
-                                else if (isLose) stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 -rotate-[15deg] text-[11px] font-black text-gray-500/80 border-2 border-gray-500/80 rounded px-1 tracking-widest pointer-events-none z-20">LOSE</div>`;
+                            if (live) {
+                                if (live.gameStatus && live.gameStatus.includes('취소')) {
+                                    stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 -rotate-[15deg] text-[11px] font-black text-blue-500/80 border-2 border-blue-500/80 rounded px-1 tracking-tighter pointer-events-none z-20">취소</div>`;
+                                } else if (live.gameStatus === '종료') {
+                                    let awayScore = parseInt(live.awayScore || 0);
+                                    let homeScore = parseInt(live.homeScore || 0);
+                                    let isWin = (matchesToday[0].team1 === selectedTeam && awayScore > homeScore) || (matchesToday[0].team2 === selectedTeam && homeScore > awayScore);
+                                    let isLose = (matchesToday[0].team1 === selectedTeam && awayScore < homeScore) || (matchesToday[0].team2 === selectedTeam && homeScore < awayScore);
+                                    let isDraw = awayScore === homeScore;
+                                    
+                                    if (isWin) stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 -rotate-[15deg] text-[11px] font-black text-red-500/80 border-2 border-red-500/80 rounded px-1 tracking-widest pointer-events-none z-20">WIN</div>`;
+                                    else if (isLose) stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 -rotate-[15deg] text-[11px] font-black text-gray-500/80 border-2 border-gray-500/80 rounded px-1 tracking-widest pointer-events-none z-20">LOSE</div>`;
+                                    else if (isDraw) stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 -rotate-[15deg] text-[11px] font-black text-green-500/80 border-2 border-green-500/80 rounded px-1 tracking-widest pointer-events-none z-20">DRAW</div>`;
+                                }
                             }
 
                             let dots = matchesToday.map(match => {
@@ -971,14 +977,20 @@
                                 statusHtml = `<div class="flex items-center gap-1.5"><span class="${badgeClass} text-[9px] font-bold text-white px-2 py-0.5 rounded-full">${displayStatus}</span><span class="text-[10px] text-gray-400 font-bold">${match.stadium}</span></div>`;
                                 scoreHtml = `<span class="text-sm font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'}">${live.awayScore}</span><span class="text-xs text-gray-500 mx-1">:</span><span class="text-sm font-black ${live.homeScore > live.awayScore ? 'text-point' : 'text-white'}">${live.homeScore}</span>`;
                                 
-                                if (live.gameStatus === '종료' && selectedTeam !== 'all') {
-                                    let awayScore = parseInt(live.awayScore || 0);
-                                    let homeScore = parseInt(live.homeScore || 0);
-                                    let isWin = (match.team1 === selectedTeam && awayScore > homeScore) || (match.team2 === selectedTeam && homeScore > awayScore);
-                                    let isLose = (match.team1 === selectedTeam && awayScore < homeScore) || (match.team2 === selectedTeam && homeScore < awayScore);
-                                    
-                                    if (isWin) stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-red-500/30 border-4 border-red-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">WIN</div>`;
-                                    else if (isLose) stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-gray-500/30 border-4 border-gray-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">LOSE</div>`;
+                                if (selectedTeam !== 'all') {
+                                    if (live.gameStatus && live.gameStatus.includes('취소')) {
+                                        stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-blue-500/30 border-4 border-blue-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">취소</div>`;
+                                    } else if (live.gameStatus === '종료') {
+                                        let awayScore = parseInt(live.awayScore || 0);
+                                        let homeScore = parseInt(live.homeScore || 0);
+                                        let isWin = (match.team1 === selectedTeam && awayScore > homeScore) || (match.team2 === selectedTeam && homeScore > awayScore);
+                                        let isLose = (match.team1 === selectedTeam && awayScore < homeScore) || (match.team2 === selectedTeam && homeScore < awayScore);
+                                        let isDraw = awayScore === homeScore;
+                                        
+                                        if (isWin) stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-red-500/30 border-4 border-red-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">WIN</div>`;
+                                        else if (isLose) stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-gray-500/30 border-4 border-gray-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">LOSE</div>`;
+                                        else if (isDraw) stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-green-500/30 border-4 border-green-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">DRAW</div>`;
+                                    }
                                 }
                             }
 
