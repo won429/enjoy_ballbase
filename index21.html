@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>KBO League Schedule</title>
+    <link rel="icon" href="logo.png"><link rel="apple-touch-icon" href="logo.png">
+    <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+    <style>
+        @font-face { font-family: 'KBO-Dia-Gothic'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/KBO-Dia-Gothic_light.woff') format('woff'); font-weight: 300; font-style: normal; }
+        @font-face { font-family: 'KBO-Dia-Gothic'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/KBO-Dia-Gothic_medium.woff') format('woff'); font-weight: 500; font-style: normal; }
+        @font-face { font-family: 'KBO-Dia-Gothic'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/KBO-Dia-Gothic_bold.woff') format('woff'); font-weight: 700; font-style: normal; }
+        
+        /* --- 최상급 프리미엄 모던 다크 (Premium Modern Dark) --- */
+        :root { 
+            --point-color: #FFFFFF; --point-bg: rgba(255, 255, 255, 0.15); --app-bg: #030303; 
+            --glass-bg: rgba(24, 24, 27, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+        body[data-theme="KIA"] { --point-color: #EA0029; --point-bg: rgba(234, 0, 41, 0.2); --app-bg: #0a0002; }
+        body[data-theme="삼성"] { --point-color: #074CA1; --point-bg: rgba(7, 76, 161, 0.2); --app-bg: #00020a; }
+        body[data-theme="all"] { --point-color: #ffffff; --point-bg: rgba(255, 255, 255, 0.15); --app-bg: #030303; }
+        
+        body { font-family: 'KBO-Dia-Gothic', sans-serif; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; touch-action: pan-y; letter-spacing: -0.3px; color: #f8fafc; }
+        .app-bg { background-color: var(--app-bg) !important; background-image: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.04) 0%, transparent 60%) !important; transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        /* 글래스모피즘 카드 스타일 */
+        .toss-card, .list-card, .bg-\[\#151515\], .bg-\[\#1C1C1E\] {
+            background: var(--glass-bg) !important;
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid var(--glass-border) !important;
+            box-shadow: var(--glass-shadow) !important;
+        }
+
+        .text-point { color: var(--point-color) !important; text-shadow: 0 0 12px var(--point-bg); transition: color 0.5s ease; }
+        .bg-point { background-color: var(--point-color) !important; color: #FFFFFF !important; border: none !important; box-shadow: 0 0 16px var(--point-bg) !important; font-weight: 800 !important; transition: background-color 0.5s ease; }
+        body[data-theme="all"] .bg-point { color: #000000 !important; }
+        .bg-point-sub { background: rgba(255,255,255,0.05) !important; color: var(--point-color) !important; border: 1px solid var(--glass-border) !important; }
+
+        /* 하단 네비게이션 (플로팅 독) */
+        #bottom-nav .bg-\[\#1C1C1E\] { 
+            background: rgba(15, 15, 18, 0.75) !important; backdrop-filter: blur(30px) saturate(200%); -webkit-backdrop-filter: blur(30px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 100px !important; box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1) !important; padding: 6px !important;
+        }
+        #nav-indicator { background: var(--point-color) !important; box-shadow: 0 0 12px var(--point-bg) !important; border-radius: 100px !important; height: calc(100% - 12px) !important; top: 6px !important; border: none !important; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        #bottom-nav button .text-white { color: #FFFFFF !important; font-weight: 800 !important; } 
+        #bottom-nav button i.text-white { color: #FFFFFF !important; }
+        body[data-theme="all"] #bottom-nav button .text-white { color: #000000 !important; }
+        body[data-theme="all"] #bottom-nav button i.text-white { color: #000000 !important; }
+
+        /* 컨트롤 랩퍼 (블러 스위치) */
+        #ctrl-wrapper { border: 1px solid rgba(255,255,255,0.08) !important; background: var(--glass-bg) !important; backdrop-filter: blur(20px); padding: 2px !important; box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;}
+        #ctrl-team button.text-gray-400 { color: #94a3b8 !important; font-weight: 600 !important; }
+
+        .pt-safe { padding-top: max(20px, env(safe-area-inset-top)); }
+        .pt-main { padding-top: calc(max(20px, env(safe-area-inset-top)) + 70px); }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .ctrl-item { transition: max-width 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), padding 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.7s ease; overflow: hidden; white-space: nowrap; width: max-content; justify-self: end; }
+        .ctrl-show { max-width: 200px; opacity: 1; padding-left: 16px; padding-right: 16px; }
+        .ctrl-hide { max-width: 0px; opacity: 0; padding-left: 0px; padding-right: 0px; pointer-events: none; }
+        
+        #bottom-sheet, #lineup-popup-sheet { background: rgba(18, 18, 20, 0.85) !important; backdrop-filter: blur(40px) saturate(200%); -webkit-backdrop-filter: blur(40px) saturate(200%); border: 1px solid rgba(255,255,255,0.1) !important; border-bottom: none !important; border-radius: 32px 32px 0 0 !important; box-shadow: 0 -10px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1) !important; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s; }
+        #bottom-sheet { transform: translate(-50%, 120%); opacity: 0; }
+        #bottom-sheet.show { transform: translate(-50%, 0); opacity: 1; }
+        
+        .calendar-day { font-weight: 600 !important; border-radius: 12px !important; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); aspect-ratio: 1 / 1.2; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 14px; }
+        .calendar-day.today { background: rgba(255,255,255,0.06) !important; border: 1px solid var(--point-color) !important; box-shadow: inset 0 0 20px var(--point-bg), 0 0 10px var(--point-bg) !important; transform: scale(1.02); }
+        .calendar-day.today span { color: var(--point-color) !important; text-shadow: 0 0 8px var(--point-bg) !important; font-weight: 900 !important;}
+        .has-match { background: rgba(255,255,255,0.02) !important; border: 1px solid rgba(255,255,255,0.05) !important; box-shadow: none !important;}
+
+        #banner-carousel > div { border-radius: 20px !important; margin: 0 4px; border: 1px solid rgba(255,255,255,0.08) !important; box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important; }
+        .banner-dot { background-color: rgba(255,255,255,0.2) !important; transition: all 0.3s; }
+        .banner-dot.bg-white { background-color: var(--point-color) !important; box-shadow: 0 0 8px var(--point-color) !important; }
+
+        .live-badge { background: rgba(234, 0, 41, 0.1) !important; color: #EA0029 !important; border: 1px solid rgba(234, 0, 41, 0.3) !important; box-shadow: 0 0 10px rgba(234, 0, 41, 0.3) !important; font-weight: 800 !important; border-radius: 8px !important; }
+        
+        .cheer-team { display: none; flex-direction: column; gap: 16px; }
+        body[data-theme="KIA"] .cheer-KIA { display: flex; }
+        body[data-theme="삼성"] .cheer-삼성 { display: flex; }
+        .btn-collapse { max-width: 0px !important; padding-left: 0px !important; padding-right: 0px !important; opacity: 0 !important; pointer-events: none !important; margin-right: -4px !important; border-width: 0px !important; }
+        .team-btn-anim { transition: all 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); overflow: hidden; max-width: 60px; white-space: nowrap; }
+        
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-runnable-track { background: rgba(255,255,255,0.1) !important; height: 6px !important; border-radius: 3px !important; border: none !important; cursor: pointer;}
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; background: #fff !important; width: 18px !important; height: 18px !important; margin-top: -6px !important; border-radius: 50%; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; transition: transform 0.1s; cursor: pointer;}
+        input[type=range]::-webkit-slider-thumb:active { transform: scale(1.2); }
+        input[type=range]:focus { outline: none; }
+
+        #full-player { background: rgba(5,5,5,0.9) !important; backdrop-filter: blur(30px); }
+        #toast-msg { background: rgba(20, 20, 22, 0.85) !important; backdrop-filter: blur(20px); color: #fff !important; font-weight: 700 !important; border: 1px solid rgba(255,255,255,0.1) !important; box-shadow: 0 20px 40px rgba(0,0,0,0.6) !important; border-radius: 100px !important; padding: 12px 24px !important; }
+        #lineup-popup-bg { background: rgba(0, 0, 0, 0.6) !important; backdrop-filter: blur(12px) !important; }
+    </style>
+</head>
+<body class="w-full h-[100dvh] flex justify-center items-center overflow-hidden app-bg" data-theme="all">
+    <audio id="audio-player" style="display:none;" preload="auto" autoplay playsinline></audio>
+    <div id="mobile-wrapper" class="w-full h-full max-w-[430px] relative z-10 flex flex-col overflow-hidden sm:border-x border-white/10 sm:shadow-2xl">
+        <header class="absolute top-0 left-0 right-0 pt-safe px-4 pb-2 z-20">
+            <div class="mt-2 flex items-center gap-2 w-full pb-1">
+                <div class="flex items-center flex-1 bg-[#151515] rounded-full px-4 py-2 shadow-lg min-h-[36px]">
+                    <div class="flex items-baseline gap-1.5 w-full overflow-hidden">
+                        <h1 id="di-main-text" class="text-[13px] font-extrabold text-white flex items-center tracking-tight">KBO 리그<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span></h1>
+                        <span class="text-[11px] text-gray-400 font-medium whitespace-nowrap">2026시즌</span>
+                    </div>
+                </div>
+                <div id="ctrl-wrapper" class="grid rounded-full h-[36px] shrink-0 overflow-hidden relative transition-all duration-700 origin-right">
+                    <div id="ctrl-team" class="ctrl-item ctrl-show flex items-center justify-center gap-1 h-full" style="grid-area: 1/1;">
+                        <button onclick="setTeamFilter('all')" id="btn-team-all" class="team-btn-anim px-3.5 py-1.5 text-[11px] font-bold rounded-full bg-point text-white shadow-sm active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto">전체</button>
+                        <button onclick="setTeamFilter('KIA')" id="btn-team-KIA" class="team-btn-anim px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto">KIA</button>
+                        <button onclick="setTeamFilter('삼성')" id="btn-team-삼성" class="team-btn-anim px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto">삼성</button>
+                    </div>
+                    <div id="ctrl-sort" class="ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full" style="grid-area: 1/1;"><span id="sort-text" class="text-[12px] font-bold text-gray-400">날짜순</span></div>
+                </div>
+            </div>
+        </header>
+
+        <main id="calendar-screen" class="flex flex-1 min-h-0 relative w-full flex-col overflow-y-auto scrollbar-hide pb-24">
+            <div class="px-5 pt-main flex-1 flex flex-col">
+                <div class="flex justify-center items-center mb-4">
+                    <div class="flex items-center gap-4">
+                        <button onclick="navigateCalendar(-1)" class="w-8 h-8 flex text-gray-400 hover:text-white rounded-full bg-white/5 border border-white/10 items-center justify-center"><i class="fa-solid fa-chevron-left text-sm"></i></button>
+                        <h2 id="calendar-title" class="text-2xl font-bold text-white text-center min-w-[100px]">2026년 3월</h2>
+                        <button onclick="navigateCalendar(1)" class="w-8 h-8 flex text-gray-400 hover:text-white rounded-full bg-white/5 border border-white/10 items-center justify-center"><i class="fa-solid fa-chevron-right text-sm"></i></button>
+                    </div>
+                </div>
+                <div class="relative mb-6 shrink-0 -mx-5">
+                    <div id="banner-carousel" class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-1" style="touch-action: pan-x pan-y;"></div>
+                    <div class="absolute -bottom-6 left-0 w-full flex justify-center items-center z-10 pointer-events-none">
+                        <div class="relative flex items-center justify-center gap-2 pointer-events-auto">
+                            <div id="banner-dots-container" class="flex items-center gap-1.5"></div>
+                            <button onclick="toggleBannerPlay()" id="btn-banner-play" class="flex items-center justify-center text-gray-500 hover:text-white transition-colors w-4 h-4 hidden"><i class="fa-solid fa-pause text-[10px]"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-end mb-3">
+                    <div class="flex gap-1 bg-white/5 p-1 rounded-full border border-white/10 w-fit shrink-0">
+                        <button onclick="setViewMode('month')" id="btn-mode-month" class="px-3 py-1 text-xs font-bold rounded-full bg-point text-white transition-all">월간</button>
+                        <button onclick="setViewMode('week')" id="btn-mode-week" class="px-3 py-1 text-xs font-medium rounded-full text-gray-400 hover:text-white transition-all">주간</button>
+                    </div>
+                </div>
+                <div id="week-days-header" class="grid grid-cols-7 gap-2 text-center mb-3">
+                    <div class="text-xs font-bold text-[#EA0029]">일</div><div class="text-xs font-bold text-gray-400">월</div><div class="text-xs font-bold text-gray-400">화</div><div class="text-xs font-bold text-gray-400">수</div><div class="text-xs font-bold text-gray-400">목</div><div class="text-xs font-bold text-gray-400">금</div><div class="text-xs font-bold text-[#074CA1]">토</div>
+                </div>
+                <div id="calendar-grid" class="grid grid-cols-7 gap-2"></div>
+            </div>
+            <div id="bottom-sheet" class="absolute bottom-24 left-1/2 w-[92%] z-30 p-5 cursor-default flex flex-col max-h-[50vh]">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center gap-2"><h3 id="sheet-date-title" class="text-lg font-bold text-white">일정</h3><span id="sheet-match-count" class="text-[10px] font-bold text-point bg-point-sub px-2 py-0.5 rounded-full"></span></div>
+                    <button onclick="closeBottomSheet()" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div id="sheet-matches-container" class="flex-1 overflow-y-auto scrollbar-hide space-y-3 pb-2"></div>
+            </div>
+        </main>
+
+        <main id="ranking-screen" class="hidden flex-1 min-h-0 relative w-full flex-col overflow-y-auto scrollbar-hide pb-24"><div class="w-full pt-main pb-10" id="ranking-container"></div></main>
+
+        <main id="cheer-screen" class="hidden flex-1 min-h-0 relative w-full flex-col overflow-y-auto scrollbar-hide">
+            <div class="w-full pt-main pb-[220px] flex flex-col items-center px-5">
+                <div class="cheer-team cheer-KIA w-full flex-col gap-2 mt-2">
+                    <div class="flex items-center justify-between mb-1.5 px-1 w-full">
+                        <div class="flex items-center gap-2.5"><img src="https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg" class="w-7 h-7 object-contain drop-shadow-md"><h2 class="text-lg font-extrabold text-white tracking-tight">KIA 응원가</h2></div>
+                        <button onclick="playActiveTabSongs('kia')" class="bg-white/10 hover:bg-white/20 border border-white/10 text-white text-[11px] font-bold py-1.5 px-3 rounded-full flex items-center gap-1.5 transition-all active:scale-95 shadow-sm"><i class="fa-solid fa-play text-[10px]"></i>전체 재생</button>
+                    </div>
+                    <div class="flex items-baseline gap-4 mb-3 overflow-x-auto scrollbar-hide px-1 w-full shrink-0">
+                        <button onclick="switchCheerTab('kia', 'team')" id="btn-cheer-kia-team" class="text-[22px] font-black text-white transition-all whitespace-nowrap">구단<span class="text-[#EA0029] ml-0.5">.</span></button>
+                        <button onclick="switchCheerTab('kia', 'player')" id="btn-cheer-kia-player" class="text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap">선수</button>
+                        <button onclick="switchCheerTab('kia', 'lineup')" id="btn-cheer-kia-lineup" class="text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap">라인업</button>
+                        <button onclick="switchCheerTab('kia', 'hitout')" id="btn-cheer-kia-hitout" class="text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap">안타/아웃</button>
+                        <button onclick="switchCheerTab('kia', 'entrance')" id="btn-cheer-kia-entrance" class="text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap">등장곡</button>
+                    </div>
+                    <div id="content-cheer-kia-team" class="flex flex-col gap-2"></div>
+                    <div id="content-cheer-kia-player" class="hidden flex-col gap-2"></div>
+                    <div id="content-cheer-kia-lineup" class="hidden flex-col gap-2"><div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div></div>
+                    <div id="content-cheer-kia-hitout" class="hidden flex-col gap-2"><div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div></div>
+                    <div id="content-cheer-kia-entrance" class="hidden flex-col gap-2"><div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div></div>
+                </div>
+
+                <div class="cheer-team cheer-삼성 w-full flex-col gap-2 mt-2">
+                    <div class="flex items-center justify-between mb-1.5 px-1 w-full">
+                        <div class="flex items-center gap-2.5"><img src="https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg" class="w-7 h-7 object-contain drop-shadow-md"><h2 class="text-lg font-extrabold text-white tracking-tight">삼성 응원가</h2></div>
+                        <button onclick="playActiveTabSongs('samsung')" class="bg-white/10 hover:bg-white/20 border border-white/10 text-white text-[11px] font-bold py-1.5 px-3 rounded-full flex items-center gap-1.5 transition-all active:scale-95 shadow-sm"><i class="fa-solid fa-play text-[10px]"></i>전체 재생</button>
+                    </div>
+                    <div class="flex items-baseline gap-4 mb-3 overflow-x-auto scrollbar-hide px-1 w-full shrink-0">
+                        <button onclick="switchCheerTab('samsung', 'team')" id="btn-cheer-samsung-team" class="text-[22px] font-black text-white transition-all whitespace-nowrap">구단<span class="text-[#074CA1] ml-0.5">.</span></button>
+                        <button onclick="switchCheerTab('samsung', 'player')" id="btn-cheer-samsung-player" class="text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap">선수</button>
+                        <button onclick="switchCheerTab('samsung', 'lineup')" id="btn-cheer-samsung-lineup" class="text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap">라인업</button>
+                        <button onclick="switchCheerTab('samsung', 'hitout')" id="btn-cheer-samsung-hitout" class="text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap">안타/아웃</button>
+                        <button onclick="switchCheerTab('samsung', 'entrance')" id="btn-cheer-samsung-entrance" class="text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap">등장곡</button>
+                    </div>
+                    <div id="content-cheer-samsung-team" class="flex flex-col gap-2"></div>
+                    <div id="content-cheer-samsung-player" class="hidden flex-col gap-2"></div>
+                    <div id="content-cheer-samsung-lineup" class="hidden flex-col gap-2"><div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div></div>
+                    <div id="content-cheer-samsung-hitout" class="hidden flex-col gap-2"><div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div></div>
+                    <div id="content-cheer-samsung-entrance" class="hidden flex-col gap-2"><div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div></div>
+                </div>
+            </div>
+        </main>
+
+        <div id="lineup-popup" class="fixed inset-0 z-[60] hidden flex-col justify-end pointer-events-none">
+            <div id="lineup-popup-bg" class="absolute inset-0 opacity-0 transition-opacity duration-300 pointer-events-none" onclick="closeLineupPopup()"></div>
+            <div id="lineup-popup-sheet" class="w-full max-w-[430px] mx-auto flex flex-col relative translate-y-full h-[85vh] pointer-events-auto">
+                <div class="w-full flex justify-center pt-4 pb-2 cursor-pointer" onclick="closeLineupPopup()"><div class="w-12 h-1.5 bg-gray-600 rounded-full"></div></div>
+                <div class="flex justify-between items-center px-6 pb-4 border-b border-white/10">
+                    <h3 id="lineup-popup-title" class="text-lg font-bold text-white tracking-tight">매치 센터</h3>
+                    <button onclick="closeLineupPopup()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white active:scale-95"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div id="lineup-content" class="flex-1 overflow-y-auto scrollbar-hide p-6 relative pb-10"></div>
+            </div>
+        </div>
+
+        <div id="mini-player" onclick="openFullPlayer()" class="absolute bottom-[104px] left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-[380px] bg-[#1C1C1E] rounded-[32px] p-2 pr-4 flex items-center justify-between transition-all duration-300 translate-y-[150%] opacity-0 pointer-events-none overflow-hidden cursor-pointer">
+            <div class="flex items-center gap-3.5 overflow-hidden flex-1">
+                <div class="w-[46px] h-[46px] bg-black/30 rounded-full flex items-center justify-center shrink-0 overflow-hidden shadow-inner p-1 border border-white/5"><img id="mini-player-cover" src="" class="w-full h-full object-contain opacity-95"></div>
+                <div class="flex flex-col truncate pointer-events-none">
+                    <span id="mini-player-title" class="text-[15px] font-extrabold text-white mb-0.5 truncate tracking-tight">곡 제목</span>
+                    <span class="text-[12px] text-gray-400 font-medium truncate tracking-tight">KBO 리그 응원가</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+                <button onclick="event.stopPropagation(); appPrevMusic()" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white active:scale-95 transition-transform"><i class="fa-solid fa-backward-step text-[14px]"></i></button>
+                <button onclick="event.stopPropagation(); toggleMiniPlayerPlay()" class="w-10 h-10 flex items-center justify-center text-white active:scale-95 transition-transform drop-shadow-md"><i id="mini-player-btn" class="fa-solid fa-pause text-[22px]"></i></button>
+                <button onclick="event.stopPropagation(); appNextMusic()" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white active:scale-95 transition-transform"><i class="fa-solid fa-forward-step text-[14px]"></i></button>
+                <button onclick="event.stopPropagation(); closeMiniPlayer()" class="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-white active:scale-95 transition-transform ml-1"><i class="fa-solid fa-xmark text-sm"></i></button>
+            </div>
+            <div class="absolute bottom-0 left-0 w-full h-[3px] bg-transparent pointer-events-none"><div id="mini-player-progress" class="h-full bg-point w-0" style="transition: width 0.25s linear;"></div></div>
+        </div>
+
+        <div id="full-player" class="fixed inset-0 z-[100] flex flex-col justify-start transition-transform duration-300 translate-y-full pointer-events-none px-7 pt-6 pb-10 sm:w-[430px] sm:mx-auto" ontouchstart="fpTouchStart(event)" ontouchmove="fpTouchMove(event)" ontouchend="fpTouchEnd(event)">
+            <div class="w-full flex justify-center mb-2 relative z-[150]"><button onclick="closeFullPlayer()" ontouchstart="event.stopPropagation()" ontouchend="closeFullPlayer(); event.stopPropagation(); event.preventDefault();" class="text-gray-400 hover:text-white active:scale-95 transition-all p-4 cursor-pointer"><i class="fa-solid fa-chevron-down text-[32px] pointer-events-none"></i></button></div>
+            <div class="w-[95%] max-w-[360px] mx-auto aspect-square bg-white/5 rounded-[40px] shrink-0 flex items-center justify-center overflow-hidden border border-white/10 shadow-2xl"><img id="full-player-cover" src="" class="w-full h-full object-contain p-12 drop-shadow-2xl"></div>
+            <div class="flex-1 flex flex-col justify-end w-full pb-8">
+                <div class="flex flex-col w-full mb-10"><h2 id="full-player-title" class="text-[26px] font-black text-white mb-2 tracking-tight">곡 제목</h2><span id="full-player-artist" class="text-[16px] text-point font-bold tracking-tight">KBO 리그 응원가</span></div>
+                <div class="flex flex-col w-full mb-12">
+                    <input type="range" id="full-player-range" min="0" max="100" value="0" class="w-full mb-4">
+                    <div class="flex justify-between text-[12px] font-bold text-gray-400 font-mono tracking-widest px-1"><span id="full-player-current">0:00</span><span id="full-player-duration">0:00</span></div>
+                </div>
+                <div class="flex justify-center items-center gap-14">
+                    <button onclick="appPrevMusic()" ontouchstart="event.stopPropagation()" class="text-white hover:text-gray-300 active:scale-95 transition-transform"><i class="fa-solid fa-backward text-[36px]"></i></button>
+                    <button onclick="toggleMiniPlayerPlay()" ontouchstart="event.stopPropagation()" class="text-white active:scale-95 transition-transform"><i id="full-player-btn" class="fa-solid fa-pause text-[52px]"></i></button>
+                    <button onclick="appNextMusic()" ontouchstart="event.stopPropagation()" class="text-white hover:text-gray-300 active:scale-95 transition-transform"><i class="fa-solid fa-forward text-[36px]"></i></button>
+                </div>
+            </div>
+            <div class="absolute bottom-8 left-8 right-8 flex justify-between items-center text-gray-500 z-10">
+                <button onclick="showToast('가사 기능은 준비 중입니다.')" ontouchstart="event.stopPropagation()" class="hover:text-white transition-colors active:scale-95 p-2"><i class="fa-solid fa-quote-left text-[22px]"></i></button>
+                <button onclick="showToast('재생목록 기능은 준비 중입니다.')" ontouchstart="event.stopPropagation()" class="hover:text-white transition-colors active:scale-95 p-2"><i class="fa-solid fa-list-ul text-[22px]"></i></button>
+            </div>
+        </div>
+
+        <nav id="bottom-nav" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-[380px] px-2 touch-pan-x select-none">
+            <div class="flex items-center justify-between bg-[#1C1C1E] relative">
+                <div id="nav-indicator" class="absolute bg-point z-0 nav-transition" style="left: 4px; width: 66px;"></div>
+                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(0)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-calendar-days text-base text-white"></i><span class="text-[10px] font-bold text-white">야구</span></div></button>
+                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(1)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-trophy text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">순위</span></div></button>
+                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(2)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-headphones text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">응원가</span></div></button>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyDTGun1KsU2Cepx0oSFF7yki2uu2NT2mfk", authDomain: "kbo-app-98418.firebaseapp.com", projectId: "kbo-app-98418", storageBucket: "kbo-app-98418.firebasestorage.app", messagingSenderId: "1046094812627", appId: "1:1046094812627:web:2c07ec94c7e8028daa4b26" };
+        firebase.initializeApp(firebaseConfig); const db = firebase.firestore();
+
+        let scheduleData = []; let rankingData = []; let liveDataStore = {}; let currentPopupMatchId = null; let currentTabIndex = 0;
+        const initialScheduleData = [];
+        const initialRankingData = [{rank:'-',team:'KIA',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'삼성',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'LG',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'두산',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'KT',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'SSG',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'롯데',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'한화',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'NC',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'키움',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}];
+        
+        // 실제 KBO 구단 공식 컬러 코드로 교체 완료 (키움, 한화, 두산 등)
+        const teamColors = {'LG':'bg-[#C30452]','두산':'bg-[#131230]','KIA':'bg-[#EA0029]','삼성':'bg-[#074CA1]','SSG':'bg-[#CE0E2D]','롯데':'bg-[#041E42]','한화':'bg-[#FF6600]','KT':'bg-[#000000]','NC':'bg-[#315288]','키움':'bg-[#820024]'};
+        const teamHex = {'LG':'#C30452','두산':'#131230','KIA':'#EA0029','삼성':'#074CA1','SSG':'#CE0E2D','롯데':'#041E42','한화':'#FF6600','KT':'#000000','NC':'#315288','키움':'#820024'};
+        const teamLogos = {'삼성':'https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg','KIA':'https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg','롯데':'https://i.namu.wiki/i/oKJnVn3EqFm31jpNrP1fqDq1k3xaBnvwfqAKYLjw1Z7UrnqjuouFt8IXymJrANkqsNzqvZ8o0qKwuO550eEFvknICMiYdtMkje1LqgX6yZFE1X_ptk56w8dxB3oqwMJhn5DYDr4bipTLN5dC7aG3sA.svg','NC':'https://i.namu.wiki/i/ht6YMmeHDSes7sNqWy0d2SOJGCI21k3OMMCVrrJ6Hzk7kWbnE862bWve-0VlEI91g9BNQ6MZlZ2zGso_noRFzXM32odjDHs6h0_9SsZVQ22w20HFrHtNRu273-H10Szal7TVWJqRk_BCQn2LneHAsw.svg','LG':'https://i.namu.wiki/i/gexLKDhp3QSYk-bDjR8YkwNDmm7D17CPmgE7ixadcVIHdLs22JOQwgP2riDC85Kl7d5GEJQOyLQutsvB-Koc8DCDRAhp-n-Cx9AJ88fJ5Ki_JsLYlK7dFvs4NqECDr2fOxipLwf9PlAgDEqBWFsZxw.svg','두산':'https://i.namu.wiki/i/qkTbw6qa14fjG0aTU5QL-uhCe_D9gwIGiyTV6l7jYo5DSzl6GwEr-eC-b_I1jIkZgDpF-ARyujk4qPQ0MZqHACoDg9dc3OtyrkZcnwZ5n66T0FR7TDJLvEMWkH8Uh9Z_yubxflY426vm3XvhsUF_MA.svg','SSG':'https://i.namu.wiki/i/X91DumdvUw7RDajMJ7nMRWGsbwd62jUhLShdLTuGu4FTbqMD9m_UHcNVTHEF9Cr-C1BahIZMvHc21r065oSPvEShTnuCOg1ksdxuTNY2BQXI46WOwPfVJssZo5nJk18dT2wQls6s5ZAzAC8_Wywy6g.svg','KT':'https://raw.githubusercontent.com/won429/enjoy_ballbase/refs/heads/main/kt_logo.png','한화':'https://raw.githubusercontent.com/won429/enjoy_ballbase/4335b61443dc7b5522bc8ff327fbbb22641070ae/hanwha_logo.png','키움':'https://i.namu.wiki/i/qNJ-4pGmvhJmKVoGIAR9uce83_Mayu1vsHyd37yK6raEmYcHSiW3MGgFqkihanigvyFK3LVoAwIgZvGr5ymW4ksC5bB643HgAHTkEGoLyrqiL1TRzXrzrNhN1PJPi7I8pGTDfLbyUyNEDj65MsNedw.svg'};
+
+        const cheerData = {
+            kia: {
+                team: [ {url:'kia/kia_lineup.mp3',title:'KIA 라인업송',label:'라인업송'},{url:'kia/kia_namhaeng.mp3',title:'KIA 남행열차',label:'남행열차'},{url:'kia/kia_choegang.mp3',title:'KIA 외쳐라 최강기아',label:'외쳐라 최강기아'},{url:'kia/kia_weareone.mp3',title:'KIA 우리는 하나',label:'우리는 하나'} ],
+                player: [ {url:'kia/kia_parkjungwoo.mp3',title:'KIA 1. 박정우',label:'1. 박정우'},{url:'kia/kia_parkmin.mp3',title:'KIA 2. 박민',label:'2. 박민'},{url:'kia/kia_kimsunbin.mp3',title:'KIA 3. 김선빈',label:'3. 김선빈'},{url:'kia/kia_kimdoyoung.mp3',title:'KIA 5. 김도영',label:'5. 김도영'},{url:'kia/kia_leechangjin.mp3',title:'KIA 8. 이창진',label:'8. 이창진'},{url:'kia/kia_kimgyuseong.mp3',title:'KIA 14. 김규성',label:'14. 김규성'},{url:'kia/kia_parkjaehyun.mp3',title:'KIA 15. 박재현',label:'15. 박재현'},{url:'kia/kia_yoondohyun.mp3',title:'KIA 16. 윤도현',label:'16. 윤도현'},{url:'kia/kia_juhyosang.mp3',title:'KIA 22. 주효상',label:'22. 주효상'},{url:'kia/kia_hanjunsu.mp3',title:'KIA 25. 한준수',label:'25. 한준수'},{url:'kia/kia_castro.mp3',title:'KIA 26. 카스트로',label:'26. 카스트로'},{url:'kia/kia_kimhoryeong.mp3',title:'KIA 27. 김호령',label:'27. 김호령'},{url:'kia/kia_byunwoohyuk.mp3',title:'KIA 29. 변우혁',label:'29. 변우혁'},{url:'kia/kia_dale.mp3',title:'KIA 32. 데일',label:'32. 데일'},{url:'kia/kia_hwangdaein.mp3',title:'KIA 34. 황대인',label:'34. 황대인'},{url:'kia/kia_kimseokhwan.mp3',title:'KIA 35. 김석환',label:'35. 김석환'},{url:'kia/kia_kimtaegun.mp3',title:'KIA 42. 김태군',label:'42. 김태군'},{url:'kia/kia_naseongbeom.mp3',title:'KIA 47. 나성범',label:'47. 나성범'},{url:'kia/kia_ohseonwoo.mp3',title:'KIA 56. 오선우',label:'56. 오선우'},{url:'kia/kia_gojongwook.mp3',title:'KIA 57. 고종욱',label:'57. 고종욱'},{url:'kia/kia_junghyunchang.mp3',title:'KIA 정현창',label:'정현창'} ],
+                entrance: [ {url:'kia/kia_parkjungwoo_entrance.mp3',title:'KIA 1. 박정우 등장곡',label:'1. 박정우 등장곡'},{url:'kia/kia_parkmin_entrance.mp3',title:'KIA 2. 박민 등장곡',label:'2. 박민 등장곡'},{url:'kia/kia_kimsunbin_entrance.mp3',title:'KIA 3. 김선빈 등장곡',label:'3. 김선빈 등장곡'},{url:'kia/kia_kimdoyoung_entrance.mp3',title:'KIA 5. 김도영 등장곡',label:'5. 김도영 등장곡'},{url:'kia/kia_leechangjin_entrance.mp3',title:'KIA 8. 이창진 등장곡',label:'8. 이창진 등장곡'},{url:'kia/kia_kimgyuseong_entrance.mp3',title:'KIA 14. 김규성 등장곡',label:'14. 김규성 등장곡'},{url:'kia/kia_parkjaehyun_entrance.mp3',title:'KIA 15. 박재현 등장곡',label:'15. 박재현 등장곡'},{url:'kia/kia_yoondohyun_entrance.mp3',title:'KIA 16. 윤도현 등장곡',label:'16. 윤도현 등장곡'},{url:'kia/kia_juhyosang_entrance.mp3',title:'KIA 22. 주효상 등장곡',label:'22. 주효상 등장곡'},{url:'kia/kia_hanjunsu_entrance.mp3',title:'KIA 25. 한준수 등장곡',label:'25. 한준수 등장곡'},{url:'kia/kia_castro_entrance.mp3',title:'KIA 26. 카스트로 등장곡',label:'26. 카스트로 등장곡'},{url:'kia/kia_kimhoryeong_entrance.mp3',title:'KIA 27. 김호령 등장곡',label:'27. 김호령 등장곡'},{url:'kia/kia_byunwoohyuk_entrance.mp3',title:'KIA 29. 변우혁 등장곡',label:'29. 변우혁 등장곡'},{url:'kia/kia_dale_entrance.mp3',title:'KIA 32. 데일 등장곡',label:'32. 데일 등장곡'},{url:'kia/kia_hwangdaein_entrance.mp3',title:'KIA 34. 황대인 등장곡',label:'34. 황대인 등장곡'},{url:'kia/kia_kimseokhwan_entrance.mp3',title:'KIA 35. 김석환 등장곡',label:'35. 김석환 등장곡'},{url:'kia/kia_kimtaegun_entrance.mp3',title:'KIA 42. 김태군 등장곡',label:'42. 김태군 등장곡'},{url:'kia/kia_naseongbeom_entrance.mp3',title:'KIA 47. 나성범 등장곡',label:'47. 나성범 등장곡'},{url:'kia/kia_ohseonwoo_entrance.mp3',title:'KIA 56. 오선우 등장곡',label:'56. 오선우 등장곡'},{url:'kia/kia_gojongwook_entrance.mp3',title:'KIA 57. 고종욱 등장곡',label:'57. 고종욱 등장곡'},{url:'kia/kia_junghyunchang_entrance.mp3',title:'KIA 정현창 등장곡',label:'정현창 등장곡'} ],
+                hitout: [ {url:'kia/kia_out_gameover.mp3',title:'KIA 2025 아웃송(Game Over)',label:'2025 아웃송(Game Over)'},{url:'kia/kia_out_geuraje.mp3',title:'KIA 2025 아웃송(그라제)',label:'2025 아웃송(그라제)'},{url:'kia/kia_out_shots.mp3',title:'KIA 아웃송(Shots)',label:'아웃송(Shots)'},{url:'kia/kia_out_ppikkibbikki.mp3',title:'KIA 2022 아웃송(삐끼삐끼)',label:'2022 아웃송(삐끼삐끼)'} ]
+            },
+            samsung: {
+                team: [ {url:'samsung/samsung_lineup.mp3',title:'삼성 라인업송',label:'라인업송'},{url:'samsung/samsung_eldorado.mp3',title:'삼성 엘도라도',label:'엘도라도'},{url:'samsung/samsung_jijunghae.mp3',title:'삼성 지중해',label:'지중해'} ],
+                player: [ {url:'samsung/samsung_gu_jawook.mp3',title:'삼성 구자욱',label:'구자욱'},{url:'samsung/samsung_gu_jawook_moonlight.mp3',title:'삼성 구자욱(달빛소년)',label:'구자욱(달빛소년)'},{url:'samsung/samsung_choi_hyoungwoo.mp3',title:'삼성 최형우',label:'최형우'},{url:'samsung/samsung_diaz.mp3',title:'삼성 디아즈',label:'디아즈'},{url:'samsung/samsung_lee_jaehyun.mp3',title:'삼성 이재현',label:'이재현'},{url:'samsung/samsung_kim_hyunjun.mp3',title:'삼성 김현준',label:'김현준'},{url:'samsung/samsung_kim_sungyoon.mp3',title:'삼성 김성윤',label:'김성윤'},{url:'samsung/samsung_kim_jichan.mp3',title:'삼성 김지찬',label:'김지찬'},{url:'samsung/samsung_kang_minho.mp3',title:'삼성 강민호',label:'강민호'},{url:'samsung/samsung_shim_jaehun.mp3',title:'삼성 심재훈',label:'심재훈'},{url:'samsung/samsung_kim_jaesung.mp3',title:'삼성 김재성',label:'김재성'},{url:'samsung/samsung_ryu_jihyuk.mp3',title:'삼성 류지혁',label:'류지혁'},{url:'samsung/samsung_lee_byunghun.mp3',title:'삼성 이병헌',label:'이병헌'},{url:'samsung/samsung_lee_sunggyu1.mp3',title:'삼성 이성규1',label:'이성규1'},{url:'samsung/samsung_lee_sunggyu2.mp3',title:'삼성 이성규2',label:'이성규2'},{url:'samsung/samsung_kim_youngwoong.mp3',title:'삼성 김영웅',label:'김영웅'},{url:'samsung/samsung_kim_taehun.mp3',title:'삼성 김태훈',label:'김태훈'},{url:'samsung/samsung_lee_haeseung.mp3',title:'삼성 이해승',label:'이해승'},{url:'samsung/samsung_park_seunggyu.mp3',title:'삼성 박승규',label:'박승규'},{url:'samsung/samsung_park_byungho.mp3',title:'삼성 박병호',label:'박병호'},{url:'samsung/samsung_yoon_jungbin.mp3',title:'삼성 윤정빈',label:'윤정빈'},{url:'samsung/samsung_kim_heongon.mp3',title:'삼성 김헌곤',label:'김헌곤'},{url:'samsung/samsung_yang_woohyun.mp3',title:'삼성 양우현',label:'양우현'},{url:'samsung/samsung_jeon_byungwoo.mp3',title:'삼성 전병우',label:'전병우'},{url:'samsung/samsung_kim_taegun.mp3',title:'삼성 김태군',label:'김태군'},{url:'samsung/samsung_park_sehyuk.mp3',title:'삼성 박세혁',label:'박세혁'} ],
+                entrance: [ {url:'samsung/samsung_gu_jawook_entrance.mp3',title:'삼성 구자욱 등장곡',label:'구자욱 등장곡'},{url:'samsung/samsung_choi_hyoungwoo_entrance.mp3',title:'삼성 최형우 등장곡',label:'최형우 등장곡'},{url:'samsung/samsung_diaz_entrance.mp3',title:'삼성 디아즈 등장곡',label:'디아즈 등장곡'},{url:'samsung/samsung_lee_jaehyun_entrance.mp3',title:'삼성 이재현 등장곡',label:'이재현 등장곡'},{url:'samsung/samsung_kim_hyunjun_entrance.mp3',title:'삼성 김현준 등장곡',label:'김현준 등장곡'},{url:'samsung/samsung_kim_sungyoon_entrance.mp3',title:'삼성 김성윤 등장곡',label:'김성윤 등장곡'},{url:'samsung/samsung_kim_jichan_entrance.mp3',title:'삼성 김지찬 등장곡',label:'김지찬 등장곡'},{url:'samsung/samsung_kang_minho_entrance.mp3',title:'삼성 강민호 등장곡',label:'강민호 등장곡'},{url:'samsung/samsung_shim_jaehun_entrance.mp3',title:'삼성 심재훈 등장곡',label:'심재훈 등장곡'},{url:'samsung/samsung_kim_jaesung_entrance.mp3',title:'삼성 김재성 등장곡',label:'김재성 등장곡'},{url:'samsung/samsung_ryu_jihyuk_entrance.mp3',title:'삼성 류지혁 등장곡',label:'류지혁 등장곡'},{url:'samsung/samsung_lee_byunghun_entrance.mp3',title:'삼성 이병헌 등장곡',label:'이병헌 등장곡'},{url:'samsung/samsung_lee_sunggyu_entrance.mp3',title:'삼성 이성규 등장곡',label:'이성규 등장곡'},{url:'samsung/samsung_kim_youngwoong_entrance.mp3',title:'삼성 김영웅 등장곡',label:'김영웅 등장곡'},{url:'samsung/samsung_kim_taehun_entrance.mp3',title:'삼성 김태훈 등장곡',label:'김태훈 등장곡'},{url:'samsung/samsung_lee_haeseung_entrance.mp3',title:'삼성 이해승 등장곡',label:'이해승 등장곡'},{url:'samsung/samsung_park_seunggyu_entrance.mp3',title:'삼성 박승규 등장곡',label:'박승규 등장곡'},{url:'samsung/samsung_park_byungho_entrance.mp3',title:'삼성 박병호 등장곡',label:'박병호 등장곡'},{url:'samsung/samsung_yoon_jungbin_entrance.mp3',title:'삼성 윤정빈 등장곡',label:'윤정빈 등장곡'},{url:'samsung/samsung_kim_heongon_entrance.mp3',title:'삼성 김헌곤 등장곡',label:'김헌곤 등장곡'},{url:'samsung/samsung_yang_woohyun_entrance.mp3',title:'삼성 양우현 등장곡',label:'양우현 등장곡'},{url:'samsung/samsung_jeon_byungwoo_entrance.mp3',title:'삼성 전병우 등장곡',label:'전병우 등장곡'},{url:'samsung/samsung_kim_taegun_entrance.mp3',title:'삼성 김태군 등장곡',label:'김태군 등장곡'},{url:'samsung/samsung_park_sehyuk_entrance.mp3',title:'삼성 박세혁 등장곡',label:'박세혁 등장곡'} ],
+                hitout: [ {url:'samsung/samsung_out_rumble.mp3',title:'삼성 2026 아웃송(럼블)',label:'2026 아웃송(럼블)'},{url:'samsung/samsung_out_destiny.mp3',title:'삼성 2026 아웃송(운명)',label:'2026 아웃송(운명)'},{url:'samsung/samsung_out_eulssu.mp3',title:'삼성 2026 아웃송(얼쑤)',label:'2026 아웃송(얼쑤)'},{url:'samsung/samsung_out_march.mp3',title:'삼성 2026 아웃송(March)',label:'2026 아웃송(March)'},{url:'samsung/samsung_out_wait.mp3',title:'삼성 2025 아웃송(WAIT)',label:'2025 아웃송(WAIT)'},{url:'samsung/samsung_out_ratata.mp3',title:'삼성 2025 아웃송(RATATA)',label:'2025 아웃송(RATATA)'},{url:'samsung/samsung_out_cheerup.mp3',title:'삼성 2025 아웃송(Cheer Up)',label:'2025 아웃송(Cheer Up)'} ]
+            }
+        };
+
+        let currentDate = new Date();
+        const todayStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+        let viewMode = 'month'; let selectedTeam = localStorage.getItem('kbo_selected_team') || 'all';
+
+        function showToast(msg) {
+            let toast = document.getElementById('toast-msg');
+            if (!toast) { toast = document.createElement('div'); toast.id = 'toast-msg'; toast.className = 'fixed top-12 left-1/2 -translate-x-1/2 bg-point text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-2xl z-[100] transition-all duration-300 opacity-0 transform -translate-y-4'; document.getElementById('mobile-wrapper').appendChild(toast); }
+            toast.innerText = msg; void toast.offsetWidth; toast.classList.remove('opacity-0', '-translate-y-4'); toast.classList.add('opacity-100', 'translate-y-0');
+            setTimeout(() => { toast.classList.remove('opacity-100', 'translate-y-0'); toast.classList.add('opacity-0', '-translate-y-4'); }, 2500);
+        }
+
+        function chunkDataForFirestore(dataArray, maxSize = 800000) {
+            let chunks = []; let currentChunk = []; let currentSize = 0;
+            dataArray.forEach(item => {
+                const itemStr = JSON.stringify(item); let itemSize = 0;
+                for (let i = 0; i < itemStr.length; i++) { const c = itemStr.charCodeAt(i); itemSize += c >> 11 ? 3 : c >> 7 ? 2 : 1; }
+                if (currentSize + itemSize > maxSize && currentChunk.length > 0) { chunks.push(currentChunk); currentChunk = [item]; currentSize = itemSize; } else { currentChunk.push(item); currentSize += itemSize; }
+            });
+            if (currentChunk.length > 0) chunks.push(currentChunk); return chunks;
+        }
+
+        async function syncWithFirestore() {
+            try {
+                const mergedMatchesSnap = await db.collection("matches_merged").get();
+                if (!mergedMatchesSnap.empty) {
+                    scheduleData = []; mergedMatchesSnap.forEach(doc => { scheduleData.push(...(doc.data().data || [])); });
+                } else {
+                    const oldMatchesSnap = await db.collection("matches").get();
+                    if (!oldMatchesSnap.empty) {
+                        scheduleData = oldMatchesSnap.docs.map(doc => doc.data());
+                        const chunks = chunkDataForFirestore(scheduleData); const batch = db.batch();
+                        chunks.forEach((chunk, index) => { batch.set(db.collection("matches_merged").doc(`chunk_${index}`), { data: chunk }); });
+                        await batch.commit();
+                    } else {
+                        scheduleData = [...initialScheduleData];
+                        if (scheduleData.length > 0) {
+                            const chunks = chunkDataForFirestore(scheduleData); const batch = db.batch();
+                            chunks.forEach((chunk, index) => { batch.set(db.collection("matches_merged").doc(`chunk_${index}`), { data: chunk }); });
+                            await batch.commit();
+                        }
+                    }
+                }
+                scheduleData.sort((a, b) => { if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); return a.date.localeCompare(b.date); });
+
+                db.collection("rankings_merged").onSnapshot((snapshot) => {
+                    if (!snapshot.empty) {
+                        rankingData = []; snapshot.forEach(doc => rankingData.push(...(doc.data().data || [])));
+                        rankingData.sort((a, b) => { if (a.rank === '-') return 1; if (b.rank === '-') return -1; return parseInt(a.rank) - parseInt(b.rank); });
+                        if (currentTabIndex === 1) renderRanking();
+                    } else {
+                        db.collection("rankings").onSnapshot((oldSnap) => {
+                            if (oldSnap.empty) { rankingData = [...initialRankingData]; } else {
+                                rankingData = oldSnap.docs.map(doc => doc.data()).sort((a, b) => { if (a.rank === '-') return 1; if (b.rank === '-') return -1; return parseInt(a.rank) - parseInt(b.rank); });
+                            }
+                            if (currentTabIndex === 1) renderRanking();
+                        });
+                    }
+                });
+
+                db.collection("lineups_merged").onSnapshot((snapshot) => {
+                    if (!snapshot.empty) {
+                        liveDataStore = {}; snapshot.forEach(doc => { const chunkData = doc.data(); Object.keys(chunkData).forEach(key => { liveDataStore[key] = chunkData[key]; }); });
+                        if (currentTabIndex === 0) renderCalendar(); if (currentPopupMatchId) renderPopupContent(currentPopupMatchId); renderBanners(); renderLineupCheerSongs();
+                    } else {
+                        db.collection("lineups").onSnapshot((oldSnap) => {
+                            oldSnap.forEach(doc => { liveDataStore[doc.id] = doc.data(); });
+                            if (currentTabIndex === 0) renderCalendar(); if (currentPopupMatchId) renderPopupContent(currentPopupMatchId); renderBanners(); renderLineupCheerSongs();
+                        });
+                    }
+                });
+            } catch (error) { console.error("파이어베이스 통신 에러:", error); scheduleData = [...initialScheduleData]; }
+        }
+
+        function switchTab(index) {
+            currentTabIndex = index; if (navigator.vibrate) navigator.vibrate(10);
+            const screens = [ document.getElementById('calendar-screen'), document.getElementById('ranking-screen'), document.getElementById('cheer-screen') ];
+            closeBottomSheet();
+            const navButtons = document.querySelectorAll('#bottom-nav button'); const indicator = document.getElementById('nav-indicator');
+            if(navButtons[index] && indicator) { indicator.style.width = `${navButtons[index].offsetWidth}px`; indicator.style.transform = `translateX(${navButtons[index].offsetLeft - 4}px)`; }
+            navButtons.forEach((btn, i) => {
+                const icon = btn.querySelector('i'); const label = btn.querySelector('span');
+                if (icon && label) {
+                    let iconName = i===0?'fa-calendar-days':(i===1?'fa-trophy':'fa-headphones');
+                    icon.className = `fa-solid ${iconName} text-base ${i===index?'text-white':'text-gray-400 transition-colors'}`;
+                    label.className = `text-[10px] whitespace-nowrap transition-colors ${i===index?'text-white font-bold':'text-gray-400 font-medium'}`;
+                }
+            });
+
+            const ctrlTeam = document.getElementById('ctrl-team'); const ctrlSort = document.getElementById('ctrl-sort'); const ctrlWrapper = document.getElementById('ctrl-wrapper'); const mainText = document.getElementById('di-main-text');
+            mainText.innerHTML = (index === 0 ? `KBO 리그` : (index === 1 ? `정규리그 순위` : `구단별 응원가`)) + `<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
+            if (index === 0) { ctrlTeam.className='ctrl-item ctrl-show flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.remove('opacity-0'); }
+            else if (index === 1) { ctrlTeam.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.add('opacity-0'); }
+            else if (index === 2) { ctrlTeam.className='ctrl-item ctrl-show flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.remove('opacity-0'); }
+
+            const btnTeamAll = document.getElementById('btn-team-all');
+            if (index === 2) { btnTeamAll.classList.add('btn-collapse'); if (selectedTeam === 'all') setTeamFilter('KIA'); } else { btnTeamAll.classList.remove('btn-collapse'); }
+            screens.forEach((screen, i) => { screen.classList.toggle('hidden', i !== index); screen.classList.toggle('flex', i === index); });
+            if (index === 0) renderCalendar(); else if (index === 1) renderRanking();
+        }
+
+        function setViewMode(mode) { 
+            viewMode = mode; currentDate = new Date();
+            const btnMonth = document.getElementById('btn-mode-month'); const btnWeek = document.getElementById('btn-mode-week');
+            if (mode === 'month') { btnMonth.className = 'px-3 py-1 text-xs font-bold rounded-full bg-point text-black transition-all'; btnWeek.className = 'px-3 py-1 text-xs font-medium rounded-full text-gray-400 hover:text-white transition-all'; }
+            else { btnWeek.className = 'px-3 py-1 text-xs font-bold rounded-full bg-point text-black transition-all'; btnMonth.className = 'px-3 py-1 text-xs font-medium rounded-full text-gray-400 hover:text-white transition-all'; }
+            renderCalendar(); closeBottomSheet(); 
+            if (mode === 'week') { setTimeout(() => { const todayGroup = document.getElementById('weekly-today-group'); if (todayGroup) todayGroup.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); }
+        }
+        
+        function setTeamFilter(team) {
+            selectedTeam = team; localStorage.setItem('kbo_selected_team', team); document.body.setAttribute('data-theme', team);
+            ['all', 'KIA', '삼성'].forEach(id => { const btn = document.getElementById(`btn-team-${id}`); btn.classList.remove('font-bold', 'bg-point', 'text-white', 'shadow-sm'); btn.classList.add('font-medium', 'text-gray-400'); });
+            const targetBtn = document.getElementById(`btn-team-${team}`); targetBtn.classList.remove('font-medium', 'text-gray-400'); targetBtn.classList.add('font-bold', 'bg-point', 'text-white', 'shadow-sm');
+            renderCalendar(); closeBottomSheet(); renderBanners();
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid'); if(!grid) return; grid.innerHTML = '';
+            const year = currentDate.getFullYear(); const month = currentDate.getMonth();
+            if (viewMode === 'month') {
+                document.getElementById('week-days-header').classList.remove('hidden'); grid.className = 'grid grid-cols-7 gap-2'; document.getElementById('calendar-title').innerText = `${year}년 ${month + 1}월`;
+                const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate();
+                for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="calendar-day opacity-0 pointer-events-none"></div>`;
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                    let matchesToday = scheduleData.filter(m => m.date === dateStr && (selectedTeam === 'all' || m.team1 === selectedTeam || m.team2 === selectedTeam));
+                    let isToday = (dateStr === todayStr); let isPast = (dateStr < todayStr);
+                    let dotsHtml = ''; let topIconHtml = ''; let stampHtml = '';
+                    if (matchesToday.length > 0) {
+                        if (selectedTeam === 'all') {
+                            dotsHtml = `<div class="flex justify-center items-center gap-1 mt-auto mb-1.5 bg-white/10 px-2 py-0.5 rounded-full border border-white/10 shadow-sm ${isPast ? 'opacity-50 grayscale' : ''}"><i class="fa-solid fa-baseball text-gray-300 text-[9px]"></i><span class="text-[10px] font-bold text-white">+${matchesToday.length}</span></div>`;
+                        } else {
+                            const live = liveDataStore[matchesToday[0].id];
+                            if (live) {
+                                if (live.gameStatus && live.gameStatus.includes('취소')) { stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 -rotate-[15deg] text-[11px] font-black text-blue-500/80 border-2 border-blue-500/80 rounded px-1 tracking-tighter pointer-events-none z-20">취소</div>`; }
+                                else if (live.gameStatus === '종료') {
+                                    let awayScore = parseInt(live.awayScore || 0); let homeScore = parseInt(live.homeScore || 0);
+                                    let isWin = (matchesToday[0].team1 === selectedTeam && awayScore > homeScore) || (matchesToday[0].team2 === selectedTeam && homeScore > awayScore);
+                                    let isLose = (matchesToday[0].team1 === selectedTeam && awayScore < homeScore) || (matchesToday[0].team2 === selectedTeam && homeScore < awayScore);
+                                    let isDraw = awayScore === homeScore;
+                                    if (isWin) stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 -rotate-[15deg] text-[11px] font-black text-red-500/80 border-2 border-red-500/80 rounded px-1 tracking-widest pointer-events-none z-20">WIN</div>`;
+                                    else if (isLose) stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 -rotate-[15deg] text-[11px] font-black text-gray-500/80 border-2 border-gray-500/80 rounded px-1 tracking-widest pointer-events-none z-20">LOSE</div>`;
+                                    else if (isDraw) stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 -rotate-[15deg] text-[11px] font-black text-green-500/80 border-2 border-green-500/80 rounded px-1 tracking-widest pointer-events-none z-20">DRAW</div>`;
+                                }
+                            }
+                            let dots = matchesToday.map(match => {
+                                let displayTeam = match.team1 === selectedTeam ? match.team2 : match.team1; let isHome = match.team2 === selectedTeam; let logo = teamLogos[displayTeam];
+                                let logoHtml = logo ? `<img src="${logo}" class="w-5 h-5 object-contain ${isPast ? 'grayscale opacity-50' : ''}">` : `<div class="w-1.5 h-1.5 rounded-full ${teamColors[displayTeam] || 'bg-gray-500'} ${isPast ? 'grayscale opacity-50' : ''}"></div>`;
+                                if (isHome) topIconHtml = `<i class="fa-solid fa-house text-point text-[10px] absolute top-1.5 left-1/2 -translate-x-1/2 ${isPast ? 'grayscale opacity-50' : ''}"></i>`; return logoHtml;
+                            }).join('');
+                            dotsHtml = `<div class="flex justify-center gap-0.5 items-center mt-auto mb-1.5">${dots}</div>`;
+                        }
+                    }
+                    grid.innerHTML += `<div class="calendar-day cursor-pointer relative ${matchesToday.length ? 'has-match' : ''} ${isToday ? 'today' : ''}" onclick="openDateSheet('${dateStr}')">${stampHtml}${topIconHtml}<span class="text-[13px] relative z-10 ${isToday ? 'text-point' : (isPast ? 'text-gray-500' : (matchesToday.length ? 'text-white font-bold' : 'text-gray-400'))}">${i}</span>${dotsHtml}</div>`;
+                }
+            } else {
+                document.getElementById('week-days-header').classList.add('hidden'); grid.className = 'flex flex-col gap-6 pb-4 w-full col-span-7';
+                let startOfWeek = new Date(currentDate); let currentDayOfWeek = (currentDate.getDay() + 6) % 7; startOfWeek.setDate(currentDate.getDate() - currentDayOfWeek);
+                let thursday = new Date(startOfWeek); thursday.setDate(thursday.getDate() + 3);
+                let firstDayOfMonthObj = new Date(thursday.getFullYear(), thursday.getMonth(), 1); let firstThursday = new Date(firstDayOfMonthObj);
+                firstThursday.setDate(firstDayOfMonthObj.getDate() + 3 - (firstDayOfMonthObj.getDay() + 6) % 7);
+                if (firstThursday.getMonth() !== thursday.getMonth()) firstThursday.setDate(firstThursday.getDate() + 7);
+                let weekNum = Math.round((thursday - firstThursday) / 86400000 / 7) + 1;
+                document.getElementById('calendar-title').innerText = `${thursday.getFullYear()}년 ${thursday.getMonth() + 1}월 ${weekNum}주차`;
+                let weekDays = [];
+                for (let i = 0; i < 7; i++) {
+                    let d = new Date(startOfWeek); d.setDate(d.getDate() + i);
+                    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                    let matchesToday = scheduleData.filter(match => match.date === dateStr && (selectedTeam === 'all' || match.team1 === selectedTeam || match.team2 === selectedTeam));
+                    weekDays.push({ d, dateStr, matches: matchesToday });
+                }
+                let idx = 0;
+                while (idx < 7) {
+                    let currentDay = weekDays[idx]; let isPast = currentDay.dateStr < todayStr;
+                    if (currentDay.matches.length > 0) {
+                        let matchesHtml = `<div class="space-y-3">` + currentDay.matches.map(match => {
+                            let isHome = selectedTeam !== 'all' && match.team2 === selectedTeam;
+                            let logo1 = teamLogos[match.team1] ? `<img src="${teamLogos[match.team1]}" class="w-6 h-6 object-contain ${isPast ? 'grayscale opacity-50' : ''}">` : `<div class="w-3 h-3 rounded-full ${teamColors[match.team1] || 'bg-gray-500'} ${isPast ? 'grayscale opacity-50' : ''}"></div>`;
+                            let logo2 = teamLogos[match.team2] ? `<img src="${teamLogos[match.team2]}" class="w-6 h-6 object-contain ${isPast ? 'grayscale opacity-50' : ''}">` : `<div class="w-3 h-3 rounded-full ${teamColors[match.team2] || 'bg-gray-500'} ${isPast ? 'grayscale opacity-50' : ''}"></div>`;
+                            const live = liveDataStore[match.id];
+                            let statusHtml = `<span class="text-[10px] text-gray-400 font-bold"><i class="fa-solid fa-clock mr-1"></i>${match.time} · ${isHome ? `<i class="fa-solid fa-house text-point mx-0.5"></i>` : ''}${match.stadium}</span>`;
+                            let scoreHtml = `<span class="text-xs text-gray-500">vs</span>`; let stampHtml = '';
+                            if (live && live.gameStatus !== '경기전') {
+                                let badgeClass = live.gameStatus === '종료' ? 'bg-gray-600' : 'bg-red-600 live-badge';
+                                let displayStatus = (live.gameStatus === '경기중' && live.inning) ? live.inning : live.gameStatus;
+                                statusHtml = `<div class="flex items-center gap-1.5"><span class="${badgeClass} text-[9px] font-bold text-white px-2 py-0.5 rounded-full">${displayStatus}</span><span class="text-[10px] text-gray-400 font-bold">${match.stadium}</span></div>`;
+                                scoreHtml = `<span class="text-sm font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'}">${live.awayScore}</span><span class="text-xs text-gray-500 mx-1">:</span><span class="text-sm font-black ${live.homeScore > live.awayScore ? 'text-point' : 'text-white'}">${live.homeScore}</span>`;
+                                if (selectedTeam !== 'all') {
+                                    if (live.gameStatus && live.gameStatus.includes('취소')) { stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-blue-500/30 border-4 border-blue-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">취소</div>`; }
+                                    else if (live.gameStatus === '종료') {
+                                        let awayScore = parseInt(live.awayScore || 0); let homeScore = parseInt(live.homeScore || 0);
+                                        let isWin = (match.team1 === selectedTeam && awayScore > homeScore) || (match.team2 === selectedTeam && homeScore > awayScore);
+                                        let isLose = (match.team1 === selectedTeam && awayScore < homeScore) || (match.team2 === selectedTeam && homeScore < awayScore);
+                                        let isDraw = awayScore === homeScore;
+                                        if (isWin) stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-red-500/30 border-4 border-red-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">WIN</div>`;
+                                        else if (isLose) stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-gray-500/30 border-4 border-gray-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">LOSE</div>`;
+                                        else if (isDraw) stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-green-500/30 border-4 border-green-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">DRAW</div>`;
+                                    }
+                                }
+                            }
+                            return `<div class="bg-white/5 border border-white/5 rounded-xl p-3 flex justify-between items-center cursor-pointer active:scale-95 transition-transform relative overflow-hidden" onclick="openLineupPopup(${match.id})">${stampHtml}<div class="flex flex-col gap-1 w-full relative z-10">${statusHtml}<div class="flex items-center justify-between mt-1"><div class="flex items-center gap-1.5 w-[40%]">${logo1}<span class="text-sm font-bold text-white truncate">${match.team1}</span></div><div class="flex items-center justify-center w-[20%]">${scoreHtml}</div><div class="flex items-center justify-end gap-1.5 w-[40%]"><span class="text-sm font-bold text-white truncate">${match.team2}</span>${logo2}</div></div></div></div>`;
+                        }).join('') + `</div>`;
+                        grid.innerHTML += `<div class="flex flex-col gap-3 scroll-mt-28" ${currentDay.dateStr === todayStr ? 'id="weekly-today-group"' : ''}><div class="flex items-center gap-2"><h3 class="text-lg font-bold ${currentDay.dateStr === todayStr ? 'text-point' : (isPast ? 'text-gray-500' : 'text-white')}">${currentDay.d.getMonth() + 1}월 ${currentDay.d.getDate()}일 일정</h3><span class="text-[10px] font-bold text-point bg-point-sub px-2 py-0.5 rounded-full ${isPast ? 'opacity-50' : ''}">${currentDay.matches.length}경기</span></div>${matchesHtml}</div>`;
+                        idx++;
+                    } else {
+                        let startIdx = idx; while (idx < 7 && weekDays[idx].matches.length === 0) idx++; let endIdx = idx - 1;
+                        let startDay = weekDays[startIdx]; let endDay = weekDays[endIdx]; let isTodayInRange = false;
+                        for (let k = startIdx; k <= endIdx; k++) { if (weekDays[k].dateStr === todayStr) isTodayInRange = true; }
+                        let isPastEnd = endDay.dateStr < todayStr; let titleColor = isTodayInRange ? 'text-point' : (isPastEnd ? 'text-gray-500' : 'text-white');
+                        let titleHtml = startIdx === endIdx ? `<h3 class="text-lg font-bold ${titleColor}">${startDay.d.getMonth() + 1}월 ${startDay.d.getDate()}일</h3>` : `<h3 class="text-lg font-bold ${titleColor}">${startDay.d.getMonth() + 1}월 ${startDay.d.getDate()}일 ~ ${endDay.d.getMonth() + 1}월 ${endDay.d.getDate()}일</h3>`;
+                        grid.innerHTML += `<div class="flex flex-col gap-3 scroll-mt-28" ${isTodayInRange ? 'id="weekly-today-group"' : ''}><div class="flex items-center gap-2">${titleHtml}<span class="text-[10px] font-bold text-gray-400 bg-white/10 px-2 py-0.5 rounded-full border border-white/5 ${isPastEnd ? 'opacity-50' : ''}">일정 없음</span></div><div class="text-[12px] text-gray-500 bg-white/5 rounded-xl p-5 text-center border border-white/5 flex flex-col items-center justify-center gap-2"><i class="fa-solid fa-bed text-2xl text-gray-600 mb-1"></i>이 기간에는 예정된 경기가 없습니다.</div></div>`;
+                    }
+                }
+            }
+        }
+
+        function openDateSheet(dateStr) {
+            let matches = scheduleData.filter(m => m.date === dateStr && (selectedTeam === 'all' || m.team1 === selectedTeam || m.team2 === selectedTeam));
+            const sheet = document.getElementById('bottom-sheet'); const container = document.getElementById('sheet-matches-container'); const [y, m, d] = dateStr.split('-');
+            document.getElementById('sheet-date-title').innerText = `${parseInt(m)}월 ${parseInt(d)}일 일정`; document.getElementById('sheet-match-count').innerText = matches.length > 0 ? `${matches.length}경기` : '일정 없음';
+            container.innerHTML = '';
+            if (matches.length === 0) { container.innerHTML = `<div class="flex flex-col items-center justify-center py-6 text-gray-500"><i class="fa-regular fa-calendar-xmark text-3xl mb-2"></i><p class="text-sm">이 날은 예정된 경기가 없습니다.</p></div>`; }
+            else {
+                matches.forEach(match => {
+                    const live = liveDataStore[match.id]; let statusHtml = `<span class="text-[10px] text-gray-400 font-bold"><i class="fa-solid fa-clock mr-1"></i>${match.time}</span>`;
+                    if (live && live.gameStatus !== '경기전') {
+                        let badgeClass = live.gameStatus === '종료' ? 'bg-gray-600' : 'bg-red-600 live-badge'; let displayStatus = (live.gameStatus === '경기중' && live.inning) ? live.inning : live.gameStatus;
+                        statusHtml = `<div class="flex items-center gap-1.5"><span class="${badgeClass} text-[9px] font-bold text-white px-2 py-0.5 rounded-full">${displayStatus}</span><span class="text-[10px] text-gray-400 font-bold">${live.awayScore}:${live.homeScore}</span></div>`;
+                    }
+                    let logo1 = teamLogos[match.team1] ? `<img src="${teamLogos[match.team1]}" class="w-6 h-6 object-contain">` : `<div class="w-6 h-6 rounded-full ${teamColors[match.team1] || 'bg-gray-600'} flex items-center justify-center text-white text-[10px] font-bold">${match.team1.substring(0,1)}</div>`;
+                    let logo2 = teamLogos[match.team2] ? `<img src="${teamLogos[match.team2]}" class="w-6 h-6 object-contain">` : `<div class="w-6 h-6 rounded-full ${teamColors[match.team2] || 'bg-gray-600'} flex items-center justify-center text-white text-[10px] font-bold">${match.team2.substring(0,1)}</div>`;
+                    container.innerHTML += `<div class="bg-white/5 border border-white/5 rounded-xl p-3 flex justify-between items-center cursor-pointer active:scale-95 transition-transform" onclick="openLineupPopup(${match.id})"><div class="flex flex-col gap-1">${statusHtml}<div class="flex items-center gap-2 mt-0.5"><div class="flex items-center gap-1.5">${logo1}<span class="text-sm font-bold text-white">${match.team1}</span></div><span class="text-[11px] text-gray-500 font-bold">vs</span><div class="flex items-center gap-1.5"><span class="text-sm font-bold text-white">${match.team2}</span>${logo2}</div></div></div><button class="w-8 h-8 rounded-full bg-white/5 text-gray-400 hover:text-white flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-chevron-right"></i></button></div>`;
+                });
+            }
+            sheet.classList.add('show');
+        }
+
+        function closeBottomSheet() { const sheet = document.getElementById('bottom-sheet'); if (sheet) sheet.classList.remove('show'); }
+
+        function renderRanking() {
+            const container = document.getElementById('ranking-container'); if (!container) return;
+            const rankCounts = {}; rankingData.forEach(t => { if (t.rank !== '-') rankCounts[t.rank] = (rankCounts[t.rank] || 0) + 1; });
+            
+            // 랭킹 헤더 (가독성 높은 텍스트로 변경)
+            let html = `<div class="px-2 sm:px-4"><div class="flex items-center py-2 px-1 border-b border-white/10 mb-2 pr-[84px]"><div class="w-[28px] text-center text-[11px] font-bold text-gray-400 shrink-0">순위</div><div class="w-[38px] text-center text-[11px] font-bold text-gray-400 shrink-0">팀명</div><div class="flex-1 flex justify-between items-center px-0.5"><div class="w-[18px] text-center text-[10px] font-bold text-gray-400 tracking-tighter whitespace-nowrap">경기</div><div class="w-[14px] text-center text-[10px] font-bold text-gray-400 whitespace-nowrap">승</div><div class="w-[14px] text-center text-[10px] font-bold text-gray-400 whitespace-nowrap">무</div><div class="w-[14px] text-center text-[10px] font-bold text-gray-400 whitespace-nowrap">패</div><div class="w-[28px] text-center text-[10px] font-bold text-gray-400 whitespace-nowrap">승률</div><div class="w-[30px] text-center text-[10px] font-bold text-gray-400 whitespace-nowrap">게임차</div><div class="w-[26px] text-center text-[10px] font-bold text-gray-400 whitespace-nowrap">연속</div></div></div><div class="flex flex-col gap-[6px] pb-2">`;
+            
+            rankingData.forEach((team, i) => {
+                let rankNum = parseInt(String(team.rank).replace('T', ''));
+                let rClass = isNaN(rankNum) ? 'text-gray-600' : (rankNum === 1 ? 'text-[#FBBF24] drop-shadow-md' : rankNum === 2 ? 'text-[#E2E8F0]' : rankNum === 3 ? 'text-[#FCA5A5]' : rankNum === 4 ? 'text-[#6EE7B7]' : rankNum === 5 ? 'text-[#93C5FD]' : 'text-gray-400');
+                let displayRank = (team.rank !== '-' && !String(team.rank).includes('T') && rankCounts[team.rank] > 1) ? 'T' + team.rank : team.rank;
+                let gamesPlayed = team.w + (team.d || 0) + team.l; let hex = teamHex[team.team] || '#888888';
+                
+                let teamMatches = scheduleData.filter(m => (m.team1 === team.team || m.team2 === team.team) && liveDataStore[m.id] && liveDataStore[m.id].gameStatus === '종료').sort((a, b) => b.date.localeCompare(a.date) || (b.time||"00:00").localeCompare(a.time||"00:00"));
+                let streakStr = '-';
+                if (teamMatches.length > 0) {
+                    let sType = ''; let sCount = 0;
+                    for (let m of teamMatches) {
+                        let l = liveDataStore[m.id]; let away = Number(l.awayScore || 0); let home = Number(l.homeScore || 0);
+                        let isWin = (m.team1 === team.team && away > home) || (m.team2 === team.team && home > away);
+                        let isLoss = (m.team1 === team.team && away < home) || (m.team2 === team.team && home < away);
+                        let res = isWin ? '승' : (isLoss ? '패' : '무');
+                        if (!sType) { sType = res; sCount = 1; } else if (sType === res) { sCount++; } else break;
+                    }
+                    streakStr = sCount + sType;
+                } else if (team.streak && team.streak !== '-') streakStr = String(team.streak);
+                
+                let streakColor = streakStr.includes('승') ? 'text-[#EA0029]' : (streakStr.includes('패') ? 'text-[#074CA1]' : 'text-gray-400');
+                
+                // 다크 테마에 맞춘 유리 질감(bg-white/5) 행, 팀명 텍스트 화이트 적용
+                html += `<div class="flex items-center bg-white/5 border border-white/5 h-[42px] rounded-xl shadow-sm relative overflow-hidden"><div class="relative z-10 flex items-center w-full pr-[84px]"><div class="w-[28px] text-center text-[15px] font-black ${rClass} shrink-0 tracking-tighter">${displayRank}</div><div class="w-[38px] text-center text-[14px] font-black shrink-0 tracking-tighter text-white drop-shadow-md">${team.team}</div><div class="flex-1 flex justify-between items-center px-0.5 text-white text-[12px] font-bold tracking-tighter"><div class="w-[18px] text-center text-gray-300 whitespace-nowrap">${gamesPlayed}</div><div class="w-[14px] text-center text-gray-300 whitespace-nowrap">${team.w}</div><div class="w-[14px] text-center text-gray-300 whitespace-nowrap">${team.d || 0}</div><div class="w-[14px] text-center text-gray-300 whitespace-nowrap">${team.l}</div><div class="w-[28px] text-center text-gray-100 font-black tracking-tight whitespace-nowrap">${team.winRate}</div><div class="w-[30px] text-center text-gray-400 whitespace-nowrap">${team.gb}</div><div class="w-[26px] text-center ${streakColor} whitespace-nowrap font-extrabold">${streakStr}</div></div></div><div class="absolute top-0 bottom-0 -right-[2px] w-[90px] z-0" style="filter: drop-shadow(-5px 0 8px rgba(0,0,0,0.8));"><div class="absolute inset-0" style="background-color: ${hex}; clip-path: polygon(0 0, 100% 0, 100% 100%, 20px 100%);"><div class="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent"></div></div><div class="absolute inset-0 flex items-center justify-center pl-3"><img src="${teamLogos[team.team]}" class="w-[48px] h-[48px] object-contain scale-[1.15] drop-shadow-lg opacity-90 ${team.team === 'KIA' ? 'translate-y-[4px]' : ''} ${team.team === 'KT' ? '-translate-y-[2px]' : ''}"></div></div></div>`;
+            });
+            html += `</div></div>`; container.innerHTML = html;
+        }
+
+        let currentBanner = 0; let totalBanners = 1; let bannerInterval; let isPlaying = true;
+        function updateBannerDots(index) { document.querySelectorAll('.banner-dot').forEach((dot, i) => { if (i === index) { dot.classList.remove('w-1.5', 'bg-gray-500'); dot.classList.add('w-3', 'bg-white'); } else { dot.classList.remove('w-3', 'bg-white'); dot.classList.add('w-1.5', 'bg-gray-500'); } }); }
+        function startBannerAutoScroll() { clearInterval(bannerInterval); if (!isPlaying || totalBanners <= 1) return; const carousel = document.getElementById('banner-carousel'); bannerInterval = setInterval(() => { if(!carousel) return; currentBanner = (currentBanner + 1) % totalBanners; carousel.scrollTo({ left: currentBanner * carousel.clientWidth, behavior: 'smooth' }); updateBannerDots(currentBanner); }, 3000); }
+        function toggleBannerPlay() { isPlaying = !isPlaying; const icon = document.querySelector('#btn-banner-play i'); if (icon) { if (isPlaying) { icon.className = 'fa-solid fa-pause text-[10px]'; startBannerAutoScroll(); } else { icon.className = 'fa-solid fa-play text-[10px] ml-[1px]'; clearInterval(bannerInterval); } } }
+
+        function renderBanners() {
+            const carousel = document.getElementById('banner-carousel'); if(!carousel) return; carousel.innerHTML = ''; const now = new Date();
+            let validMatches = scheduleData.filter(match => {
+                if (selectedTeam !== 'all' && match.team1 !== selectedTeam && match.team2 !== selectedTeam) return false;
+                const live = liveDataStore[match.id]; if (live && live.gameStatus === '종료') return false;
+                const matchStart = new Date(`${match.date}T${match.time}:00`); if (live && live.gameStatus === '경기중') return true;
+                return now < new Date(matchStart.getTime() + 5 * 60 * 60 * 1000);
+            }).sort((a, b) => { if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); return a.date.localeCompare(b.date); });
+            let topMatches = []; let seenTeams = new Set(); let targetDate = validMatches.length > 0 ? validMatches[0].date : null;
+            for (let match of validMatches) {
+                if (targetDate && match.date !== targetDate) continue;
+                if (selectedTeam === 'all') { if (!seenTeams.has(match.team1) && !seenTeams.has(match.team2)) { topMatches.push(match); seenTeams.add(match.team1); seenTeams.add(match.team2); } if (topMatches.length >= 5) break; }
+                else { if (topMatches.length > 0) { let firstLive = liveDataStore[topMatches[0].id]; if (firstLive && firstLive.gameStatus === '경기중') break; } topMatches.push(match); if (topMatches.length >= 3) break; }
+            }
+            topMatches.forEach(match => {
+                const hex1 = teamHex[match.team1] || '#888888'; const hex2 = teamHex[match.team2] || '#888888'; const d = new Date(match.date); const days = ['일', '월', '화', '수', '목', '금', '토']; const dateStr = `${d.getMonth()+1}. ${d.getDate()} (${days[d.getDay()]}) ${match.time}`; const live = liveDataStore[match.id];
+                let centerHtml = `<span class="text-[11px] font-black text-gray-300 tracking-wider">VS</span>`;
+                if (live && live.gameStatus === '경기중') { let displayStatus = live.inning ? live.inning : '경기중'; centerHtml = `<div class="flex items-center justify-center w-full relative"><span class="absolute -top-6 text-[10px] font-bold text-white bg-red-600 px-2.5 py-0.5 rounded-full live-badge tracking-widest whitespace-nowrap">${displayStatus}</span><div class="flex items-center justify-center w-full"><div class="flex-1 flex justify-end"><span class="text-3xl font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'} leading-none">${live.awayScore}</span></div><div class="px-1.5 flex justify-center items-center pb-0.5"><span class="text-base text-gray-500 font-bold leading-none">:</span></div><div class="flex-1 flex justify-start"><span class="text-3xl font-black ${live.homeScore > live.awayScore ? 'text-point' : 'text-white'} leading-none">${live.homeScore}</span></div></div></div>`; }
+                const div = document.createElement('div'); div.className = 'min-w-full bg-[#18181b] border-y border-white/5 shrink-0 px-7 py-5 transition-transform active:scale-[0.98] snap-center relative overflow-hidden shadow-lg';
+                div.innerHTML = `<div class="absolute inset-0 pointer-events-none z-0" style="background: linear-gradient(135deg, ${hex1}80 0%, ${hex2}80 100%); opacity: 0.85;"></div><div class="flex justify-between items-center mb-5 relative z-10"><div class="flex items-center gap-1.5"><div class="w-1 h-3 rounded-sm" style="background-color: ${hex2}"></div><span class="text-[11px] font-extrabold text-white tracking-wider">${match.stadium}</span></div><span class="text-[10px] text-gray-300 font-medium bg-white/5 px-2 py-0.5 rounded-lg border border-white/5 tracking-wide">${dateStr}</span></div><div class="flex justify-between items-center relative z-10"><div class="flex items-center gap-3 w-[40%]"><img src="${teamLogos[match.team1]}" class="w-[42px] h-[42px] object-contain drop-shadow-md"><div class="flex flex-col"><span class="text-[9px] text-gray-300 font-bold mb-0.5 tracking-wider">AWAY</span><span class="text-[15px] font-bold text-white tracking-wide">${match.team1}</span></div></div><div class="flex justify-center w-[20%]">${centerHtml}</div><div class="flex items-center justify-end gap-3 w-[40%] text-right"><div class="flex flex-col"><span class="text-[9px] text-gray-300 font-bold mb-0.5 tracking-wider">HOME</span><span class="text-[15px] font-bold text-white tracking-wide">${match.team2}</span></div><img src="${teamLogos[match.team2]}" class="w-[42px] h-[42px] object-contain drop-shadow-md"></div></div>`;
+                carousel.appendChild(div);
+            });
+            totalBanners = carousel.children.length; const dotsContainer = document.getElementById('banner-dots-container'); const playBtn = document.getElementById('btn-banner-play');
+            if(dotsContainer) { dotsContainer.innerHTML = ''; for(let i=0; i<totalBanners; i++) { const dot = document.createElement('div'); dot.className = `banner-dot w-${i===currentBanner?'3':'1.5'} h-1.5 rounded-full ${i===currentBanner?'bg-white':'bg-gray-500'} transition-all duration-300`; dotsContainer.appendChild(dot); } }
+            if (playBtn) { if (totalBanners > 1) { playBtn.classList.remove('hidden'); } else { playBtn.classList.add('hidden'); } }
+            if (currentBanner >= totalBanners) currentBanner = 0; updateBannerDots(currentBanner); startBannerAutoScroll();
+        }
+
+        function navigateCalendar(offset) { if (viewMode === 'week') { currentDate.setDate(currentDate.getDate() + (offset * 7)); } else { currentDate.setDate(1); currentDate.setMonth(currentDate.getMonth() + offset); } renderCalendar(); closeBottomSheet(); }
+
+        function openLineupPopup(matchId) { currentPopupMatchId = matchId; if (navigator.vibrate) navigator.vibrate(5); const popup = document.getElementById('lineup-popup'); const bg = document.getElementById('lineup-popup-bg'); const sheet = document.getElementById('lineup-popup-sheet'); popup.classList.remove('hidden'); popup.classList.add('flex'); setTimeout(() => { bg.classList.remove('opacity-0', 'pointer-events-none'); bg.classList.add('opacity-100', 'pointer-events-auto'); sheet.classList.remove('translate-y-full'); }, 10); renderPopupContent(matchId); }
+        function closeLineupPopup() { currentPopupMatchId = null; const popup = document.getElementById('lineup-popup'); const bg = document.getElementById('lineup-popup-bg'); const sheet = document.getElementById('lineup-popup-sheet'); bg.classList.remove('opacity-100', 'pointer-events-auto'); bg.classList.add('opacity-0', 'pointer-events-none'); sheet.classList.add('translate-y-full'); setTimeout(() => { popup.classList.add('hidden'); popup.classList.remove('flex'); }, 300); }
+
+        function renderPopupContent(matchId) {
+            const content = document.getElementById('lineup-content'); const match = scheduleData.find(m => m.id === parseInt(matchId) || m.id === matchId); if (!match) return; const live = liveDataStore[matchId];
+            const logo1 = teamLogos[match.team1] ? `<img src="${teamLogos[match.team1]}" class="w-14 h-14 object-contain drop-shadow-lg mb-2">` : `<div class="w-14 h-14 rounded-full ${teamColors[match.team1]} flex items-center justify-center text-white font-bold mb-2">${match.team1}</div>`;
+            const logo2 = teamLogos[match.team2] ? `<img src="${teamLogos[match.team2]}" class="w-14 h-14 object-contain drop-shadow-lg mb-2">` : `<div class="w-14 h-14 rounded-full ${teamColors[match.team2]} flex items-center justify-center text-white font-bold mb-2">${match.team2}</div>`;
+            if (!live) { content.innerHTML = `<div class="flex justify-between items-center mb-8 px-2 mt-2"><div class="flex flex-col items-center w-[40%]">${logo1}<span class="text-[15px] font-black text-white">${match.team1}</span></div><span class="text-2xl font-black text-gray-700">VS</span><div class="flex flex-col items-center w-[40%]">${logo2}<span class="text-[15px] font-black text-white">${match.team2}</span></div></div><div class="flex flex-col items-center justify-center h-48 text-gray-400 mt-4 gap-3 bg-white/5 rounded-2xl border border-white/5"><i class="fa-solid fa-clipboard-question text-4xl text-gray-500 mb-2"></i><span class="text-lg font-bold text-white tracking-wide">라인업 미발표</span><span class="text-[12px] text-gray-500 text-center">선발 라인업은<br>경기 시작 1~2시간 전에 공개됩니다.</span></div>`; return; }
+            let scoreCenterHtml = `<span class="text-2xl font-black text-gray-700">VS</span>`;
+            if (live.gameStatus !== '경기전') { let displayStatus = (live.gameStatus === '경기중' && live.inning) ? live.inning : live.gameStatus; scoreCenterHtml = `<div class="flex flex-col items-center gap-1"><span class="text-[11px] font-bold text-white bg-red-600 px-2 py-0.5 rounded-full ${live.gameStatus !== '종료' ? 'live-badge' : 'bg-gray-600'}">${displayStatus}</span><div class="flex items-center gap-2 mt-2"><span class="text-3xl font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'}">${live.awayScore}</span><span class="text-xl text-gray-500">:</span><span class="text-3xl font-black ${live.homeScore > live.awayScore ? 'text-point' : 'text-white'}">${live.homeScore}</span></div></div>`; }
+            content.innerHTML = `<div class="flex justify-between items-center mb-8 px-2 mt-2"><div class="flex flex-col items-center w-[30%]">${logo1}<span class="text-[15px] font-black text-white tracking-wider">${match.team1}</span><span class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">AWAY</span></div><div class="flex flex-col items-center justify-center w-[40%]">${scoreCenterHtml}</div><div class="flex flex-col items-center w-[30%]">${logo2}<span class="text-[15px] font-black text-white tracking-wider">${match.team2}</span><span class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">HOME</span></div></div><div class="bg-white/5 rounded-2xl p-4 mb-8 border border-white/5 shadow-inner"><div class="flex justify-center mb-3"><span class="text-[10px] font-bold text-white bg-white/10 px-3 py-1 rounded-full border border-white/10 tracking-widest">선발 투수</span></div><div class="flex justify-between items-center"><div class="flex-1 text-center font-bold text-white text-sm">${live.awayPitcher || '-'}</div><div class="w-px h-6 bg-white/10 mx-4"></div><div class="flex-1 text-center font-bold text-white text-sm">${live.homePitcher || '-'}</div></div></div><div class="flex justify-center mb-4"><span class="text-[10px] font-bold text-gray-400 tracking-widest">선발 타자 라인업</span></div><div class="flex gap-4"><div class="flex-1 flex flex-col gap-2">${(live.awayLineup && live.awayLineup.length > 0) ? live.awayLineup.map((p, i) => `<div class="bg-white/5 rounded-xl px-3 py-2.5 flex items-center gap-3 border border-white/5 shadow-sm"><span class="w-4 text-center text-[11px] font-black text-point opacity-80">${i+1}</span><span class="text-[13px] font-bold text-gray-200">${p}</span></div>`).join('') : '<div class="text-center text-xs text-gray-500 py-4">라인업 정보 없음</div>'}</div><div class="flex-1 flex flex-col gap-2">${(live.homeLineup && live.homeLineup.length > 0) ? live.homeLineup.map((p, i) => `<div class="bg-white/5 rounded-xl px-3 py-2.5 flex items-center gap-3 border border-white/5 shadow-sm"><span class="w-4 text-center text-[11px] font-black text-point opacity-80">${i+1}</span><span class="text-[13px] font-bold text-gray-200">${p}</span></div>`).join('') : '<div class="text-center text-xs text-gray-500 py-4">라인업 정보 없음</div>'}</div></div>`;
+        }
+
+        function switchCheerTab(team, type) {
+            const typeNames = { 'team': '구단', 'player': '선수', 'lineup': '라인업', 'hitout': '안타/아웃', 'entrance': '등장곡' }; const pointColor = team === 'kia' ? 'text-[#EA0029]' : 'text-[#074CA1]';
+            Object.keys(typeNames).forEach(t => {
+                const btn = document.getElementById(`btn-cheer-${team}-${t}`); const content = document.getElementById(`content-cheer-${team}-${t}`); if (!btn || !content) return;
+                if (t === type) { btn.className = `text-[22px] font-black text-white transition-all whitespace-nowrap`; btn.innerHTML = `${typeNames[t]}<span class="${pointColor} ml-0.5">.</span>`; content.classList.remove('hidden'); content.classList.add('flex'); }
+                else { btn.className = `text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap`; btn.innerHTML = typeNames[t]; content.classList.add('hidden'); content.classList.remove('flex'); }
+            });
+        }
+
+        function renderCheerSongs() {
+            const categories = [ { teamId: 'kia', type: 'team', teamName: 'KIA', subtitle: '팀 응원가' }, { teamId: 'kia', type: 'player', teamName: 'KIA', subtitle: '선수 응원가' }, { teamId: 'kia', type: 'entrance', teamName: 'KIA', subtitle: '등장곡' }, { teamId: 'kia', type: 'hitout', teamName: 'KIA', subtitle: '안타/아웃' }, { teamId: 'samsung', type: 'team', teamName: '삼성', subtitle: '팀 응원가' }, { teamId: 'samsung', type: 'player', teamName: '삼성', subtitle: '선수 응원가' }, { teamId: 'samsung', type: 'entrance', teamName: '삼성', subtitle: '등장곡' }, { teamId: 'samsung', type: 'hitout', teamName: '삼성', subtitle: '안타/아웃' } ];
+            categories.forEach(cat => {
+                const container = document.getElementById(`content-cheer-${cat.teamId}-${cat.type}`); if (!container) return; const songs = cheerData[cat.teamId]?.[cat.type] || [];
+                if (songs.length === 0) { container.innerHTML = `<div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div>`; return; }
+                const logoUrl = teamLogos[cat.teamName];
+                container.innerHTML = songs.map((song, index) => `<div class="flex items-center justify-between py-2.5 px-1 active:bg-white/5 transition-colors cursor-pointer rounded-lg" onclick="playCheerSong('${song.url}', '${song.title}')"><div class="flex items-center gap-3.5"><div class="w-4 text-center text-[13px] font-black text-gray-500">${index + 1}</div><div class="w-10 h-10 bg-[#1A1A1C] rounded-xl flex items-center justify-center shadow-inner p-1 border border-white/5"><img src="${logoUrl}" class="w-full h-full object-contain opacity-90"></div><div class="flex flex-col"><span class="text-[15px] font-bold text-white mb-0.5 tracking-tight">${song.label}</span><span class="text-[11px] text-gray-400 font-medium tracking-tight">${cat.subtitle}</span></div></div></div>`).join('');
+            });
+        }
+
+        function renderLineupCheerSongs() {
+            let targetDateObj = new Date(); if (targetDateObj.getHours() < 11) { targetDateObj.setDate(targetDateObj.getDate() - 1); } const targetDateStr = `${targetDateObj.getFullYear()}-${String(targetDateObj.getMonth() + 1).padStart(2, '0')}-${String(targetDateObj.getDate()).padStart(2, '0')}`;
+            ['KIA', '삼성'].forEach(teamName => {
+                const teamId = teamName === 'KIA' ? 'kia' : 'samsung'; const container = document.getElementById(`content-cheer-${teamId}-lineup`); if (!container) return;
+                const targetMatch = scheduleData.find(m => m.date === targetDateStr && (m.team1 === teamName || m.team2 === teamName));
+                if (!targetMatch) { container.innerHTML = `<div class="text-center text-xs text-gray-500 py-6">해당 날짜에 경기가 없습니다.</div>`; return; }
+                const live = liveDataStore[targetMatch.id]; if (!live) { container.innerHTML = `<div class="text-center text-xs text-gray-500 py-6">라인업이 아직 발표되지 않았습니다.</div>`; return; }
+                let lineup = []; if (targetMatch.team1 === teamName) lineup = live.awayLineup || []; else if (targetMatch.team2 === teamName) lineup = live.homeLineup || [];
+                if (lineup.length === 0) { container.innerHTML = `<div class="text-center text-xs text-gray-500 py-6">라인업이 아직 발표되지 않았습니다.</div>`; return; }
+                const playerSongs = cheerData[teamId]?.player || []; const teamSongs = cheerData[teamId]?.team || []; const entranceSongs = cheerData[teamId]?.entrance || []; const logoUrl = teamLogos[teamName]; let html = '';
+                const lineupSong = teamSongs.find(s => s.label.includes('라인업송'));
+                if (lineupSong) { html += `<div class="flex items-center justify-between py-2.5 px-1 active:bg-white/5 transition-colors cursor-pointer rounded-lg mb-1" onclick="playCheerSong('${lineupSong.url}', '${lineupSong.title}')"><div class="flex items-center gap-3.5"><div class="w-4 text-center text-[10px] font-black text-point opacity-90 tracking-tighter">TEAM</div><div class="w-10 h-10 bg-[#1A1A1C] rounded-xl flex items-center justify-center shadow-inner p-1 border border-white/5"><img src="${logoUrl}" class="w-full h-full object-contain opacity-90"></div><div class="flex flex-col"><span class="text-[15px] font-bold text-white mb-0.5 tracking-tight">${lineupSong.label}</span><span class="text-[11px] text-gray-400 font-medium tracking-tight">구단 응원가</span></div></div></div>`; }
+                lineup.forEach((playerName, index) => {
+                    const matchedEntrance = entranceSongs.find(s => s.label.includes(playerName) || s.title.includes(playerName)); const matchedSongs = playerSongs.filter(s => s.label.includes(playerName) || s.title.includes(playerName));
+                    if (matchedEntrance || matchedSongs.length > 0) {
+                        if (matchedEntrance) { html += `<div class="flex items-center justify-between py-2.5 px-1 active:bg-white/5 transition-colors cursor-pointer rounded-lg" onclick="playCheerSong('${matchedEntrance.url}', '${matchedEntrance.title}')"><div class="flex items-center gap-3.5"><div class="w-4 text-center text-[14px] font-black text-point opacity-90">${index + 1}</div><div class="w-10 h-10 bg-[#1A1A1C] rounded-xl flex items-center justify-center shadow-inner p-1 border border-white/5"><img src="${logoUrl}" class="w-full h-full object-contain opacity-90"></div><div class="flex flex-col"><span class="text-[15px] font-bold text-white mb-0.5 tracking-tight">${matchedEntrance.label}</span><span class="text-[11px] text-gray-400 font-medium tracking-tight">등장곡</span></div></div></div>`; }
+                        matchedSongs.forEach(song => { html += `<div class="flex items-center justify-between py-2.5 px-1 active:bg-white/5 transition-colors cursor-pointer rounded-lg" onclick="playCheerSong('${song.url}', '${song.title}')"><div class="flex items-center gap-3.5"><div class="w-4 text-center text-[14px] font-black text-point opacity-90">${index + 1}</div><div class="w-10 h-10 bg-[#1A1A1C] rounded-xl flex items-center justify-center shadow-inner p-1 border border-white/5"><img src="${logoUrl}" class="w-full h-full object-contain opacity-90"></div><div class="flex flex-col"><span class="text-[15px] font-bold text-white mb-0.5 tracking-tight">${song.label}</span><span class="text-[11px] text-gray-400 font-medium tracking-tight">라인업 응원가</span></div></div></div>`; });
+                    } else { html += `<div class="flex items-center justify-between py-2.5 px-1 opacity-50"><div class="flex items-center gap-3.5"><div class="w-4 text-center text-[14px] font-black text-gray-600">${index + 1}</div><div class="w-10 h-10 bg-[#1A1A1C] rounded-xl flex items-center justify-center shadow-inner p-1 border border-white/5"><img src="${logoUrl}" class="w-full h-full object-contain opacity-40"></div><div class="flex flex-col"><span class="text-[15px] font-bold text-gray-400 mb-0.5 tracking-tight">${playerName}</span><span class="text-[11px] text-gray-500 font-medium tracking-tight">응원가 미등록</span></div></div></div>`; }
+                });
+                container.innerHTML = html;
+            });
+        }
+
+        let audioPlayer; let currentSongTitle = ''; let currentSongCover = ''; let currentPlaylist = []; let currentSongIndex = -1; let isSeeking = false;
+        
+        window.appPlayMusic = function() { if (audioPlayer && audioPlayer.src) { audioPlayer.play(); const btn = document.getElementById('mini-player-btn'); if (btn) btn.className = 'fa-solid fa-pause text-base'; } };
+        window.appPauseMusic = function() { if (audioPlayer) { audioPlayer.pause(); const btn = document.getElementById('mini-player-btn'); if (btn) btn.className = 'fa-solid fa-play text-base ml-0.5'; } };
+        function sendStateToAndroid(state, title) { if (window.AndroidBridge && window.AndroidBridge.updateMusicState) { window.AndroidBridge.updateMusicState(state, title); } }
+        window.appPrevMusic = function() { if (currentPlaylist.length > 0 && currentSongIndex >= 0) { currentSongIndex--; if (currentSongIndex < 0) { currentSongIndex = currentPlaylist.length - 1; } const prevSong = currentPlaylist[currentSongIndex]; executePlay(prevSong.url, prevSong.title); } else { if (audioPlayer && audioPlayer.src) { audioPlayer.currentTime = 0; audioPlayer.play(); } } };
+        window.appNextMusic = function() { if (currentPlaylist.length > 0 && currentSongIndex >= 0) { currentSongIndex++; if (currentSongIndex >= currentPlaylist.length) { currentSongIndex = 0; } const nextSong = currentPlaylist[currentSongIndex]; executePlay(nextSong.url, nextSong.title); } };
+
+        function initAudioPlayer() {
+            audioPlayer = document.getElementById('audio-player'); const rangeSlider = document.getElementById('full-player-range');
+            audioPlayer.addEventListener('play', () => { const btn = document.getElementById('mini-player-btn'); const fullBtn = document.getElementById('full-player-btn'); if (btn) btn.className = 'fa-solid fa-pause text-[22px]'; if (fullBtn) fullBtn.className = 'fa-solid fa-pause text-5xl'; updateMediaSession(); sendStateToAndroid("PLAYING", currentSongTitle); });
+            audioPlayer.addEventListener('pause', () => { const btn = document.getElementById('mini-player-btn'); const fullBtn = document.getElementById('full-player-btn'); if (btn) btn.className = 'fa-solid fa-play text-[22px] ml-0.5'; if (fullBtn) fullBtn.className = 'fa-solid fa-play text-5xl ml-1'; sendStateToAndroid("PAUSED", currentSongTitle); });
+            audioPlayer.addEventListener('loadedmetadata', () => { if(audioPlayer.duration && !isNaN(audioPlayer.duration) && audioPlayer.duration !== Infinity) { document.getElementById('full-player-duration').innerText = formatTime(audioPlayer.duration); } else { document.getElementById('full-player-duration').innerText = "0:00"; } });
+            audioPlayer.addEventListener('timeupdate', () => { if(audioPlayer.duration && !isNaN(audioPlayer.duration) && audioPlayer.duration !== Infinity) { const percent = (audioPlayer.currentTime / audioPlayer.duration) * 100; document.getElementById('mini-player-progress').style.width = percent + '%'; if (!isSeeking && rangeSlider) { rangeSlider.value = percent; rangeSlider.style.background = `linear-gradient(to right, #ffffff ${percent}%, rgba(255,255,255,0.2) ${percent}%)`; } document.getElementById('full-player-current').innerText = formatTime(audioPlayer.currentTime); } });
+            if (rangeSlider) { rangeSlider.addEventListener('input', (e) => { isSeeking = true; const percent = e.target.value; rangeSlider.style.background = `linear-gradient(to right, #ffffff ${percent}%, rgba(255,255,255,0.2) ${percent}%)`; if(audioPlayer.duration && !isNaN(audioPlayer.duration) && audioPlayer.duration !== Infinity) { document.getElementById('full-player-current').innerText = formatTime((percent / 100) * audioPlayer.duration); } }); rangeSlider.addEventListener('change', (e) => { isSeeking = false; if(audioPlayer.duration && !isNaN(audioPlayer.duration) && audioPlayer.duration !== Infinity) { audioPlayer.currentTime = (e.target.value / 100) * audioPlayer.duration; } }); }
+            audioPlayer.addEventListener('ended', () => { if (currentPlaylist.length > 0 && currentSongIndex >= 0 && currentSongIndex + 1 < currentPlaylist.length) { currentSongIndex++; const nextSong = currentPlaylist[currentSongIndex]; executePlay(nextSong.url, nextSong.title); } else { const btn = document.getElementById('mini-player-btn'); const fullBtn = document.getElementById('full-player-btn'); if (btn) btn.className = 'fa-solid fa-play text-[22px] ml-0.5'; if (fullBtn) fullBtn.className = 'fa-solid fa-play text-5xl ml-1'; document.getElementById('mini-player-progress').style.width = '0%'; if (rangeSlider) { rangeSlider.value = 0; rangeSlider.style.background = `rgba(255,255,255,0.2)`; document.getElementById('full-player-current').innerText = "0:00"; } sendStateToAndroid("PAUSED", currentSongTitle); } });
+            audioPlayer.addEventListener('error', () => { showToast('음원 파일을 불러올 수 없습니다. 경로를 확인해주세요.'); closeMiniPlayer(); });
+        }
+
+        function updateMediaSession() { if ('mediaSession' in navigator && currentSongTitle) { let artistName = '팀 응원가'; if (currentSongTitle.includes('김도영') || currentSongTitle.includes('구자욱') || currentSongTitle.includes('최형우')) { artistName = '선수 응원가'; } navigator.mediaSession.metadata = new MediaMetadata({ title: currentSongTitle, artist: artistName, artwork: [ { src: currentSongCover, sizes: '512x512', type: 'image/png' }, { src: currentSongCover, sizes: '192x192', type: 'image/png' } ] }); navigator.mediaSession.setActionHandler('play', () => { if(audioPlayer) audioPlayer.play(); }); navigator.mediaSession.setActionHandler('pause', () => { if(audioPlayer) audioPlayer.pause(); }); navigator.mediaSession.setActionHandler('previoustrack', () => { window.appPrevMusic(); }); navigator.mediaSession.setActionHandler('nexttrack', () => { window.appNextMusic(); }); } }
+        function toggleMiniPlayerPlay() { if(!audioPlayer) return; if (audioPlayer.paused) { audioPlayer.play(); } else { audioPlayer.pause(); } }
+        function closeMiniPlayer() { if(audioPlayer) { audioPlayer.pause(); audioPlayer.currentTime = 0; } const playerUI = document.getElementById('mini-player'); playerUI.classList.add('translate-y-[150%]', 'opacity-0', 'pointer-events-none'); const progressBar = document.getElementById('mini-player-progress'); if(progressBar) progressBar.style.width = '0%'; }
+
+        function playAllSongs(containerId) { const container = document.getElementById(containerId); if (!container) return; const songElements = container.querySelectorAll(`[onclick*="playCheerSong"]`); currentPlaylist = Array.from(songElements).map(el => { const onclickStr = el.getAttribute('onclick'); const match = onclickStr.match(/playCheerSong\(['"]([^'"]+)['"],\s*['"]([^'"]+)['"]\)/); if (match) return { url: match[1], title: match[2] }; return null; }).filter(item => item !== null); if (currentPlaylist.length > 0) { currentSongIndex = 0; executePlay(currentPlaylist[0].url, currentPlaylist[0].title); } else { showToast('재생할 곡이 없습니다.'); } }
+        function playActiveTabSongs(teamPrefix) { const activeContainer = document.querySelector(`div[id^="content-cheer-${teamPrefix}-"]:not(.hidden)`); if (activeContainer) { playAllSongs(activeContainer.id); } else { showToast('재생할 곡이 없습니다.'); } }
+
+        function playCheerSong(url, title) {
+            const allSongElements = document.querySelectorAll(`[onclick*="playCheerSong"]`);
+            let clickedElement = Array.from(allSongElements).find(el => { const isMatch = el.getAttribute('onclick').includes(`'${url}'`) || el.getAttribute('onclick').includes(`"${url}"`); if (!isMatch) return false; const parent = el.closest('[id^="content-cheer-"]'); return parent && !parent.classList.contains('hidden'); });
+            if (!clickedElement) { clickedElement = Array.from(allSongElements).find(el => el.getAttribute('onclick').includes(`'${url}'`) || el.getAttribute('onclick').includes(`"${url}"`)); }
+            if (clickedElement) { const parentContainer = clickedElement.closest('[id^="content-cheer-"]'); if (parentContainer) { const siblingElements = parentContainer.querySelectorAll(`[onclick*="playCheerSong"]`); currentPlaylist = Array.from(siblingElements).map(el => { const onclickStr = el.getAttribute('onclick'); const match = onclickStr.match(/playCheerSong\(['"]([^'"]+)['"],\s*['"]([^'"]+)['"]\)/); if (match) return { url: match[1], title: match[2] }; return null; }).filter(item => item !== null); currentSongIndex = currentPlaylist.findIndex(item => item.url === url); } } else { currentPlaylist = [{url, title}]; currentSongIndex = 0; }
+            executePlay(url, title);
+        }
+
+        function executePlay(url, title) {
+            if (!audioPlayer) initAudioPlayer();
+            audioPlayer.autoplay = true; audioPlayer.src = url; audioPlayer.load(); audioPlayer.play().catch(e => { showToast('음원 재생 중 오류가 발생했습니다. (파일 확인 필요)'); }); showToast(`🎵 ${title} 재생을 시작합니다.`);
+            let coverUrl = 'kia/kia_logo.png'; let displayCoverUrl = teamLogos['KIA'];
+            if (title.includes('삼성') || title.includes('엘도라도') || title.includes('구자욱') || title.includes('최형우')) { coverUrl = 'samsung/samsung_logo.png'; displayCoverUrl = teamLogos['삼성']; }
+            document.getElementById('mini-player-title').innerText = title; document.getElementById('mini-player-cover').src = displayCoverUrl; document.getElementById('full-player-title').innerText = title; document.getElementById('full-player-cover').src = displayCoverUrl;
+            let artistName = '팀 응원가'; if (title.includes('김도영') || title.includes('구자욱') || title.includes('최형우')) { artistName = '선수 응원가'; } document.getElementById('full-player-artist').innerText = title.includes('KIA') ? 'KIA 타이거즈 응원가' : (title.includes('삼성') ? '삼성 라이온즈 응원가' : artistName);
+            currentSongTitle = title; currentSongCover = coverUrl; updateMediaSession();
+            const progressBar = document.getElementById('mini-player-progress'); if(progressBar) progressBar.style.width = '0%'; const rangeSlider = document.getElementById('full-player-range'); if(rangeSlider) { rangeSlider.value = 0; rangeSlider.style.background = `rgba(255,255,255,0.2)`; }
+            const playerUI = document.getElementById('mini-player'); playerUI.classList.remove('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
+        }
+
+        let fpStartY = 0; let fpCurrentY = 0; let fpIsDragging = false;
+        function fpTouchStart(e) { if(e.target.tagName.toLowerCase() === 'input') return; const player = document.getElementById('full-player'); player.style.transition = 'none'; fpStartY = e.touches[0].clientY; fpCurrentY = fpStartY; fpIsDragging = true; }
+        function fpTouchMove(e) { if (!fpIsDragging) return; fpCurrentY = e.touches[0].clientY; let diffY = fpCurrentY - fpStartY; if (diffY < 0) diffY = 0; const player = document.getElementById('full-player'); player.style.transform = `translateY(${diffY}px)`; }
+        function fpTouchEnd(e) { if (!fpIsDragging) return; fpIsDragging = false; let diffY = fpCurrentY - fpStartY; const player = document.getElementById('full-player'); player.style.transition = ''; if (diffY > 100) { closeFullPlayer(); } else { player.style.transform = ''; } }
+        function openFullPlayer() { const fullPlayer = document.getElementById('full-player'); if(fullPlayer) { fullPlayer.style.transform = ''; fullPlayer.classList.remove('translate-y-full', 'pointer-events-none'); fullPlayer.classList.add('translate-y-0', 'pointer-events-auto'); } }
+        function closeFullPlayer() { const fullPlayer = document.getElementById('full-player'); if(fullPlayer) { fullPlayer.style.transform = ''; fullPlayer.classList.remove('translate-y-0', 'pointer-events-auto'); fullPlayer.classList.add('translate-y-full', 'pointer-events-none'); } }
+        function formatTime(seconds) { if (isNaN(seconds)) return "0:00"; const min = Math.floor(seconds / 60); const sec = Math.floor(seconds % 60); return `${min}:${sec < 10 ? '0' + sec : sec}`; }
+
+        window.onload = async () => {
+            initAudioPlayer(); renderCheerSongs(); await syncWithFirestore(); setTeamFilter(selectedTeam); switchTab(0); renderBanners(); 
+            const bannerCarousel = document.getElementById('banner-carousel');
+            if (bannerCarousel) {
+                bannerCarousel.addEventListener('scroll', () => { const scrollPos = bannerCarousel.scrollLeft; const width = bannerCarousel.clientWidth; if (width === 0) return; const newIndex = Math.round(scrollPos / width); if (newIndex !== currentBanner) { currentBanner = newIndex; updateBannerDots(currentBanner); } });
+                bannerCarousel.addEventListener('touchstart', () => clearInterval(bannerInterval), {passive: true}); bannerCarousel.addEventListener('touchend', () => { if (isPlaying) startBannerAutoScroll(); }, {passive: true});
+            }
+        };
+    </script>
+</body>
+</html>
