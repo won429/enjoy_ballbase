@@ -37,7 +37,7 @@
         <!-- 상단: 텍스트 영역 -->
         <div class="flex flex-col items-center text-center gap-4 relative z-10">
             <h1 class="text-3xl sm:text-4xl font-extrabold text-white leading-snug tracking-tight">
-                최악의 경기로<br>잠시 <span class="text-red-500">문 닫습니다.</span>
+                최악의 경기로<br>잠시 <span id="close-text" class="text-red-500">문 닫습니다.</span>
             </h1>
             
             <p class="text-gray-400 text-sm font-medium mt-2">
@@ -46,8 +46,8 @@
         </div>
 
         <!-- 하단: 캐릭터 이미지 영역 -->
-        <div class="relative z-10 flex flex-col items-center">
-            <img src="https://github.com/won429/enjoy_ballbase/blob/main/hogirl.png?raw=true" alt="캐릭터" class="w-72 h-auto object-contain drop-shadow-2xl">
+        <div class="relative z-10 flex flex-col items-center mt-24">
+            <img id="character-img" src="https://github.com/won429/enjoy_ballbase/blob/main/hogirl.png?raw=true" alt="캐릭터" class="w-72 h-auto object-contain drop-shadow-2xl">
             
             <!-- 그림자 효과 -->
             <div class="w-40 h-3 bg-black rounded-[100%] mt-4 blur-[2px] opacity-60"></div>
@@ -55,5 +55,22 @@
 
     </div>
 
+    <script>
+        // 새로고침 할 때마다 기아/삼성 랜덤 노출 로직
+        const isSamsung = Math.random() < 0.5;
+        const imgEl = document.getElementById('character-img');
+        const textEl = document.getElementById('close-text');
+        
+        if (isSamsung) {
+            imgEl.src = "https://github.com/won429/enjoy_ballbase/blob/main/laon.png?raw=true";
+            textEl.className = "text-[#074CA1]"; // 삼성 파란색
+            // 🔥 css scale과 translate를 이용해 크기를 더 키우고 아래로 내림 🔥
+            imgEl.className = "w-72 h-[240px] object-contain drop-shadow-2xl scale-[1.7] translate-y-6 origin-bottom"; 
+        } else {
+            imgEl.src = "https://github.com/won429/enjoy_ballbase/blob/main/hogirl.png?raw=true";
+            textEl.className = "text-red-500"; // 기아 빨간색
+            imgEl.className = "w-72 h-auto object-contain drop-shadow-2xl"; // 원래 상태 유지
+        }
+    </script>
 </body>
 </html>
