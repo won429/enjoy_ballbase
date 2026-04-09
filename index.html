@@ -106,7 +106,7 @@
 <body class="w-full h-[100dvh] flex justify-center items-center overflow-hidden app-bg" data-theme="all">
     <audio id="audio-player" style="display:none;" preload="auto" autoplay playsinline></audio>
     <div id="mobile-wrapper" class="w-full h-full max-w-[430px] relative z-10 flex flex-col overflow-hidden sm:border-x border-white/10 sm:shadow-2xl">
-        <header class="absolute top-0 left-0 right-0 pt-safe px-4 pb-2 z-20">
+        <header class="absolute top-0 left-0 right-0 pt-safe px-4 pb-2 z-30" style="background-color: var(--app-bg);">
             <div class="mt-2 flex items-center gap-2 w-full pb-1">
                 <div class="flex items-center flex-1 bg-[#151515] rounded-full px-4 py-2 shadow-lg min-h-[36px]">
                     <div class="flex items-baseline gap-1.5 w-full overflow-hidden">
@@ -121,12 +121,11 @@
                         <button onclick="setTeamFilter('삼성')" id="btn-team-삼성" class="team-btn-anim px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto">삼성</button>
                     </div>
                     <div id="ctrl-sort" class="ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full" style="grid-area: 1/1;"><span id="sort-text" class="text-[12px] font-bold text-gray-400">날짜순</span></div>
-                </div>
             </div>
         </header>
 
         <main id="calendar-screen" class="flex flex-1 min-h-0 relative w-full flex-col overflow-y-auto scrollbar-hide pb-[180px]">
-            <div class="px-5 pt-main flex-1 flex flex-col">
+            <div class="sticky top-0 z-20 px-5 pt-main pb-2 w-full border-b border-white/5" style="background-color: var(--app-bg);">
                 <div class="flex justify-center items-center mb-4">
                     <div class="flex items-center gap-4">
                         <button onclick="navigateCalendar(-1)" class="w-8 h-8 flex text-gray-400 hover:text-white rounded-full bg-white/5 border border-white/10 items-center justify-center"><i class="fa-solid fa-chevron-left text-sm"></i></button>
@@ -149,9 +148,11 @@
                         <button onclick="setViewMode('week')" id="btn-mode-week" class="px-3 py-1 text-xs font-medium rounded-full text-gray-400 hover:text-white transition-all">주간</button>
                     </div>
                 </div>
-                <div id="week-days-header" class="grid grid-cols-7 gap-2 text-center mb-3">
+                <div id="week-days-header" class="grid grid-cols-7 gap-2 text-center mb-1">
                     <div class="text-xs font-bold text-[#EA0029]">일</div><div class="text-xs font-bold text-gray-400">월</div><div class="text-xs font-bold text-gray-400">화</div><div class="text-xs font-bold text-gray-400">수</div><div class="text-xs font-bold text-gray-400">목</div><div class="text-xs font-bold text-gray-400">금</div><div class="text-xs font-bold text-[#074CA1]">토</div>
                 </div>
+            </div>
+            <div class="px-5 flex-1 flex flex-col pt-3 relative z-0">
                 <div id="calendar-grid" class="grid grid-cols-7 gap-2"></div>
             </div>
             <div id="bottom-sheet" class="absolute bottom-24 left-1/2 w-[92%] z-30 p-5 cursor-default flex flex-col max-h-[50vh]">
@@ -511,7 +512,7 @@
                             }
                             return `<div class="bg-white/5 border border-white/5 rounded-xl p-3 flex justify-between items-center cursor-pointer active:scale-95 transition-transform relative overflow-hidden" onclick="openLineupPopup(${match.id})">${stampHtml}<div class="flex flex-col gap-1 w-full relative z-10">${statusHtml}<div class="flex items-center justify-between mt-1"><div class="flex items-center gap-1.5 w-[40%]">${logo1}<span class="text-sm font-bold text-white truncate">${match.team1}</span></div><div class="flex items-center justify-center w-[20%]">${scoreHtml}</div><div class="flex items-center justify-end gap-1.5 w-[40%]"><span class="text-sm font-bold text-white truncate">${match.team2}</span>${logo2}</div></div></div></div>`;
                         }).join('') + `</div>`;
-                        grid.innerHTML += `<div class="flex flex-col gap-3 scroll-mt-28" ${currentDay.dateStr === todayStr ? 'id="weekly-today-group"' : ''}><div class="flex items-center gap-2"><h3 class="text-lg font-bold ${currentDay.dateStr === todayStr ? 'text-point' : (isPast ? 'text-gray-500' : 'text-white')}">${currentDay.d.getMonth() + 1}월 ${currentDay.d.getDate()}일 일정</h3><span class="text-[10px] font-bold text-point bg-point-sub px-2 py-0.5 rounded-full ${isPast ? 'opacity-50' : ''}">${currentDay.matches.length}경기</span></div>${matchesHtml}</div>`;
+                        grid.innerHTML += `<div class="flex flex-col gap-3 scroll-mt-[350px]" ${currentDay.dateStr === todayStr ? 'id="weekly-today-group"' : ''}><div class="flex items-center gap-2"><h3 class="text-lg font-bold ${currentDay.dateStr === todayStr ? 'text-point' : (isPast ? 'text-gray-500' : 'text-white')}">${currentDay.d.getMonth() + 1}월 ${currentDay.d.getDate()}일 일정</h3><span class="text-[10px] font-bold text-point bg-point-sub px-2 py-0.5 rounded-full ${isPast ? 'opacity-50' : ''}">${currentDay.matches.length}경기</span></div>${matchesHtml}</div>`;
                         idx++;
                     } else {
                         let startIdx = idx; while (idx < 7 && weekDays[idx].matches.length === 0) idx++; let endIdx = idx - 1;
@@ -519,7 +520,7 @@
                         for (let k = startIdx; k <= endIdx; k++) { if (weekDays[k].dateStr === todayStr) isTodayInRange = true; }
                         let isPastEnd = endDay.dateStr < todayStr; let titleColor = isTodayInRange ? 'text-point' : (isPastEnd ? 'text-gray-500' : 'text-white');
                         let titleHtml = startIdx === endIdx ? `<h3 class="text-lg font-bold ${titleColor}">${startDay.d.getMonth() + 1}월 ${startDay.d.getDate()}일</h3>` : `<h3 class="text-lg font-bold ${titleColor}">${startDay.d.getMonth() + 1}월 ${startDay.d.getDate()}일 ~ ${endDay.d.getMonth() + 1}월 ${endDay.d.getDate()}일</h3>`;
-                        grid.innerHTML += `<div class="flex flex-col gap-3 scroll-mt-28" ${isTodayInRange ? 'id="weekly-today-group"' : ''}><div class="flex items-center gap-2">${titleHtml}<span class="text-[10px] font-bold text-gray-400 bg-white/10 px-2 py-0.5 rounded-full border border-white/5 ${isPastEnd ? 'opacity-50' : ''}">일정 없음</span></div><div class="text-[12px] text-gray-500 bg-white/5 rounded-xl p-5 text-center border border-white/5 flex flex-col items-center justify-center gap-2"><i class="fa-solid fa-bed text-2xl text-gray-600 mb-1"></i>이 기간에는 예정된 경기가 없습니다.</div></div>`;
+                        grid.innerHTML += `<div class="flex flex-col gap-3 scroll-mt-[350px]" ${isTodayInRange ? 'id="weekly-today-group"' : ''}><div class="flex items-center gap-2">${titleHtml}<span class="text-[10px] font-bold text-gray-400 bg-white/10 px-2 py-0.5 rounded-full border border-white/5 ${isPastEnd ? 'opacity-50' : ''}">일정 없음</span></div><div class="text-[12px] text-gray-500 bg-white/5 rounded-xl p-5 text-center border border-white/5 flex flex-col items-center justify-center gap-2"><i class="fa-solid fa-bed text-2xl text-gray-600 mb-1"></i>이 기간에는 예정된 경기가 없습니다.</div></div>`;
                     }
                 }
             }
