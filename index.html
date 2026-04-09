@@ -424,7 +424,12 @@
                         } else {
                             const live = liveDataStore[matchesToday[0].id];
                             if (live) {
-                                if (live.gameStatus && live.gameStatus.includes('취소')) { stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 -rotate-[15deg] text-[11px] font-black text-blue-500/80 border-2 border-blue-500/80 rounded px-1 tracking-tighter pointer-events-none z-20">취소</div>`; }
+                                let isCanceled = (live.gameStatus && (live.gameStatus.includes('취소') || live.gameStatus.includes('우취'))) || (live.inning && (live.inning.includes('취소') || live.inning.includes('우취')));
+                                if (isCanceled) { 
+                                    let text = (live.inning && (live.inning.includes('취소') || live.inning.includes('우취'))) ? live.inning : (live.gameStatus || '취소');
+                                    if (text === '취소') text = '우천취소'; text = text.replace('우취', '우천취소');
+                                    stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 -rotate-[15deg] text-[11px] font-black text-blue-400 border-2 border-blue-400 rounded px-1 tracking-tighter pointer-events-none z-20 bg-black/60 backdrop-blur-sm whitespace-nowrap">${text}</div>`; 
+                                }
                                 else if (live.gameStatus === '종료') {
                                     let awayScore = parseInt(live.awayScore || 0); let homeScore = parseInt(live.homeScore || 0);
                                     let isWin = (matchesToday[0].team1 === selectedTeam && awayScore > homeScore) || (matchesToday[0].team2 === selectedTeam && homeScore > awayScore);
@@ -472,14 +477,23 @@
                             const live = liveDataStore[match.id];
                             let statusHtml = `<span class="text-[10px] text-gray-400 font-bold"><i class="fa-solid fa-clock mr-1"></i>${match.time} · ${isHome ? `<i class="fa-solid fa-house text-point mx-0.5"></i>` : ''}${match.stadium}</span>`;
                             let scoreHtml = `<span class="text-xs text-gray-500">vs</span>`; let stampHtml = '';
-                            if (live && live.gameStatus !== '경기전') {
-                                let badgeClass = live.gameStatus === '종료' ? 'bg-gray-600' : 'bg-red-600 live-badge';
-                                let displayStatus = (live.gameStatus === '경기중' && live.inning) ? live.inning : live.gameStatus;
-                                statusHtml = `<div class="flex items-center gap-1.5"><span class="${badgeClass} text-[9px] font-bold text-white px-2 py-0.5 rounded-full">${displayStatus}</span><span class="text-[10px] text-gray-400 font-bold">${match.stadium}</span></div>`;
-                                scoreHtml = `<span class="text-sm font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'}">${live.awayScore}</span><span class="text-xs text-gray-500 mx-1">:</span><span class="text-sm font-black ${live.homeScore > live.awayScore ? 'text-point' : 'text-white'}">${live.homeScore}</span>`;
-                                if (selectedTeam !== 'all') {
-                                    if (live.gameStatus && live.gameStatus.includes('취소')) { stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-blue-500/30 border-4 border-blue-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">취소</div>`; }
-                                    else if (live.gameStatus === '종료') {
+                            
+                            if (live) {
+                                let isCanceled = (live.gameStatus && (live.gameStatus.includes('취소') || live.gameStatus.includes('우취'))) || (live.inning && (live.inning.includes('취소') || live.inning.includes('우취')));
+                                if (isCanceled) {
+                                    let text = (live.inning && (live.inning.includes('취소') || live.inning.includes('우취'))) ? live.inning : (live.gameStatus || '취소');
+                                    if (text === '취소') text = '우천취소'; text = text.replace('우취', '우천취소');
+                                    statusHtml = `<div class="flex items-center gap-1.5"><span class="bg-blue-600 text-[9px] font-bold text-white px-2 py-0.5 rounded-full">${text}</span><span class="text-[10px] text-gray-400 font-bold">${match.stadium}</span></div>`;
+                                    if (selectedTeam !== 'all') {
+                                        stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-blue-400 border-4 border-blue-400 rounded-lg px-2 tracking-widest pointer-events-none z-0 bg-black/60 backdrop-blur-sm whitespace-nowrap">${text}</div>`;
+                                    }
+                                } else if (live.gameStatus !== '경기전') {
+                                    let badgeClass = live.gameStatus === '종료' ? 'bg-gray-600' : 'bg-red-600 live-badge';
+                                    let displayStatus = (live.gameStatus === '경기중' && live.inning) ? live.inning : live.gameStatus;
+                                    statusHtml = `<div class="flex items-center gap-1.5"><span class="${badgeClass} text-[9px] font-bold text-white px-2 py-0.5 rounded-full">${displayStatus}</span><span class="text-[10px] text-gray-400 font-bold">${match.stadium}</span></div>`;
+                                    scoreHtml = `<span class="text-sm font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'}">${live.awayScore}</span><span class="text-xs text-gray-500 mx-1">:</span><span class="text-sm font-black ${live.homeScore > live.awayScore ? 'text-point' : 'text-white'}">${live.homeScore}</span>`;
+                                    
+                                    if (live.gameStatus === '종료' && selectedTeam !== 'all') {
                                         let awayScore = parseInt(live.awayScore || 0); let homeScore = parseInt(live.homeScore || 0);
                                         let isWin = (match.team1 === selectedTeam && awayScore > homeScore) || (match.team2 === selectedTeam && homeScore > awayScore);
                                         let isLose = (match.team1 === selectedTeam && awayScore < homeScore) || (match.team2 === selectedTeam && homeScore < awayScore);
@@ -515,10 +529,19 @@
             else {
                 matches.forEach(match => {
                     const live = liveDataStore[match.id]; let statusHtml = `<span class="text-[10px] text-gray-400 font-bold"><i class="fa-solid fa-clock mr-1"></i>${match.time}</span>`;
-                    if (live && live.gameStatus !== '경기전') {
-                        let badgeClass = live.gameStatus === '종료' ? 'bg-gray-600' : 'bg-red-600 live-badge'; let displayStatus = (live.gameStatus === '경기중' && live.inning) ? live.inning : live.gameStatus;
-                        statusHtml = `<div class="flex items-center gap-1.5"><span class="${badgeClass} text-[9px] font-bold text-white px-2 py-0.5 rounded-full">${displayStatus}</span><span class="text-[10px] text-gray-400 font-bold">${live.awayScore}:${live.homeScore}</span></div>`;
+                    
+                    if (live) {
+                        let isCanceled = (live.gameStatus && (live.gameStatus.includes('취소') || live.gameStatus.includes('우취'))) || (live.inning && (live.inning.includes('취소') || live.inning.includes('우취')));
+                        if (isCanceled) {
+                            let text = (live.inning && (live.inning.includes('취소') || live.inning.includes('우취'))) ? live.inning : (live.gameStatus || '취소');
+                            if (text === '취소') text = '우천취소'; text = text.replace('우취', '우천취소');
+                            statusHtml = `<div class="flex items-center gap-1.5"><span class="bg-blue-600 text-[9px] font-bold text-white px-2 py-0.5 rounded-full">${text}</span></div>`;
+                        } else if (live.gameStatus !== '경기전') {
+                            let badgeClass = live.gameStatus === '종료' ? 'bg-gray-600' : 'bg-red-600 live-badge'; let displayStatus = (live.gameStatus === '경기중' && live.inning) ? live.inning : live.gameStatus;
+                            statusHtml = `<div class="flex items-center gap-1.5"><span class="${badgeClass} text-[9px] font-bold text-white px-2 py-0.5 rounded-full">${displayStatus}</span><span class="text-[10px] text-gray-400 font-bold">${live.awayScore}:${live.homeScore}</span></div>`;
+                        }
                     }
+                    
                     let logo1 = teamLogos[match.team1] ? `<img src="${teamLogos[match.team1]}" class="w-6 h-6 object-contain">` : `<div class="w-6 h-6 rounded-full ${teamColors[match.team1] || 'bg-gray-600'} flex items-center justify-center text-white text-[10px] font-bold">${match.team1.substring(0,1)}</div>`;
                     let logo2 = teamLogos[match.team2] ? `<img src="${teamLogos[match.team2]}" class="w-6 h-6 object-contain">` : `<div class="w-6 h-6 rounded-full ${teamColors[match.team2] || 'bg-gray-600'} flex items-center justify-center text-white text-[10px] font-bold">${match.team2.substring(0,1)}</div>`;
                     container.innerHTML += `<div class="bg-white/5 border border-white/5 rounded-xl p-3 flex justify-between items-center cursor-pointer active:scale-95 transition-transform" onclick="openLineupPopup(${match.id})"><div class="flex flex-col gap-1">${statusHtml}<div class="flex items-center gap-2 mt-0.5"><div class="flex items-center gap-1.5">${logo1}<span class="text-sm font-bold text-white">${match.team1}</span></div><span class="text-[11px] text-gray-500 font-bold">vs</span><div class="flex items-center gap-1.5"><span class="text-sm font-bold text-white">${match.team2}</span>${logo2}</div></div></div><button class="w-8 h-8 rounded-full bg-white/5 text-gray-400 hover:text-white flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-chevron-right"></i></button></div>`;
@@ -574,6 +597,15 @@
             let validMatches = scheduleData.filter(match => {
                 if (selectedTeam !== 'all' && match.team1 !== selectedTeam && match.team2 !== selectedTeam) return false;
                 const live = liveDataStore[match.id]; if (live && live.gameStatus === '종료') return false;
+                
+                let isCanceled = live && ((live.gameStatus && (live.gameStatus.includes('취소') || live.gameStatus.includes('우취'))) || (live.inning && (live.inning.includes('취소') || live.inning.includes('우취'))));
+                
+                if (isCanceled) {
+                    const cancelLimitTime = new Date(`${match.date}T19:30:00`);
+                    if (now >= cancelLimitTime) return false;
+                    return true;
+                }
+                
                 const matchStart = new Date(`${match.date}T${match.time}:00`); if (live && live.gameStatus === '경기중') return true;
                 return now < new Date(matchStart.getTime() + 5 * 60 * 60 * 1000);
             }).sort((a, b) => { if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); return a.date.localeCompare(b.date); });
@@ -585,10 +617,48 @@
             }
             topMatches.forEach(match => {
                 const hex1 = teamHex[match.team1] || '#888888'; const hex2 = teamHex[match.team2] || '#888888'; const d = new Date(match.date); const days = ['일', '월', '화', '수', '목', '금', '토']; const dateStr = `${d.getMonth()+1}. ${d.getDate()} (${days[d.getDay()]}) ${match.time}`; const live = liveDataStore[match.id];
-                let centerHtml = `<span class="text-[11px] font-black text-gray-300 tracking-wider">VS</span>`;
-                if (live && live.gameStatus === '경기중') { let displayStatus = live.inning ? live.inning : '경기중'; centerHtml = `<div class="flex items-center justify-center w-full relative"><span class="absolute -top-6 text-[10px] font-bold text-white bg-red-600 px-2.5 py-0.5 rounded-full live-badge tracking-widest whitespace-nowrap">${displayStatus}</span><div class="flex items-center justify-center w-full"><div class="flex-1 flex justify-end"><span class="text-3xl font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'} leading-none">${live.awayScore}</span></div><div class="px-1.5 flex justify-center items-center pb-0.5"><span class="text-base text-gray-500 font-bold leading-none">:</span></div><div class="flex-1 flex justify-start"><span class="text-3xl font-black ${live.homeScore > live.awayScore ? 'text-point' : 'text-white'} leading-none">${live.homeScore}</span></div></div></div>`; }
-                const div = document.createElement('div'); div.className = 'min-w-full bg-[#18181b] border-y border-white/5 shrink-0 px-7 py-5 transition-transform active:scale-[0.98] snap-center relative overflow-hidden shadow-lg';
-                div.innerHTML = `<div class="absolute inset-0 pointer-events-none z-0" style="background: linear-gradient(135deg, ${hex1}80 0%, ${hex2}80 100%); opacity: 0.85;"></div><div class="flex justify-between items-center mb-5 relative z-10"><div class="flex items-center gap-1.5"><div class="w-1 h-3 rounded-sm" style="background-color: ${hex2}"></div><span class="text-[11px] font-extrabold text-white tracking-wider">${match.stadium}</span></div><span class="text-[10px] text-gray-300 font-medium bg-white/5 px-2 py-0.5 rounded-lg border border-white/5 tracking-wide">${dateStr}</span></div><div class="flex justify-between items-center relative z-10"><div class="flex items-center gap-3 w-[40%]"><img src="${teamLogos[match.team1]}" class="w-[42px] h-[42px] object-contain drop-shadow-md"><div class="flex flex-col"><span class="text-[9px] text-gray-300 font-bold mb-0.5 tracking-wider">AWAY</span><span class="text-[15px] font-bold text-white tracking-wide">${match.team1}</span></div></div><div class="flex justify-center w-[20%]">${centerHtml}</div><div class="flex items-center justify-end gap-3 w-[40%] text-right"><div class="flex flex-col"><span class="text-[9px] text-gray-300 font-bold mb-0.5 tracking-wider">HOME</span><span class="text-[15px] font-bold text-white tracking-wide">${match.team2}</span></div><img src="${teamLogos[match.team2]}" class="w-[42px] h-[42px] object-contain drop-shadow-md"></div></div>`;
+                const div = document.createElement('div'); 
+                
+                let isCanceled = live && ((live.gameStatus && (live.gameStatus.includes('취소') || live.gameStatus.includes('우취'))) || (live.inning && (live.inning.includes('취소') || live.inning.includes('우취'))));
+                
+                if (isCanceled) {
+                    let cancelText = (live.inning && (live.inning.includes('취소') || live.inning.includes('우취'))) ? live.inning : (live.gameStatus || '우천취소');
+                    if (cancelText === '취소') cancelText = '우천취소'; cancelText = cancelText.replace('우취', '우천취소');
+                    
+                    div.className = 'min-w-full shrink-0 transition-transform active:scale-[0.98] snap-center relative overflow-hidden shadow-lg h-[116px] rounded-[20px] border border-white/10 flex items-center justify-center';
+                    div.style.background = '#1e3a8a'; 
+                    div.innerHTML = `
+                        <div class="absolute inset-0 opacity-30 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E'); mix-blend-mode: overlay;"></div>
+                        <div class="absolute inset-0 opacity-20 pointer-events-none" style="background: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(0,0,0,0.1) 4px, rgba(0,0,0,0.1) 8px);"></div>
+                        
+                        <div class="absolute top-[20px] left-0 w-full h-[60px] bg-gradient-to-b from-white to-[#f1f5f9] shadow-sm border-y border-white/30 flex justify-between items-center px-4">
+                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <span class="text-[28px] font-black text-[#111827] tracking-widest" style="text-shadow: 0 1px 1px rgba(255,255,255,0.8);">${cancelText}</span>
+                            </div>
+                        </div>
+
+                        <div class="absolute top-0 left-0 w-full h-full flex justify-between items-center px-5 pointer-events-none z-20">
+                            <img src="${teamLogos[match.team1]}" class="w-[74px] h-[74px] object-contain drop-shadow-xl">
+                            <img src="${teamLogos[match.team2]}" class="w-[74px] h-[74px] object-contain drop-shadow-xl">
+                        </div>
+
+                        <div class="absolute bottom-[6px] left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#0f172a] via-[#1e293b] to-[#0f172a] px-5 py-1.5 flex items-center justify-center gap-2 shadow-lg border border-white/10 z-30 min-w-max rounded-sm">
+                            <i class="fa-regular fa-clock text-white/70 text-[11px]"></i>
+                            <span class="text-[13px] font-bold text-white tracking-widest">${match.time}</span>
+                            <span class="text-white/30 text-[11px] mx-1">|</span>
+                            <i class="fa-solid fa-location-dot text-white/70 text-[11px]"></i>
+                            <span class="text-[13px] font-bold text-white tracking-widest">${match.stadium}</span>
+                        </div>
+                    `;
+                } else {
+                    div.className = 'min-w-full bg-[#18181b] shrink-0 px-7 py-5 transition-transform active:scale-[0.98] snap-center relative overflow-hidden shadow-lg h-[116px] flex flex-col justify-center rounded-[20px] border border-white/10';
+                    let centerHtml = `<span class="text-[11px] font-black text-gray-300 tracking-wider">VS</span>`;
+                    if (live && live.gameStatus === '경기중') { 
+                        let displayStatus = live.inning ? live.inning : '경기중'; 
+                        centerHtml = `<div class="flex items-center justify-center w-full relative"><span class="absolute -top-6 text-[10px] font-bold text-white bg-red-600 px-2.5 py-0.5 rounded-full live-badge tracking-widest whitespace-nowrap">${displayStatus}</span><div class="flex items-center justify-center w-full"><div class="flex-1 flex justify-end"><span class="text-3xl font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'} leading-none">${live.awayScore}</span></div><div class="px-1.5 flex justify-center items-center pb-0.5"><span class="text-base text-gray-500 font-bold leading-none">:</span></div><div class="flex-1 flex justify-start"><span class="text-3xl font-black ${live.homeScore > live.awayScore ? 'text-point' : 'text-white'} leading-none">${live.homeScore}</span></div></div></div>`; 
+                    }
+                    div.innerHTML = `<div class="absolute inset-0 pointer-events-none z-0" style="background: linear-gradient(135deg, ${hex1}80 0%, ${hex2}80 100%); opacity: 0.85;"></div><div class="flex justify-between items-center mb-4 relative z-10 w-full"><div class="flex items-center gap-1.5"><div class="w-1 h-3 rounded-sm" style="background-color: ${hex2}"></div><span class="text-[11px] font-extrabold text-white tracking-wider">${match.stadium}</span></div><span class="text-[10px] text-gray-300 font-medium bg-white/5 px-2 py-0.5 rounded-lg border border-white/5 tracking-wide">${dateStr}</span></div><div class="flex justify-between items-center relative z-10 w-full"><div class="flex items-center gap-3 w-[40%]"><img src="${teamLogos[match.team1]}" class="w-[42px] h-[42px] object-contain drop-shadow-md"><div class="flex flex-col"><span class="text-[9px] text-gray-300 font-bold mb-0.5 tracking-wider">AWAY</span><span class="text-[15px] font-bold text-white tracking-wide">${match.team1}</span></div></div><div class="flex justify-center w-[20%]">${centerHtml}</div><div class="flex items-center justify-end gap-3 w-[40%] text-right"><div class="flex flex-col"><span class="text-[9px] text-gray-300 font-bold mb-0.5 tracking-wider">HOME</span><span class="text-[15px] font-bold text-white tracking-wide">${match.team2}</span></div><img src="${teamLogos[match.team2]}" class="w-[42px] h-[42px] object-contain drop-shadow-md"></div></div>`;
+                }
                 carousel.appendChild(div);
             });
             totalBanners = carousel.children.length; const dotsContainer = document.getElementById('banner-dots-container'); const playBtn = document.getElementById('btn-banner-play');
@@ -608,7 +678,19 @@
             const logo2 = teamLogos[match.team2] ? `<img src="${teamLogos[match.team2]}" class="w-14 h-14 object-contain drop-shadow-lg mb-2">` : `<div class="w-14 h-14 rounded-full ${teamColors[match.team2]} flex items-center justify-center text-white font-bold mb-2">${match.team2}</div>`;
             if (!live) { content.innerHTML = `<div class="flex justify-between items-center mb-8 px-2 mt-2"><div class="flex flex-col items-center w-[40%]">${logo1}<span class="text-[15px] font-black text-white">${match.team1}</span></div><span class="text-2xl font-black text-gray-700">VS</span><div class="flex flex-col items-center w-[40%]">${logo2}<span class="text-[15px] font-black text-white">${match.team2}</span></div></div><div class="flex flex-col items-center justify-center h-48 text-gray-400 mt-4 gap-3 bg-white/5 rounded-2xl border border-white/5"><i class="fa-solid fa-clipboard-question text-4xl text-gray-500 mb-2"></i><span class="text-lg font-bold text-white tracking-wide">라인업 미발표</span><span class="text-[12px] text-gray-500 text-center">선발 라인업은<br>경기 시작 1~2시간 전에 공개됩니다.</span></div>`; return; }
             let scoreCenterHtml = `<span class="text-2xl font-black text-gray-700">VS</span>`;
-            if (live.gameStatus !== '경기전') { let displayStatus = (live.gameStatus === '경기중' && live.inning) ? live.inning : live.gameStatus; scoreCenterHtml = `<div class="flex flex-col items-center gap-1"><span class="text-[11px] font-bold text-white bg-red-600 px-2 py-0.5 rounded-full ${live.gameStatus !== '종료' ? 'live-badge' : 'bg-gray-600'}">${displayStatus}</span><div class="flex items-center gap-2 mt-2"><span class="text-3xl font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'}">${live.awayScore}</span><span class="text-xl text-gray-500">:</span><span class="text-3xl font-black ${live.homeScore > live.awayScore ? 'text-point' : 'text-white'}">${live.homeScore}</span></div></div>`; }
+            
+            if (live) {
+                let isCanceled = (live.gameStatus && (live.gameStatus.includes('취소') || live.gameStatus.includes('우취'))) || (live.inning && (live.inning.includes('취소') || live.inning.includes('우취')));
+                if (isCanceled) {
+                    let text = (live.inning && (live.inning.includes('취소') || live.inning.includes('우취'))) ? live.inning : (live.gameStatus || '취소');
+                    if (text === '취소') text = '우천취소'; text = text.replace('우취', '우천취소');
+                    scoreCenterHtml = `<div class="flex flex-col items-center gap-1"><span class="text-[11px] font-bold text-white bg-blue-600 px-2 py-0.5 rounded-full">${text}</span><span class="text-2xl font-black text-gray-700 mt-2">VS</span></div>`;
+                } else if (live.gameStatus !== '경기전') {
+                    let displayStatus = (live.gameStatus === '경기중' && live.inning) ? live.inning : live.gameStatus; 
+                    scoreCenterHtml = `<div class="flex flex-col items-center gap-1"><span class="text-[11px] font-bold text-white bg-red-600 px-2 py-0.5 rounded-full ${live.gameStatus !== '종료' ? 'live-badge' : 'bg-gray-600'}">${displayStatus}</span><div class="flex items-center gap-2 mt-2"><span class="text-3xl font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'}">${live.awayScore}</span><span class="text-xl text-gray-500">:</span><span class="text-3xl font-black ${live.homeScore > live.awayScore ? 'text-point' : 'text-white'}">${live.homeScore}</span></div></div>`;
+                }
+            }
+
             content.innerHTML = `<div class="flex justify-between items-center mb-8 px-2 mt-2"><div class="flex flex-col items-center w-[30%]">${logo1}<span class="text-[15px] font-black text-white tracking-wider">${match.team1}</span><span class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">AWAY</span></div><div class="flex flex-col items-center justify-center w-[40%]">${scoreCenterHtml}</div><div class="flex flex-col items-center w-[30%]">${logo2}<span class="text-[15px] font-black text-white tracking-wider">${match.team2}</span><span class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">HOME</span></div></div><div class="bg-white/5 rounded-2xl p-4 mb-8 border border-white/5 shadow-inner"><div class="flex justify-center mb-3"><span class="text-[10px] font-bold text-white bg-white/10 px-3 py-1 rounded-full border border-white/10 tracking-widest">선발 투수</span></div><div class="flex justify-between items-center"><div class="flex-1 text-center font-bold text-white text-sm">${live.awayPitcher || '-'}</div><div class="w-px h-6 bg-white/10 mx-4"></div><div class="flex-1 text-center font-bold text-white text-sm">${live.homePitcher || '-'}</div></div></div><div class="flex justify-center mb-4"><span class="text-[10px] font-bold text-gray-400 tracking-widest">선발 타자 라인업</span></div><div class="flex gap-4"><div class="flex-1 flex flex-col gap-2">${(live.awayLineup && live.awayLineup.length > 0) ? live.awayLineup.map((p, i) => `<div class="bg-white/5 rounded-xl px-3 py-2.5 flex items-center gap-3 border border-white/5 shadow-sm"><span class="w-4 text-center text-[11px] font-black text-point opacity-80">${i+1}</span><span class="text-[13px] font-bold text-gray-200">${p}</span></div>`).join('') : '<div class="text-center text-xs text-gray-500 py-4">라인업 정보 없음</div>'}</div><div class="flex-1 flex flex-col gap-2">${(live.homeLineup && live.homeLineup.length > 0) ? live.homeLineup.map((p, i) => `<div class="bg-white/5 rounded-xl px-3 py-2.5 flex items-center gap-3 border border-white/5 shadow-sm"><span class="w-4 text-center text-[11px] font-black text-point opacity-80">${i+1}</span><span class="text-[13px] font-bold text-gray-200">${p}</span></div>`).join('') : '<div class="text-center text-xs text-gray-500 py-4">라인업 정보 없음</div>'}</div></div>`;
         }
 
@@ -670,7 +752,7 @@
             audioPlayer.addEventListener('timeupdate', () => { if(audioPlayer.duration && !isNaN(audioPlayer.duration) && audioPlayer.duration !== Infinity) { const percent = (audioPlayer.currentTime / audioPlayer.duration) * 100; document.getElementById('mini-player-progress').style.width = percent + '%'; if (!isSeeking && rangeSlider) { rangeSlider.value = percent; rangeSlider.style.background = `linear-gradient(to right, #ffffff ${percent}%, rgba(255,255,255,0.2) ${percent}%)`; } document.getElementById('full-player-current').innerText = formatTime(audioPlayer.currentTime); } });
             if (rangeSlider) { rangeSlider.addEventListener('input', (e) => { isSeeking = true; const percent = e.target.value; rangeSlider.style.background = `linear-gradient(to right, #ffffff ${percent}%, rgba(255,255,255,0.2) ${percent}%)`; if(audioPlayer.duration && !isNaN(audioPlayer.duration) && audioPlayer.duration !== Infinity) { document.getElementById('full-player-current').innerText = formatTime((percent / 100) * audioPlayer.duration); } }); rangeSlider.addEventListener('change', (e) => { isSeeking = false; if(audioPlayer.duration && !isNaN(audioPlayer.duration) && audioPlayer.duration !== Infinity) { audioPlayer.currentTime = (e.target.value / 100) * audioPlayer.duration; } }); }
             audioPlayer.addEventListener('ended', () => { if (currentPlaylist.length > 0 && currentSongIndex >= 0 && currentSongIndex + 1 < currentPlaylist.length) { currentSongIndex++; const nextSong = currentPlaylist[currentSongIndex]; executePlay(nextSong.url, nextSong.title); } else { const btn = document.getElementById('mini-player-btn'); const fullBtn = document.getElementById('full-player-btn'); if (btn) btn.className = 'fa-solid fa-play text-[22px] ml-0.5'; if (fullBtn) fullBtn.className = 'fa-solid fa-play text-5xl ml-1'; document.getElementById('mini-player-progress').style.width = '0%'; if (rangeSlider) { rangeSlider.value = 0; rangeSlider.style.background = `rgba(255,255,255,0.2)`; document.getElementById('full-player-current').innerText = "0:00"; } sendStateToAndroid("PAUSED", currentSongTitle); } });
-            audioPlayer.addEventListener('error', () => { showToast('음원 파일을 불러올 수 없습니다. 경로를 확인해주세요.'); closeMiniPlayer(); });
+            audioPlayer.addEventListener('error', () => { showToast('음원 파일을 불러올 수 대없습니다. 경로를 확인해주세요.'); closeMiniPlayer(); });
         }
 
         function updateMediaSession() { if ('mediaSession' in navigator && currentSongTitle) { let artistName = '팀 응원가'; if (currentSongTitle.includes('김도영') || currentSongTitle.includes('구자욱') || currentSongTitle.includes('최형우')) { artistName = '선수 응원가'; } navigator.mediaSession.metadata = new MediaMetadata({ title: currentSongTitle, artist: artistName, artwork: [ { src: currentSongCover, sizes: '512x512', type: 'image/png' }, { src: currentSongCover, sizes: '192x192', type: 'image/png' } ] }); navigator.mediaSession.setActionHandler('play', () => { if(audioPlayer) audioPlayer.play(); }); navigator.mediaSession.setActionHandler('pause', () => { if(audioPlayer) audioPlayer.pause(); }); navigator.mediaSession.setActionHandler('previoustrack', () => { window.appPrevMusic(); }); navigator.mediaSession.setActionHandler('nexttrack', () => { window.appNextMusic(); }); } }
