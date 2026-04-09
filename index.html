@@ -101,6 +101,21 @@
         #full-player { background: rgba(5,5,5,0.9) !important; backdrop-filter: blur(30px); }
         #toast-msg { background: rgba(20, 20, 22, 0.85) !important; backdrop-filter: blur(20px); color: #fff !important; font-weight: 700 !important; border: 1px solid rgba(255,255,255,0.1) !important; box-shadow: 0 20px 40px rgba(0,0,0,0.6) !important; border-radius: 100px !important; padding: 12px 24px !important; }
         #lineup-popup-bg { background: rgba(0, 0, 0, 0.6) !important; backdrop-filter: blur(12px) !important; }
+
+        .text-pattern-KIA {
+            background-color: #EA0029;
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,0.4) 4px, rgba(255,255,255,0.4) 5px), repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(255,255,255,0.4) 4px, rgba(255,255,255,0.4) 5px);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
+        .text-pattern-삼성 {
+            background-color: #074CA1;
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,0.4) 4px, rgba(255,255,255,0.4) 5px), repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(255,255,255,0.4) 4px, rgba(255,255,255,0.4) 5px);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
     </style>
 </head>
 <body class="w-full h-[100dvh] flex justify-center items-center overflow-hidden app-bg" data-theme="all">
@@ -121,8 +136,23 @@
                         <button onclick="setTeamFilter('삼성')" id="btn-team-삼성" class="team-btn-anim px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto">삼성</button>
                     </div>
                     <div id="ctrl-sort" class="ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full" style="grid-area: 1/1;"><span id="sort-text" class="text-[12px] font-bold text-gray-400">날짜순</span></div>
+                </div>
             </div>
         </header>
+
+        <main id="winrate-screen" class="hidden flex-1 min-h-0 relative w-full flex-col overflow-y-auto scrollbar-hide pb-[180px]">
+            <div class="sticky top-0 z-20 px-5 pt-[calc(max(20px,env(safe-area-inset-top))+56px)] pb-1 w-full border-b border-white/5" style="background-color: var(--app-bg);">
+                <div class="flex justify-center items-center w-full">
+                    <div class="flex gap-1 bg-white/5 p-1.5 rounded-full border border-white/10 w-full max-w-[240px]">
+                        <button onclick="setWinrateTab('직관')" id="btn-wr-jik" class="flex-1 py-1.5 text-[13px] font-bold rounded-full bg-point shadow-sm transition-all">직관</button>
+                        <button onclick="setWinrateTab('집관')" id="btn-wr-jip" class="flex-1 py-1.5 text-[13px] font-medium rounded-full text-gray-400 hover:text-white transition-all">집관</button>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full pt-0 pb-10 px-5 flex flex-col gap-5" id="winrate-container">
+                <!-- 승률 데이터가 JS를 통해 렌더링됩니다 -->
+            </div>
+        </main>
 
         <main id="calendar-screen" class="flex flex-1 min-h-0 relative w-full flex-col overflow-y-auto scrollbar-hide pb-[180px]">
             <div class="sticky top-0 z-20 px-5 pt-main pb-2 w-full border-b border-white/5" style="background-color: var(--app-bg);">
@@ -208,6 +238,18 @@
             </div>
         </main>
 
+        <div id="record-popup" class="fixed inset-0 z-[70] hidden flex-col justify-end pointer-events-none">
+            <div id="record-popup-bg" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 pointer-events-none" onclick="closeRecordPopup()"></div>
+            <div id="record-popup-sheet" class="w-full max-w-[430px] mx-auto flex flex-col relative translate-y-full h-[85vh] pointer-events-auto bg-[#1C1C1E]/95 backdrop-blur-xl rounded-t-[32px] border border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.8)] transition-transform duration-300">
+                <div class="w-full flex justify-center pt-4 pb-2 cursor-pointer" onclick="closeRecordPopup()"><div class="w-12 h-1.5 bg-gray-600 rounded-full"></div></div>
+                <div class="flex justify-between items-center px-6 pb-4 border-b border-white/10">
+                    <h3 id="record-popup-title" class="text-lg font-bold text-white tracking-tight">기록 추가</h3>
+                    <button onclick="closeRecordPopup()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white active:scale-95"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div id="record-content" class="flex-1 overflow-y-auto scrollbar-hide p-5 relative pb-10 space-y-3"></div>
+            </div>
+        </div>
+
         <div id="lineup-popup" class="fixed inset-0 z-[60] hidden flex-col justify-end pointer-events-none">
             <div id="lineup-popup-bg" class="absolute inset-0 opacity-0 transition-opacity duration-300 pointer-events-none" onclick="closeLineupPopup()"></div>
             <div id="lineup-popup-sheet" class="w-full max-w-[430px] mx-auto flex flex-col relative translate-y-full h-[85vh] pointer-events-auto">
@@ -261,9 +303,10 @@
         <nav id="bottom-nav" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-[380px] px-2 touch-pan-x select-none">
             <div class="flex items-center justify-between bg-[#1C1C1E] relative">
                 <div id="nav-indicator" class="absolute bg-point z-0 nav-transition" style="left: 4px; width: 66px;"></div>
-                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(0)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-calendar-days text-base text-white"></i><span class="text-[10px] font-bold text-white">야구</span></div></button>
-                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(1)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-trophy text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">순위</span></div></button>
-                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(2)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-headphones text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">응원가</span></div></button>
+                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(0)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-chart-pie text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">승률</span></div></button>
+                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(1)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-calendar-days text-base text-white"></i><span class="text-[10px] font-bold text-white">야구</span></div></button>
+                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(2)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-trophy text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">순위</span></div></button>
+                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(3)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-headphones text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">응원가</span></div></button>
             </div>
         </nav>
     </div>
@@ -272,7 +315,7 @@
         const firebaseConfig = { apiKey: "AIzaSyDTGun1KsU2Cepx0oSFF7yki2uu2NT2mfk", authDomain: "kbo-app-98418.firebaseapp.com", projectId: "kbo-app-98418", storageBucket: "kbo-app-98418.firebasestorage.app", messagingSenderId: "1046094812627", appId: "1:1046094812627:web:2c07ec94c7e8028daa4b26" };
         firebase.initializeApp(firebaseConfig); const db = firebase.firestore();
 
-        let scheduleData = []; let rankingData = []; let liveDataStore = {}; let currentPopupMatchId = null; let currentTabIndex = 0;
+        let scheduleData = []; let rankingData = []; let liveDataStore = {}; let currentPopupMatchId = null; let currentTabIndex = 0; let watchRecords = [];
         const initialScheduleData = [];
         const initialRankingData = [{rank:'-',team:'KIA',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'삼성',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'LG',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'두산',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'KT',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'SSG',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'롯데',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'한화',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'NC',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'키움',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}];
         
@@ -298,7 +341,9 @@
 
         let currentDate = new Date();
         const todayStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
-        let viewMode = 'month'; let selectedTeam = localStorage.getItem('kbo_selected_team') || 'all';
+        let viewMode = 'month'; let selectedTeam = localStorage.getItem('kbo_selected_team');
+        if (selectedTeam !== 'KIA' && selectedTeam !== '삼성') selectedTeam = 'KIA';
+        let currentWinrateTab = '직관';
 
         function showToast(msg) {
             let toast = document.getElementById('toast-msg');
@@ -344,13 +389,13 @@
                     if (!snapshot.empty) {
                         rankingData = []; snapshot.forEach(doc => rankingData.push(...(doc.data().data || [])));
                         rankingData.sort((a, b) => { if (a.rank === '-') return 1; if (b.rank === '-') return -1; return parseInt(a.rank) - parseInt(b.rank); });
-                        if (currentTabIndex === 1) renderRanking();
+                        if (currentTabIndex === 2) renderRanking();
                     } else {
                         db.collection("rankings").onSnapshot((oldSnap) => {
                             if (oldSnap.empty) { rankingData = [...initialRankingData]; } else {
                                 rankingData = oldSnap.docs.map(doc => doc.data()).sort((a, b) => { if (a.rank === '-') return 1; if (b.rank === '-') return -1; return parseInt(a.rank) - parseInt(b.rank); });
                             }
-                            if (currentTabIndex === 1) renderRanking();
+                            if (currentTabIndex === 2) renderRanking();
                         });
                     }
                 });
@@ -358,42 +403,54 @@
                 db.collection("lineups_merged").onSnapshot((snapshot) => {
                     if (!snapshot.empty) {
                         liveDataStore = {}; snapshot.forEach(doc => { const chunkData = doc.data(); Object.keys(chunkData).forEach(key => { liveDataStore[key] = chunkData[key]; }); });
-                        if (currentTabIndex === 0) renderCalendar(); if (currentPopupMatchId) renderPopupContent(currentPopupMatchId); renderBanners(); renderLineupCheerSongs();
+                        if (currentTabIndex === 1) renderCalendar(); if (currentPopupMatchId) renderPopupContent(currentPopupMatchId); renderBanners(); renderLineupCheerSongs();
                     } else {
                         db.collection("lineups").onSnapshot((oldSnap) => {
                             oldSnap.forEach(doc => { liveDataStore[doc.id] = doc.data(); });
-                            if (currentTabIndex === 0) renderCalendar(); if (currentPopupMatchId) renderPopupContent(currentPopupMatchId); renderBanners(); renderLineupCheerSongs();
+                            if (currentTabIndex === 1) renderCalendar(); if (currentPopupMatchId) renderPopupContent(currentPopupMatchId); renderBanners(); renderLineupCheerSongs();
                         });
                     }
+                });
+
+                db.collection("watch_records").onSnapshot((snapshot) => {
+                    watchRecords = []; snapshot.forEach(doc => watchRecords.push(doc.data()));
+                    if (currentTabIndex === 0) renderWinRate();
                 });
             } catch (error) { console.error("파이어베이스 통신 에러:", error); scheduleData = [...initialScheduleData]; }
         }
 
         function switchTab(index) {
             currentTabIndex = index; if (navigator.vibrate) navigator.vibrate(10);
-            const screens = [ document.getElementById('calendar-screen'), document.getElementById('ranking-screen'), document.getElementById('cheer-screen') ];
+            const screens = [ document.getElementById('winrate-screen'), document.getElementById('calendar-screen'), document.getElementById('ranking-screen'), document.getElementById('cheer-screen') ];
             closeBottomSheet();
             const navButtons = document.querySelectorAll('#bottom-nav button'); const indicator = document.getElementById('nav-indicator');
             if(navButtons[index] && indicator) { indicator.style.width = `${navButtons[index].offsetWidth}px`; indicator.style.transform = `translateX(${navButtons[index].offsetLeft - 4}px)`; }
             navButtons.forEach((btn, i) => {
                 const icon = btn.querySelector('i'); const label = btn.querySelector('span');
                 if (icon && label) {
-                    let iconName = i===0?'fa-calendar-days':(i===1?'fa-trophy':'fa-headphones');
+                    let iconName = i===0?'fa-chart-pie':(i===1?'fa-calendar-days':(i===2?'fa-trophy':'fa-headphones'));
                     icon.className = `fa-solid ${iconName} text-base ${i===index?'text-white':'text-gray-400 transition-colors'}`;
                     label.className = `text-[10px] whitespace-nowrap transition-colors ${i===index?'text-white font-bold':'text-gray-400 font-medium'}`;
                 }
             });
 
             const ctrlTeam = document.getElementById('ctrl-team'); const ctrlSort = document.getElementById('ctrl-sort'); const ctrlWrapper = document.getElementById('ctrl-wrapper'); const mainText = document.getElementById('di-main-text');
-            mainText.innerHTML = (index === 0 ? `KBO 리그` : (index === 1 ? `정규리그 순위` : `구단별 응원가`)) + `<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
+            mainText.innerHTML = (index === 0 ? `직관/집관 승률` : index === 1 ? `KBO 리그` : (index === 2 ? `정규리그 순위` : `구단별 응원가`)) + `<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
             if (index === 0) { ctrlTeam.className='ctrl-item ctrl-show flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.remove('opacity-0'); }
-            else if (index === 1) { ctrlTeam.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.add('opacity-0'); }
-            else if (index === 2) { ctrlTeam.className='ctrl-item ctrl-show flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.remove('opacity-0'); }
+            else if (index === 1) { ctrlTeam.className='ctrl-item ctrl-show flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.remove('opacity-0'); }
+            else if (index === 2) { ctrlTeam.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.add('opacity-0'); }
+            else if (index === 3) { ctrlTeam.className='ctrl-item ctrl-show flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.remove('opacity-0'); }
 
             const btnTeamAll = document.getElementById('btn-team-all');
-            if (index === 2) { btnTeamAll.classList.add('btn-collapse'); if (selectedTeam === 'all') setTeamFilter('KIA'); } else { btnTeamAll.classList.remove('btn-collapse'); }
-            screens.forEach((screen, i) => { screen.classList.toggle('hidden', i !== index); screen.classList.toggle('flex', i === index); });
-            if (index === 0) renderCalendar(); else if (index === 1) renderRanking();
+            if (index === 0 || index === 3) { 
+                if(btnTeamAll) btnTeamAll.classList.add('btn-collapse'); 
+                if (selectedTeam === 'all') setTeamFilter('KIA'); 
+            } else { 
+                if(btnTeamAll) btnTeamAll.classList.remove('btn-collapse'); 
+            }
+
+            screens.forEach((screen, i) => { if(screen) { screen.classList.toggle('hidden', i !== index); screen.classList.toggle('flex', i === index); }});
+            if (index === 0) renderWinRate(); else if (index === 1) renderCalendar(); else if (index === 2) renderRanking();
         }
 
         function setViewMode(mode) { 
@@ -407,8 +464,9 @@
         
         function setTeamFilter(team) {
             selectedTeam = team; localStorage.setItem('kbo_selected_team', team); document.body.setAttribute('data-theme', team);
-            ['all', 'KIA', '삼성'].forEach(id => { const btn = document.getElementById(`btn-team-${id}`); btn.classList.remove('font-bold', 'bg-point', 'text-white', 'shadow-sm'); btn.classList.add('font-medium', 'text-gray-400'); });
-            const targetBtn = document.getElementById(`btn-team-${team}`); targetBtn.classList.remove('font-medium', 'text-gray-400'); targetBtn.classList.add('font-bold', 'bg-point', 'text-white', 'shadow-sm');
+            ['all', 'KIA', '삼성'].forEach(id => { const btn = document.getElementById(`btn-team-${id}`); if(btn) { btn.classList.remove('font-bold', 'bg-point', 'text-white', 'shadow-sm'); btn.classList.add('font-medium', 'text-gray-400'); } });
+            const targetBtn = document.getElementById(`btn-team-${team}`); if(targetBtn) { targetBtn.classList.remove('font-medium', 'text-gray-400'); targetBtn.classList.add('font-bold', 'bg-point', 'text-white', 'shadow-sm'); }
+            if (currentTabIndex === 0) renderWinRate(); 
             renderCalendar(); closeBottomSheet(); renderBanners();
         }
 
@@ -483,23 +541,14 @@
                             const live = liveDataStore[match.id];
                             let statusHtml = `<span class="text-[10px] text-gray-400 font-bold"><i class="fa-solid fa-clock mr-1"></i>${match.time} · ${isHome ? `<i class="fa-solid fa-house text-point mx-0.5"></i>` : ''}${match.stadium}</span>`;
                             let scoreHtml = `<span class="text-xs text-gray-500">vs</span>`; let stampHtml = '';
-                            
-                            if (live) {
-                                let isCanceled = (live.gameStatus && (live.gameStatus.includes('취소') || live.gameStatus.includes('우취'))) || (live.inning && (live.inning.includes('취소') || live.inning.includes('우취')));
-                                if (isCanceled) {
-                                    let text = (live.inning && (live.inning.includes('취소') || live.inning.includes('우취'))) ? live.inning : (live.gameStatus || '취소');
-                                    if (text === '취소') text = '우천취소'; text = text.replace('우취', '우천취소');
-                                    statusHtml = `<div class="flex items-center gap-1.5"><span class="bg-blue-600 text-[9px] font-bold text-white px-2 py-0.5 rounded-full">${text}</span><span class="text-[10px] text-gray-400 font-bold">${match.stadium}</span></div>`;
-                                    if (selectedTeam !== 'all') {
-                                        stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-blue-400 border-4 border-blue-400 rounded-lg px-2 tracking-widest pointer-events-none z-0 bg-black/60 backdrop-blur-sm whitespace-nowrap">${text}</div>`;
-                                    }
-                                } else if (live.gameStatus !== '경기전') {
-                                    let badgeClass = live.gameStatus === '종료' ? 'bg-gray-600' : 'bg-red-600 live-badge';
-                                    let displayStatus = (live.gameStatus === '경기중' && live.inning) ? live.inning : live.gameStatus;
-                                    statusHtml = `<div class="flex items-center gap-1.5"><span class="${badgeClass} text-[9px] font-bold text-white px-2 py-0.5 rounded-full">${displayStatus}</span><span class="text-[10px] text-gray-400 font-bold">${match.stadium}</span></div>`;
-                                    scoreHtml = `<span class="text-sm font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'}">${live.awayScore}</span><span class="text-xs text-gray-500 mx-1">:</span><span class="text-sm font-black ${live.homeScore > live.awayScore ? 'text-point' : 'text-white'}">${live.homeScore}</span>`;
-                                    
-                                    if (live.gameStatus === '종료' && selectedTeam !== 'all') {
+                            if (live && live.gameStatus !== '경기전') {
+                                let badgeClass = live.gameStatus === '종료' ? 'bg-gray-600' : 'bg-red-600 live-badge';
+                                let displayStatus = (live.gameStatus === '경기중' && live.inning) ? live.inning : live.gameStatus;
+                                statusHtml = `<div class="flex items-center gap-1.5"><span class="${badgeClass} text-[9px] font-bold text-white px-2 py-0.5 rounded-full">${displayStatus}</span><span class="text-[10px] text-gray-400 font-bold">${match.stadium}</span></div>`;
+                                scoreHtml = `<span class="text-sm font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'}">${live.awayScore}</span><span class="text-xs text-gray-500 mx-1">:</span><span class="text-sm font-black ${live.homeScore > live.awayScore ? 'text-point' : 'text-white'}">${live.homeScore}</span>`;
+                                if (selectedTeam !== 'all') {
+                                    if (live.gameStatus && live.gameStatus.includes('취소')) { stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-blue-500/30 border-4 border-blue-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">취소</div>`; }
+                                    else if (live.gameStatus === '종료') {
                                         let awayScore = parseInt(live.awayScore || 0); let homeScore = parseInt(live.homeScore || 0);
                                         let isWin = (match.team1 === selectedTeam && awayScore > homeScore) || (match.team2 === selectedTeam && homeScore > awayScore);
                                         let isLose = (match.team1 === selectedTeam && awayScore < homeScore) || (match.team2 === selectedTeam && homeScore < awayScore);
@@ -631,34 +680,9 @@
                     let cancelText = (live.inning && (live.inning.includes('취소') || live.inning.includes('우취'))) ? live.inning : (live.gameStatus || '우천취소');
                     if (cancelText === '취소') cancelText = '우천취소'; cancelText = cancelText.replace('우취', '우천취소');
                     
-                    div.className = 'min-w-full shrink-0 snap-center relative h-[116px] rounded-[20px] bg-[#121212] border border-white/5 shadow-2xl overflow-hidden transition-transform active:scale-[0.98]';
+                    div.className = 'min-w-full bg-[#18181b] shrink-0 px-7 py-5 transition-transform active:scale-[0.98] snap-center relative overflow-hidden shadow-lg h-[116px] flex flex-col justify-center rounded-[20px] border border-white/10';
                     
-                    div.innerHTML = `
-                        <div class="absolute inset-0 opacity-[0.15] mix-blend-screen" style="background: linear-gradient(90deg, ${hex1} 0%, transparent 40%, transparent 60%, ${hex2} 100%);"></div>
-                        <div class="absolute inset-0 bg-gradient-to-t from-[#000000] to-transparent opacity-50 pointer-events-none"></div>
-
-                        <div class="relative z-10 w-full h-full flex justify-between items-center px-6">
-                            <div class="flex flex-col items-center justify-center gap-1.5 w-[25%] opacity-40">
-                                <img src="${teamLogos[match.team1]}" class="w-[42px] h-[42px] object-contain grayscale">
-                                <span class="text-[10px] font-bold text-gray-400 tracking-wider">${match.team1}</span>
-                            </div>
-                            <div class="flex flex-col items-center justify-center flex-1">
-                                <div class="px-2.5 py-0.5 rounded-sm border border-white/10 bg-white/5 mb-2 shadow-inner">
-                                    <span class="text-[9px] font-black text-white/50 tracking-[0.2em] ml-[0.1em]">CANCELED</span>
-                                </div>
-                                <span class="text-[20px] font-extrabold text-white/90 tracking-[0.15em] ml-[0.05em] mb-1.5 drop-shadow-md whitespace-nowrap">${cancelText}</span>
-                                <div class="flex items-center gap-1.5 text-[10px] font-bold text-gray-500 tracking-wide">
-                                    <span>${match.time}</span>
-                                    <span class="w-[1px] h-[8px] bg-gray-600 rounded-full"></span>
-                                    <span>${match.stadium}</span>
-                                </div>
-                            </div>
-                            <div class="flex flex-col items-center justify-center gap-1.5 w-[25%] opacity-40">
-                                <img src="${teamLogos[match.team2]}" class="w-[42px] h-[42px] object-contain grayscale">
-                                <span class="text-[10px] font-bold text-gray-400 tracking-wider">${match.team2}</span>
-                            </div>
-                        </div>
-                    `;
+                    div.innerHTML = `<div class="absolute inset-0 pointer-events-none z-0" style="background: linear-gradient(135deg, ${hex1} 0%, ${hex2} 100%); opacity: 0.35;"></div><div class="absolute inset-0 pointer-events-none z-0 opacity-20" style="background: repeating-linear-gradient(-45deg, transparent, transparent 4px, #000 4px, #000 8px);"></div><div class="flex justify-between items-center mb-4 relative z-10 w-full opacity-50"><div class="flex items-center gap-1.5"><div class="w-1 h-3 rounded-sm bg-gray-500"></div><span class="text-[11px] font-extrabold text-white tracking-wider">${match.stadium}</span></div><span class="text-[10px] text-gray-300 font-medium bg-white/5 px-2 py-0.5 rounded-lg border border-white/5 tracking-wide">${dateStr}</span></div><div class="flex justify-between items-center relative z-10 w-full"><div class="flex items-center gap-3 w-[40%] opacity-40 grayscale"><img src="${teamLogos[match.team1]}" class="w-[42px] h-[42px] object-contain drop-shadow-md"><div class="flex flex-col"><span class="text-[9px] text-gray-300 font-bold mb-0.5 tracking-wider">AWAY</span><span class="text-[15px] font-bold text-white tracking-wide">${match.team1}</span></div></div><div class="flex justify-center w-[20%]"></div><div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center z-20 w-full"><div class="bg-black/70 backdrop-blur-md border border-white/10 rounded-full px-4 py-1.5 shadow-2xl flex items-center justify-center w-fit"><span class="text-[13px] font-black text-white tracking-widest drop-shadow-md whitespace-nowrap">${cancelText}</span></div></div><div class="flex items-center justify-end gap-3 w-[40%] text-right opacity-40 grayscale"><div class="flex flex-col"><span class="text-[9px] text-gray-300 font-bold mb-0.5 tracking-wider">HOME</span><span class="text-[15px] font-bold text-white tracking-wide">${match.team2}</span></div><img src="${teamLogos[match.team2]}" class="w-[42px] h-[42px] object-contain drop-shadow-md"></div></div>`;
                 } else {
                     div.className = 'min-w-full bg-[#18181b] shrink-0 px-6 py-5 transition-transform active:scale-[0.98] snap-center relative overflow-hidden shadow-xl h-[120px] flex flex-col justify-center rounded-[24px] border border-white/10';
                     
@@ -813,8 +837,218 @@
         function closeFullPlayer() { const fullPlayer = document.getElementById('full-player'); if(fullPlayer) { fullPlayer.style.transform = ''; fullPlayer.classList.remove('translate-y-0', 'pointer-events-auto'); fullPlayer.classList.add('translate-y-full', 'pointer-events-none'); } }
         function formatTime(seconds) { if (isNaN(seconds)) return "0:00"; const min = Math.floor(seconds / 60); const sec = Math.floor(seconds % 60); return `${min}:${sec < 10 ? '0' + sec : sec}`; }
 
+        function setWinrateTab(tab) {
+            currentWinrateTab = tab;
+            const btnJik = document.getElementById('btn-wr-jik');
+            const btnJip = document.getElementById('btn-wr-jip');
+            if (tab === '직관') {
+                if(btnJik) btnJik.className = 'flex-1 py-1.5 text-[13px] font-bold rounded-full bg-point shadow-sm transition-all';
+                if(btnJip) btnJip.className = 'flex-1 py-1.5 text-[13px] font-medium rounded-full text-gray-400 hover:text-white transition-all';
+            } else {
+                if(btnJip) btnJip.className = 'flex-1 py-1.5 text-[13px] font-bold rounded-full bg-point shadow-sm transition-all';
+                if(btnJik) btnJik.className = 'flex-1 py-1.5 text-[13px] font-medium rounded-full text-gray-400 hover:text-white transition-all';
+            }
+            renderWinRate();
+        }
+
+        function renderWinRate() {
+            const container = document.getElementById('winrate-container'); if (!container) return;
+            let stats = { 'KIA': { '직관': {w:0, l:0, d:0}, '집관': {w:0, l:0, d:0} }, '삼성': { '직관': {w:0, l:0, d:0}, '집관': {w:0, l:0, d:0} } };
+            
+            watchRecords.forEach(r => {
+                if(!stats[r.team] || !stats[r.team][r.type]) return;
+                let m = scheduleData.find(x => x.id === r.matchId);
+                let live = liveDataStore[r.matchId];
+                if (m && live && live.gameStatus === '종료') {
+                    let awayScore = parseInt(live.awayScore || 0); let homeScore = parseInt(live.homeScore || 0);
+                    let isWin = (m.team1 === r.team && awayScore > homeScore) || (m.team2 === r.team && homeScore > awayScore);
+                    let isLose = (m.team1 === r.team && awayScore < homeScore) || (m.team2 === r.team && homeScore < awayScore);
+                    if (isWin) stats[r.team][r.type].w++; else if (isLose) stats[r.team][r.type].l++; else stats[r.team][r.type].d++;
+                }
+            });
+
+            let team = selectedTeam;
+            if (team !== 'KIA' && team !== '삼성') team = 'KIA';
+            
+            let targetStats = stats[team][currentWinrateTab];
+            let targetTotal = targetStats.w + targetStats.d + targetStats.l;
+
+            let targetPercent = targetTotal === 0 ? 0 : Math.round((targetStats.w / (targetStats.w + targetStats.l)) * 100);
+            if (isNaN(targetPercent)) targetPercent = 0;
+
+            let fullName = team === 'KIA' ? 'KIA 타이거즈' : '삼성 라이온즈';
+            let tColor = team === 'KIA' ? 'text-[#EA0029]' : 'text-[#074CA1]';
+
+            function createCard(type, percent, rec) {
+                let fillY = 150 - (108 * percent / 100);
+                let uid = team === 'KIA' ? 'kia' : 'sam';
+                let uidType = type === '직관' ? 'jik' : 'jip';
+                let defId = `art-${uid}-${uidType}`;
+                let clipId = `clip-${uid}-${uidType}`;
+
+                let faceHtml = '';
+                if (percent >= 60) {
+                    faceHtml = `
+                        <path d="M 60 68 Q 64 62 68 68 M 92 68 Q 96 62 100 68" stroke="currentColor" stroke-width="4" stroke-linecap="round" fill="none"/>
+                        <path d="M 74 76 Q 80 82 86 76" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/>
+                    `;
+                } else if (percent >= 40) {
+                    faceHtml = `
+                        <circle cx="64" cy="66" r="3.5" fill="currentColor"/>
+                        <circle cx="96" cy="66" r="3.5" fill="currentColor"/>
+                        <line x1="76" y1="76" x2="84" y2="76" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                    `;
+                } else {
+                    faceHtml = `
+                        <circle cx="64" cy="68" r="3.5" fill="currentColor"/>
+                        <circle cx="96" cy="68" r="3.5" fill="currentColor"/>
+                        <path d="M 75 79 Q 80 73 85 79" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/>
+                    `;
+                }
+
+                let characterHtml = `
+                    <svg width="184" height="230" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-2xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                        <defs>
+                            <clipPath id="${clipId}">
+                                <rect x="35" y="30" width="90" height="120" rx="45"/>
+                            </clipPath>
+                            <g id="${defId}">
+                                <ellipse cx="52" cy="72" rx="7" ry="4" fill="#FF8A8A" opacity="0.5"/>
+                                <ellipse cx="108" cy="72" rx="7" ry="4" fill="#FF8A8A" opacity="0.5"/>
+                                ${faceHtml}
+                            </g>
+                        </defs>
+
+                        <ellipse cx="80" cy="165" rx="35" ry="6" fill="rgba(0,0,0,0.2)"/>
+
+                        <path d="M 55 140 V 155 A 12 12 0 0 0 79 155 V 140" fill="white" stroke="#111" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M 105 140 V 155 A 12 12 0 0 1 81 155 V 140" fill="white" stroke="#111" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+
+                        <rect x="35" y="30" width="90" height="120" rx="45" fill="white" stroke="#111" stroke-width="4"/>
+
+                        <use href="#${defId}" color="#111"/>
+
+                        <g clip-path="url(#${clipId})">
+                            <path fill="${teamHex[team]}" opacity="0.5" d="M -200 ${fillY} Q -150 ${fillY + 8} -100 ${fillY} T 0 ${fillY} T 100 ${fillY} T 200 ${fillY} T 300 ${fillY} T 400 ${fillY} V 200 H -200 Z">
+                                <animateTransform attributeName="transform" type="translate" from="0,0" to="-200,0" dur="3s" repeatCount="indefinite" />
+                            </path>
+                            <path fill="${teamHex[team]}" opacity="0.95" d="M -200 ${fillY} Q -150 ${fillY - 8} -100 ${fillY} T 0 ${fillY} T 100 ${fillY} T 200 ${fillY} T 300 ${fillY} T 400 ${fillY} V 200 H -200 Z">
+                                <animateTransform attributeName="transform" type="translate" from="0,0" to="200,0" dur="2.5s" repeatCount="indefinite" />
+                            </path>
+                            <use href="#${defId}" color="#fff"/>
+                        </g>
+
+                        <rect x="35" y="30" width="90" height="120" rx="45" fill="none" stroke="#111" stroke-width="4"/>
+
+                        <path d="M 28 85 Q 15 95 28 105" fill="white" stroke="#111" stroke-width="4" stroke-linecap="round"/>
+                        <path d="M 132 85 Q 145 95 132 105" fill="white" stroke="#111" stroke-width="4" stroke-linecap="round"/>
+
+                        <image href="${teamLogos[team]}" x="50" y="85" width="60" height="60" opacity="0.9" />
+                    </svg>
+                `;
+
+                return `
+                <div class="flex flex-col items-center justify-center w-full pt-2 pb-4 relative">
+                    <div class="flex items-start justify-center mb-6">
+                        <span class="text-[160px] font-black text-pattern-${team} leading-none tracking-tighter pb-4">${percent}</span>
+                        <span class="text-[44px] font-black ${tColor} mt-4 ml-1">%</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-center mb-8 relative w-full h-[230px]">
+                        ${characterHtml}
+                    </div>
+
+                    <div class="flex items-center gap-2 mb-3 opacity-80">
+                        <span class="text-[13px] text-gray-400">✦</span>
+                        <span class="text-[14px] font-bold text-gray-300 tracking-widest">${fullName}</span>
+                        <span class="text-[13px] text-gray-400">✦</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="text-[34px] font-extrabold text-white tracking-tight">${type}</span>
+                        <button onclick="openRecordPopup('${team}')" class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-all shadow-sm border border-white/10 mt-1.5"><i class="fa-solid fa-arrow-up-from-bracket text-[14px]"></i></button>
+                    </div>
+                    
+                    <div class="text-[14px] font-bold text-gray-500 bg-[#1A1A1C] px-6 py-2.5 rounded-full border border-white/10 shadow-inner">
+                        ${rec.w}승 ${rec.d}무 ${rec.l}패 (총 ${rec.w + rec.d + rec.l}경기)
+                    </div>
+                </div>`;
+            }
+
+            container.innerHTML = createCard(currentWinrateTab, targetPercent, targetStats);
+        }
+
+        function openRecordPopup(team) {
+            const popup = document.getElementById('record-popup'); const bg = document.getElementById('record-popup-bg'); const sheet = document.getElementById('record-popup-sheet');
+            document.getElementById('record-popup-title').innerText = `${team} 직관/집관 기록 추가`;
+            const content = document.getElementById('record-content');
+            
+            let endedMatches = scheduleData.filter(m => (m.team1 === team || m.team2 === team) && liveDataStore[m.id] && liveDataStore[m.id].gameStatus === '종료');
+            endedMatches.sort((a, b) => b.date.localeCompare(a.date));
+            
+            if(endedMatches.length === 0) {
+                content.innerHTML = `<div class="text-center text-gray-500 py-10 font-medium">아직 종료된 경기가 없습니다.</div>`;
+            } else {
+                content.innerHTML = endedMatches.map(m => {
+                    let live = liveDataStore[m.id];
+                    let rec = watchRecords.find(r => r.matchId === m.id && r.team === team);
+                    let type = rec ? rec.type : null;
+                    
+                    let awayScore = parseInt(live.awayScore||0); let homeScore = parseInt(live.homeScore||0);
+                    let isWin = (m.team1 === team && awayScore > homeScore) || (m.team2 === team && homeScore > awayScore);
+                    let isLose = (m.team1 === team && awayScore < homeScore) || (m.team2 === team && homeScore < awayScore);
+                    let resultBadge = isWin ? `<span class="text-[10px] font-black text-white bg-red-600 px-2 py-0.5 rounded-full shadow-sm">승</span>` : (isLose ? `<span class="text-[10px] font-black text-white bg-gray-600 px-2 py-0.5 rounded-full shadow-sm">패</span>` : `<span class="text-[10px] font-black text-white bg-green-600 px-2 py-0.5 rounded-full shadow-sm">무</span>`);
+
+                    let aColor = awayScore > homeScore ? 'text-white' : 'text-gray-500';
+                    let hColor = homeScore > awayScore ? 'text-white' : 'text-gray-500';
+                    let dateStr = m.date.substring(5).replace('-','.');
+                    
+                    let teamColor = team === 'KIA' ? '#EA0029' : '#074CA1';
+                    let btnJik = `<button onclick="setWatchRecord(${m.id}, '${team}', '직관')" class="flex-1 py-2 rounded-xl text-[13px] font-black tracking-wider transition-all ${type === '직관' ? 'text-white shadow-md' : 'bg-white/5 text-gray-400 border border-white/5 hover:bg-white/10'}" ${type === '직관' ? `style="background-color: ${teamColor}; border: 1px solid ${teamColor};"` : ''}>직관</button>`;
+                    let btnJip = `<button onclick="setWatchRecord(${m.id}, '${team}', '집관')" class="flex-1 py-2 rounded-xl text-[13px] font-black tracking-wider transition-all ${type === '집관' ? 'text-white shadow-md' : 'bg-white/5 text-gray-400 border border-white/5 hover:bg-white/10'}" ${type === '집관' ? `style="background-color: ${teamColor}; border: 1px solid ${teamColor}; opacity: 0.85;"` : ''}>집관</button>`;
+                    let btnDel = type ? `<button onclick="setWatchRecord(${m.id}, '${team}', null)" class="w-[42px] flex justify-center items-center rounded-xl bg-white/5 text-gray-500 hover:text-white border border-white/5 transition-colors"><i class="fa-solid fa-trash text-[13px]"></i></button>` : '';
+
+                    return `
+                    <div class="bg-white/5 border border-white/10 rounded-[20px] p-4 flex flex-col gap-3.5 shadow-sm">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[12px] font-bold text-gray-400 tracking-wide">${dateStr} · ${m.stadium}</span>
+                            ${resultBadge}
+                        </div>
+                        <div class="flex justify-between items-center px-2">
+                            <div class="flex items-center gap-3 w-[40%]"><span class="text-[15px] font-black text-white truncate">${m.team1}</span><span class="text-[22px] font-black ${aColor}">${live.awayScore}</span></div>
+                            <span class="text-[11px] text-gray-600 font-black">VS</span>
+                            <div class="flex items-center justify-end gap-3 w-[40%]"><span class="text-[22px] font-black ${hColor}">${live.homeScore}</span><span class="text-[15px] font-black text-white truncate">${m.team2}</span></div>
+                        </div>
+                        <div class="flex gap-2 mt-1">
+                            ${btnJik}
+                            ${btnJip}
+                            ${btnDel}
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+            
+            popup.classList.remove('hidden'); popup.classList.add('flex');
+            setTimeout(() => { bg.classList.remove('opacity-0', 'pointer-events-none'); bg.classList.add('opacity-100', 'pointer-events-auto'); sheet.classList.remove('translate-y-full'); }, 10);
+        }
+        
+        function closeRecordPopup() {
+            const popup = document.getElementById('record-popup'); const bg = document.getElementById('record-popup-bg'); const sheet = document.getElementById('record-popup-sheet');
+            bg.classList.remove('opacity-100', 'pointer-events-auto'); bg.classList.add('opacity-0', 'pointer-events-none'); sheet.classList.add('translate-y-full');
+            setTimeout(() => { popup.classList.add('hidden'); popup.classList.remove('flex'); }, 300);
+        }
+
+        function setWatchRecord(matchId, team, type) {
+            const docRef = db.collection("watch_records").doc(`${matchId}_${team}`);
+            if (type) {
+                docRef.set({ matchId, team, type }).then(() => openRecordPopup(team));
+            } else {
+                docRef.delete().then(() => openRecordPopup(team));
+            }
+        }
+
         window.onload = async () => {
-            initAudioPlayer(); renderCheerSongs(); await syncWithFirestore(); setTeamFilter(selectedTeam); switchTab(0); renderBanners(); 
+            initAudioPlayer(); renderCheerSongs(); await syncWithFirestore(); setTeamFilter(selectedTeam); switchTab(1); renderBanners(); 
             const bannerCarousel = document.getElementById('banner-carousel');
             if (bannerCarousel) {
                 bannerCarousel.addEventListener('scroll', () => { const scrollPos = bannerCarousel.scrollLeft; const width = bannerCarousel.clientWidth; if (width === 0) return; const newIndex = Math.round(scrollPos / width); if (newIndex !== currentBanner) { currentBanner = newIndex; updateBannerDots(currentBanner); } });
