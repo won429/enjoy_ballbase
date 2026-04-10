@@ -63,18 +63,14 @@
         #ctrl-wrapper { border: 1px solid rgba(255,255,255,0.08) !important; background: #151515 !important; padding: 2px !important; box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;}
         #ctrl-team button.text-gray-400 { color: #94a3b8 !important; font-weight: 600 !important; }
 
-        .pt-safe { padding-top: max(20px, env(safe-area-inset-top)); }
-        .pt-main { padding-top: calc(max(20px, env(safe-area-inset-top)) + 70px); }
+        .pt-safe { padding-top: max(20px, env(safe-area-inset-top)) !important; }
+        .pt-main { padding-top: calc(max(20px, env(safe-area-inset-top)) + 70px) !important; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         .ctrl-item { transition: max-width 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), padding 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.7s ease; overflow: hidden; white-space: nowrap; width: max-content; justify-self: end; }
         .ctrl-show { max-width: 200px; opacity: 1; padding-left: 16px; padding-right: 16px; }
-        #ctrl-team.ctrl-show { padding-left: 2px; padding-right: 2px; }
+        #ctrl-team.ctrl-show, #ctrl-back.ctrl-show { padding-left: 2px; padding-right: 2px; }
         .ctrl-hide { max-width: 0px; opacity: 0; padding-left: 0px; padding-right: 0px; pointer-events: none; }
-        
-        #bottom-sheet, #lineup-popup-sheet { background: rgba(18, 18, 20, 0.85) !important; backdrop-filter: blur(40px) saturate(200%); -webkit-backdrop-filter: blur(40px) saturate(200%); border: 1px solid rgba(255,255,255,0.1) !important; border-bottom: none !important; border-radius: 32px 32px 0 0 !important; box-shadow: 0 -10px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1) !important; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s; }
-        #bottom-sheet { transform: translate(-50%, 120%); opacity: 0; }
-        #bottom-sheet.show { transform: translate(-50%, 0); opacity: 1; }
         
         .calendar-day { font-weight: 600 !important; border-radius: 12px !important; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); aspect-ratio: 1 / 1.2; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 14px; }
         .calendar-day.today { background: rgba(255,255,255,0.06) !important; border: 1px solid var(--point-color) !important; box-shadow: inset 0 0 20px var(--point-bg), 0 0 10px var(--point-bg) !important; transform: scale(1.02); }
@@ -101,7 +97,6 @@
 
         #full-player { background: rgba(5,5,5,0.9) !important; backdrop-filter: blur(30px); }
         #toast-msg { background: rgba(20, 20, 22, 0.85) !important; backdrop-filter: blur(20px); color: #fff !important; font-weight: 700 !important; border: 1px solid rgba(255,255,255,0.1) !important; box-shadow: 0 20px 40px rgba(0,0,0,0.6) !important; border-radius: 100px !important; padding: 12px 24px !important; }
-        #lineup-popup-bg { background: rgba(0, 0, 0, 0.6) !important; backdrop-filter: blur(12px) !important; }
 
         .text-pattern-KIA {
             background-color: #EA0029;
@@ -134,11 +129,19 @@
     <audio id="audio-player" style="display:none;" preload="auto" autoplay playsinline></audio>
     <div id="mobile-wrapper" class="w-full h-full max-w-[430px] relative z-10 flex flex-col overflow-hidden sm:border-x border-white/10 sm:shadow-2xl">
         <header class="absolute top-0 left-0 right-0 pt-safe px-4 pb-2 z-30 app-bg">
-            <div class="mt-2 flex items-center gap-2 w-full pb-1">
-                <div class="flex items-center flex-1 bg-[#151515] rounded-full px-4 py-2 shadow-lg min-h-[36px]">
-                    <div class="flex items-baseline gap-1.5 w-full overflow-hidden">
-                        <h1 id="di-main-text" class="text-[13px] font-extrabold text-white flex items-center tracking-tight">KBO 리그<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span></h1>
-                        <span class="text-[11px] text-gray-400 font-medium whitespace-nowrap">2026시즌</span>
+            <div class="mt-2 flex items-center justify-between gap-2 w-full pb-1">
+                <div id="left-wrapper" class="flex items-center flex-1 min-w-0 rounded-full transition-all duration-300" style="border: 1px solid rgba(255,255,255,0.08) !important; background: #151515 !important; padding: 2px !important; box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important; height: 36px;">
+                    <div id="header-title-container" class="flex items-center gap-1.5 px-3 h-full min-w-0">
+                        <h1 id="di-main-text" class="text-[13px] font-extrabold text-white flex items-center tracking-tight shrink-0">KBO 리그<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span></h1>
+                        <span class="text-[11px] text-gray-400 font-medium whitespace-nowrap mb-0.5 truncate">2026시즌</span>
+                    </div>
+                    <div id="header-calendar-nav" class="hidden items-center justify-between w-full h-full min-w-0">
+                        <button onclick="navigateCalendar(-1)" class="w-8 h-8 shrink-0 flex text-white rounded-full bg-point shadow-sm items-center justify-center active:scale-95 transition-transform"><i class="fa-solid fa-chevron-left text-[11px]"></i></button>
+                        <h2 id="calendar-title" class="text-[14px] font-black text-white text-center tracking-tight truncate px-1 min-w-0">2026년 3월</h2>
+                        <button onclick="navigateCalendar(1)" class="w-8 h-8 shrink-0 flex text-white rounded-full bg-point shadow-sm items-center justify-center active:scale-95 transition-transform"><i class="fa-solid fa-chevron-right text-[11px]"></i></button>
+                    </div>
+                    <div id="header-popup-title" class="hidden items-center justify-center w-full h-full px-2 min-w-0">
+                        <h2 id="header-popup-text" class="text-[13px] font-extrabold text-white tracking-tight truncate w-full text-center"></h2>
                     </div>
                 </div>
                 <div id="ctrl-wrapper" class="grid rounded-full h-[36px] shrink-0 overflow-hidden relative transition-all duration-700 origin-right">
@@ -146,6 +149,9 @@
                         <button onclick="setTeamFilter('all')" id="btn-team-all" class="team-btn-anim px-3.5 py-1.5 text-[11px] font-bold rounded-full bg-point text-white shadow-sm active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto">전체</button>
                         <button onclick="setTeamFilter('KIA')" id="btn-team-KIA" class="team-btn-anim px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto">KIA</button>
                         <button onclick="setTeamFilter('삼성')" id="btn-team-삼성" class="team-btn-anim px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 active:scale-95 cursor-pointer shrink-0 relative z-50 pointer-events-auto">삼성</button>
+                    </div>
+                    <div id="ctrl-back" class="ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full" style="grid-area: 1/1;">
+                        <button onclick="goBackFromPopup()" class="px-3.5 py-1.5 text-[11px] font-bold rounded-full bg-point transition-all text-white shadow-sm active:scale-95 cursor-pointer shrink-0 flex items-center gap-1.5 relative z-50 pointer-events-auto"><i class="fa-solid fa-arrow-left text-[10px]"></i>뒤로가기</button>
                     </div>
                     <div id="ctrl-sort" class="ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full" style="grid-area: 1/1;"><span id="sort-text" class="text-[12px] font-bold text-gray-400">날짜순</span></div>
                 </div>
@@ -158,16 +164,9 @@
             </div>
         </main>
 
-        <main id="calendar-screen" class="flex flex-1 min-h-0 relative w-full flex-col overflow-y-auto scrollbar-hide">
+        <main id="calendar-screen" class="flex flex-1 min-h-0 relative w-full flex-col overflow-y-auto scrollbar-hide pb-[260px]">
             <div class="sticky top-0 z-20 px-5 pt-main pb-2 w-full app-bg">
-                <div class="flex justify-center items-center mb-4">
-                    <div class="flex items-center gap-4">
-                        <button onclick="navigateCalendar(-1)" class="w-8 h-8 flex text-gray-400 hover:text-white rounded-full bg-white/5 border border-white/10 items-center justify-center"><i class="fa-solid fa-chevron-left text-sm"></i></button>
-                        <h2 id="calendar-title" class="text-2xl font-bold text-white text-center min-w-[100px]">2026년 3월</h2>
-                        <button onclick="navigateCalendar(1)" class="w-8 h-8 flex text-gray-400 hover:text-white rounded-full bg-white/5 border border-white/10 items-center justify-center"><i class="fa-solid fa-chevron-right text-sm"></i></button>
-                    </div>
-                </div>
-                <div class="relative mb-6 shrink-0 -mx-5">
+                <div class="relative mb-6 mt-1 shrink-0 -mx-5">
                     <div id="banner-carousel" class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-1" style="touch-action: pan-x pan-y;"></div>
                     <div class="absolute -bottom-6 left-0 w-full flex justify-center items-center z-10 pointer-events-none">
                         <div class="relative flex items-center justify-center gap-2 pointer-events-auto">
@@ -188,13 +187,6 @@
             </div>
             <div class="px-5 flex-1 flex flex-col pt-3 pb-[260px] relative z-0">
                 <div id="calendar-grid" class="grid grid-cols-7 gap-2"></div>
-            </div>
-            <div id="bottom-sheet" class="absolute bottom-24 left-1/2 w-[92%] z-30 p-5 cursor-default flex flex-col max-h-[50vh]">
-                <div class="flex justify-between items-center mb-4">
-                    <div class="flex items-center gap-2"><h3 id="sheet-date-title" class="text-lg font-bold text-white">일정</h3><span id="sheet-match-count" class="text-[10px] font-bold text-point bg-point-sub px-2 py-0.5 rounded-full"></span></div>
-                    <button onclick="closeBottomSheet()" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <div id="sheet-matches-container" class="flex-1 overflow-y-auto scrollbar-hide space-y-3 pb-2"></div>
             </div>
         </main>
 
@@ -242,28 +234,17 @@
             </div>
         </main>
 
-        <div id="record-popup" class="fixed inset-0 z-[70] hidden flex-col justify-end pointer-events-none">
-            <div id="record-popup-bg" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 pointer-events-none" onclick="closeRecordPopup()"></div>
-            <div id="record-popup-sheet" class="w-full max-w-[430px] mx-auto flex flex-col relative translate-y-full h-[85vh] pointer-events-auto bg-[#1C1C1E]/95 backdrop-blur-xl rounded-t-[32px] border border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.8)] transition-transform duration-300">
-                <div class="w-full flex justify-center pt-4 pb-2 cursor-pointer" onclick="closeRecordPopup()"><div class="w-12 h-1.5 bg-gray-600 rounded-full"></div></div>
-                <div class="flex justify-between items-center px-6 pb-4 border-b border-white/10">
-                    <h3 id="record-popup-title" class="text-lg font-bold text-white tracking-tight">기록 추가</h3>
-                    <button onclick="closeRecordPopup()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white active:scale-95"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <div id="record-content" class="flex-1 overflow-y-auto scrollbar-hide p-5 relative pb-10 space-y-3"></div>
-            </div>
+        <!-- 새로운 풀스크린 팝업창 디자인 (내부 헤더 완전 삭제, 캡슐 타이틀로 통일) -->
+        <div id="bottom-sheet" class="absolute inset-0 z-[25] hidden flex-col app-bg overflow-hidden">
+            <div id="sheet-matches-container" class="flex-1 overflow-y-auto scrollbar-hide px-5 pt-main pb-[260px] space-y-3"></div>
         </div>
 
-        <div id="lineup-popup" class="fixed inset-0 z-[60] hidden flex-col justify-end pointer-events-none">
-            <div id="lineup-popup-bg" class="absolute inset-0 opacity-0 transition-opacity duration-300 pointer-events-none" onclick="closeLineupPopup()"></div>
-            <div id="lineup-popup-sheet" class="w-full max-w-[430px] mx-auto flex flex-col relative translate-y-full h-[85vh] pointer-events-auto">
-                <div class="w-full flex justify-center pt-4 pb-2 cursor-pointer" onclick="closeLineupPopup()"><div class="w-12 h-1.5 bg-gray-600 rounded-full"></div></div>
-                <div class="flex justify-between items-center px-6 pb-4 border-b border-white/10">
-                    <h3 id="lineup-popup-title" class="text-lg font-bold text-white tracking-tight">매치 센터</h3>
-                    <button onclick="closeLineupPopup()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white active:scale-95"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <div id="lineup-content" class="flex-1 overflow-y-auto scrollbar-hide p-6 relative pb-10"></div>
-            </div>
+        <div id="record-popup" class="absolute inset-0 z-[25] hidden flex-col app-bg overflow-hidden">
+            <div id="record-content" class="flex-1 overflow-y-auto scrollbar-hide px-5 pt-main relative pb-[260px] space-y-3"></div>
+        </div>
+
+        <div id="lineup-popup" class="absolute inset-0 z-[25] hidden flex-col app-bg overflow-hidden">
+            <div id="lineup-content" class="flex-1 overflow-y-auto scrollbar-hide px-6 pt-main relative pb-[260px]"></div>
         </div>
 
         <div id="mini-player" onclick="openFullPlayer()" class="absolute bottom-[104px] left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-[380px] bg-[#1C1C1E] rounded-[32px] p-2 pr-4 flex items-center justify-between transition-all duration-300 translate-y-[150%] opacity-0 pointer-events-none overflow-hidden cursor-pointer">
@@ -426,10 +407,64 @@
             } catch (error) { console.error("파이어베이스 통신 에러:", error); scheduleData = [...initialScheduleData]; }
         }
 
+        function updateHeaderCtrlForPopup(isOpen, titleStr) {
+            const ctrlTeam = document.getElementById('ctrl-team');
+            const ctrlSort = document.getElementById('ctrl-sort');
+            const ctrlBack = document.getElementById('ctrl-back');
+            const ctrlWrapper = document.getElementById('ctrl-wrapper');
+            
+            const titleContainer = document.getElementById('header-title-container');
+            const calNav = document.getElementById('header-calendar-nav');
+            const popupTitleContainer = document.getElementById('header-popup-title');
+            const popupTitleText = document.getElementById('header-popup-text');
+            
+            if (isOpen) {
+                if(ctrlTeam) ctrlTeam.className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full';
+                if(ctrlSort) ctrlSort.className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full';
+                if(ctrlBack) ctrlBack.className = 'ctrl-item ctrl-show flex items-center justify-center gap-1 h-full';
+                if(ctrlWrapper) ctrlWrapper.classList.remove('opacity-0');
+                
+                if(titleContainer) { titleContainer.classList.add('hidden'); titleContainer.classList.remove('flex'); }
+                if(calNav) { calNav.classList.add('hidden'); calNav.classList.remove('flex'); }
+                if(popupTitleContainer) { popupTitleContainer.classList.remove('hidden'); popupTitleContainer.classList.add('flex'); }
+                if(popupTitleText && titleStr) popupTitleText.innerText = titleStr;
+            } else {
+                if(ctrlBack) ctrlBack.className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full';
+                if (currentTabIndex === 0 || currentTabIndex === 1 || currentTabIndex === 3) {
+                    if(ctrlTeam) ctrlTeam.className = 'ctrl-item ctrl-show flex items-center justify-center gap-1 h-full';
+                    if(ctrlWrapper) ctrlWrapper.classList.remove('opacity-0');
+                } else if (currentTabIndex === 2) {
+                    if(ctrlTeam) ctrlTeam.className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full';
+                    if(ctrlWrapper) ctrlWrapper.classList.add('opacity-0');
+                }
+                
+                if(popupTitleContainer) { popupTitleContainer.classList.add('hidden'); popupTitleContainer.classList.remove('flex'); }
+                
+                if (currentTabIndex === 1) { 
+                    if(titleContainer) { titleContainer.classList.add('hidden'); titleContainer.classList.remove('flex'); }
+                    if(calNav) { calNav.classList.remove('hidden'); calNav.classList.add('flex'); }
+                } else {
+                    if(titleContainer) { titleContainer.classList.remove('hidden'); titleContainer.classList.add('flex'); }
+                    if(calNav) { calNav.classList.add('hidden'); calNav.classList.remove('flex'); }
+                }
+            }
+        }
+
+        function goBackFromPopup() {
+            closeBottomSheet();
+            closeRecordPopup();
+            closeLineupPopup();
+            if (currentTabIndex !== 1) {
+                switchTab(1);
+            }
+        }
+
         function switchTab(index) {
             currentTabIndex = index; if (navigator.vibrate) navigator.vibrate(10);
             const screens = [ document.getElementById('winrate-screen'), document.getElementById('calendar-screen'), document.getElementById('ranking-screen'), document.getElementById('cheer-screen') ];
-            closeBottomSheet();
+            
+            closeBottomSheet(); closeLineupPopup(); closeRecordPopup();
+
             const navButtons = document.querySelectorAll('#bottom-nav button'); const indicator = document.getElementById('nav-indicator');
             if(navButtons[index] && indicator) { indicator.style.width = `${navButtons[index].offsetWidth}px`; indicator.style.transform = `translateX(${navButtons[index].offsetLeft - 4}px)`; }
             navButtons.forEach((btn, i) => {
@@ -441,8 +476,25 @@
                 }
             });
 
-            const ctrlTeam = document.getElementById('ctrl-team'); const ctrlSort = document.getElementById('ctrl-sort'); const ctrlWrapper = document.getElementById('ctrl-wrapper'); const mainText = document.getElementById('di-main-text');
-            mainText.innerHTML = (index === 0 ? `직관/집관 승률` : index === 1 ? `KBO 리그` : (index === 2 ? `정규리그 순위` : `구단별 응원가`)) + `<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
+            const ctrlTeam = document.getElementById('ctrl-team'); const ctrlSort = document.getElementById('ctrl-sort'); const ctrlBack = document.getElementById('ctrl-back'); const ctrlWrapper = document.getElementById('ctrl-wrapper'); 
+            
+            const titleContainer = document.getElementById('header-title-container');
+            const calNav = document.getElementById('header-calendar-nav');
+            const popupTitleContainer = document.getElementById('header-popup-title');
+            const mainText = document.getElementById('di-main-text');
+            
+            if (index === 1) { 
+                if(titleContainer) { titleContainer.classList.add('hidden'); titleContainer.classList.remove('flex'); }
+                if(calNav) { calNav.classList.remove('hidden'); calNav.classList.add('flex'); }
+            } else {
+                if(titleContainer) { titleContainer.classList.remove('hidden'); titleContainer.classList.add('flex'); }
+                if(calNav) { calNav.classList.add('hidden'); calNav.classList.remove('flex'); }
+                if(mainText) mainText.innerHTML = (index === 0 ? `직관/집관 승률` : (index === 2 ? `정규리그 순위` : `구단별 응원가`)) + `<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>`;
+            }
+            if(popupTitleContainer) { popupTitleContainer.classList.add('hidden'); popupTitleContainer.classList.remove('flex'); }
+            
+            if(ctrlBack) ctrlBack.className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full';
+
             if (index === 0) { ctrlTeam.className='ctrl-item ctrl-show flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.remove('opacity-0'); }
             else if (index === 1) { ctrlTeam.className='ctrl-item ctrl-show flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.remove('opacity-0'); }
             else if (index === 2) { ctrlTeam.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlSort.className='ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full'; ctrlWrapper.classList.add('opacity-0'); }
@@ -467,6 +519,7 @@
             else { btnWeek.className = 'px-3 py-1 text-xs font-bold rounded-full bg-point text-black transition-all'; btnMonth.className = 'px-3 py-1 text-xs font-medium rounded-full text-gray-400 hover:text-white transition-all'; }
             renderCalendar(); closeBottomSheet(); 
             if (mode === 'week') { setTimeout(() => { const todayGroup = document.getElementById('weekly-today-group'); if (todayGroup) todayGroup.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); }
+            else { setTimeout(() => { const screen = document.getElementById('calendar-screen'); if (screen) screen.scrollTop = 0; }, 10); }
         }
         
         function setTeamFilter(team) {
@@ -562,7 +615,7 @@
                                         let isDraw = awayScore === homeScore;
                                         if (isWin) stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-red-500/30 border-4 border-red-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">WIN</div>`;
                                         else if (isLose) stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-gray-500/30 border-4 border-gray-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">LOSE</div>`;
-                                        else if (isDraw) stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-green-500/30 border-4 border-green-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">DRAW</div>`;
+                                        else if (isDraw) stampHtml = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-green-500/80 border-4 border-green-500/80 rounded-lg px-2 tracking-widest pointer-events-none z-0">DRAW</div>`;
                                     }
                                 }
                             }
@@ -584,8 +637,15 @@
 
         function openDateSheet(dateStr) {
             let matches = scheduleData.filter(m => m.date === dateStr && (selectedTeam === 'all' || m.team1 === selectedTeam || m.team2 === selectedTeam));
+            
+            if (matches.length === 1) {
+                openLineupPopup(matches[0].id);
+                return;
+            }
+
             const sheet = document.getElementById('bottom-sheet'); const container = document.getElementById('sheet-matches-container'); const [y, m, d] = dateStr.split('-');
-            document.getElementById('sheet-date-title').innerText = `${parseInt(m)}월 ${parseInt(d)}일 일정`; document.getElementById('sheet-match-count').innerText = matches.length > 0 ? `${matches.length}경기` : '일정 없음';
+            const titleStr = matches.length > 0 ? `${parseInt(m)}월 ${parseInt(d)}일 일정 (${matches.length}경기)` : `${parseInt(m)}월 ${parseInt(d)}일 일정`;
+            
             container.innerHTML = '';
             if (matches.length === 0) { container.innerHTML = `<div class="flex flex-col items-center justify-center py-6 text-gray-500"><i class="fa-regular fa-calendar-xmark text-3xl mb-2"></i><p class="text-sm">이 날은 예정된 경기가 없습니다.</p></div>`; }
             else {
@@ -609,10 +669,17 @@
                     container.innerHTML += `<div class="bg-white/5 border border-white/5 rounded-xl p-3 flex justify-between items-center cursor-pointer active:scale-95 transition-transform" onclick="openLineupPopup(${match.id})"><div class="flex flex-col gap-1">${statusHtml}<div class="flex items-center gap-2 mt-0.5"><div class="flex items-center gap-1.5">${logo1}<span class="text-sm font-bold text-white">${match.team1}</span></div><span class="text-[11px] text-gray-500 font-bold">vs</span><div class="flex items-center gap-1.5"><span class="text-sm font-bold text-white">${match.team2}</span>${logo2}</div></div></div><button class="w-8 h-8 rounded-full bg-white/5 text-gray-400 hover:text-white flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-chevron-right"></i></button></div>`;
                 });
             }
-            sheet.classList.add('show');
+            sheet.classList.remove('hidden'); sheet.classList.add('flex');
+            updateHeaderCtrlForPopup(true, titleStr);
         }
 
-        function closeBottomSheet() { const sheet = document.getElementById('bottom-sheet'); if (sheet) sheet.classList.remove('show'); }
+        function closeBottomSheet() { 
+            const sheet = document.getElementById('bottom-sheet'); 
+            if (sheet && !sheet.classList.contains('hidden')) { 
+                sheet.classList.add('hidden'); sheet.classList.remove('flex'); 
+                updateHeaderCtrlForPopup(false); 
+            } 
+        }
 
         function renderRanking() {
             const container = document.getElementById('ranking-container'); if (!container) return;
@@ -723,8 +790,32 @@
 
         function navigateCalendar(offset) { if (viewMode === 'week') { currentDate.setDate(currentDate.getDate() + (offset * 7)); } else { currentDate.setDate(1); currentDate.setMonth(currentDate.getMonth() + offset); } renderCalendar(); closeBottomSheet(); }
 
-        function openLineupPopup(matchId) { currentPopupMatchId = matchId; if (navigator.vibrate) navigator.vibrate(5); const popup = document.getElementById('lineup-popup'); const bg = document.getElementById('lineup-popup-bg'); const sheet = document.getElementById('lineup-popup-sheet'); popup.classList.remove('hidden'); popup.classList.add('flex'); setTimeout(() => { bg.classList.remove('opacity-0', 'pointer-events-none'); bg.classList.add('opacity-100', 'pointer-events-auto'); sheet.classList.remove('translate-y-full'); }, 10); renderPopupContent(matchId); }
-        function closeLineupPopup() { currentPopupMatchId = null; const popup = document.getElementById('lineup-popup'); const bg = document.getElementById('lineup-popup-bg'); const sheet = document.getElementById('lineup-popup-sheet'); bg.classList.remove('opacity-100', 'pointer-events-auto'); bg.classList.add('opacity-0', 'pointer-events-none'); sheet.classList.add('translate-y-full'); setTimeout(() => { popup.classList.add('hidden'); popup.classList.remove('flex'); }, 300); }
+        function openLineupPopup(matchId) { 
+            currentPopupMatchId = matchId; 
+            if (navigator.vibrate) navigator.vibrate(5); 
+            const popup = document.getElementById('lineup-popup'); 
+            popup.classList.remove('hidden'); popup.classList.add('flex'); 
+            
+            let titleStr = "경기 정보";
+            const match = scheduleData.find(m => m.id === parseInt(matchId) || m.id === matchId);
+            if(match) {
+                const d = new Date(match.date);
+                const days = ['일', '월', '화', '수', '목', '금', '토'];
+                titleStr = `${d.getMonth()+1}월 ${d.getDate()}일 ${days[d.getDay()]}요일 경기 정보`;
+            }
+            
+            renderPopupContent(matchId); 
+            updateHeaderCtrlForPopup(true, titleStr);
+        }
+        
+        function closeLineupPopup() { 
+            const popup = document.getElementById('lineup-popup'); 
+            if(popup && !popup.classList.contains('hidden')) {
+                currentPopupMatchId = null; 
+                popup.classList.add('hidden'); popup.classList.remove('flex'); 
+                updateHeaderCtrlForPopup(false);
+            }
+        }
 
         function renderPopupContent(matchId) {
             const content = document.getElementById('lineup-content'); const match = scheduleData.find(m => m.id === parseInt(matchId) || m.id === matchId); if (!match) return; const live = liveDataStore[matchId];
@@ -882,9 +973,9 @@
                 let uidType = type === '직관' ? 'jik' : 'jip';
                 let clipId = `clip-${uid}-${uidType}`;
 
-                let waterOpacity1 = type === '집관' ? '0.2' : '0.4';
-                let waterOpacity2 = type === '집관' ? '0.5' : '0.9';
-                let textOpacityClass = type === '집관' ? 'opacity-60' : '';
+                let waterHex1 = type === '집관' ? (team === 'KIA' ? '#FFA3B1' : '#93C5FD') : (team === 'KIA' ? '#FF4D6D' : '#3B82F6');
+                let waterHex2 = type === '집관' ? (team === 'KIA' ? '#FF7A8F' : '#60A5FA') : teamHex[team];
+                
                 let glowClass = isWinner ? 'winning-glow' : '';
                 let glowStyle = isWinner ? `style="--glow-color: ${teamHex[team]}; --glow-color-half: ${teamHex[team]}80;"` : '';
 
@@ -937,10 +1028,10 @@
 
                         <!-- Water Animation -->
                         <g clip-path="url(#${clipId})">
-                            <path fill="${teamHex[team]}" opacity="${waterOpacity1}" d="M -200 ${fillY} Q -150 ${fillY + 8} -100 ${fillY} T 0 ${fillY} T 100 ${fillY} T 200 ${fillY} T 300 ${fillY} T 400 ${fillY} V 200 H -200 Z">
+                            <path fill="${waterHex1}" d="M -200 ${fillY} Q -150 ${fillY + 8} -100 ${fillY} T 0 ${fillY} T 100 ${fillY} T 200 ${fillY} T 300 ${fillY} T 400 ${fillY} V 200 H -200 Z">
                                 <animateTransform attributeName="transform" type="translate" from="0,0" to="-200,0" dur="3s" repeatCount="indefinite" />
                             </path>
-                            <path fill="${teamHex[team]}" opacity="${waterOpacity2}" d="M -200 ${fillY} Q -150 ${fillY - 8} -100 ${fillY} T 0 ${fillY} T 100 ${fillY} T 200 ${fillY} T 300 ${fillY} T 400 ${fillY} V 200 H -200 Z">
+                            <path fill="${waterHex2}" d="M -200 ${fillY} Q -150 ${fillY - 8} -100 ${fillY} T 0 ${fillY} T 100 ${fillY} T 200 ${fillY} T 300 ${fillY} T 400 ${fillY} V 200 H -200 Z">
                                 <animateTransform attributeName="transform" type="translate" from="0,0" to="200,0" dur="2.5s" repeatCount="indefinite" />
                             </path>
                         </g>
@@ -960,8 +1051,8 @@
                 <div class="flex ${rowClass} items-center justify-between w-full bg-[#1A1A1C]/60 rounded-[32px] border border-white/5 px-5 py-4 shadow-xl relative overflow-hidden h-[220px] ${glowClass}" ${glowStyle}>
                     <div class="flex flex-col justify-center ${alignClass} w-[55%] z-10 relative">
                         <div class="flex items-start -mb-1 w-full ${isReverse ? 'justify-end' : 'justify-start'}">
-                            <span class="text-[80px] font-black text-pattern-${team} leading-[0.85] tracking-tighter pointer-events-none select-none ${textOpacityClass}">${percent}</span>
-                            <span class="text-[26px] font-black ${tColor} mt-2 ml-0.5 ${textOpacityClass}">%</span>
+                            <span class="text-[80px] font-black text-pattern-${team} leading-[0.85] tracking-tighter pointer-events-none select-none">${percent}</span>
+                            <span class="text-[26px] font-black ${tColor} mt-2 ml-0.5">%</span>
                         </div>
                         
                         <div class="flex items-center gap-2 mb-3 mt-1 ${isReverse ? 'flex-row-reverse' : 'flex-row'}">
@@ -997,13 +1088,20 @@
             currentRecordTeam = team;
             currentRecordType = type;
             recordPopupDate = new Date();
-            const popup = document.getElementById('record-popup'); const bg = document.getElementById('record-popup-bg'); const sheet = document.getElementById('record-popup-sheet');
-            document.getElementById('record-popup-title').innerText = `${team} ${type} 기록 추가`;
-            
+            const popup = document.getElementById('record-popup'); 
+            const titleStr = `${team} ${type} 기록 추가`;
             renderRecordCalendar(team, type);
-            
             popup.classList.remove('hidden'); popup.classList.add('flex');
-            setTimeout(() => { bg.classList.remove('opacity-0', 'pointer-events-none'); bg.classList.add('opacity-100', 'pointer-events-auto'); sheet.classList.remove('translate-y-full'); }, 10);
+            updateHeaderCtrlForPopup(true, titleStr);
+        }
+
+        function closeRecordPopup() {
+            const popup = document.getElementById('record-popup'); 
+            if(popup && !popup.classList.contains('hidden')) {
+                popup.classList.add('hidden'); popup.classList.remove('flex'); 
+                currentRecordTeam = null; currentRecordType = null; 
+                updateHeaderCtrlForPopup(false);
+            }
         }
 
         function changeRecordMonth(offset, team, type) {
@@ -1061,12 +1159,6 @@
             }
             html += `</div><div class="mt-8 text-center text-[11px] text-gray-500 font-medium tracking-tight">※ 월요일은 야구 없는 날입니다.</div>`;
             content.innerHTML = html;
-        }
-        
-        function closeRecordPopup() {
-            const popup = document.getElementById('record-popup'); const bg = document.getElementById('record-popup-bg'); const sheet = document.getElementById('record-popup-sheet');
-            bg.classList.remove('opacity-100', 'pointer-events-auto'); bg.classList.add('opacity-0', 'pointer-events-none'); sheet.classList.add('translate-y-full');
-            setTimeout(() => { popup.classList.add('hidden'); popup.classList.remove('flex'); currentRecordTeam = null; currentRecordType = null; }, 300);
         }
 
         function setWatchRecord(matchId, team, type) {
