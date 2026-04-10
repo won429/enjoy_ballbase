@@ -27,7 +27,7 @@
         body[data-theme="all"] { --point-color: #ffffff; --point-bg: rgba(255, 255, 255, 0.15); --app-bg: #030303; }
         
         body { font-family: 'KBO-Dia-Gothic', sans-serif; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; touch-action: pan-y; letter-spacing: -0.3px; color: #f8fafc; }
-        .app-bg { background-color: var(--app-bg) !important; background-image: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.04) 0%, transparent 60%) !important; transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .app-bg { background-color: var(--app-bg) !important; background-image: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.04) 0%, transparent 60%) !important; background-attachment: fixed !important; transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         
         /* 글래스모피즘 카드 스타일 */
         .toss-card, .list-card, .bg-\[\#1C1C1E\] {
@@ -133,7 +133,7 @@
 <body class="w-full h-[100dvh] flex justify-center items-center overflow-hidden app-bg" data-theme="all">
     <audio id="audio-player" style="display:none;" preload="auto" autoplay playsinline></audio>
     <div id="mobile-wrapper" class="w-full h-full max-w-[430px] relative z-10 flex flex-col overflow-hidden sm:border-x border-white/10 sm:shadow-2xl">
-        <header class="absolute top-0 left-0 right-0 pt-safe px-4 pb-2 z-30" style="background-color: var(--app-bg);">
+        <header class="absolute top-0 left-0 right-0 pt-safe px-4 pb-2 z-30 app-bg">
             <div class="mt-2 flex items-center gap-2 w-full pb-1">
                 <div class="flex items-center flex-1 bg-[#151515] rounded-full px-4 py-2 shadow-lg min-h-[36px]">
                     <div class="flex items-baseline gap-1.5 w-full overflow-hidden">
@@ -153,13 +153,13 @@
         </header>
 
         <main id="winrate-screen" class="hidden flex-1 min-h-0 relative w-full flex-col overflow-y-auto scrollbar-hide">
-            <div class="w-full pt-main pb-[120px] px-4 flex flex-col min-h-full" id="winrate-container">
+            <div class="w-full pt-main pb-[260px] px-4 flex flex-col min-h-full" id="winrate-container">
                 <!-- 승률 데이터가 JS를 통해 렌더링됩니다 -->
             </div>
         </main>
 
-        <main id="calendar-screen" class="flex flex-1 min-h-0 relative w-full flex-col overflow-y-auto scrollbar-hide pb-[180px]">
-            <div class="sticky top-0 z-20 px-5 pt-main pb-2 w-full border-b border-white/5" style="background-color: var(--app-bg);">
+        <main id="calendar-screen" class="flex flex-1 min-h-0 relative w-full flex-col overflow-y-auto scrollbar-hide pb-[260px]">
+            <div class="sticky top-0 z-20 px-5 pt-main pb-2 w-full app-bg">
                 <div class="flex justify-center items-center mb-4">
                     <div class="flex items-center gap-4">
                         <button onclick="navigateCalendar(-1)" class="w-8 h-8 flex text-gray-400 hover:text-white rounded-full bg-white/5 border border-white/10 items-center justify-center"><i class="fa-solid fa-chevron-left text-sm"></i></button>
@@ -198,10 +198,10 @@
             </div>
         </main>
 
-        <main id="ranking-screen" class="hidden flex-1 min-h-0 relative w-full flex-col overflow-y-auto scrollbar-hide pb-[180px]"><div class="w-full pt-main pb-10" id="ranking-container"></div></main>
+        <main id="ranking-screen" class="hidden flex-1 min-h-0 relative w-full flex-col overflow-y-auto scrollbar-hide pb-[260px]"><div class="w-full pt-main pb-10" id="ranking-container"></div></main>
 
         <main id="cheer-screen" class="hidden flex-1 min-h-0 relative w-full flex-col overflow-y-auto scrollbar-hide">
-            <div class="w-full pt-main pb-[220px] flex flex-col items-center px-5">
+            <div class="w-full pt-main pb-[260px] flex flex-col items-center px-5">
                 <div class="cheer-team cheer-KIA w-full flex-col gap-2 mt-2">
                     <div class="flex items-center justify-between mb-1.5 px-1 w-full">
                         <div class="flex items-center gap-2.5"><img src="https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg" class="w-7 h-7 object-contain drop-shadow-md"><h2 class="text-lg font-extrabold text-white tracking-tight">KIA 응원가</h2></div>
