@@ -116,6 +116,17 @@
             -webkit-text-fill-color: transparent;
             color: transparent;
         }
+
+        /* 승률 위너 효과 애니메이션 */
+        @keyframes border-glow {
+            0%, 100% { box-shadow: 0 0 5px var(--glow-color), inset 0 0 5px var(--glow-color); border-color: var(--glow-color-half); }
+            50% { box-shadow: 0 0 25px var(--glow-color), inset 0 0 12px var(--glow-color); border-color: var(--glow-color); }
+        }
+        .winning-glow {
+            animation: border-glow 2.5s ease-in-out infinite;
+            border-width: 2px !important;
+            z-index: 20;
+        }
     </style>
 </head>
 <body class="w-full h-[100dvh] flex justify-center items-center overflow-hidden app-bg" data-theme="all">
@@ -140,16 +151,8 @@
             </div>
         </header>
 
-        <main id="winrate-screen" class="hidden flex-1 min-h-0 relative w-full flex-col overflow-y-auto scrollbar-hide pb-[180px]">
-            <div class="sticky top-0 z-20 px-5 pt-[calc(max(20px,env(safe-area-inset-top))+56px)] pb-1 w-full border-b border-white/5" style="background-color: var(--app-bg);">
-                <div class="flex justify-center items-center w-full">
-                    <div class="flex gap-1 bg-white/5 p-1.5 rounded-full border border-white/10 w-full max-w-[240px]">
-                        <button onclick="setWinrateTab('직관')" id="btn-wr-jik" class="flex-1 py-1.5 text-[13px] font-bold rounded-full bg-point shadow-sm transition-all">직관</button>
-                        <button onclick="setWinrateTab('집관')" id="btn-wr-jip" class="flex-1 py-1.5 text-[13px] font-medium rounded-full text-gray-400 hover:text-white transition-all">집관</button>
-                    </div>
-                </div>
-            </div>
-            <div class="w-full pt-0 pb-10 px-5 flex flex-col gap-5" id="winrate-container">
+        <main id="winrate-screen" class="hidden flex-1 min-h-0 relative w-full flex-col overflow-y-auto scrollbar-hide">
+            <div class="w-full pt-main pb-[120px] px-4 flex flex-col min-h-full" id="winrate-container">
                 <!-- 승률 데이터가 JS를 통해 렌더링됩니다 -->
             </div>
         </main>
@@ -315,7 +318,7 @@
         const firebaseConfig = { apiKey: "AIzaSyDTGun1KsU2Cepx0oSFF7yki2uu2NT2mfk", authDomain: "kbo-app-98418.firebaseapp.com", projectId: "kbo-app-98418", storageBucket: "kbo-app-98418.firebasestorage.app", messagingSenderId: "1046094812627", appId: "1:1046094812627:web:2c07ec94c7e8028daa4b26" };
         firebase.initializeApp(firebaseConfig); const db = firebase.firestore();
 
-        let scheduleData = []; let rankingData = []; let liveDataStore = {}; let currentPopupMatchId = null; let currentTabIndex = 0; let watchRecords = [];
+        let scheduleData = []; let rankingData = []; let liveDataStore = {}; let currentPopupMatchId = null; let currentTabIndex = 0; let watchRecords = []; let recordPopupDate = new Date(); let currentRecordTeam = null; let currentRecordType = null;
         const initialScheduleData = [];
         const initialRankingData = [{rank:'-',team:'KIA',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'삼성',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'LG',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'두산',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'KT',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'SSG',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'롯데',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'한화',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'NC',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'},{rank:'-',team:'키움',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}];
         
@@ -343,7 +346,6 @@
         const todayStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
         let viewMode = 'month'; let selectedTeam = localStorage.getItem('kbo_selected_team');
         if (selectedTeam !== 'KIA' && selectedTeam !== '삼성') selectedTeam = 'KIA';
-        let currentWinrateTab = '직관';
 
         function showToast(msg) {
             let toast = document.getElementById('toast-msg');
@@ -415,6 +417,10 @@
                 db.collection("watch_records").onSnapshot((snapshot) => {
                     watchRecords = []; snapshot.forEach(doc => watchRecords.push(doc.data()));
                     if (currentTabIndex === 0) renderWinRate();
+                    const popup = document.getElementById('record-popup');
+                    if (popup && !popup.classList.contains('hidden') && currentRecordTeam && currentRecordType) {
+                        renderRecordCalendar(currentRecordTeam, currentRecordType);
+                    }
                 });
             } catch (error) { console.error("파이어베이스 통신 에러:", error); scheduleData = [...initialScheduleData]; }
         }
@@ -837,20 +843,6 @@
         function closeFullPlayer() { const fullPlayer = document.getElementById('full-player'); if(fullPlayer) { fullPlayer.style.transform = ''; fullPlayer.classList.remove('translate-y-0', 'pointer-events-auto'); fullPlayer.classList.add('translate-y-full', 'pointer-events-none'); } }
         function formatTime(seconds) { if (isNaN(seconds)) return "0:00"; const min = Math.floor(seconds / 60); const sec = Math.floor(seconds % 60); return `${min}:${sec < 10 ? '0' + sec : sec}`; }
 
-        function setWinrateTab(tab) {
-            currentWinrateTab = tab;
-            const btnJik = document.getElementById('btn-wr-jik');
-            const btnJip = document.getElementById('btn-wr-jip');
-            if (tab === '직관') {
-                if(btnJik) btnJik.className = 'flex-1 py-1.5 text-[13px] font-bold rounded-full bg-point shadow-sm transition-all';
-                if(btnJip) btnJip.className = 'flex-1 py-1.5 text-[13px] font-medium rounded-full text-gray-400 hover:text-white transition-all';
-            } else {
-                if(btnJip) btnJip.className = 'flex-1 py-1.5 text-[13px] font-bold rounded-full bg-point shadow-sm transition-all';
-                if(btnJik) btnJik.className = 'flex-1 py-1.5 text-[13px] font-medium rounded-full text-gray-400 hover:text-white transition-all';
-            }
-            renderWinRate();
-        }
-
         function renderWinRate() {
             const container = document.getElementById('winrate-container'); if (!container) return;
             let stats = { 'KIA': { '직관': {w:0, l:0, d:0}, '집관': {w:0, l:0, d:0} }, '삼성': { '직관': {w:0, l:0, d:0}, '집관': {w:0, l:0, d:0} } };
@@ -870,180 +862,218 @@
             let team = selectedTeam;
             if (team !== 'KIA' && team !== '삼성') team = 'KIA';
             
-            let targetStats = stats[team][currentWinrateTab];
-            let targetTotal = targetStats.w + targetStats.d + targetStats.l;
+            let jikStats = stats[team]['직관'];
+            let jikTotal = jikStats.w + jikStats.d + jikStats.l;
+            let jikPercent = jikTotal === 0 ? 0 : Math.round((jikStats.w / (jikStats.w + jikStats.l)) * 100);
+            if (isNaN(jikPercent)) jikPercent = 0;
 
-            let targetPercent = targetTotal === 0 ? 0 : Math.round((targetStats.w / (targetStats.w + targetStats.l)) * 100);
-            if (isNaN(targetPercent)) targetPercent = 0;
+            let jipStats = stats[team]['집관'];
+            let jipTotal = jipStats.w + jipStats.d + jipStats.l;
+            let jipPercent = jipTotal === 0 ? 0 : Math.round((jipStats.w / (jipStats.w + jipStats.l)) * 100);
+            if (isNaN(jipPercent)) jipPercent = 0;
 
             let fullName = team === 'KIA' ? 'KIA 타이거즈' : '삼성 라이온즈';
             let tColor = team === 'KIA' ? 'text-[#EA0029]' : 'text-[#074CA1]';
 
-            function createCard(type, percent, rec) {
-                let fillY = 150 - (108 * percent / 100);
+            function createCard(type, percent, rec, isReverse, isWinner) {
+                let fillY = 145 - (110 * percent / 100);
                 let uid = team === 'KIA' ? 'kia' : 'sam';
                 let uidType = type === '직관' ? 'jik' : 'jip';
-                let defId = `art-${uid}-${uidType}`;
                 let clipId = `clip-${uid}-${uidType}`;
+
+                let waterOpacity1 = type === '집관' ? '0.2' : '0.4';
+                let waterOpacity2 = type === '집관' ? '0.5' : '0.9';
+                let textOpacityClass = type === '집관' ? 'opacity-60' : '';
+                let glowClass = isWinner ? 'winning-glow' : '';
+                let glowStyle = isWinner ? `style="--glow-color: ${teamHex[team]}; --glow-color-half: ${teamHex[team]}80;"` : '';
 
                 let faceHtml = '';
                 if (percent >= 60) {
                     faceHtml = `
-                        <path d="M 60 68 Q 64 62 68 68 M 92 68 Q 96 62 100 68" stroke="currentColor" stroke-width="4" stroke-linecap="round" fill="none"/>
-                        <path d="M 74 76 Q 80 82 86 76" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/>
+                        <circle cx="62" cy="55" r="4.5" fill="#111"/>
+                        <circle cx="98" cy="55" r="4.5" fill="#111"/>
+                        <path d="M 72 64 Q 80 74 88 64" stroke="#111" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+                        <ellipse cx="50" cy="62" rx="7" ry="4" fill="#FFB6C1" opacity="0.8"/>
+                        <ellipse cx="110" cy="62" rx="7" ry="4" fill="#FFB6C1" opacity="0.8"/>
                     `;
                 } else if (percent >= 40) {
                     faceHtml = `
-                        <circle cx="64" cy="66" r="3.5" fill="currentColor"/>
-                        <circle cx="96" cy="66" r="3.5" fill="currentColor"/>
-                        <line x1="76" y1="76" x2="84" y2="76" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                        <circle cx="62" cy="58" r="4.5" fill="#111"/>
+                        <circle cx="98" cy="58" r="4.5" fill="#111"/>
+                        <line x1="75" y1="67" x2="85" y2="67" stroke="#111" stroke-width="3.5" stroke-linecap="round"/>
                     `;
                 } else {
                     faceHtml = `
-                        <circle cx="64" cy="68" r="3.5" fill="currentColor"/>
-                        <circle cx="96" cy="68" r="3.5" fill="currentColor"/>
-                        <path d="M 75 79 Q 80 73 85 79" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/>
+                        <circle cx="62" cy="60" r="4.5" fill="#111"/>
+                        <circle cx="98" cy="60" r="4.5" fill="#111"/>
+                        <path d="M 74 72 Q 80 65 86 72" stroke="#111" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+                        <path d="M 108 65 Q 110 70 108 75 Q 106 70 108 65" fill="#60A5FA" opacity="0.9"/>
                     `;
                 }
 
                 let characterHtml = `
-                    <svg width="184" height="230" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-2xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                    <svg width="100%" height="100%" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-2xl absolute inset-0 m-auto pointer-events-none select-none max-h-[100%] max-w-[100%] scale-110">
+                        <!-- Ground Shadow -->
+                        <ellipse cx="80" cy="165" rx="30" ry="5" fill="rgba(0,0,0,0.15)"/>
+                        
+                        <!-- Legs -->
+                        <path d="M 55 130 L 55 150 A 10 10 0 0 0 75 150 L 75 130 Z" fill="#F8FAFC"/>
+                        <path d="M 85 130 L 85 150 A 10 10 0 0 0 105 150 L 105 130 Z" fill="#F8FAFC"/>
+
+                        <!-- Arms -->
+                        <path d="M 40 85 Q 25 90 25 100 Q 25 110 40 115 Z" fill="#F8FAFC"/>
+                        <path d="M 120 85 Q 135 90 135 100 Q 135 110 120 115 Z" fill="#F8FAFC"/>
+
+                        <!-- Body Base -->
+                        <rect x="35" y="25" width="90" height="120" rx="45" fill="#FFFFFF"/>
+                        
+                        <!-- Water Clipping -->
                         <defs>
                             <clipPath id="${clipId}">
-                                <rect x="35" y="30" width="90" height="120" rx="45"/>
+                                <rect x="35" y="25" width="90" height="120" rx="45"/>
                             </clipPath>
-                            <g id="${defId}">
-                                <ellipse cx="52" cy="72" rx="7" ry="4" fill="#FF8A8A" opacity="0.5"/>
-                                <ellipse cx="108" cy="72" rx="7" ry="4" fill="#FF8A8A" opacity="0.5"/>
-                                ${faceHtml}
-                            </g>
                         </defs>
 
-                        <ellipse cx="80" cy="165" rx="35" ry="6" fill="rgba(0,0,0,0.2)"/>
-
-                        <path d="M 55 140 V 155 A 12 12 0 0 0 79 155 V 140" fill="white" stroke="#111" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M 105 140 V 155 A 12 12 0 0 1 81 155 V 140" fill="white" stroke="#111" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-
-                        <rect x="35" y="30" width="90" height="120" rx="45" fill="white" stroke="#111" stroke-width="4"/>
-
-                        <use href="#${defId}" color="#111"/>
-
+                        <!-- Water Animation -->
                         <g clip-path="url(#${clipId})">
-                            <path fill="${teamHex[team]}" opacity="0.5" d="M -200 ${fillY} Q -150 ${fillY + 8} -100 ${fillY} T 0 ${fillY} T 100 ${fillY} T 200 ${fillY} T 300 ${fillY} T 400 ${fillY} V 200 H -200 Z">
+                            <path fill="${teamHex[team]}" opacity="${waterOpacity1}" d="M -200 ${fillY} Q -150 ${fillY + 8} -100 ${fillY} T 0 ${fillY} T 100 ${fillY} T 200 ${fillY} T 300 ${fillY} T 400 ${fillY} V 200 H -200 Z">
                                 <animateTransform attributeName="transform" type="translate" from="0,0" to="-200,0" dur="3s" repeatCount="indefinite" />
                             </path>
-                            <path fill="${teamHex[team]}" opacity="0.95" d="M -200 ${fillY} Q -150 ${fillY - 8} -100 ${fillY} T 0 ${fillY} T 100 ${fillY} T 200 ${fillY} T 300 ${fillY} T 400 ${fillY} V 200 H -200 Z">
+                            <path fill="${teamHex[team]}" opacity="${waterOpacity2}" d="M -200 ${fillY} Q -150 ${fillY - 8} -100 ${fillY} T 0 ${fillY} T 100 ${fillY} T 200 ${fillY} T 300 ${fillY} T 400 ${fillY} V 200 H -200 Z">
                                 <animateTransform attributeName="transform" type="translate" from="0,0" to="200,0" dur="2.5s" repeatCount="indefinite" />
                             </path>
-                            <use href="#${defId}" color="#fff"/>
                         </g>
+                        
+                        <!-- Face -->
+                        ${faceHtml}
 
-                        <rect x="35" y="30" width="90" height="120" rx="45" fill="none" stroke="#111" stroke-width="4"/>
-
-                        <path d="M 28 85 Q 15 95 28 105" fill="white" stroke="#111" stroke-width="4" stroke-linecap="round"/>
-                        <path d="M 132 85 Q 145 95 132 105" fill="white" stroke="#111" stroke-width="4" stroke-linecap="round"/>
-
-                        <image href="${teamLogos[team]}" x="50" y="85" width="60" height="60" opacity="0.9" />
+                        <!-- Team Logo -->
+                        <image href="${teamLogos[team]}" x="50" y="85" width="60" height="60" opacity="0.95" />
                     </svg>
                 `;
 
-                return `
-                <div class="flex flex-col items-center justify-center w-full pt-2 pb-4 relative">
-                    <div class="flex items-start justify-center mb-6">
-                        <span class="text-[160px] font-black text-pattern-${team} leading-none tracking-tighter pb-4">${percent}</span>
-                        <span class="text-[44px] font-black ${tColor} mt-4 ml-1">%</span>
-                    </div>
-                    
-                    <div class="flex items-center justify-center mb-8 relative w-full h-[230px]">
-                        ${characterHtml}
-                    </div>
+                let alignClass = isReverse ? 'items-end' : 'items-start';
+                let rowClass = isReverse ? 'flex-row-reverse' : 'flex-row';
 
-                    <div class="flex items-center gap-2 mb-3 opacity-80">
-                        <span class="text-[13px] text-gray-400">✦</span>
-                        <span class="text-[14px] font-bold text-gray-300 tracking-widest">${fullName}</span>
-                        <span class="text-[13px] text-gray-400">✦</span>
+                return `
+                <div class="flex ${rowClass} items-center justify-between w-full bg-[#1A1A1C]/60 rounded-[32px] border border-white/5 px-5 py-4 shadow-xl relative overflow-hidden h-[220px] ${glowClass}" ${glowStyle}>
+                    <div class="flex flex-col justify-center ${alignClass} w-[55%] z-10 relative">
+                        <div class="flex items-start -mb-1 w-full ${isReverse ? 'justify-end' : 'justify-start'}">
+                            <span class="text-[80px] font-black text-pattern-${team} leading-[0.85] tracking-tighter pointer-events-none select-none ${textOpacityClass}">${percent}</span>
+                            <span class="text-[26px] font-black ${tColor} mt-2 ml-0.5 ${textOpacityClass}">%</span>
+                        </div>
+                        
+                        <div class="flex items-center gap-2 mb-3 mt-1 ${isReverse ? 'flex-row-reverse' : 'flex-row'}">
+                            <span class="text-[26px] font-extrabold text-white tracking-tight">${type}</span>
+                            <button onclick="openRecordPopup('${team}', '${type}')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/90 hover:bg-white/20 transition-all shadow-sm border border-white/10"><i class="fa-solid fa-plus text-[14px]"></i></button>
+                        </div>
+                        
+                        <div class="text-[12px] font-bold text-gray-300 bg-black/40 px-3.5 py-1.5 rounded-full border border-white/5 shadow-inner whitespace-nowrap truncate tracking-tight">
+                            ${rec.w}승 ${rec.d}무 ${rec.l}패 <span class="opacity-50 text-[10px] font-medium ml-0.5">(${rec.w + rec.d + rec.l}전)</span>
+                        </div>
                     </div>
                     
-                    <div class="flex items-center gap-3 mb-6">
-                        <span class="text-[34px] font-extrabold text-white tracking-tight">${type}</span>
-                        <button onclick="openRecordPopup('${team}')" class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-all shadow-sm border border-white/10 mt-1.5"><i class="fa-solid fa-arrow-up-from-bracket text-[14px]"></i></button>
-                    </div>
-                    
-                    <div class="text-[14px] font-bold text-gray-500 bg-[#1A1A1C] px-6 py-2.5 rounded-full border border-white/10 shadow-inner">
-                        ${rec.w}승 ${rec.d}무 ${rec.l}패 (총 ${rec.w + rec.d + rec.l}경기)
+                    <div class="flex items-center justify-center relative w-[45%] h-full">
+                        ${characterHtml}
                     </div>
                 </div>`;
             }
 
-            container.innerHTML = createCard(currentWinrateTab, targetPercent, targetStats);
+            container.innerHTML = `
+                <div class="flex items-center justify-center gap-2 mb-2 mt-2 opacity-90">
+                    <span class="text-[14px] text-gray-500">✦</span>
+                    <span class="text-[16px] font-black text-gray-200 tracking-widest drop-shadow-md">${fullName}</span>
+                    <span class="text-[14px] text-gray-500">✦</span>
+                </div>
+                <div class="flex flex-col gap-4 w-full pb-8">
+                    ${createCard('직관', jikPercent, jikStats, false, jikPercent > jipPercent)}
+                    ${createCard('집관', jipPercent, jipStats, true, jipPercent > jikPercent)}
+                </div>
+            `;
         }
 
-        function openRecordPopup(team) {
+        function openRecordPopup(team, type) {
+            currentRecordTeam = team;
+            currentRecordType = type;
+            recordPopupDate = new Date();
             const popup = document.getElementById('record-popup'); const bg = document.getElementById('record-popup-bg'); const sheet = document.getElementById('record-popup-sheet');
-            document.getElementById('record-popup-title').innerText = `${team} 직관/집관 기록 추가`;
-            const content = document.getElementById('record-content');
+            document.getElementById('record-popup-title').innerText = `${team} ${type} 기록 추가`;
             
-            let endedMatches = scheduleData.filter(m => (m.team1 === team || m.team2 === team) && liveDataStore[m.id] && liveDataStore[m.id].gameStatus === '종료');
-            endedMatches.sort((a, b) => b.date.localeCompare(a.date));
-            
-            if(endedMatches.length === 0) {
-                content.innerHTML = `<div class="text-center text-gray-500 py-10 font-medium">아직 종료된 경기가 없습니다.</div>`;
-            } else {
-                content.innerHTML = endedMatches.map(m => {
-                    let live = liveDataStore[m.id];
-                    let rec = watchRecords.find(r => r.matchId === m.id && r.team === team);
-                    let type = rec ? rec.type : null;
-                    
-                    let awayScore = parseInt(live.awayScore||0); let homeScore = parseInt(live.homeScore||0);
-                    let isWin = (m.team1 === team && awayScore > homeScore) || (m.team2 === team && homeScore > awayScore);
-                    let isLose = (m.team1 === team && awayScore < homeScore) || (m.team2 === team && homeScore < awayScore);
-                    let resultBadge = isWin ? `<span class="text-[10px] font-black text-white bg-red-600 px-2 py-0.5 rounded-full shadow-sm">승</span>` : (isLose ? `<span class="text-[10px] font-black text-white bg-gray-600 px-2 py-0.5 rounded-full shadow-sm">패</span>` : `<span class="text-[10px] font-black text-white bg-green-600 px-2 py-0.5 rounded-full shadow-sm">무</span>`);
-
-                    let aColor = awayScore > homeScore ? 'text-white' : 'text-gray-500';
-                    let hColor = homeScore > awayScore ? 'text-white' : 'text-gray-500';
-                    let dateStr = m.date.substring(5).replace('-','.');
-                    
-                    let teamColor = team === 'KIA' ? '#EA0029' : '#074CA1';
-                    let btnJik = `<button onclick="setWatchRecord(${m.id}, '${team}', '직관')" class="flex-1 py-2 rounded-xl text-[13px] font-black tracking-wider transition-all ${type === '직관' ? 'text-white shadow-md' : 'bg-white/5 text-gray-400 border border-white/5 hover:bg-white/10'}" ${type === '직관' ? `style="background-color: ${teamColor}; border: 1px solid ${teamColor};"` : ''}>직관</button>`;
-                    let btnJip = `<button onclick="setWatchRecord(${m.id}, '${team}', '집관')" class="flex-1 py-2 rounded-xl text-[13px] font-black tracking-wider transition-all ${type === '집관' ? 'text-white shadow-md' : 'bg-white/5 text-gray-400 border border-white/5 hover:bg-white/10'}" ${type === '집관' ? `style="background-color: ${teamColor}; border: 1px solid ${teamColor}; opacity: 0.85;"` : ''}>집관</button>`;
-                    let btnDel = type ? `<button onclick="setWatchRecord(${m.id}, '${team}', null)" class="w-[42px] flex justify-center items-center rounded-xl bg-white/5 text-gray-500 hover:text-white border border-white/5 transition-colors"><i class="fa-solid fa-trash text-[13px]"></i></button>` : '';
-
-                    return `
-                    <div class="bg-white/5 border border-white/10 rounded-[20px] p-4 flex flex-col gap-3.5 shadow-sm">
-                        <div class="flex justify-between items-center">
-                            <span class="text-[12px] font-bold text-gray-400 tracking-wide">${dateStr} · ${m.stadium}</span>
-                            ${resultBadge}
-                        </div>
-                        <div class="flex justify-between items-center px-2">
-                            <div class="flex items-center gap-3 w-[40%]"><span class="text-[15px] font-black text-white truncate">${m.team1}</span><span class="text-[22px] font-black ${aColor}">${live.awayScore}</span></div>
-                            <span class="text-[11px] text-gray-600 font-black">VS</span>
-                            <div class="flex items-center justify-end gap-3 w-[40%]"><span class="text-[22px] font-black ${hColor}">${live.homeScore}</span><span class="text-[15px] font-black text-white truncate">${m.team2}</span></div>
-                        </div>
-                        <div class="flex gap-2 mt-1">
-                            ${btnJik}
-                            ${btnJip}
-                            ${btnDel}
-                        </div>
-                    </div>`;
-                }).join('');
-            }
+            renderRecordCalendar(team, type);
             
             popup.classList.remove('hidden'); popup.classList.add('flex');
             setTimeout(() => { bg.classList.remove('opacity-0', 'pointer-events-none'); bg.classList.add('opacity-100', 'pointer-events-auto'); sheet.classList.remove('translate-y-full'); }, 10);
+        }
+
+        function changeRecordMonth(offset, team, type) {
+            recordPopupDate.setMonth(recordPopupDate.getMonth() + offset);
+            renderRecordCalendar(team, type);
+        }
+
+        function renderRecordCalendar(team, type) {
+            const content = document.getElementById('record-content');
+            const year = recordPopupDate.getFullYear();
+            const month = recordPopupDate.getMonth();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            let html = `<div class="flex justify-between items-center mb-6 px-2"><button onclick="changeRecordMonth(-1, '${team}', '${type}')" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white active:scale-95"><i class="fa-solid fa-chevron-left text-sm"></i></button><span class="text-lg font-bold text-white tracking-wide">${year}년 ${month + 1}월</span><button onclick="changeRecordMonth(1, '${team}', '${type}')" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white active:scale-95"><i class="fa-solid fa-chevron-right text-sm"></i></button></div><div class="grid grid-cols-7 gap-2 text-center mb-2"><div class="text-[11px] font-bold text-[#EA0029]">일</div><div class="text-[11px] font-bold text-gray-400">월</div><div class="text-[11px] font-bold text-gray-400">화</div><div class="text-[11px] font-bold text-gray-400">수</div><div class="text-[11px] font-bold text-gray-400">목</div><div class="text-[11px] font-bold text-gray-400">금</div><div class="text-[11px] font-bold text-[#074CA1]">토</div></div><div class="grid grid-cols-7 gap-2">`;
+
+            for (let i = 0; i < firstDay; i++) { html += `<div></div>`; }
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                let d = new Date(year, month, i);
+                let dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                let isMonday = d.getDay() === 1;
+                
+                let match = scheduleData.find(m => m.date === dateStr && (m.team1 === team || m.team2 === team));
+                let live = match ? liveDataStore[match.id] : null;
+                let hasEndedMatch = match && live && live.gameStatus === '종료';
+
+                let record = watchRecords.find(r => r.team === team && r.matchId === (match ? match.id : -1));
+                
+                let dayClass = "h-11 rounded-full flex items-center justify-center text-[15px] font-bold transition-all active:scale-95 ";
+                let onClick = ""; let style = "";
+
+                if (isMonday) {
+                    dayClass += "text-gray-600 opacity-30 pointer-events-none";
+                } else if (!hasEndedMatch) {
+                    dayClass += "text-gray-500 opacity-40 cursor-default";
+                    onClick = `onclick="showToast('이 날은 종료된 경기가 없습니다.')"`;
+                } else {
+                    if (record) {
+                        if (record.type === type) {
+                            let tColor = team === 'KIA' ? '#EA0029' : '#074CA1';
+                            dayClass += "text-white shadow-md";
+                            style = `style="background-color: ${tColor}; border: 1px solid ${tColor};"`;
+                            onClick = `onclick="setWatchRecord(${match.id}, '${team}', null)"`;
+                        } else {
+                            dayClass += "text-gray-600 opacity-30 cursor-default";
+                            onClick = `onclick="showToast('이미 ${record.type}로 등록된 경기입니다.')"`;
+                        }
+                    } else {
+                        dayClass += "bg-white/5 text-gray-200 hover:bg-white/10 cursor-pointer border border-white/10";
+                        onClick = `onclick="setWatchRecord(${match.id}, '${team}', '${type}')"`;
+                    }
+                }
+                html += `<button class="${dayClass}" ${style} ${onClick}>${i}</button>`;
+            }
+            html += `</div><div class="mt-8 text-center text-[11px] text-gray-500 font-medium tracking-tight">※ 월요일은 야구 없는 날입니다.</div>`;
+            content.innerHTML = html;
         }
         
         function closeRecordPopup() {
             const popup = document.getElementById('record-popup'); const bg = document.getElementById('record-popup-bg'); const sheet = document.getElementById('record-popup-sheet');
             bg.classList.remove('opacity-100', 'pointer-events-auto'); bg.classList.add('opacity-0', 'pointer-events-none'); sheet.classList.add('translate-y-full');
-            setTimeout(() => { popup.classList.add('hidden'); popup.classList.remove('flex'); }, 300);
+            setTimeout(() => { popup.classList.add('hidden'); popup.classList.remove('flex'); currentRecordTeam = null; currentRecordType = null; }, 300);
         }
 
         function setWatchRecord(matchId, team, type) {
             const docRef = db.collection("watch_records").doc(`${matchId}_${team}`);
             if (type) {
-                docRef.set({ matchId, team, type }).then(() => openRecordPopup(team));
+                docRef.set({ matchId, team, type });
             } else {
-                docRef.delete().then(() => openRecordPopup(team));
+                docRef.delete();
             }
         }
 
