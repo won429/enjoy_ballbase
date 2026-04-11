@@ -816,7 +816,6 @@
                 return;
             }
 
-            // 간편 탭 전용 카드 렌더링 함수
             const getTeamHtml = (teamInfo, rankNum, isPodium) => {
                 if (!teamInfo) return ``;
                 let displayRank = (teamInfo.rank !== '-' && !String(teamInfo.rank).includes('T') && rankCounts[teamInfo.rank] > 1) ? 'T' + teamInfo.rank : teamInfo.rank;
@@ -825,121 +824,73 @@
                 const hex = teamHex[teamInfo.team] || '#888888';
                 
                 if (isPodium) {
-                    let rankColor = rankNum === 1 ? 'text-[#FBBF24]' : rankNum === 2 ? 'text-gray-300' : 'text-[#FCA5A5]';
-                    let imgHtml = '';
-                    let parentPb = 'pb-2'; // 로고일 때는 기본 하단 여백 유지
-                    let badgeHtml = '';
-                    
+                    let rankColor = rankNum === 1 ? 'text-[#FBBF24]' : rankNum === 2 ? 'text-[#E2E8F0]' : 'text-[#FCA5A5]';
+                    let imgHtml = ''; let badgeHtml = '';
                     if (charUrl) {
-                        // 캐릭터 이미지가 등록된 경우 (배지 완전 숨김, 여백 제거)
-                        let charSize = rankNum === 1 ? 'w-[96px] h-[96px]' : 'w-[80px] h-[80px]';
-                        parentPb = 'pb-0'; // 캐릭터는 하단 패딩 제거
-                        imgHtml = `
-                            <div class="${charSize} flex items-end justify-center relative z-10 -mb-[4px]">
-                                <img src="${charUrl}" class="w-full h-full object-contain object-bottom scale-[1.25] drop-shadow-[0_8px_6px_rgba(0,0,0,0.6)] origin-bottom">
-                            </div>
-                        `;
+                        // 캐릭터는 배지 삭제, 마이너스 마진으로 단상에 완벽 밀착
+                        let charSize = rankNum === 1 ? 'w-[100px] h-[100px]' : 'w-[85px] h-[85px]';
+                        imgHtml = `<div class="${charSize} flex items-end justify-center relative z-10 -mb-[3px]"><img src="${charUrl}" class="w-full h-full object-contain object-bottom scale-[1.25] drop-shadow-[0_10px_10px_rgba(0,0,0,0.6)] origin-bottom"></div>`;
                     } else {
-                        // 캐릭터 주소가 없을 때 기존 고급 로고 및 배지 유지
-                        let sizeClass = rankNum === 1 ? 'w-[84px] h-[84px]' : 'w-[68px] h-[68px]';
-                        let scaleClass = rankNum === 1 ? 'scale-[1.15]' : 'scale-110';
-                        imgHtml = `
-                            <div class="${sizeClass} rounded-full bg-white flex items-center justify-center p-2 shadow-[0_12px_25px_rgba(0,0,0,0.7)] relative overflow-hidden border-[4px]" style="border-color: ${hex};">
-                                <img src="${logoUrl}" class="w-full h-full object-contain ${scaleClass} drop-shadow-sm">
-                            </div>
-                        `;
-                        badgeHtml = `
-                            <div class="bg-[#111111]/90 border border-white/10 rounded-full px-3 py-1 mb-2 flex items-center gap-1.5 shadow-[0_4px_10px_rgba(0,0,0,0.5)] whitespace-nowrap backdrop-blur-md">
-                                <span class="text-[12px] font-black ${rankColor}">${displayRank}위</span>
-                                <span class="text-[13px] font-bold text-white">${teamInfo.team}</span>
-                            </div>
-                        `;
+                        // 로고는 배지 유지
+                        let sizeClass = rankNum === 1 ? 'w-[80px] h-[80px]' : 'w-[64px] h-[64px]';
+                        imgHtml = `<div class="${sizeClass} rounded-full bg-white flex items-center justify-center p-2 shadow-xl relative overflow-hidden border-[3px]" style="border-color: ${hex};"><img src="${logoUrl}" class="w-full h-full object-contain scale-110 drop-shadow-sm"></div>`;
+                        badgeHtml = `<div class="bg-black/80 border border-white/10 rounded-full px-3 py-1 mb-2 flex items-center gap-1.5 shadow-lg backdrop-blur-md"><span class="text-[11px] font-black ${rankColor}">${displayRank}위</span><span class="text-[12px] font-bold text-white">${teamInfo.team}</span></div>`;
                     }
-
-                    return `
-                        <div class="flex flex-col items-center relative z-10 transition-transform hover:-translate-y-1 px-1 ${parentPb}">
-                            ${badgeHtml}
-                            ${imgHtml}
-                        </div>
-                    `;
+                    return `<div class="flex flex-col items-center relative z-10 transition-transform hover:-translate-y-1 px-1">${badgeHtml}${imgHtml}</div>`;
                 } else {
-                    // 하위권 (기존 유지)
-                    return `
-                        <div class="flex flex-col items-center w-[70px] mb-2 transition-transform active:scale-95">
-                            <div class="bg-black/40 border border-white/5 rounded-full px-2 py-0.5 mb-1.5 flex items-center gap-1 shadow-sm whitespace-nowrap">
-                                <span class="text-[10px] font-black text-gray-400">${displayRank}위</span>
-                                <span class="text-[11px] font-bold text-gray-200">${teamInfo.team}</span>
-                            </div>
-                            <div class="w-[56px] h-[56px] rounded-full bg-white flex items-center justify-center p-1.5 shadow-[0_4px_8px_rgba(0,0,0,0.5)] border-[3px]" style="border-color: ${hex};">
-                                <img src="${logoUrl}" class="w-full h-full object-contain scale-110">
-                            </div>
-                        </div>
-                    `;
+                    return `<div class="flex flex-col items-center w-[70px] mb-2 transition-transform active:scale-95"><div class="bg-black/50 border border-white/5 rounded-full px-2 py-0.5 mb-2 flex items-center gap-1 shadow-sm whitespace-nowrap"><span class="text-[10px] font-black text-gray-400">${displayRank}위</span><span class="text-[11px] font-bold text-gray-200">${teamInfo.team}</span></div><div class="w-14 h-14 rounded-full bg-white flex items-center justify-center p-1.5 shadow-lg border-[3px]" style="border-color: ${hex};"><img src="${logoUrl}" class="w-full h-full object-contain scale-110"></div></div>`;
                 }
             };
 
-            // 순위별 그룹화 로직 (1, 2, 3위 정확히 분리)
-            let rank1Teams = rankingData.filter(t => parseInt(String(t.rank).replace('T', '')) === 1);
-            let rank2Teams = rankingData.filter(t => parseInt(String(t.rank).replace('T', '')) === 2);
-            let rank3Teams = rankingData.filter(t => parseInt(String(t.rank).replace('T', '')) === 3);
-            let restTeams = rankingData.filter(t => { 
-                let r = parseInt(String(t.rank).replace('T', '')); 
-                return isNaN(r) || r > 3; 
-            });
+            let r1 = rankingData.filter(t => parseInt(String(t.rank).replace('T', '')) === 1);
+            let r2 = rankingData.filter(t => parseInt(String(t.rank).replace('T', '')) === 2);
+            let r3 = rankingData.filter(t => parseInt(String(t.rank).replace('T', '')) === 3);
+            let rRest = rankingData.filter(t => { let r = parseInt(String(t.rank).replace('T', '')); return isNaN(r) || r > 3; });
+
+            // 완벽한 백분율 비율 계산: 인원수에 따라 넓어지되, 빈 단상도 비율을 완벽하게 유지 (찌그러짐 원천 차단)
+            let w1 = Math.max(120, r1.length * 90);
+            let w2 = Math.max(75, r2.length * 80);
+            let w3 = Math.max(75, r3.length * 80);
+            let totalW = w1 + w2 + w3;
+            let pct1 = (w1 / totalW) * 100;
+            let pct2 = (w2 / totalW) * 100;
+            let pct3 = (w3 / totalW) * 100;
 
             let htmlSimple = `
-            <div class="flex flex-col items-center w-full px-4 pt-32 pb-12">
-                <!-- E-Sports 사이버펑크 네온 스테이지 (1, 2, 3위) -->
-                <div class="flex items-end justify-center w-full max-w-[360px] mx-auto select-none relative mt-4">
-                    <!-- 2위 (좌측) - 실버 네온 -->
-                    <div class="flex flex-col items-center z-10 relative transition-all duration-500 min-w-[70px]" style="flex: ${rank2Teams.length === 0 ? '0.7' : Math.max(1, rank2Teams.length)};">
-                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 flex items-end justify-center gap-1 w-max pb-1">
-                            ${rank2Teams.map(t => getTeamHtml(t, 2, true)).join('')}
-                        </div>
-                        <div class="w-full h-[90px] bg-[#111113] border-x border-t border-white/5 border-t-[3px] border-t-[#94A3B8] rounded-t-[16px] flex justify-center pt-3 shadow-[0_-8px_20px_rgba(148,163,184,0.15),_inset_0_10px_20px_-10px_rgba(148,163,184,0.3)] relative overflow-hidden">
-                            <div class="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_6px,rgba(255,255,255,0.02)_6px,rgba(255,255,255,0.02)_8px)] pointer-events-none"></div>
-                            <div class="absolute top-0 w-full h-1/2 bg-gradient-to-b from-[#94A3B8]/15 to-transparent pointer-events-none"></div>
-                            <span class="text-[44px] font-black text-[#E2E8F0] opacity-60 tracking-tighter relative z-10" style="text-shadow: 0 0 15px rgba(148,163,184,0.6);">2</span>
+            <div class="flex flex-col items-center w-full px-4 pt-28 pb-12">
+                <div class="flex items-end justify-center w-full max-w-[360px] mx-auto select-none relative mt-6 h-[155px]">
+                    <!-- 2위 단상 (실버 메탈) -->
+                    <div class="flex flex-col items-center z-10 relative transition-all duration-300 h-[100px]" style="width: ${pct2}%;">
+                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 flex items-end justify-center gap-0.5 w-max pb-0.5 z-10">${r2.map(t => getTeamHtml(t, 2, true)).join('')}</div>
+                        <div class="w-full h-full bg-gradient-to-b from-[#2E3038] to-[#16171B] border-t-[3px] border-[#A1A1AA] border-l border-l-white/5 rounded-tl-[24px] flex justify-center pt-3 shadow-[inset_0_2px_10px_rgba(255,255,255,0.08),_-10px_0_20px_rgba(0,0,0,0.3)] relative overflow-hidden">
+                            <span class="text-[48px] font-black text-[#A1A1AA] opacity-20 tracking-tighter" style="text-shadow: 0 2px 4px rgba(0,0,0,0.8);">2</span>
                         </div>
                     </div>
                     
-                    <!-- 1위 (중앙) - 골드 네온 -->
-                    <div class="flex flex-col items-center z-20 shrink-0 -mx-3 drop-shadow-2xl relative transition-all duration-500 min-w-[120px]" style="flex: ${rank1Teams.length === 0 ? '1.2' : Math.max(1.3, rank1Teams.length * 1.1)};">
-                        <!-- 1위 황금빛 네온 후광 효과 -->
-                        <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[160px] h-[160px] bg-[#FBBF24] opacity-20 blur-[50px] rounded-full z-0 pointer-events-none"></div>
-                        
-                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 flex items-end justify-center gap-1 w-max pb-1 z-20">
-                            ${rank1Teams.map(t => getTeamHtml(t, 1, true)).join('')}
-                        </div>
-                        <div class="w-full h-[130px] bg-[#131418] border-x border-t border-white/5 border-t-[4px] border-t-[#FBBF24] rounded-t-[20px] flex justify-center pt-4 shadow-[0_-12px_25px_rgba(251,191,36,0.25),_inset_0_15px_30px_-10px_rgba(251,191,36,0.35)] relative z-10 overflow-hidden">
-                            <div class="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_6px,rgba(255,255,255,0.02)_6px,rgba(255,255,255,0.02)_8px)] pointer-events-none"></div>
-                            <div class="absolute top-0 w-full h-1/2 bg-gradient-to-b from-[#FBBF24]/20 to-transparent pointer-events-none"></div>
-                            <span class="text-[56px] font-black text-[#FBBF24] opacity-80 tracking-tighter relative z-10" style="text-shadow: 0 0 20px rgba(251,191,36,0.8);">1</span>
+                    <!-- 1위 단상 (골드 메탈) -->
+                    <div class="flex flex-col items-center z-20 shrink-0 -mx-3 drop-shadow-[0_-5px_25px_rgba(0,0,0,0.7)] relative transition-all duration-300 h-[145px]" style="width: ${pct1}%;">
+                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 flex items-end justify-center gap-0.5 w-max pb-0.5 z-20">${r1.map(t => getTeamHtml(t, 1, true)).join('')}</div>
+                        <div class="w-full h-full bg-gradient-to-b from-[#3E414A] to-[#1A1C20] border-t-[4px] border-[#FBBF24] border-x border-x-white/10 rounded-t-[28px] flex justify-center pt-4 shadow-[inset_0_4px_12px_rgba(255,255,255,0.12)] relative z-10 overflow-hidden">
+                            <div class="absolute top-0 w-full h-1/2 bg-gradient-to-b from-[#FBBF24]/5 to-transparent"></div>
+                            <span class="text-[64px] font-black text-[#FBBF24] opacity-30 tracking-tighter" style="text-shadow: 0 2px 5px rgba(0,0,0,0.8);">1</span>
                         </div>
                     </div>
                     
-                    <!-- 3위 (우측) - 브론즈 네온 -->
-                    <div class="flex flex-col items-center z-10 relative transition-all duration-500 min-w-[65px]" style="flex: ${rank3Teams.length === 0 ? '0.6' : Math.max(1, rank3Teams.length)};">
-                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 flex items-end justify-center gap-1 w-max pb-1">
-                            ${rank3Teams.map(t => getTeamHtml(t, 3, true)).join('')}
-                        </div>
-                        <div class="w-full h-[65px] bg-[#0E0F11] border-x border-t border-white/5 border-t-[3px] border-t-[#FCA5A5] rounded-t-[16px] flex justify-center pt-2 shadow-[0_-6px_15px_rgba(252,165,165,0.15),_inset_0_8px_15px_-10px_rgba(252,165,165,0.25)] relative overflow-hidden">
-                            <div class="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_6px,rgba(255,255,255,0.02)_6px,rgba(255,255,255,0.02)_8px)] pointer-events-none"></div>
-                            <div class="absolute top-0 w-full h-1/2 bg-gradient-to-b from-[#FCA5A5]/15 to-transparent pointer-events-none"></div>
-                            <span class="text-[34px] font-black text-[#FCA5A5] opacity-60 tracking-tighter relative z-10" style="text-shadow: 0 0 12px rgba(252,165,165,0.6);">3</span>
+                    <!-- 3위 단상 (브론즈 메탈) -->
+                    <div class="flex flex-col items-center z-10 relative transition-all duration-300 h-[75px]" style="width: ${pct3}%;">
+                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 flex items-end justify-center gap-0.5 w-max pb-0.5 z-10">${r3.map(t => getTeamHtml(t, 3, true)).join('')}</div>
+                        <div class="w-full h-full bg-gradient-to-b from-[#27292F] to-[#121316] border-t-[3px] border-[#CD7F32] border-r border-r-white/5 rounded-tr-[24px] flex justify-center pt-1.5 shadow-[inset_0_2px_10px_rgba(255,255,255,0.08),_10px_0_20px_rgba(0,0,0,0.3)] relative overflow-hidden">
+                            <span class="text-[38px] font-black text-[#CD7F32] opacity-20 tracking-tighter" style="text-shadow: 0 2px 4px rgba(0,0,0,0.8);">3</span>
                         </div>
                     </div>
                 </div>
                 
                 <!-- 구분선 -->
-                <div class="w-full bg-white/10 rounded-full h-[2px] my-8"></div>
+                <div class="w-full bg-white/10 rounded-full h-[2px] my-10 shadow-[0_0_10px_rgba(255,255,255,0.1)]"></div>
 
-                <!-- 하위권 라인 (4~10위) 옹기종기 모여있는 느낌 -->
-                <div class="flex flex-wrap justify-center gap-x-5 gap-y-6 w-full max-w-[360px] px-2">
-                    ${restTeams.map(t => getTeamHtml(t, 4, false)).join('')}
-                </div>
-            </div>
-            `;
+                <!-- 하위권 라인 -->
+                <div class="flex flex-wrap justify-center gap-x-5 gap-y-8 w-full max-w-[360px] px-2">${rRest.map(t => getTeamHtml(t, 4, false)).join('')}</div>
+            </div>`;
             containerSimple.innerHTML = htmlSimple;
         }
 
