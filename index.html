@@ -308,6 +308,51 @@
         const teamColors = {'LG':'bg-[#C30452]','두산':'bg-[#131230]','KIA':'bg-[#EA0029]','삼성':'bg-[#074CA1]','SSG':'bg-[#CE0E2D]','롯데':'bg-[#041E42]','한화':'bg-[#FF6600]','KT':'bg-[#000000]','NC':'bg-[#315288]','키움':'bg-[#820024]'};
         const teamHex = {'LG':'#C30452','두산':'#131230','KIA':'#EA0029','삼성':'#074CA1','SSG':'#CE0E2D','롯데':'#041E42','한화':'#FF6600','KT':'#000000','NC':'#315288','키움':'#820024'};
         const teamLogos = {'삼성':'https://i.namu.wiki/i/j_0SPzwNZ9_862jjVwlK4NwjVzMUjubABTVYul8Fbr46wE_lj7z7Sfroas9et17E9DGNpIX-NHmn0ZtUUCT-NHkID9yEXgZjhoEQoTS2dHU2k6bbDpJ8GE_32hM61lBccdsz9RQKc2iB_yaQqB2k1Q.svg','KIA':'https://i.namu.wiki/i/W0yZrMENss9Jf2ntFpyly0YSRbO9gPWz87BrCFyqwdnRLm6PMGen9Qwbounrk1sbOCMXHBys_TI9qKB2tUhfth8e563qvChkAxelE9WgwpwJgyHKzOZSD-u2AAtoJBv77pAth-0NNzq4XwGQ0rLfOQ.svg','롯데':'https://i.namu.wiki/i/oKJnVn3EqFm31jpNrP1fqDq1k3xaBnvwfqAKYLjw1Z7UrnqjuouFt8IXymJrANkqsNzqvZ8o0qKwuO550eEFvknICMiYdtMkje1LqgX6yZFE1X_ptk56w8dxB3oqwMJhn5DYDr4bipTLN5dC7aG3sA.svg','NC':'https://i.namu.wiki/i/ht6YMmeHDSes7sNqWy0d2SOJGCI21k3OMMCVrrJ6Hzk7kWbnE862bWve-0VlEI91g9BNQ6MZlZ2zGso_noRFzXM32odjDHs6h0_9SsZVQ22w20HFrHtNRu273-H10Szal7TVWJqRk_BCQn2LneHAsw.svg','LG':'https://i.namu.wiki/i/gexLKDhp3QSYk-bDjR8YkwNDmm7D17CPmgE7ixadcVIHdLs22JOQwgP2riDC85Kl7d5GEJQOyLQutsvB-Koc8DCDRAhp-n-Cx9AJ88fJ5Ki_JsLYlK7dFvs4NqECDr2fOxipLwf9PlAgDEqBWFsZxw.svg','두산':'https://i.namu.wiki/i/qkTbw6qa14fjG0aTU5QL-uhCe_D9gwIGiyTV6l7jYo5DSzl6GwEr-eC-b_I1jIkZgDpF-ARyujk4qPQ0MZqHACoDg9dc3OtyrkZcnwZ5n66T0FR7TDJLvEMWkH8Uh9Z_yubxflY426vm3XvhsUF_MA.svg','SSG':'https://i.namu.wiki/i/X91DumdvUw7RDajMJ7nMRWGsbwd62jUhLShdLTuGu4FTbqMD9m_UHcNVTHEF9Cr-C1BahIZMvHc21r065oSPvEShTnuCOg1ksdxuTNY2BQXI46WOwPfVJssZo5nJk18dT2wQls6s5ZAzAC8_Wywy6g.svg','KT':'https://raw.githubusercontent.com/won429/enjoy_ballbase/refs/heads/main/kt_logo.png','한화':'https://raw.githubusercontent.com/won429/enjoy_ballbase/4335b61443dc7b5522bc8ff327fbbb22641070ae/hanwha_logo.png','키움':'https://i.namu.wiki/i/qNJ-4pGmvhJmKVoGIAR9uce83_Mayu1vsHyd37yK6raEmYcHSiW3MGgFqkihanigvyFK3LVoAwIgZvGr5ymW4ksC5bB643HgAHTkEGoLyrqiL1TRzXrzrNhN1PJPi7I8pGTDfLbyUyNEDj65MsNedw.svg'};
+        
+        const playerImages = {
+            '이의리': 'https://sports-phinf.pstatic.net/player/kbo/default/51648.png?type=w150',
+            '데일': 'https://sports-phinf.pstatic.net/player/kbo/default/56632.png?type=w150',
+            '김호령': 'https://sports-phinf.pstatic.net/player/kbo/default/65653.png?type=w150',
+            '김선빈': 'https://sports-phinf.pstatic.net/player/kbo/default/78603.png?type=w150',
+            '김도영': 'https://sports-phinf.pstatic.net/player/kbo/default/52605.png?type=w150',
+            '카스트로': 'https://sports-phinf.pstatic.net/player/kbo/default/56626.png?type=w150',
+            '나성범': 'https://sports-phinf.pstatic.net/player/kbo/default/62947.png?type=w150',
+            '한준수': 'https://sports-phinf.pstatic.net/player/kbo/default/68646.png?type=w150',
+            '박상준': 'https://sports-phinf.pstatic.net/player/kbo/default/52634.png?type=w150',
+            '박재현': 'https://sports-phinf.pstatic.net/player/kbo/default/55636.png?type=w150',
+            '네일': 'https://sports-phinf.pstatic.net/player/kbo/default/54640.png?type=w150',
+            '김태형': 'https://sports-phinf.pstatic.net/player/kbo/default/55610.png?type=w150',
+            '양현종': 'https://sports-phinf.pstatic.net/player/kbo/default/77637.png?type=w150',
+            '김태군': 'https://sports-phinf.pstatic.net/player/kbo/default/78122.png?type=w150',
+            '올러': 'https://sports-phinf.pstatic.net/player/kbo/default/55633.png?type=w150',
+            '정현창': 'https://sports-phinf.pstatic.net/player/kbo/default/55926.png?type=w150',
+            '윤도현': 'https://sports-phinf.pstatic.net/player/kbo/default/52667.png?type=w150',
+            '박민': 'https://sports-phinf.pstatic.net/player/kbo/default/50657.png?type=w150',
+            '오선우': 'https://sports-phinf.pstatic.net/player/kbo/default/69636.png?type=w150',
+            '고종욱': 'https://sports-phinf.pstatic.net/player/kbo/default/61353.png?type=w150',
+            '이창진': 'https://sports-phinf.pstatic.net/player/kbo/default/64560.png?type=w150',
+            '후라도': 'https://sports-phinf.pstatic.net/player/kbo/default/53375.png?type=w150',
+            '원태인': 'https://sports-phinf.pstatic.net/player/kbo/default/69446.png?type=w150',
+            '최원태': 'https://sports-phinf.pstatic.net/player/kbo/default/65320.png?type=w150',
+            '양창섭': 'https://sports-phinf.pstatic.net/player/kbo/default/68415.png?type=w150',
+            '이승현': 'https://sports-phinf.pstatic.net/player/kbo/default/51454.png?type=w150',
+            '박승규': 'https://sports-phinf.pstatic.net/player/kbo/default/69418.png?type=w150',
+            '김지찬': 'https://sports-phinf.pstatic.net/player/kbo/default/50458.png?type=w150',
+            '김성윤': 'https://sports-phinf.pstatic.net/player/kbo/default/67449.png?type=w150',
+            '최형우': 'https://sports-phinf.pstatic.net/player/kbo/default/72443.png?type=w150',
+            '구자욱': 'https://sports-phinf.pstatic.net/player/kbo/default/62404.png?type=w150',
+            '디아즈': 'https://sports-phinf.pstatic.net/player/kbo/default/54400.png?type=w150',
+            '류지혁': 'https://sports-phinf.pstatic.net/player/kbo/default/62234.png?type=w150',
+            '강민호': 'https://sports-phinf.pstatic.net/player/kbo/default/74540.png?type=w150',
+            '박세혁': 'https://sports-phinf.pstatic.net/player/kbo/default/62244.png?type=w150',
+            '이재현': 'https://sports-phinf.pstatic.net/player/kbo/default/52415.png?type=w150',
+            '김영웅': 'https://sports-phinf.pstatic.net/player/kbo/default/52430.png?type=w150',
+            '김헌곤': 'https://sports-phinf.pstatic.net/player/kbo/default/61404.png?type=w150',
+            '함수호': 'https://sports-phinf.pstatic.net/player/kbo/default/55440.png?type=w150',
+            '전병우': 'https://sports-phinf.pstatic.net/player/kbo/default/65586.png?type=w150',
+            '양우현': 'https://sports-phinf.pstatic.net/player/kbo/default/69403.png?type=w150',
+            '김태훈': 'https://sports-phinf.pstatic.net/player/kbo/default/65040.png?type=w150'
+        };
 
         const cheerData = {
             kia: {
@@ -835,24 +880,59 @@
 
         function renderPopupContent(matchId) {
             const content = document.getElementById('lineup-content'); const match = scheduleData.find(m => m.id === parseInt(matchId) || m.id === matchId); if (!match) return; const live = liveDataStore[matchId];
-            const logo1 = teamLogos[match.team1] ? `<img src="${teamLogos[match.team1]}" class="w-14 h-14 object-contain drop-shadow-lg mb-2">` : `<div class="w-14 h-14 rounded-full ${teamColors[match.team1]} flex items-center justify-center text-white font-bold mb-2">${match.team1}</div>`;
-            const logo2 = teamLogos[match.team2] ? `<img src="${teamLogos[match.team2]}" class="w-14 h-14 object-contain drop-shadow-lg mb-2">` : `<div class="w-14 h-14 rounded-full ${teamColors[match.team2]} flex items-center justify-center text-white font-bold mb-2">${match.team2}</div>`;
-            if (!live) { content.innerHTML = `<div class="flex justify-between items-center mb-8 px-2 mt-2"><div class="flex flex-col items-center w-[40%]">${logo1}<span class="text-[15px] font-black text-white">${match.team1}</span></div><span class="text-2xl font-black text-gray-700">VS</span><div class="flex flex-col items-center w-[40%]">${logo2}<span class="text-[15px] font-black text-white">${match.team2}</span></div></div><div class="flex flex-col items-center justify-center h-48 text-gray-400 mt-4 gap-3 bg-white/5 rounded-2xl border border-white/5"><i class="fa-solid fa-clipboard-question text-4xl text-gray-500 mb-2"></i><span class="text-lg font-bold text-white tracking-wide">라인업 미발표</span><span class="text-[12px] text-gray-500 text-center">선발 라인업은<br>경기 시작 1~2시간 전에 공개됩니다.</span></div>`; return; }
-            let scoreCenterHtml = `<span class="text-2xl font-black text-gray-700">VS</span>`;
             
+            // 날아갔던 스코어보드 완벽 복구 및 여백 슬림화
+            let scoreCenterHtml = `<span class="text-2xl font-black text-gray-700">VS</span>`;
             if (live) {
                 let isCanceled = (live.gameStatus && (live.gameStatus.includes('취소') || live.gameStatus.includes('우취'))) || (live.inning && (live.inning.includes('취소') || live.inning.includes('우취')));
                 if (isCanceled) {
                     let text = (live.inning && (live.inning.includes('취소') || live.inning.includes('우취'))) ? live.inning : (live.gameStatus || '취소');
                     if (text === '취소') text = '우천취소'; text = text.replace('우취', '우천취소');
-                    scoreCenterHtml = `<div class="flex flex-col items-center gap-1"><span class="text-[11px] font-bold text-white bg-blue-600 px-2 py-0.5 rounded-full">${text}</span><span class="text-2xl font-black text-gray-700 mt-2">VS</span></div>`;
+                    scoreCenterHtml = `<div class="flex flex-col items-center gap-1"><span class="text-[11px] font-bold text-white bg-blue-600 px-2 py-0.5 rounded-full">${text}</span><span class="text-2xl font-black text-gray-700 mt-1">VS</span></div>`;
                 } else if (live.gameStatus !== '경기전') {
                     let displayStatus = (live.gameStatus === '경기중' && live.inning) ? live.inning : live.gameStatus; 
-                    scoreCenterHtml = `<div class="flex flex-col items-center gap-1"><span class="text-[11px] font-bold text-white bg-red-600 px-2 py-0.5 rounded-full ${live.gameStatus !== '종료' ? 'live-badge' : 'bg-gray-600'}">${displayStatus}</span><div class="flex items-center gap-2 mt-2"><span class="text-3xl font-black ${live.awayScore > live.homeScore ? 'text-point' : 'text-white'}">${live.awayScore}</span><span class="text-xl text-gray-500">:</span><span class="text-3xl font-black ${live.homeScore > live.awayScore ? 'text-point' : 'text-white'}">${live.homeScore}</span></div></div>`;
+                    let aScore = parseInt(live.awayScore || 0); let hScore = parseInt(live.homeScore || 0);
+                    let aSize = aScore > hScore ? 'text-[38px]' : (aScore < hScore ? 'text-[24px] opacity-50' : 'text-[30px]');
+                    let hSize = hScore > aScore ? 'text-[38px]' : (hScore < aScore ? 'text-[24px] opacity-50' : 'text-[30px]');
+                    let aColor = aScore > hScore ? 'text-point drop-shadow-xl' : 'text-white';
+                    let hColor = hScore > aScore ? 'text-point drop-shadow-xl' : 'text-white';
+                    scoreCenterHtml = `<div class="flex flex-col items-center gap-1"><span class="text-[11px] font-bold text-white bg-red-600 px-2 py-0.5 rounded-full ${live.gameStatus !== '종료' ? 'live-badge' : 'bg-gray-600'}">${displayStatus}</span><div class="flex items-center gap-3 mt-1.5"><span class="${aSize} font-black ${aColor} leading-none tracking-tighter transition-all duration-500">${live.awayScore}</span><span class="text-lg text-gray-500 mb-1">:</span><span class="${hSize} font-black ${hColor} leading-none tracking-tighter transition-all duration-500">${live.homeScore}</span></div></div>`;
                 }
             }
+            
+            const logo1Lg = teamLogos[match.team1] ? `<img src="${teamLogos[match.team1]}" class="w-12 h-12 object-contain drop-shadow-lg mb-1.5">` : `<div class="w-12 h-12 rounded-full ${teamColors[match.team1] || 'bg-gray-600'} flex items-center justify-center text-white font-bold mb-1.5">${match.team1}</div>`;
+            const logo2Lg = teamLogos[match.team2] ? `<img src="${teamLogos[match.team2]}" class="w-12 h-12 object-contain drop-shadow-lg mb-1.5">` : `<div class="w-12 h-12 rounded-full ${teamColors[match.team2] || 'bg-gray-600'} flex items-center justify-center text-white font-bold mb-1.5">${match.team2}</div>`;
+            
+            const scoreBoardHtml = `<div class="flex justify-between items-center mb-5 px-1 mt-0 pb-5 border-b border-white/10"><div class="flex flex-col items-center w-[30%]">${logo1Lg}<span class="text-[15px] font-black text-white tracking-wider">${match.team1}</span><span class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">AWAY</span></div><div class="flex flex-col items-center justify-center w-[40%]">${scoreCenterHtml}</div><div class="flex flex-col items-center w-[30%]">${logo2Lg}<span class="text-[15px] font-black text-white tracking-wider">${match.team2}</span><span class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">HOME</span></div></div>`;
 
-            content.innerHTML = `<div class="flex justify-between items-center mb-8 px-2 mt-2"><div class="flex flex-col items-center w-[30%]">${logo1}<span class="text-[15px] font-black text-white tracking-wider">${match.team1}</span><span class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">AWAY</span></div><div class="flex flex-col items-center justify-center w-[40%]">${scoreCenterHtml}</div><div class="flex flex-col items-center w-[30%]">${logo2}<span class="text-[15px] font-black text-white tracking-wider">${match.team2}</span><span class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">HOME</span></div></div><div class="bg-white/5 rounded-2xl p-4 mb-8 border border-white/5 shadow-inner"><div class="flex justify-center mb-3"><span class="text-[10px] font-bold text-white bg-white/10 px-3 py-1 rounded-full border border-white/10 tracking-widest">선발 투수</span></div><div class="flex justify-between items-center"><div class="flex-1 text-center font-bold text-white text-sm">${live.awayPitcher || '-'}</div><div class="w-px h-6 bg-white/10 mx-4"></div><div class="flex-1 text-center font-bold text-white text-sm">${live.homePitcher || '-'}</div></div></div><div class="flex justify-center mb-4"><span class="text-[10px] font-bold text-gray-400 tracking-widest">선발 타자 라인업</span></div><div class="flex gap-4"><div class="flex-1 flex flex-col gap-2">${(live.awayLineup && live.awayLineup.length > 0) ? live.awayLineup.map((p, i) => `<div class="bg-white/5 rounded-xl px-3 py-2.5 flex items-center gap-3 border border-white/5 shadow-sm"><span class="w-4 text-center text-[11px] font-black text-point opacity-80">${i+1}</span><span class="text-[13px] font-bold text-gray-200">${p}</span></div>`).join('') : '<div class="text-center text-xs text-gray-500 py-4">라인업 정보 없음</div>'}</div><div class="flex-1 flex flex-col gap-2">${(live.homeLineup && live.homeLineup.length > 0) ? live.homeLineup.map((p, i) => `<div class="bg-white/5 rounded-xl px-3 py-2.5 flex items-center gap-3 border border-white/5 shadow-sm"><span class="w-4 text-center text-[11px] font-black text-point opacity-80">${i+1}</span><span class="text-[13px] font-bold text-gray-200">${p}</span></div>`).join('') : '<div class="text-center text-xs text-gray-500 py-4">라인업 정보 없음</div>'}</div></div>`;
+            if (!live || (!live.awayPitcher && (!live.awayLineup || live.awayLineup.length === 0))) { 
+                content.innerHTML = scoreBoardHtml + `<div class="flex flex-col items-center justify-center h-48 text-gray-400 mt-2 gap-3 bg-white/5 rounded-2xl border border-white/5"><i class="fa-solid fa-clipboard-question text-4xl text-gray-500 mb-2"></i><span class="text-lg font-bold text-white tracking-wide">라인업 미발표</span><span class="text-[12px] text-gray-500 text-center">선발 라인업은<br>경기 시작 1~2시간 전에 공개됩니다.</span></div>`; 
+                return; 
+            }
+            
+            let hex1 = teamHex[match.team1] || '#888888'; let hex2 = teamHex[match.team2] || '#888888';
+            let logoImg1 = teamLogos[match.team1] ? `<img src="${teamLogos[match.team1]}" class="w-6 h-6 object-contain">` : `<div class="w-6 h-6 rounded-full ${teamColors[match.team1] || 'bg-gray-600'} flex items-center justify-center text-white text-[8px] font-bold">${match.team1.substring(0,1)}</div>`;
+            let logoImg2 = teamLogos[match.team2] ? `<img src="${teamLogos[match.team2]}" class="w-6 h-6 object-contain">` : `<div class="w-6 h-6 rounded-full ${teamColors[match.team2] || 'bg-gray-600'} flex items-center justify-center text-white text-[8px] font-bold">${match.team2.substring(0,1)}</div>`;
+
+            // 칼각 정렬 템플릿 (w-[22px] 로 번호와 선발뱃지 정렬 맞춤, mb-3.5로 촘촘하게 압축, 등록된 프로필 사진 연동)
+            let apName = live.awayPitcher || '-'; let hpName = live.homePitcher || '-';
+            let apImg = playerImages[apName] ? `<img src="${playerImages[apName]}" class="w-full h-full object-cover object-top pt-1 scale-110 drop-shadow-md">` : `<i class="fa-solid fa-user text-gray-500 text-[16px] mt-1.5"></i>`;
+            let hpImg = playerImages[hpName] ? `<img src="${playerImages[hpName]}" class="w-full h-full object-cover object-top pt-1 scale-110 drop-shadow-md">` : `<i class="fa-solid fa-user text-gray-500 text-[16px] mt-1.5"></i>`;
+            
+            let awayPitcherHtml = `<div class="flex items-center gap-2.5 mb-3.5"><div class="w-[22px] flex justify-center shrink-0"><span class="bg-[#1E3A8A] text-[#93C5FD] border border-[#1E3A8A] text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">선발</span></div><div class="w-9 h-9 bg-[#222224] rounded-full flex items-center justify-center overflow-hidden shrink-0 border border-white/10">${apImg}</div><div class="flex flex-col truncate"><span class="text-[14px] font-bold text-white truncate tracking-tight">${apName}</span><span class="text-[10px] text-gray-400 truncate mt-0.5">투수</span></div></div>`;
+            let homePitcherHtml = `<div class="flex items-center gap-2.5 mb-3.5"><div class="w-[22px] flex justify-center shrink-0"><span class="bg-[#1E3A8A] text-[#93C5FD] border border-[#1E3A8A] text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">선발</span></div><div class="w-9 h-9 bg-[#222224] rounded-full flex items-center justify-center overflow-hidden shrink-0 border border-white/10">${hpImg}</div><div class="flex flex-col truncate"><span class="text-[14px] font-bold text-white truncate tracking-tight">${hpName}</span><span class="text-[10px] text-gray-400 truncate mt-0.5">투수</span></div></div>`;
+            
+            let awayBattersHtml = (live.awayLineup && live.awayLineup.length > 0) ? live.awayLineup.map((p, i) => {
+                let pImg = playerImages[p] ? `<img src="${playerImages[p]}" class="w-full h-full object-cover object-top pt-1 scale-110 drop-shadow-md">` : `<i class="fa-solid fa-user text-gray-500 text-[16px] mt-1.5"></i>`;
+                return `<div class="flex items-center gap-2.5 mb-3.5"><span class="w-[22px] text-center text-[15px] font-black shrink-0" style="color: ${hex1}">${i+1}</span><div class="w-9 h-9 bg-[#222224] rounded-full flex items-center justify-center overflow-hidden shrink-0 border border-white/10">${pImg}</div><div class="flex flex-col truncate"><span class="text-[14px] font-bold text-white truncate tracking-tight">${p}</span><span class="text-[10px] text-gray-400 truncate mt-0.5">타자</span></div></div>`;
+            }).join('') : '<div class="text-center text-xs text-gray-500 py-4">라인업 정보 없음</div>';
+            
+            let homeBattersHtml = (live.homeLineup && live.homeLineup.length > 0) ? live.homeLineup.map((p, i) => {
+                let pImg = playerImages[p] ? `<img src="${playerImages[p]}" class="w-full h-full object-cover object-top pt-1 scale-110 drop-shadow-md">` : `<i class="fa-solid fa-user text-gray-500 text-[16px] mt-1.5"></i>`;
+                return `<div class="flex items-center gap-2.5 mb-3.5"><span class="w-[22px] text-center text-[15px] font-black shrink-0" style="color: ${hex2}">${i+1}</span><div class="w-9 h-9 bg-[#222224] rounded-full flex items-center justify-center overflow-hidden shrink-0 border border-white/10">${pImg}</div><div class="flex flex-col truncate"><span class="text-[14px] font-bold text-white truncate tracking-tight">${p}</span><span class="text-[10px] text-gray-400 truncate mt-0.5">타자</span></div></div>`;
+            }).join('') : '<div class="text-center text-xs text-gray-500 py-4">라인업 정보 없음</div>';
+
+            content.innerHTML = scoreBoardHtml + `<div class="flex w-full pt-1 px-1"><div class="flex-1 flex flex-col pr-2 min-w-0"><div class="flex items-center gap-1.5 mb-3"><div class="w-6 h-6 flex items-center justify-center shrink-0">${logoImg1}</div><span class="text-[14px] font-bold text-gray-200 truncate">${match.team1}선발</span></div>${awayPitcherHtml}<div class="w-full h-px bg-white/5 mb-3.5"></div>${awayBattersHtml}</div><div class="w-px bg-white/10 shrink-0 mx-2 mb-4"></div><div class="flex-1 flex flex-col pl-2 min-w-0"><div class="flex items-center gap-1.5 mb-3"><div class="w-6 h-6 flex items-center justify-center shrink-0">${logoImg2}</div><span class="text-[14px] font-bold text-gray-200 truncate">${match.team2}선발</span></div>${homePitcherHtml}<div class="w-full h-px bg-white/5 mb-3.5"></div>${homeBattersHtml}</div></div>`;
         }
 
         function switchCheerTab(team, type) {
