@@ -348,62 +348,78 @@
 
         async function syncWithFirestore() {
             try {
-                const mergedMatchesSnap = await db.collection("matches_merged").get();
-                if (!mergedMatchesSnap.empty) {
-                    scheduleData = []; mergedMatchesSnap.forEach(doc => { scheduleData.push(...(doc.data().data || [])); });
-                } else {
-                    const oldMatchesSnap = await db.collection("matches").get();
-                    if (!oldMatchesSnap.empty) {
-                        scheduleData = oldMatchesSnap.docs.map(doc => doc.data());
-                        const chunks = chunkDataForFirestore(scheduleData); const batch = db.batch();
-                        chunks.forEach((chunk, index) => { batch.set(db.collection("matches_merged").doc(`chunk_${index}`), { data: chunk }); });
-                        await batch.commit();
+                const p1 = (async () => {
+                    const mergedMatchesSnap = await db.collection("matches_merged").get();
+                    if (!mergedMatchesSnap.empty) {
+                        scheduleData = []; mergedMatchesSnap.forEach(doc => { scheduleData.push(...(doc.data().data || [])); });
                     } else {
-                        scheduleData = [...initialScheduleData];
-                        if (scheduleData.length > 0) {
+                        const oldMatchesSnap = await db.collection("matches").get();
+                        if (!oldMatchesSnap.empty) {
+                            scheduleData = oldMatchesSnap.docs.map(doc => doc.data());
                             const chunks = chunkDataForFirestore(scheduleData); const batch = db.batch();
                             chunks.forEach((chunk, index) => { batch.set(db.collection("matches_merged").doc(`chunk_${index}`), { data: chunk }); });
                             await batch.commit();
+                        } else {
+                            scheduleData = [...initialScheduleData];
+                            if (scheduleData.length > 0) {
+                                const chunks = chunkDataForFirestore(scheduleData); const batch = db.batch();
+                                chunks.forEach((chunk, index) => { batch.set(db.collection("matches_merged").doc(`chunk_${index}`), { data: chunk }); });
+                                await batch.commit();
+                            }
                         }
                     }
-                }
-                scheduleData.sort((a, b) => { if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); return a.date.localeCompare(b.date); });
+                    scheduleData.sort((a, b) => { if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); return a.date.localeCompare(b.date); });
+                })();
 
-                db.collection("rankings_merged").onSnapshot((snapshot) => {
-                    if (!snapshot.empty) {
-                        rankingData = []; snapshot.forEach(doc => rankingData.push(...(doc.data().data || [])));
-                        rankingData.sort((a, b) => { if (a.rank === '-') return 1; if (b.rank === '-') return -1; return parseInt(a.rank) - parseInt(b.rank); });
-                        if (currentTabIndex === 2) renderRanking();
-                    } else {
-                        db.collection("rankings").onSnapshot((oldSnap) => {
-                            if (oldSnap.empty) { rankingData = [...initialRankingData]; } else {
-                                rankingData = oldSnap.docs.map(doc => doc.data()).sort((a, b) => { if (a.rank === '-') return 1; if (b.rank === '-') return -1; return parseInt(a.rank) - parseInt(b.rank); });
-                            }
+                const p2 = new Promise((resolve) => {
+                    let isFirst = true;
+                    db.collection("rankings_merged").onSnapshot((snapshot) => {
+                        if (!snapshot.empty) {
+                            rankingData = []; snapshot.forEach(doc => rankingData.push(...(doc.data().data || [])));
+                            rankingData.sort((a, b) => { if (a.rank === '-') return 1; if (b.rank === '-') return -1; return parseInt(a.rank) - parseInt(b.rank); });
                             if (currentTabIndex === 2) renderRanking();
-                        });
-                    }
+                        } else {
+                            db.collection("rankings").onSnapshot((oldSnap) => {
+                                if (oldSnap.empty) { rankingData = [...initialRankingData]; } else {
+                                    rankingData = oldSnap.docs.map(doc => doc.data()).sort((a, b) => { if (a.rank === '-') return 1; if (b.rank === '-') return -1; return parseInt(a.rank) - parseInt(b.rank); });
+                                }
+                                if (currentTabIndex === 2) renderRanking();
+                            });
+                        }
+                        if(isFirst) { isFirst = false; resolve(); }
+                    });
                 });
 
-                db.collection("lineups_merged").onSnapshot((snapshot) => {
-                    if (!snapshot.empty) {
-                        liveDataStore = {}; snapshot.forEach(doc => { const chunkData = doc.data(); Object.keys(chunkData).forEach(key => { liveDataStore[key] = chunkData[key]; }); });
-                        if (currentTabIndex === 1) renderCalendar(); if (currentPopupMatchId) renderPopupContent(currentPopupMatchId); renderBanners(); renderLineupCheerSongs();
-                    } else {
-                        db.collection("lineups").onSnapshot((oldSnap) => {
-                            oldSnap.forEach(doc => { liveDataStore[doc.id] = doc.data(); });
+                const p3 = new Promise((resolve) => {
+                    let isFirst = true;
+                    db.collection("lineups_merged").onSnapshot((snapshot) => {
+                        if (!snapshot.empty) {
+                            liveDataStore = {}; snapshot.forEach(doc => { const chunkData = doc.data(); Object.keys(chunkData).forEach(key => { liveDataStore[key] = chunkData[key]; }); });
                             if (currentTabIndex === 1) renderCalendar(); if (currentPopupMatchId) renderPopupContent(currentPopupMatchId); renderBanners(); renderLineupCheerSongs();
-                        });
-                    }
+                        } else {
+                            db.collection("lineups").onSnapshot((oldSnap) => {
+                                oldSnap.forEach(doc => { liveDataStore[doc.id] = doc.data(); });
+                                if (currentTabIndex === 1) renderCalendar(); if (currentPopupMatchId) renderPopupContent(currentPopupMatchId); renderBanners(); renderLineupCheerSongs();
+                            });
+                        }
+                        if(isFirst) { isFirst = false; resolve(); }
+                    });
                 });
 
-                db.collection("watch_records").onSnapshot((snapshot) => {
-                    watchRecords = []; snapshot.forEach(doc => watchRecords.push(doc.data()));
-                    if (currentTabIndex === 0) renderWinRate();
-                    const popup = document.getElementById('record-popup');
-                    if (popup && !popup.classList.contains('hidden') && currentRecordTeam && currentRecordType) {
-                        renderRecordCalendar(currentRecordTeam, currentRecordType);
-                    }
+                const p4 = new Promise((resolve) => {
+                    let isFirst = true;
+                    db.collection("watch_records").onSnapshot((snapshot) => {
+                        watchRecords = []; snapshot.forEach(doc => watchRecords.push(doc.data()));
+                        if (currentTabIndex === 0) renderWinRate();
+                        const popup = document.getElementById('record-popup');
+                        if (popup && !popup.classList.contains('hidden') && currentRecordTeam && currentRecordType) {
+                            renderRecordCalendar(currentRecordTeam, currentRecordType);
+                        }
+                        if(isFirst) { isFirst = false; resolve(); }
+                    });
                 });
+
+                await Promise.all([p1, p2, p3, p4]);
             } catch (error) { console.error("파이어베이스 통신 에러:", error); scheduleData = [...initialScheduleData]; }
         }
 
