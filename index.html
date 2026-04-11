@@ -516,9 +516,6 @@
             closeBottomSheet();
             closeRecordPopup();
             closeLineupPopup();
-            if (currentTabIndex !== 1) {
-                switchTab(1);
-            }
         }
 
         function switchTab(index) {
@@ -1300,7 +1297,23 @@
         }
 
         window.onload = async () => {
-            initAudioPlayer(); renderCheerSongs(); await syncWithFirestore(); setTeamFilter(selectedTeam); switchTab(1); renderBanners(); 
+            let reloadTimer = setTimeout(() => {
+                let rBtn = document.getElementById('reload-toast');
+                if (!rBtn) {
+                    rBtn = document.createElement('div'); rBtn.id = 'reload-toast';
+                    rBtn.className = 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center bg-[#18181b]/95 backdrop-blur-md rounded-[32px] p-7 shadow-2xl z-[9999] border border-white/10 text-center min-w-[280px]';
+                    rBtn.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-[40px] text-point mb-4"></i><span class="text-white text-[18px] font-black mb-1.5 tracking-tight">서버 응답 지연 😭</span><span class="text-gray-400 text-[13px] font-medium mb-6 tracking-tight">네트워크 상태가 불안정합니다.</span><button onclick="location.reload()" class="bg-point text-white text-[15px] px-7 py-3 rounded-full font-bold shadow-lg active:scale-95 transition-transform tracking-tight"><i class="fa-solid fa-rotate-right mr-1.5"></i>재로딩하기</button>`;
+                    document.body.appendChild(rBtn);
+                }
+            }, 6000);
+
+            initAudioPlayer(); renderCheerSongs(); 
+            
+            await syncWithFirestore(); 
+            
+            clearTimeout(reloadTimer); let rBtn = document.getElementById('reload-toast'); if (rBtn) rBtn.remove();
+
+            setTeamFilter(selectedTeam); switchTab(1); renderBanners(); 
             const bannerCarousel = document.getElementById('banner-carousel');
             if (bannerCarousel) {
                 bannerCarousel.addEventListener('scroll', () => { const scrollPos = bannerCarousel.scrollLeft; const width = bannerCarousel.clientWidth; if (width === 0) return; const newIndex = Math.round(scrollPos / width); if (newIndex !== currentBanner) { currentBanner = newIndex; updateBannerDots(currentBanner); } });
