@@ -270,7 +270,7 @@
                         <div class="absolute bottom-[5px] right-0 w-[5px] h-[100px] pointer-events-auto"></div>
                     </div>
                     <!-- 🔥 스크롤 없이 그래픽 중계만 뚫어보는 액자 프레임 (pointer-events-none 삭제하여 구멍 영역 터치 허용) 🔥 -->
-                    <iframe id="broadcast-iframe" class="opacity-0 transition-opacity duration-500 hidden absolute w-full h-[1600px] -top-[970px] left-0 border-none z-30 bg-white" scrolling="no" src="" onload="const l=document.getElementById('broadcast-loading'); if(l) {l.classList.add('hidden'); l.classList.remove('flex');} this.classList.remove('opacity-0');"></iframe>
+                    <iframe id="broadcast-iframe" class="opacity-0 transition-opacity duration-500 hidden absolute w-full h-[1600px] -top-[970px] left-0 border-none z-30 bg-white" scrolling="no" src="" onload="setTimeout(() => { const l=document.getElementById('broadcast-loading'); if(l) {l.classList.add('hidden'); l.classList.remove('flex');} this.classList.remove('opacity-0'); }, 800);"></iframe>
                 </div>
             </div>
         </div>
