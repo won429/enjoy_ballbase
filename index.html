@@ -251,7 +251,7 @@
         <div id="lineup-popup" class="absolute inset-0 z-[25] hidden flex-col app-bg overflow-hidden">
             <div id="lineup-content" class="flex-1 overflow-y-auto scrollbar-hide px-6 pt-main relative pb-[260px]"></div>
             <div id="broadcast-content" class="hidden flex-1 overflow-y-auto scrollbar-hide px-5 pt-main relative pb-[260px] flex-col">
-                <div class="w-full h-[350px] bg-[#43724F] rounded-2xl border border-white/10 flex flex-col items-center justify-center text-white/80 shadow-2xl relative overflow-hidden mt-2">
+                <div class="w-full h-[300px] bg-[#43724F] rounded-2xl border border-white/10 flex flex-col items-center justify-center text-white/80 shadow-2xl relative overflow-hidden mt-2">
                     <div class="absolute inset-0 bg-black/10 z-0"></div>
                     <div id="broadcast-placeholder" class="flex flex-col items-center justify-center relative z-10 w-full h-full transition-opacity">
                         <i class="fa-solid fa-baseball text-5xl mb-3 opacity-40"></i>
@@ -263,7 +263,7 @@
                         <span class="text-xs font-bold text-white">중계 화면을 불러오는 중...</span>
                     </div>
                     <!-- 🔥 스크롤 없이 그래픽 중계만 뚫어보는 액자(크롭) 프레임 적용 🔥 -->
-                    <iframe id="broadcast-iframe" class="hidden absolute w-[110%] h-[1600px] -top-[950px] -left-[5%] border-none z-30 bg-white pointer-events-none" scrolling="no" src="" onload="const l=document.getElementById('broadcast-loading'); if(l) {l.classList.add('hidden'); l.classList.remove('flex');}"></iframe>
+                    <iframe id="broadcast-iframe" class="hidden absolute w-full h-[1600px] -top-[970px] left-0 border-none z-30 bg-white pointer-events-none" scrolling="no" src="" onload="const l=document.getElementById('broadcast-loading'); if(l) {l.classList.add('hidden'); l.classList.remove('flex');}"></iframe>
                 </div>
             </div>
         </div>
