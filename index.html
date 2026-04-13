@@ -263,14 +263,7 @@
                         <span class="text-xs font-bold text-white">중계 화면을 불러오는 중...</span>
                     </div>
                     <!-- 🔥 스크롤 없이 그래픽 중계만 뚫어보는 액자(크롭) 프레임 적용 🔥 -->
-                    <iframe id="broadcast-iframe" class="hidden absolute w-[100%] h-[1600px] -top-[950px] left-0 border-none z-30 bg-white pointer-events-none" scrolling="no" src="" onload="const l=document.getElementById('broadcast-loading'); if(l) {l.classList.add('hidden'); l.classList.remove('flex');}"></iframe>
-                </div>
-                <!-- 🔥 네이버 보안 차단 대응용 우회 버튼 🔥 -->
-                <div id="broadcast-fallback" class="hidden mt-5 w-full flex-col items-center gap-2">
-                    <p class="text-[11px] text-gray-400 text-center leading-relaxed">화면이 하얗게 나오거나 연결을 거부하면<br>네이버 자체 보안 정책 때문입니다.</p>
-                    <button id="btn-open-broadcast" class="bg-point hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-lg active:scale-95 transition-all text-xs flex items-center gap-2 w-fit">
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i> 네이버 중계 새 창으로 열기
-                    </button>
+                    <iframe id="broadcast-iframe" class="hidden absolute w-[110%] h-[1600px] -top-[950px] -left-[5%] border-none z-30 bg-white pointer-events-none" scrolling="no" src="" onload="const l=document.getElementById('broadcast-loading'); if(l) {l.classList.add('hidden'); l.classList.remove('flex');}"></iframe>
                 </div>
             </div>
         </div>
