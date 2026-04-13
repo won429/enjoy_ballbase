@@ -258,13 +258,19 @@
                         <p id="broadcast-msg-title" class="text-sm font-bold text-white">상세중계 (그래픽 중계)</p>
                         <p id="broadcast-msg-desc" class="text-[11px] mt-1.5 text-white/60 text-center px-4">관리자 페이지에서 링크 연동 시<br>네이버 스포츠 중계가 표시됩니다.</p>
                     </div>
-                    <!-- 🔥 로딩 스피너 층(z-index)을 40으로 올려서 화면을 완벽히 덮음 🔥 -->
                     <div id="broadcast-loading" class="hidden absolute inset-0 z-40 flex-col items-center justify-center bg-[#43724F]">
                         <i class="fa-solid fa-spinner fa-spin text-3xl text-white mb-3"></i>
                         <span class="text-xs font-bold text-white">중계 화면을 불러오는 중...</span>
                     </div>
-                    <!-- 🔥 투명도(opacity-0)를 줘서 못생긴 로딩 과정을 숨기고 다 되면 나타나게 함 🔥 -->
-                    <iframe id="broadcast-iframe" class="opacity-0 transition-opacity duration-500 hidden absolute w-full h-[1600px] -top-[970px] left-0 border-none z-30 bg-white pointer-events-none" scrolling="no" src="" onload="const l=document.getElementById('broadcast-loading'); if(l) {l.classList.add('hidden'); l.classList.remove('flex');} this.classList.remove('opacity-0');"></iframe>
+                    <!-- 🔥 투명 방어막 (터치/스크롤 원천 차단, 우측 하단 '타석보기' 버튼 영역만 구멍 뚫어놓음) 🔥 -->
+                    <div class="absolute inset-0 z-[35] pointer-events-none">
+                        <div class="absolute top-0 left-0 right-0 bottom-[105px] pointer-events-auto"></div>
+                        <div class="absolute bottom-0 left-0 right-0 h-[5px] pointer-events-auto"></div>
+                        <div class="absolute bottom-[5px] left-0 right-[100px] h-[100px] pointer-events-auto"></div>
+                        <div class="absolute bottom-[5px] right-0 w-[5px] h-[100px] pointer-events-auto"></div>
+                    </div>
+                    <!-- 🔥 스크롤 없이 그래픽 중계만 뚫어보는 액자 프레임 (pointer-events-none 삭제하여 구멍 영역 터치 허용) 🔥 -->
+                    <iframe id="broadcast-iframe" class="opacity-0 transition-opacity duration-500 hidden absolute w-full h-[1600px] -top-[970px] left-0 border-none z-30 bg-white" scrolling="no" src="" onload="const l=document.getElementById('broadcast-loading'); if(l) {l.classList.add('hidden'); l.classList.remove('flex');} this.classList.remove('opacity-0');"></iframe>
                 </div>
             </div>
         </div>
