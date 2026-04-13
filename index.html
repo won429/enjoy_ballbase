@@ -252,11 +252,24 @@
             <div id="lineup-content" class="flex-1 overflow-y-auto scrollbar-hide px-6 pt-main relative pb-[260px]"></div>
             <div id="broadcast-content" class="hidden flex-1 overflow-y-auto scrollbar-hide px-5 pt-main relative pb-[260px] flex-col">
                 <div class="w-full aspect-[4/3] bg-[#43724F] rounded-2xl border border-white/10 flex flex-col items-center justify-center text-white/80 shadow-2xl relative overflow-hidden mt-2">
-                    <div class="absolute inset-0 bg-black/10"></div>
-                    <i class="fa-solid fa-baseball text-5xl mb-3 opacity-40"></i>
-                    <p class="text-sm font-bold z-10 text-white">상세중계 (그래픽 중계)</p>
-                    <p class="text-[11px] mt-1.5 z-10 text-white/60 text-center px-4">추후 관리자 페이지에서 링크 연동 시<br>이 영역에 네이버 스포츠 중계가 표시됩니다.</p>
-                    <iframe id="broadcast-iframe" class="hidden absolute inset-0 w-full h-full border-none z-20" src=""></iframe>
+                    <div class="absolute inset-0 bg-black/10 z-0"></div>
+                    <div id="broadcast-placeholder" class="flex flex-col items-center justify-center relative z-10 w-full h-full transition-opacity">
+                        <i class="fa-solid fa-baseball text-5xl mb-3 opacity-40"></i>
+                        <p id="broadcast-msg-title" class="text-sm font-bold text-white">상세중계 (그래픽 중계)</p>
+                        <p id="broadcast-msg-desc" class="text-[11px] mt-1.5 text-white/60 text-center px-4">관리자 페이지에서 링크 연동 시<br>네이버 스포츠 중계가 표시됩니다.</p>
+                    </div>
+                    <div id="broadcast-loading" class="hidden absolute inset-0 z-20 flex-col items-center justify-center bg-[#43724F]">
+                        <i class="fa-solid fa-spinner fa-spin text-3xl text-white mb-3"></i>
+                        <span class="text-xs font-bold text-white">중계 화면을 불러오는 중...</span>
+                    </div>
+                    <iframe id="broadcast-iframe" class="hidden absolute inset-0 w-full h-full border-none z-30 bg-white" src="" onload="const l=document.getElementById('broadcast-loading'); if(l) {l.classList.add('hidden'); l.classList.remove('flex');}"></iframe>
+                </div>
+                <!-- 🔥 네이버 보안 차단 대응용 우회 버튼 🔥 -->
+                <div id="broadcast-fallback" class="hidden mt-5 w-full flex-col items-center gap-2">
+                    <p class="text-[11px] text-gray-400 text-center leading-relaxed">화면이 하얗게 나오거나 연결을 거부하면<br>네이버 자체 보안 정책 때문입니다.</p>
+                    <button id="btn-open-broadcast" class="bg-point hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-lg active:scale-95 transition-all text-xs flex items-center gap-2 w-fit">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> 네이버 중계 새 창으로 열기
+                    </button>
                 </div>
             </div>
         </div>
@@ -940,6 +953,53 @@
         function renderPopupContent(matchId) {
             const content = document.getElementById('lineup-content'); const match = scheduleData.find(m => m.id === parseInt(matchId) || m.id === matchId); if (!match) return; const live = liveDataStore[matchId];
             
+            // 🔥 관리자 페이지에서 입력한 상세중계 링크 연동 및 상태 처리 🔥
+            const iframe = document.getElementById('broadcast-iframe');
+            const placeholder = document.getElementById('broadcast-placeholder');
+            const loading = document.getElementById('broadcast-loading');
+            const fallback = document.getElementById('broadcast-fallback');
+            const btnOpen = document.getElementById('btn-open-broadcast');
+            const msgTitle = document.getElementById('broadcast-msg-title');
+            const msgDesc = document.getElementById('broadcast-msg-desc');
+
+            if (iframe && placeholder && loading) {
+                if (live && live.broadcastLink) {
+                    // 링크가 있을 때: 로딩 스피너 보여주고 iframe 띄우기
+                    placeholder.classList.add('hidden');
+                    placeholder.classList.remove('flex');
+                    loading.classList.remove('hidden');
+                    loading.classList.add('flex');
+                    
+                    iframe.src = live.broadcastLink;
+                    iframe.classList.remove('hidden');
+                    
+                    if(fallback) {
+                        fallback.classList.remove('hidden');
+                        fallback.classList.add('flex');
+                    }
+                    if(btnOpen) {
+                        btnOpen.onclick = () => window.open(live.broadcastLink, '_blank');
+                    }
+                } else {
+                    // 링크가 없을 때: 텅 빈 상태 메시지
+                    iframe.src = '';
+                    iframe.classList.add('hidden');
+                    loading.classList.add('hidden');
+                    loading.classList.remove('flex');
+                    
+                    placeholder.classList.remove('hidden');
+                    placeholder.classList.add('flex');
+                    
+                    if(msgTitle) msgTitle.innerText = "등록된 상세중계가 없습니다";
+                    if(msgDesc) msgDesc.innerHTML = "관리자가 아직 상세중계 링크를<br>연동하지 않았습니다.";
+                    
+                    if(fallback) {
+                        fallback.classList.add('hidden');
+                        fallback.classList.remove('flex');
+                    }
+                }
+            }
+
             // 날아갔던 스코어보드 완벽 복구 및 여백 슬림화
             let scoreCenterHtml = `<span class="text-2xl font-black text-gray-700">VS</span>`;
             if (live) {
