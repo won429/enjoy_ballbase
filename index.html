@@ -129,6 +129,11 @@
 <body class="w-full h-[100dvh] flex justify-center items-center overflow-hidden app-bg" data-theme="all">
     <audio id="audio-player" style="display:none;" preload="auto" autoplay playsinline></audio>
     <div id="mobile-wrapper" class="w-full h-full max-w-[430px] relative z-10 flex flex-col overflow-hidden sm:border-x border-white/10 sm:shadow-2xl">
+        <!-- 🔥 초기 사이트 접속 로딩 화면 (1.5초 대기) 🔥 -->
+        <div id="initial-loader" class="absolute inset-0 z-[150] flex flex-col items-center justify-center app-bg transition-opacity duration-500">
+            <i class="fa-solid fa-baseball fa-spin text-4xl text-point mb-4 opacity-80"></i>
+            <span class="text-sm font-bold text-white tracking-widest animate-pulse">데이터를 불러오는 중...</span>
+        </div>
         <header class="absolute top-0 left-0 right-0 pt-safe px-4 pb-2 z-30 app-bg">
             <div class="mt-2 flex items-center justify-between gap-2 w-full pb-1">
                 <div id="left-wrapper" class="flex items-center flex-1 min-w-0 rounded-full transition-all duration-300" style="border: 1px solid rgba(255,255,255,0.08) !important; background: #151515 !important; padding: 2px !important; box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important; height: 36px;">
@@ -270,7 +275,7 @@
                         <div class="absolute bottom-[5px] right-0 w-[5px] h-[100px] pointer-events-auto"></div>
                     </div>
                     <!-- 🔥 스크롤 없이 그래픽 중계만 뚫어보는 액자 프레임 (pointer-events-none 삭제하여 구멍 영역 터치 허용) 🔥 -->
-                    <iframe id="broadcast-iframe" class="opacity-0 transition-opacity duration-500 hidden absolute w-full h-[1600px] -top-[970px] left-0 border-none z-30 bg-white" scrolling="no" src="" onload="setTimeout(() => { const l=document.getElementById('broadcast-loading'); if(l) {l.classList.add('hidden'); l.classList.remove('flex');} this.classList.remove('opacity-0'); }, 800);"></iframe>
+                    <iframe id="broadcast-iframe" class="opacity-0 transition-opacity duration-500 hidden absolute w-full h-[1600px] -top-[970px] left-0 border-none z-30 bg-white" scrolling="no" src="" onload="setTimeout(() => { const l=document.getElementById('broadcast-loading'); if(l) {l.classList.add('hidden'); l.classList.remove('flex');} this.classList.remove('opacity-0'); }, 1500);"></iframe>
                 </div>
             </div>
         </div>
@@ -1443,6 +1448,15 @@
                 bannerCarousel.addEventListener('scroll', () => { const scrollPos = bannerCarousel.scrollLeft; const width = bannerCarousel.clientWidth; if (width === 0) return; const newIndex = Math.round(scrollPos / width); if (newIndex !== currentBanner) { currentBanner = newIndex; updateBannerDots(currentBanner); } });
                 bannerCarousel.addEventListener('touchstart', () => clearInterval(bannerInterval), {passive: true}); bannerCarousel.addEventListener('touchend', () => { if (isPlaying) startBannerAutoScroll(); }, {passive: true});
             }
+            
+            // 🔥 초기 로딩 1.5초 대기 후 부드럽게 제거 🔥
+            setTimeout(() => {
+                const initLoader = document.getElementById('initial-loader');
+                if (initLoader) {
+                    initLoader.classList.add('opacity-0');
+                    setTimeout(() => initLoader.remove(), 500);
+                }
+            }, 1500);
         };
     </script>
 </body>
