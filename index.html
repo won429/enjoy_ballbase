@@ -973,13 +973,20 @@
                     // 링크가 있을 때: 로딩 스피너 보여주고 iframe 띄우기
                     placeholder.classList.add('hidden');
                     placeholder.classList.remove('flex');
-                    loading.classList.remove('hidden');
-                    loading.classList.add('flex');
                     
-                    // 🔥 새 화면을 불러올 때마다 투명하게 만들어서 로딩 과정을 숨김 🔥
-                    iframe.classList.add('opacity-0');
-                    iframe.src = live.broadcastLink;
-                    iframe.classList.remove('hidden');
+                    // 🔥 이미 백그라운드에서 미리 로딩해둔 주소랑 같으면 로딩 없이 즉시 짠! (Preload 효과) 🔥
+                    if (iframe.src && iframe.src.includes(live.broadcastLink)) {
+                        loading.classList.add('hidden');
+                        loading.classList.remove('flex');
+                        iframe.classList.remove('opacity-0', 'hidden');
+                    } else {
+                        // 새 링크면 다시 로딩 시작
+                        loading.classList.remove('hidden');
+                        loading.classList.add('flex');
+                        iframe.classList.add('opacity-0');
+                        iframe.src = live.broadcastLink;
+                        iframe.classList.remove('hidden');
+                    }
                     
                     if(fallback) {
                         fallback.classList.remove('hidden');
@@ -1447,6 +1454,18 @@
             if (bannerCarousel) {
                 bannerCarousel.addEventListener('scroll', () => { const scrollPos = bannerCarousel.scrollLeft; const width = bannerCarousel.clientWidth; if (width === 0) return; const newIndex = Math.round(scrollPos / width); if (newIndex !== currentBanner) { currentBanner = newIndex; updateBannerDots(currentBanner); } });
                 bannerCarousel.addEventListener('touchstart', () => clearInterval(bannerInterval), {passive: true}); bannerCarousel.addEventListener('touchend', () => { if (isPlaying) startBannerAutoScroll(); }, {passive: true});
+            }
+
+            // 🔥 [로사 특제] 앱 켜자마자 오늘 우리 팀 중계 미리 몰래 불러오기 (Preload) 🔥
+            const preloadMatch = scheduleData.find(m => m.date === todayStr && (selectedTeam === 'all' || m.team1 === selectedTeam || m.team2 === selectedTeam));
+            if (preloadMatch) {
+                const preloadLive = liveDataStore[preloadMatch.id];
+                if (preloadLive && preloadLive.broadcastLink) {
+                    const preloadIframe = document.getElementById('broadcast-iframe');
+                    if (preloadIframe && (!preloadIframe.src || preloadIframe.src === window.location.href)) {
+                        preloadIframe.src = preloadLive.broadcastLink;
+                    }
+                }
             }
             
             // 🔥 초기 로딩 1.5초 대기 후 부드럽게 제거 🔥
