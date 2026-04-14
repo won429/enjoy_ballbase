@@ -124,6 +124,17 @@
             border-width: 2px !important;
             z-index: 20;
         }
+
+        /* 🔥 Off-screen Rendering (브라우저 속임수) 🔥 */
+        .render-hidden {
+            position: absolute !important;
+            transform: translateX(-9999px) !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            width: 100% !important;
+            height: 100% !important;
+            z-index: -1 !important;
+        }
     </style>
 </head>
 <body class="w-full h-[100dvh] flex justify-center items-center overflow-hidden app-bg" data-theme="all">
@@ -253,9 +264,10 @@
             <div id="record-content" class="flex-1 overflow-y-auto scrollbar-hide px-5 pt-main relative pb-[260px] space-y-3"></div>
         </div>
 
-        <div id="lineup-popup" class="absolute inset-0 z-[25] hidden flex-col app-bg overflow-hidden">
+        <!-- 🔥 Off-screen Rendering 적용 완료: hidden 속성 대신 render-hidden 클래스 사용 🔥 -->
+        <div id="lineup-popup" class="absolute inset-0 z-[25] render-hidden flex flex-col app-bg overflow-hidden">
             <div id="lineup-content" class="flex-1 overflow-y-auto scrollbar-hide px-6 pt-main relative pb-[260px]"></div>
-            <div id="broadcast-content" class="hidden flex-1 overflow-y-auto scrollbar-hide px-5 pt-main relative pb-[260px] flex-col">
+            <div id="broadcast-content" class="render-hidden flex-1 overflow-y-auto scrollbar-hide px-5 pt-main relative pb-[260px] flex flex-col">
                 <div class="w-[calc(100%+40px)] -ml-5 h-[300px] bg-[#43724F] border-y border-white/10 flex flex-col items-center justify-center text-white/80 shadow-2xl relative overflow-hidden mt-2">
                     <div class="absolute inset-0 bg-black/10 z-0"></div>
                     <div id="broadcast-placeholder" class="flex flex-col items-center justify-center relative z-10 w-full h-full transition-opacity">
@@ -274,8 +286,8 @@
                         <div class="absolute bottom-[5px] left-0 right-[100px] h-[100px] pointer-events-auto"></div>
                         <div class="absolute bottom-[5px] right-0 w-[5px] h-[100px] pointer-events-auto"></div>
                     </div>
-                    <!-- 🔥 스크롤 없이 그래픽 중계만 뚫어보는 액자 프레임 (pointer-events-none 삭제하여 구멍 영역 터치 허용) 🔥 -->
-                    <iframe id="broadcast-iframe" class="opacity-0 transition-opacity duration-500 hidden absolute w-full h-[1600px] -top-[970px] left-0 border-none z-30 bg-white" scrolling="no" src="" onload="setTimeout(() => { const l=document.getElementById('broadcast-loading'); if(l) {l.classList.add('hidden'); l.classList.remove('flex');} this.classList.remove('opacity-0'); }, 1500);"></iframe>
+                    <!-- 🔥 스크롤 없이 그래픽 중계만 뚫어보는 액자 프레임 🔥 -->
+                    <iframe id="broadcast-iframe" class="opacity-0 transition-opacity duration-500 absolute w-full h-[1600px] -top-[970px] left-0 border-none z-30 bg-white" scrolling="no" src="" onload="setTimeout(() => { const l=document.getElementById('broadcast-loading'); if(l) {l.classList.add('hidden'); l.classList.remove('flex');} this.classList.remove('opacity-0'); }, 1500);"></iframe>
                 </div>
             </div>
         </div>
@@ -905,7 +917,7 @@
             currentPopupMatchId = matchId; 
             if (navigator.vibrate) navigator.vibrate(5); 
             const popup = document.getElementById('lineup-popup'); 
-            popup.classList.remove('hidden'); popup.classList.add('flex'); 
+            popup.classList.remove('render-hidden'); 
             
             let titleStr = "경기 정보";
             const match = scheduleData.find(m => m.id === parseInt(matchId) || m.id === matchId);
@@ -921,17 +933,17 @@
         
         function closeLineupPopup() { 
             const popup = document.getElementById('lineup-popup'); 
-            if(popup && !popup.classList.contains('hidden')) {
+            if(popup && !popup.classList.contains('render-hidden')) {
                 currentPopupMatchId = null; 
-                popup.classList.add('hidden'); popup.classList.remove('flex'); 
+                popup.classList.add('render-hidden'); 
                 updateHeaderCtrlForPopup(false);
                 
                 isBroadcastView = false;
                 const lineupContent = document.getElementById('lineup-content');
                 const broadcastContent = document.getElementById('broadcast-content');
                 const btnBroadcast = document.getElementById('btn-detail-broadcast');
-                if(lineupContent) lineupContent.classList.remove('hidden');
-                if(broadcastContent) { broadcastContent.classList.add('hidden'); broadcastContent.classList.remove('flex'); }
+                if(lineupContent) { lineupContent.classList.remove('render-hidden'); lineupContent.classList.remove('hidden'); }
+                if(broadcastContent) { broadcastContent.classList.add('render-hidden'); }
                 if(btnBroadcast) btnBroadcast.innerHTML = `<i class="fa-solid fa-tv text-[10px] text-gray-300"></i>상세중계`;
             }
         }
@@ -944,14 +956,12 @@
             const btnBroadcast = document.getElementById('btn-detail-broadcast');
             
             if (isBroadcastView) {
-                lineupContent.classList.add('hidden');
-                broadcastContent.classList.remove('hidden');
-                broadcastContent.classList.add('flex');
+                lineupContent.classList.add('render-hidden');
+                broadcastContent.classList.remove('render-hidden');
                 if(btnBroadcast) btnBroadcast.innerHTML = `<i class="fa-solid fa-list text-[10px] text-gray-300"></i>라인업`;
             } else {
-                lineupContent.classList.remove('hidden');
-                broadcastContent.classList.add('hidden');
-                broadcastContent.classList.remove('flex');
+                lineupContent.classList.remove('render-hidden');
+                broadcastContent.classList.add('render-hidden');
                 if(btnBroadcast) btnBroadcast.innerHTML = `<i class="fa-solid fa-tv text-[10px] text-gray-300"></i>상세중계`;
             }
         }
@@ -984,8 +994,8 @@
                         loading.classList.remove('hidden');
                         loading.classList.add('flex');
                         iframe.classList.add('opacity-0');
-                        iframe.src = live.broadcastLink;
                         iframe.classList.remove('hidden');
+                        iframe.src = live.broadcastLink;
                     }
                     
                     if(fallback) {
@@ -999,6 +1009,7 @@
                     // 링크가 없을 때: 텅 빈 상태 메시지
                     iframe.src = '';
                     iframe.classList.add('hidden');
+                    iframe.classList.add('opacity-0');
                     loading.classList.add('hidden');
                     loading.classList.remove('flex');
                     
