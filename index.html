@@ -232,6 +232,7 @@
         <div id="lineup-popup" class="absolute inset-0 z-[25] render-hidden flex flex-col app-bg overflow-hidden">
             <div id="lineup-content" class="flex-1 overflow-y-auto scrollbar-hide px-6 pt-main relative pb-[260px]"></div>
             <div id="broadcast-content" class="render-hidden flex-1 overflow-y-auto scrollbar-hide px-5 pt-main relative pb-[260px] flex flex-col">
+                <!-- 🚨🚨🚨 상세중계(우리팀) 블럭 크기 조절: 아래 h-[300px] 숫자를 수정하세요 (예: h-[400px]) 🚨🚨🚨 -->
                 <div class="w-[calc(100%+40px)] -ml-5 h-[300px] bg-[#43724F] border-y border-white/10 flex flex-col items-center justify-center text-white/80 shadow-2xl relative overflow-hidden mt-2">
                     <div class="absolute inset-0 bg-black/10 z-0"></div>
                     <div id="broadcast-placeholder" class="flex flex-col items-center justify-center relative z-10 w-full h-full transition-opacity">
@@ -817,7 +818,7 @@
                                         let iL = (m.team1 === selectedTeam && a < h) || (m.team2 === selectedTeam && h < a);
                                         let iD = a === h;
                                         if (iW) stmp = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-red-500/30 border-4 border-red-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">WIN</div>`;
-                                        else if (iL) stmp = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-gray-500/30 border-4 border-gray-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">LOSE</div>`;
+                                        else if (iL) stmp = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 -rotate-[15deg] text-[28px] font-black text-gray-500/30 border-4 border-gray-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">LOSE</div>`;
                                         else if (iD) stmp = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-green-500/80 border-4 border-green-500/80 rounded-lg px-2 tracking-widest pointer-events-none z-0">DRAW</div>`;
                                     }
                                 }
@@ -1165,11 +1166,11 @@
                     }
                     
                     if (l.gameStatus === '경기중') {
-                        ifr.style.top = '-1206px';
+                        ifr.style.top = '-1206px'; /* 🎯🎯🎯 상세중계(우리팀) 경기중 화면 위치 조절 🎯🎯🎯 */
                     } else if (l.gameStatus === '경기전' || !l.gameStatus || l.gameStatus === '예정') {
-                        ifr.style.top = '-970px';
+                        ifr.style.top = '-970px'; /* 🎯🎯🎯 상세중계(우리팀) 경기전 화면 위치 조절 🎯🎯🎯 */
                     } else {
-                        ifr.style.top = '-970px'; /* 여기 숫자를 -1050px ~ -1100px 정도로 조절하세요 (우리 팀 경기 종료 시) */
+                        ifr.style.top = '-970px'; /* 🎯🎯🎯 상세중계(우리팀) 경기종료 화면 위치 조절 🎯🎯🎯 */
                     }
                     
                     if (fb) {
@@ -1223,10 +1224,12 @@
                 } else {
                     let isPre = (!l.gameStatus || l.gameStatus === '경기전' || l.gameStatus === '예정');
                     let isIngame = (l.gameStatus === '경기중');
-                    let tOfs = isPre ? '-970px' : (isIngame ? '-990px' : '-1010px'); /* 마지막 '-1010px' 숫자를 조절하세요 (타 팀 경기 종료 시) */
+                    /* 🎯🎯🎯 타팀(라인업) 경기 화면 위치 조절 (경기전 / 경기중 / 경기종료 순서) 🎯🎯🎯 */
+                    let tOfs = isPre ? '-970px' : (isIngame ? '-995px' : '-935px');
                     
                     c.innerHTML = sbh + `
-                        <div class="w-[calc(100%+48px)] -ml-6 h-[300px] bg-[#43724F] border-y border-white/10 flex flex-col items-center justify-center text-white/80 shadow-2xl relative overflow-hidden mt-2">
+                        <!-- 🚨🚨🚨 타팀(라인업) 블럭 크기 조절: 아래 h-[300px] 숫자를 수정하세요 (예: h-[400px]) 🚨🚨🚨 -->
+                        <div class="w-[calc(100%+48px)] -ml-6 h-[580px] bg-[#43724F] border-y border-white/10 flex flex-col items-center justify-center text-white/80 shadow-2xl relative overflow-hidden mt-2">
                             <div class="absolute inset-0 bg-black/10 z-0"></div>
                             <div id="lu-loading" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-[#43724F]">
                                 <i class="fa-solid fa-spinner fa-spin text-3xl text-white mb-3"></i>
