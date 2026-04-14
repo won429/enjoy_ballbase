@@ -1169,7 +1169,7 @@
                     } else if (l.gameStatus === '경기전' || !l.gameStatus || l.gameStatus === '예정') {
                         ifr.style.top = '-970px';
                     } else {
-                        ifr.style.top = '-1180px';
+                        ifr.style.top = '-1230px';
                     }
                     
                     if (fb) {
@@ -1223,7 +1223,7 @@
                 } else {
                     let isPre = (!l.gameStatus || l.gameStatus === '경기전' || l.gameStatus === '예정');
                     let isIngame = (l.gameStatus === '경기중');
-                    let tOfs = isPre ? '-970px' : (isIngame ? '-1140px' : '-1180px');
+                    let tOfs = isPre ? '-970px' : (isIngame ? '-1140px' : '-1230px');
                     
                     c.innerHTML = sbh + `
                         <div class="w-[calc(100%+48px)] -ml-6 h-[300px] bg-[#43724F] border-y border-white/10 flex flex-col items-center justify-center text-white/80 shadow-2xl relative overflow-hidden mt-2">
