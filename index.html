@@ -1165,11 +1165,11 @@
                     }
                     
                     if (l.gameStatus === '경기중') {
-                        ifr.style.top = '-1190px';
+                        ifr.style.top = '-1206px';
                     } else if (l.gameStatus === '경기전' || !l.gameStatus || l.gameStatus === '예정') {
                         ifr.style.top = '-970px';
                     } else {
-                        ifr.style.top = '-1210px';
+                        ifr.style.top = '-970px'; /* 여기 숫자를 -1050px ~ -1100px 정도로 조절하세요 (우리 팀 경기 종료 시) */
                     }
                     
                     if (fb) {
@@ -1223,7 +1223,7 @@
                 } else {
                     let isPre = (!l.gameStatus || l.gameStatus === '경기전' || l.gameStatus === '예정');
                     let isIngame = (l.gameStatus === '경기중');
-                    let tOfs = isPre ? '-970px' : (isIngame ? '-1190px' : '-1210px');
+                    let tOfs = isPre ? '-970px' : (isIngame ? '-990px' : '-1010px'); /* 마지막 '-1010px' 숫자를 조절하세요 (타 팀 경기 종료 시) */
                     
                     c.innerHTML = sbh + `
                         <div class="w-[calc(100%+48px)] -ml-6 h-[300px] bg-[#43724F] border-y border-white/10 flex flex-col items-center justify-center text-white/80 shadow-2xl relative overflow-hidden mt-2">
