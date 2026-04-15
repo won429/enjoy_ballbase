@@ -36,14 +36,14 @@
         body[data-theme="all"] .bg-point { color: #000000 !important; }
         .bg-point-sub { background: rgba(255,255,255,0.05) !important; color: var(--point-color) !important; border: 1px solid var(--glass-border) !important; }
         
-        #bottom-nav .bg-\[\#1C1C1E\] { background: rgba(15, 15, 18, 0.75) !important; backdrop-filter: blur(30px) saturate(200%); -webkit-backdrop-filter: blur(30px) saturate(200%); border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 100px !important; box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1) !important; padding: 6px !important; }
+        #bottom-nav .bg-\[\#1C1C1E\] { background: rgba(15, 15, 18, 1) !important; backdrop-filter: blur(30px) saturate(200%); -webkit-backdrop-filter: blur(30px) saturate(200%); border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 100px !important; box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1) !important; padding: 6px !important; }
         #nav-indicator { background: var(--point-color) !important; box-shadow: 0 0 12px var(--point-bg) !important; border-radius: 100px !important; height: calc(100% - 12px) !important; top: 6px !important; border: none !important; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
         #bottom-nav button .text-white { color: #FFFFFF !important; font-weight: 800 !important; }
         #bottom-nav button i.text-white { color: #FFFFFF !important; }
         body[data-theme="all"] #bottom-nav button .text-white { color: #000000 !important; }
         body[data-theme="all"] #bottom-nav button i.text-white { color: #000000 !important; }
         
-        #ctrl-wrapper { border: 1px solid rgba(255,255,255,0.08) !important; background: #151515 !important; padding: 2px !important; box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important; }
+        #left-wrapper, #ctrl-wrapper { border: 1px solid rgba(255,255,255,0.08) !important; background: #151515 !important; padding: 2px !important; box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important; }
         #ctrl-team button.text-gray-400 { color: #94a3b8 !important; font-weight: 600 !important; }
         .pt-safe { padding-top: max(20px, env(safe-area-inset-top)) !important; }
         .pt-main { padding-top: calc(max(20px, env(safe-area-inset-top)) + 70px) !important; }
@@ -59,7 +59,7 @@
         .calendar-day.today span { color: var(--point-color) !important; text-shadow: 0 0 8px var(--point-bg) !important; font-weight: 900 !important; }
         .has-match { background: rgba(255,255,255,0.02) !important; border: 1px solid rgba(255,255,255,0.05) !important; box-shadow: none !important; }
         
-        #banner-carousel > div { border-radius: 20px !important; margin: 0 4px; border: 1px solid rgba(255,255,255,0.08) !important; box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important; }
+        #banner-carousel > div { border-radius: 20px !important; margin: 0 4px; border: 1px solid rgba(255,255,255,0.08) !important; box-shadow: none !important; }
         .banner-dot { background-color: rgba(255,255,255,0.2) !important; transition: all 0.3s; }
         .banner-dot.bg-white { background-color: var(--point-color) !important; box-shadow: 0 0 8px var(--point-color) !important; }
         .live-badge { background: rgba(234, 0, 41, 0.1) !important; color: #EA0029 !important; border: 1px solid rgba(234, 0, 41, 0.3) !important; box-shadow: 0 0 10px rgba(234, 0, 41, 0.3) !important; font-weight: 800 !important; border-radius: 8px !important; }
@@ -89,6 +89,142 @@
         .winning-glow { animation: border-glow 2.5s ease-in-out infinite; border-width: 2px !important; z-index: 20; }
         
         .render-hidden { position: absolute !important; transform: translateX(-9999px) !important; opacity: 0 !important; pointer-events: none !important; width: 100% !important; height: 100% !important; z-index: -1 !important; }
+
+        /* ☀️ 라이트모드 마법의 CSS (필터 완전 제거, 100% 원본 색상 보장) ☀️ */
+        html { background-color: #030303; }
+        html.light-mode { background-color: #f3f4f6; }
+        html.light-mode:has(body[data-theme="all"]) { background-color: #ffffff; }
+        
+        html.light-mode body { 
+            --app-bg: #f3f4f6; 
+            --glass-bg: rgba(255, 255, 255, 0.85); 
+            --glass-border: rgba(0, 0, 0, 0.1); 
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05); 
+            color: #111827; 
+        }
+        /* 🚨 라이트모드 구단별 은은한 배경색 적용 🚨 */
+        html.light-mode body[data-theme="all"] { --app-bg: #ffffff; --point-color: #111827; --point-bg: rgba(0,0,0,0.1); }
+        html.light-mode body[data-theme="KIA"] { --app-bg: #fff0f2; }
+        html.light-mode body[data-theme="삼성"] { --app-bg: #f0f5fb; }
+        
+        html.light-mode .app-bg { background-image: radial-gradient(circle at 50% 0%, rgba(0,0,0,0.03) 0%, transparent 60%) !important; }
+        html.light-mode body[data-theme="all"].app-bg { background-image: none !important; background-color: #ffffff !important; }
+        
+        /* 🚨 하얀색으로 바꿀 배경들 (단, 배너(bg-[#18181b])는 어둡게 유지하여 원래 색상 100% 보존) 🚨 */
+        html.light-mode .bg-\[\#1C1C1E\], 
+        html.light-mode .bg-\[\#1A1A1C\], 
+        html.light-mode .bg-\[\#222224\], 
+        html.light-mode .bg-\[\#111\] { 
+            background-color: #ffffff !important; 
+            border-color: rgba(0,0,0,0.08) !important; 
+            box-shadow: none !important; /* 배너 그림자 제거 */
+        }
+        
+        /* 🚨 탑 헤더 배경 강제 하얀색 전환 🚨 */
+        html.light-mode #left-wrapper, html.light-mode #ctrl-wrapper {
+            background: #ffffff !important;
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+
+        html.light-mode .bg-\[\#1A1A1C\]\/60 { background-color: rgba(255,255,255,0.85) !important; border-color: rgba(0,0,0,0.08) !important; }
+        
+        /* 🚨 텍스트 컬러 반전 (어두운 글씨로) 🚨 */
+        html.light-mode .text-white { color: #111827 !important; }
+        html.light-mode .bg-gray-600.text-white { color: #ffffff !important; } /* 종료 뱃지 및 빈 로고 텍스트 하얗게 보호 */
+        html.light-mode .text-white\/95 { color: #111827 !important; }
+        html.light-mode .text-white\/90 { color: #1f2937 !important; }
+        html.light-mode .text-white\/80 { color: #374151 !important; }
+        html.light-mode .text-white\/70 { color: #4b5563 !important; }
+        html.light-mode .text-white\/60 { color: #6b7280 !important; }
+        html.light-mode .text-gray-100 { color: #1f2937 !important; }
+        html.light-mode .text-gray-200 { color: #374151 !important; }
+        html.light-mode .text-gray-300 { color: #4b5563 !important; }
+        html.light-mode .text-gray-400 { color: #6b7280 !important; }
+        html.light-mode .text-gray-500 { color: #9ca3af !important; }
+        html.light-mode .text-gray-600 { color: #d1d5db !important; }
+        
+        /* 🚨 순위 색상(1~5위) 라이트모드용으로 진하게 🚨 */
+        html.light-mode .text-\[\#FBBF24\] { color: #d97706 !important; } /* 1위 노란색 */
+        html.light-mode .text-\[\#E2E8F0\] { color: #8b5cf6 !important; } /* 2위 보라색 (기존 회색에서 변경) */
+        html.light-mode .text-\[\#FCA5A5\] { color: #ef4444 !important; } /* 3위 빨간색 */
+        html.light-mode .text-\[\#6EE7B7\] { color: #10b981 !important; } /* 4위 초록색 */
+        html.light-mode .text-\[\#93C5FD\] { color: #3b82f6 !important; } /* 5위 파란색 */
+        
+        /* 🚨 배너 내부 텍스트 및 배경 컬러 유지 (배너 배경이 어두우므로 하얀 글씨/어두운 배경 유지) 🚨 */
+        html.light-mode #banner-carousel .text-white,
+        html.light-mode #banner-carousel .text-white\/95,
+        html.light-mode #banner-carousel .text-white\/90,
+        html.light-mode #banner-carousel .text-white\/80,
+        html.light-mode #banner-carousel .text-white\/70,
+        html.light-mode #banner-carousel .text-white\/60 { color: #ffffff !important; }
+        html.light-mode #banner-carousel .text-gray-200 { color: #e5e7eb !important; }
+        html.light-mode #banner-carousel .text-gray-300 { color: #d1d5db !important; }
+        html.light-mode #banner-carousel .text-gray-400 { color: #9ca3af !important; }
+        html.light-mode #banner-carousel .bg-black\/30 { background-color: rgba(0,0,0,0.3) !important; border-color: rgba(255,255,255,0.1) !important; }
+        html.light-mode #banner-carousel .bg-black\/40 { background-color: rgba(0,0,0,0.4) !important; }
+        html.light-mode #banner-carousel .bg-black\/70 { background-color: rgba(0,0,0,0.7) !important; border-color: rgba(255,255,255,0.1) !important; }
+
+        /* 🚨 라이트모드 배너 하단 점(인디케이터) 색상 수정 🚨 */
+        html.light-mode .banner-dot:not(.bg-white) { background-color: rgba(0,0,0,0.15) !important; }
+        html.light-mode body[data-theme="all"] .banner-dot.bg-white { background-color: #111827 !important; box-shadow: 0 0 6px rgba(0,0,0,0.2) !important; }
+
+        html.light-mode .bg-white\/5, html.light-mode .bg-point-sub { background-color: rgba(0,0,0,0.03) !important; }
+        html.light-mode .bg-white\/10 { background-color: rgba(0,0,0,0.06) !important; }
+        html.light-mode .bg-white\/20 { background-color: rgba(0,0,0,0.1) !important; }
+        html.light-mode .border-white\/5 { border-color: rgba(0,0,0,0.05) !important; }
+        html.light-mode .border-white\/10 { border-color: rgba(0,0,0,0.1) !important; }
+        html.light-mode .border-white\/20 { border-color: rgba(0,0,0,0.15) !important; }
+        
+        html.light-mode .bg-black\/20, html.light-mode .bg-black\/30, html.light-mode .bg-black\/40, html.light-mode .bg-black\/50, html.light-mode .bg-black\/60, html.light-mode .bg-black\/70 { 
+            background-color: rgba(255,255,255,0.7) !important; 
+            border-color: rgba(0,0,0,0.05) !important; 
+        }
+        
+        html.light-mode input, html.light-mode select { color: #111827 !important; background-color: #ffffff !important; border-color: rgba(0,0,0,0.1) !important; }
+        html.light-mode input::placeholder { color: #9ca3af !important; }
+        
+        html.light-mode #bottom-nav .bg-\[\#1C1C1E\] { background: rgba(255,255,255,1) !important; border: 1px solid rgba(0,0,0,0.1) !important; box-shadow: 0 20px 40px rgba(0,0,0,0.05) !important; }
+        
+        /* 🚨 포인트 색상 요소 내부 하얀 글씨 보호 🚨 */
+        html.light-mode .bg-point, html.light-mode .live-badge { color: #ffffff !important; }
+        html.light-mode body[data-theme="all"] .bg-point { color: #ffffff !important; }
+        html.light-mode #bottom-nav button .text-white, html.light-mode #bottom-nav button i.text-white { color: #ffffff !important; }
+        html.light-mode body[data-theme="all"] #bottom-nav button .text-white, html.light-mode body[data-theme="all"] #bottom-nav button i.text-white { color: #ffffff !important; }
+        html.light-mode .bg-point .text-white, html.light-mode .bg-point i, html.light-mode button[style*="background-color"] { color: #ffffff !important; }
+        html.light-mode body[data-theme="all"] .bg-point .text-white, html.light-mode body[data-theme="all"] .bg-point i { color: #ffffff !important; }
+        
+        html.light-mode .bg-\[\#43724F\] .text-white { color: #ffffff !important; }
+        html.light-mode .bg-\[\#43724F\] .text-white\/80 { color: rgba(255,255,255,0.8) !important; }
+        html.light-mode .bg-\[\#43724F\] .text-white\/60 { color: rgba(255,255,255,0.6) !important; }
+        html.light-mode .bg-\[\#43724F\] .border-white\/10 { border-color: rgba(255,255,255,0.1) !important; }
+        
+        html.light-mode #full-player { background: rgba(255,255,255,0.95) !important; }
+
+        /* 🚨 라인업 팝업 및 헤더 배경을 구단 색상으로 은은하게 적용 (전체는 하얀색) 🚨 */
+        html.light-mode #lineup-popup { background-color: var(--app-bg) !important; background-image: none !important; }
+        html.light-mode:has(#lineup-popup:not(.render-hidden)) .app-bg { background-color: var(--app-bg) !important; background-image: none !important; }
+
+        /* 🚨 상세중계 및 라인업 로딩/프레임 배경을 구단 색상과 완벽 동기화 🚨 */
+        html.light-mode #broadcast-content .bg-white,
+        html.light-mode #lineup-content .bg-white { background-color: var(--app-bg) !important; }
+
+        /* 🚨 승률 캐릭터 형태 구분을 위한 은은한 그레이 적용 🚨 */
+        html.light-mode #winrate-container svg rect[fill="#FFFFFF"] { fill: #e5e7eb !important; }
+        html.light-mode #winrate-container svg path[fill="#F8FAFC"] { fill: #d1d5db !important; }
+
+        /* 🚨 WIN/LOSE 도장 색상 원본 100% 강제 복원 🚨 */
+        html.light-mode .text-red-500\/80, html.light-mode .border-red-500\/80, html.light-mode .text-red-500\/30, html.light-mode .border-red-500\/30 {
+            color: #EA0029 !important; border-color: #EA0029 !important; background-color: rgba(234,0,41,0.05) !important; opacity: 1 !important;
+        }
+        html.light-mode .text-blue-400, html.light-mode .border-blue-400, html.light-mode .text-blue-500\/30, html.light-mode .border-blue-500\/30 {
+            color: #074CA1 !important; border-color: #074CA1 !important; background-color: rgba(7,76,161,0.05) !important; opacity: 1 !important;
+        }
+        html.light-mode .text-gray-500\/80, html.light-mode .border-gray-500\/80, html.light-mode .text-gray-500\/30, html.light-mode .border-gray-500\/30 {
+            color: #4b5563 !important; border-color: #4b5563 !important; background-color: rgba(75,85,99,0.05) !important; opacity: 1 !important;
+        }
+        html.light-mode .text-green-500\/80, html.light-mode .border-green-500\/80 {
+            color: #10b981 !important; border-color: #10b981 !important; background-color: rgba(16,185,129,0.05) !important; opacity: 1 !important;
+        }
     </style>
 </head>
 <body class="w-full h-[100dvh] flex justify-center items-center overflow-hidden app-bg" data-theme="all">
@@ -101,10 +237,12 @@
         
         <header class="absolute top-0 left-0 right-0 pt-safe px-4 pb-2 z-30 app-bg">
             <div class="mt-2 flex items-center justify-between gap-2 w-full pb-1">
-                <div id="left-wrapper" class="flex items-center flex-1 min-w-0 rounded-full transition-all duration-300" style="border: 1px solid rgba(255,255,255,0.08) !important; background: #151515 !important; padding: 2px !important; box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important; height: 36px;">
+                <div id="left-wrapper" class="flex items-center flex-1 min-w-0 rounded-full transition-all duration-300 h-[36px]">
                     <div id="header-title-container" class="flex items-center gap-1.5 px-3 h-full min-w-0">
                         <h1 id="di-main-text" class="text-[13px] font-extrabold text-white flex items-center tracking-tight shrink-0">KBO 리그<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span></h1>
                         <span class="text-[11px] text-gray-400 font-medium whitespace-nowrap mb-0.5 truncate">2026시즌</span>
+                        <!-- ☀️ 라이트모드 토글 버튼 추가 ☀️ -->
+                        <button onclick="toggleThemeMode()" class="ml-1 w-6 h-6 flex items-center justify-center text-gray-400 hover:text-white transition-colors" title="라이트/다크 모드 변경"><i id="theme-icon" class="fa-solid fa-sun text-[13px]"></i></button>
                     </div>
                     <div id="header-calendar-nav" class="hidden items-center justify-between w-full h-full min-w-0">
                         <button onclick="navigateCalendar(-1)" class="w-8 h-8 shrink-0 flex text-white rounded-full bg-point shadow-sm items-center justify-center active:scale-95 transition-transform"><i class="fa-solid fa-chevron-left text-[11px]"></i></button>
@@ -233,16 +371,15 @@
             <div id="lineup-content" class="flex-1 overflow-y-auto scrollbar-hide px-6 pt-main relative pb-[260px]"></div>
             <div id="broadcast-content" class="render-hidden flex-1 overflow-y-auto scrollbar-hide px-5 pt-main relative pb-[260px] flex flex-col">
                 <!-- 🚨🚨🚨 상세중계(우리팀) 블럭 크기 조절: 아래 h-[300px] 숫자를 수정하세요 (예: h-[400px]) 🚨🚨🚨 -->
-                <div class="w-[calc(100%+40px)] -ml-5 h-[300px] bg-[#43724F] border-y border-white/10 flex flex-col items-center justify-center text-white/80 shadow-2xl relative overflow-hidden mt-2">
-                    <div class="absolute inset-0 bg-black/10 z-0"></div>
+                <div class="w-[calc(100%+40px)] -ml-5 h-[300px] bg-white flex flex-col items-center justify-center text-gray-800 relative overflow-hidden mt-2">
                     <div id="broadcast-placeholder" class="flex flex-col items-center justify-center relative z-10 w-full h-full transition-opacity">
-                        <i class="fa-solid fa-baseball text-5xl mb-3 opacity-40"></i>
-                        <p id="broadcast-msg-title" class="text-sm font-bold text-white">상세중계 (그래픽 중계)</p>
-                        <p id="broadcast-msg-desc" class="text-[11px] mt-1.5 text-white/60 text-center px-4">관리자 페이지에서 링크 연동 시<br>네이버 스포츠 중계가 표시됩니다.</p>
+                        <i class="fa-solid fa-baseball text-5xl mb-3 text-gray-300"></i>
+                        <p id="broadcast-msg-title" class="text-sm font-bold text-gray-800">상세중계 (그래픽 중계)</p>
+                        <p id="broadcast-msg-desc" class="text-[11px] mt-1.5 text-gray-500 text-center px-4">관리자 페이지에서 링크 연동 시<br>네이버 스포츠 중계가 표시됩니다.</p>
                     </div>
-                    <div id="broadcast-loading" class="hidden absolute inset-0 z-40 flex-col items-center justify-center bg-[#43724F]">
-                        <i class="fa-solid fa-spinner fa-spin text-3xl text-white mb-3"></i>
-                        <span class="text-xs font-bold text-white">중계 화면을 불러오는 중...</span>
+                    <div id="broadcast-loading" class="hidden absolute inset-0 z-40 flex-col items-center justify-center bg-white">
+                        <i class="fa-solid fa-baseball fa-spin text-3xl text-gray-400 mb-3"></i>
+                        <span class="text-xs font-bold text-gray-600">중계 화면을 불러오는 중...</span>
                     </div>
                     <div class="absolute inset-0 z-[35] pointer-events-none">
                         <div class="absolute top-0 left-0 right-0 bottom-[105px] pointer-events-auto"></div>
@@ -818,7 +955,7 @@
                                         let iL = (m.team1 === selectedTeam && a < h) || (m.team2 === selectedTeam && h < a);
                                         let iD = a === h;
                                         if (iW) stmp = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-red-500/30 border-4 border-red-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">WIN</div>`;
-                                        else if (iL) stmp = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 -rotate-[15deg] text-[28px] font-black text-gray-500/30 border-4 border-gray-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">LOSE</div>`;
+                                        else if (iL) stmp = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-gray-500/30 border-4 border-gray-500/30 rounded-lg px-2 tracking-widest pointer-events-none z-0">LOSE</div>`;
                                         else if (iD) stmp = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-green-500/80 border-4 border-green-500/80 rounded-lg px-2 tracking-widest pointer-events-none z-0">DRAW</div>`;
                                     }
                                 }
@@ -1170,7 +1307,11 @@
                     } else if (l.gameStatus === '경기전' || !l.gameStatus || l.gameStatus === '예정') {
                         ifr.style.top = '-970px'; /* 🎯🎯🎯 상세중계(우리팀) 경기전 화면 위치 조절 🎯🎯🎯 */
                     } else {
-                        ifr.style.top = '-970px'; /* 🎯🎯🎯 상세중계(우리팀) 경기종료 화면 위치 조절 🎯🎯🎯 */
+                        let useEnded = false;
+                        if (l.naverOffsetMode === 'ended') useEnded = true;
+                        else if (l.naverOffsetMode === 'live') useEnded = false;
+                        else useEnded = (!l.endTime || (Date.now() - l.endTime > 3600000));
+                        ifr.style.top = useEnded ? '-970px' : '-1206px'; /* 🎯🎯🎯 상세중계(우리팀) 경기종료 화면 위치 조절 🎯🎯🎯 */
                     }
                     
                     if (fb) {
@@ -1225,15 +1366,21 @@
                     let isPre = (!l.gameStatus || l.gameStatus === '경기전' || l.gameStatus === '예정');
                     let isIngame = (l.gameStatus === '경기중');
                     /* 🎯🎯🎯 타팀(라인업) 경기 화면 위치 조절 (경기전 / 경기중 / 경기종료 순서) 🎯🎯🎯 */
-                    let tOfs = isPre ? '-970px' : (isIngame ? '-995px' : '-935px');
+                    let tOfs = isPre ? '-976px' : (isIngame ? '-1001px' : '-941px');
+                    if (l.gameStatus === '종료') {
+                        let useEnded = false;
+                        if (l.naverOffsetMode === 'ended') useEnded = true;
+                        else if (l.naverOffsetMode === 'live') useEnded = false;
+                        else useEnded = (!l.endTime || (Date.now() - l.endTime > 3600000));
+                        tOfs = useEnded ? '-941px' : '-1001px';
+                    }
                     
                     c.innerHTML = sbh + `
-                        <!-- 🚨🚨🚨 타팀(라인업) 블럭 크기 조절: 아래 h-[300px] 숫자를 수정하세요 (예: h-[400px]) 🚨🚨🚨 -->
-                        <div class="w-[calc(100%+48px)] -ml-6 h-[580px] bg-[#43724F] border-y border-white/10 flex flex-col items-center justify-center text-white/80 shadow-2xl relative overflow-hidden mt-2">
-                            <div class="absolute inset-0 bg-black/10 z-0"></div>
-                            <div id="lu-loading" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-[#43724F]">
-                                <i class="fa-solid fa-spinner fa-spin text-3xl text-white mb-3"></i>
-                                <span class="text-xs font-bold text-white">라인업을 불러오는 중...</span>
+                        <!-- 🚨🚨🚨 타팀(라인업) 블럭 크기 조절: 아래 h-[580px] 숫자를 수정하세요 (예: h-[400px]) 🚨🚨🚨 -->
+                        <div class="w-[calc(100%+48px)] -ml-6 h-[580px] bg-white flex flex-col items-center justify-center relative overflow-hidden mt-2">
+                            <div id="lu-loading" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-white">
+                                <i class="fa-solid fa-baseball fa-spin text-3xl text-gray-400 mb-3"></i>
+                                <span class="text-xs font-bold text-gray-600">라인업을 불러오는 중...</span>
                             </div>
                             <div class="absolute inset-0 z-[35] pointer-events-none">
                                 <div class="absolute top-0 left-0 right-0 bottom-[105px] pointer-events-auto"></div>
@@ -1241,7 +1388,7 @@
                                 <div class="absolute bottom-[5px] left-0 right-[100px] h-[100px] pointer-events-auto"></div>
                                 <div class="absolute bottom-[5px] right-0 w-[5px] h-[100px] pointer-events-auto"></div>
                             </div>
-                            <iframe class="opacity-0 transition-opacity duration-500 absolute w-full h-[1600px] left-0 border-none z-30 bg-white" style="top:${tOfs};" scrolling="no" src="${l.lineupLink}" onload="const ld=document.getElementById('lu-loading');if(ld){ld.classList.add('hidden');ld.classList.remove('flex');}this.classList.remove('opacity-0');"></iframe>
+                            <iframe class="opacity-0 transition-opacity duration-500 absolute w-full h-[1600px] left-0 border-none z-30 bg-white" style="top:${tOfs};" scrolling="no" src="${l.lineupLink}" onload="setTimeout(() => { const ld=document.getElementById('lu-loading');if(ld){ld.classList.add('hidden');ld.classList.remove('flex');}this.classList.remove('opacity-0'); }, 1500);"></iframe>
                         </div>`;
                 }
                 return;
@@ -1263,8 +1410,8 @@
             let apf = api ? "w-9 h-9 flex items-end justify-center shrink-0" : "w-9 h-9 bg-[#222224] rounded-full flex items-center justify-center overflow-hidden shrink-0 border border-white/10";
             let hpf = hpi ? "w-9 h-9 flex items-end justify-center shrink-0" : "w-9 h-9 bg-[#222224] rounded-full flex items-center justify-center overflow-hidden shrink-0 border border-white/10";
             
-            let aph = `<div class="flex items-center gap-2.5 mb-3.5"><div class="w-[22px] flex justify-center shrink-0"><span class="bg-[#1E3A8A] text-[#93C5FD] border border-[#1E3A8A] text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">선발</span></div><div class="${apf}">${apim}</div><div class="flex flex-col truncate"><span class="text-[14px] font-bold text-white truncate tracking-tight">${apn}</span><span class="text-[10px] text-gray-400 truncate mt-0.5">투수</span></div></div>`;
-            let hph = `<div class="flex items-center gap-2.5 mb-3.5"><div class="w-[22px] flex justify-center shrink-0"><span class="bg-[#1E3A8A] text-[#93C5FD] border border-[#1E3A8A] text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">선발</span></div><div class="${hpf}">${hpim}</div><div class="flex flex-col truncate"><span class="text-[14px] font-bold text-white truncate tracking-tight">${hpn}</span><span class="text-[10px] text-gray-400 truncate mt-0.5">투수</span></div></div>`;
+            let aph = `<div class="flex items-center gap-2.5 mb-3.5"><div class="w-[22px] flex justify-center shrink-0"><span style="background-color: ${h1}; border: 1px solid ${h1}; color: #ffffff !important;" class="text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">선발</span></div><div class="${apf}">${apim}</div><div class="flex flex-col truncate"><span class="text-[14px] font-bold text-white truncate tracking-tight">${apn}</span><span class="text-[10px] text-gray-400 truncate mt-0.5">투수</span></div></div>`;
+            let hph = `<div class="flex items-center gap-2.5 mb-3.5"><div class="w-[22px] flex justify-center shrink-0"><span style="background-color: ${h2}; border: 1px solid ${h2}; color: #ffffff !important;" class="text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">선발</span></div><div class="${hpf}">${hpim}</div><div class="flex flex-col truncate"><span class="text-[14px] font-bold text-white truncate tracking-tight">${hpn}</span><span class="text-[10px] text-gray-400 truncate mt-0.5">투수</span></div></div>`;
             
             let abh = (l.awayLineup && l.awayLineup.length > 0) ? l.awayLineup.map((p, i) => {
                 let hi = playerImages[p];
@@ -1439,7 +1586,7 @@
                 const b = document.getElementById('mini-player-btn');
                 if (b) b.className = 'fa-solid fa-play text-base ml-0.5';
             }
-        };
+        }
         
         function sendStateToAndroid(s, t) {
             if (window.AndroidBridge && window.AndroidBridge.updateMusicState) {
@@ -1903,7 +2050,29 @@
             else r.delete();
         }
 
+        // ☀️ 라이트모드 토글 함수 추가 ☀️
+        function toggleThemeMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('light-mode')) {
+                html.classList.remove('light-mode');
+                if(icon) icon.className = 'fa-solid fa-sun text-[13px]';
+                localStorage.setItem('kbo_theme_mode', 'dark');
+            } else {
+                html.classList.add('light-mode');
+                if(icon) icon.className = 'fa-solid fa-moon text-[13px]';
+                localStorage.setItem('kbo_theme_mode', 'light');
+            }
+        }
+
         window.onload = async () => {
+            // ☀️ 저장된 라이트모드 설정 불러오기 ☀️
+            if (localStorage.getItem('kbo_theme_mode') === 'light') {
+                document.documentElement.classList.add('light-mode');
+                const icon = document.getElementById('theme-icon');
+                if(icon) icon.className = 'fa-solid fa-moon text-[13px]';
+            }
+
             let rt = setTimeout(() => {
                 let r = document.getElementById('reload-toast');
                 if (!r) {
