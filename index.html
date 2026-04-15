@@ -1291,10 +1291,6 @@
                     if (ifr.src && ifr.src.includes(l.broadcastLink)) {
                         ld.classList.add('hidden');
                         ld.classList.remove('flex');
-                        ifr.classList.remove('opacity-0', 'hidden');
-                    } else {
-                        ld.classList.remove('hidden');
-                        ld.classList.add('flex');
                         ifr.classList.add('opacity-0');
                         ifr.classList.remove('hidden');
                         ifr.src = l.broadcastLink;
@@ -1302,21 +1298,23 @@
                     
                     let bcOfsPre = '-970px';       /* 🎯 상세중계(우리팀) 경기전 위치 */
                     let bcOfsIngame = '-1025px';   /* 🎯 상세중계(우리팀) 경기중 위치 */
-                    let bcOfsJustEnded = '-1205px';/* 🎯 상세중계(우리팀) 경기종료 직후 1시간 위치 (네이버 경기중 모듈 유지기간) */
-                    let bcOfsEnded = '-970px';     /* 🎯 상세중계(우리팀) 경기종료 1시간 후 위치 (완전 종료) */
+                    let bcOfsJustEnded = '-1205px';/* 🎯 상세중계(우리팀) 경기종료 직후 2시간 위치 (네이버 경기중 모듈 유지기간) */
+                    let bcOfsEnded = '-970px';     /* 🎯 상세중계(우리팀) 경기종료 2시간 후 위치 (완전 종료) */
                     
                     let bcFinalOfs = bcOfsPre;
-                    let bcIs1HrPassed = (l.gameStatus === '종료' && (!l.endTime || (Date.now() - l.endTime > 3600000)));
+                    let bcIsDelayPassed = (l.gameStatus === '종료' && (!l.endTime || (Date.now() - l.endTime > 7200000)));
                     
                     if (l.naverOffsetMode === 'ended') {
                         bcFinalOfs = bcOfsEnded;
                     } else if (l.naverOffsetMode === 'live') {
                         bcFinalOfs = bcOfsIngame;
+                    } else if (l.naverOffsetMode === 'just_ended') {
+                        bcFinalOfs = bcOfsJustEnded;
                     } else {
                         if (l.gameStatus === '경기중') {
                             bcFinalOfs = bcOfsIngame;
                         } else if (l.gameStatus === '종료') {
-                            bcFinalOfs = bcIs1HrPassed ? bcOfsEnded : bcOfsJustEnded;
+                            bcFinalOfs = bcIsDelayPassed ? bcOfsEnded : bcOfsJustEnded;
                         }
                     }
                     ifr.style.top = bcFinalOfs;
@@ -1372,21 +1370,23 @@
                 } else {
                     let luOfsPre = '-670px';       /* 🎯 타팀(라인업) 경기전 위치 */
                     let luOfsIngame = '-1001px';   /* 🎯 타팀(라인업) 경기중 위치 */
-                    let luOfsJustEnded = '-1200px';/* 🎯 타팀(라인업) 경기종료 직후 1시간 위치 (네이버 경기중 모듈 유지기간) */
-                    let luOfsEnded = '-941px';     /* 🎯 타팀(라인업) 경기종료 1시간 후 위치 (완전 종료) */
+                    let luOfsJustEnded = '-1200px';/* 🎯 타팀(라인업) 경기종료 직후 2시간 위치 (네이버 경기중 모듈 유지기간) */
+                    let luOfsEnded = '-941px';     /* 🎯 타팀(라인업) 경기종료 2시간 후 위치 (완전 종료) */
                     
                     let luFinalOfs = luOfsPre;
-                    let luIs1HrPassed = (l.gameStatus === '종료' && (!l.endTime || (Date.now() - l.endTime > 3600000)));
+                    let luIsDelayPassed = (l.gameStatus === '종료' && (!l.endTime || (Date.now() - l.endTime > 7200000)));
                     
                     if (l.naverOffsetMode === 'ended') {
                         luFinalOfs = luOfsEnded;
                     } else if (l.naverOffsetMode === 'live') {
                         luFinalOfs = luOfsIngame;
+                    } else if (l.naverOffsetMode === 'just_ended') {
+                        luFinalOfs = luOfsJustEnded;
                     } else {
                         if (l.gameStatus === '경기중') {
                             luFinalOfs = luOfsIngame;
                         } else if (l.gameStatus === '종료') {
-                            luFinalOfs = luIs1HrPassed ? luOfsEnded : luOfsJustEnded;
+                            luFinalOfs = luIsDelayPassed ? luOfsEnded : luOfsJustEnded;
                         }
                     }
                     let tOfs = luFinalOfs;
