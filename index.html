@@ -208,7 +208,7 @@
         html.light-mode #broadcast-content .bg-white,
         html.light-mode #lineup-content .bg-white { background-color: var(--app-bg) !important; }
 
-        /* 🚨 승률 캐릭터 형태 구분을 위한 은은한 그레이 적용 🚨 */
+        /* 🚨 승률 캐릭터 형태 구분 위한 은은한 그레이 적용 🚨 */
         html.light-mode #winrate-container svg rect[fill="#FFFFFF"] { fill: #e5e7eb !important; }
         html.light-mode #winrate-container svg path[fill="#F8FAFC"] { fill: #d1d5db !important; }
 
@@ -2070,20 +2070,21 @@
             else r.delete();
         }
 
-        // ☀️ 기기 시스템 설정에 따른 라이트/다크모드 자동 감지 ☀️
-        const themeMediaQuery = window.matchMedia('(prefers-color-scheme: light)');
-        function handleThemeChange(e) {
-            if (e.matches) {
+        // ☀️ 시간에 따른 라이트/다크모드 자동 적용 (06:00~19:00 라이트, 19:01~05:59 다크) ☀️
+        function applyTimeBasedTheme() {
+            const now = new Date();
+            const totalMinutes = now.getHours() * 60 + now.getMinutes();
+            if (totalMinutes >= 360 && totalMinutes <= 1140) {
                 document.documentElement.classList.add('light-mode');
             } else {
                 document.documentElement.classList.remove('light-mode');
             }
         }
-        themeMediaQuery.addEventListener('change', handleThemeChange);
+        setInterval(applyTimeBasedTheme, 60000); // 1분마다 체크
 
         window.onload = async () => {
-            // ☀️ 시스템 설정 즉시 적용 ☀️
-            handleThemeChange(themeMediaQuery);
+            // ☀️ 시간 기반 테마 즉시 적용 ☀️
+            applyTimeBasedTheme();
 
             let rt = setTimeout(() => {
                 let r = document.getElementById('reload-toast');
