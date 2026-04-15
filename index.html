@@ -369,7 +369,7 @@
             <div id="lineup-content" class="flex-1 overflow-y-auto scrollbar-hide px-6 pt-main relative pb-[260px]"></div>
             <div id="broadcast-content" class="render-hidden flex-1 overflow-y-auto scrollbar-hide px-5 pt-main relative pb-[260px] flex flex-col">
                 <!-- 🚨🚨🚨 상세중계(우리팀) 블럭 크기 조절: 아래 h-[300px] 숫자를 수정하세요 (예: h-[400px]) 🚨🚨🚨 -->
-                <div class="w-[calc(100%+40px)] -ml-5 h-[300px] flex flex-col items-center justify-center text-white relative overflow-hidden mt-2" style="background-color: var(--app-bg);">
+                <div id="bc-container" class="w-[calc(100%+40px)] -ml-5 h-[300px] flex flex-col items-center justify-center text-white relative overflow-hidden mt-2" style="background-color: var(--app-bg);">
                     <div id="broadcast-placeholder" class="flex flex-col items-center justify-center relative z-10 w-full h-full transition-opacity">
                         <i class="fa-solid fa-baseball text-5xl mb-3 text-gray-500"></i>
                         <p id="broadcast-msg-title" class="text-sm font-bold text-white">상세중계 (그래픽 중계)</p>
@@ -385,7 +385,7 @@
                         <div class="absolute bottom-[5px] left-0 right-[100px] h-[100px] pointer-events-auto"></div>
                         <div class="absolute bottom-[5px] right-0 w-[5px] h-[100px] pointer-events-auto"></div>
                     </div>
-                    <iframe id="broadcast-iframe" class="opacity-0 transition-opacity duration-500 absolute w-full h-[1600px] left-0 border-none z-30" style="background-color: var(--app-bg);" scrolling="no" src="" onload="setTimeout(() => { const l=document.getElementById('broadcast-loading'); if(l) {l.classList.add('hidden'); l.classList.remove('flex');} this.classList.remove('opacity-0'); }, 1500);"></iframe>
+                    <iframe id="broadcast-iframe" class="opacity-0 transition-opacity duration-500 absolute w-full h-[2500px] left-0 border-none z-30" style="background-color: var(--app-bg);" scrolling="no" src="" onload="setTimeout(() => { const l=document.getElementById('broadcast-loading'); if(l) {l.classList.add('hidden'); l.classList.remove('flex');} this.classList.remove('opacity-0'); }, 1500);"></iframe>
                 </div>
             </div>
         </div>
@@ -1302,7 +1302,7 @@
                     
                     let bcOfsPre = '-970px';       /* 🎯 상세중계(우리팀) 경기전 위치 */
                     let bcOfsIngame = '-1025px';   /* 🎯 상세중계(우리팀) 경기중 위치 */
-                    let bcOfsJustEnded = '-1205px';/* 🎯 상세중계(우리팀) 경기종료 직후 1시간 위치 (네이버 경기중 모듈 유지기간) */
+                    let bcOfsJustEnded = '-1025px';/* 🎯 상세중계(우리팀) 경기종료 직후 1시간 위치 (네이버 경기중 모듈 유지기간) */
                     let bcOfsEnded = '-970px';     /* 🎯 상세중계(우리팀) 경기종료 1시간 후 위치 (완전 종료) */
                     
                     let bcFinalOfs = bcOfsPre;
@@ -1313,8 +1313,11 @@
                     } else if (l.naverOffsetMode === 'live') {
                         bcFinalOfs = bcOfsIngame;
                     } else {
-                        if (l.gameStatus === '경기중') bcFinalOfs = bcOfsIngame;
-                        else if (l.gameStatus === '종료') bcFinalOfs = bcIs1HrPassed ? bcOfsEnded : bcOfsJustEnded;
+                        if (l.gameStatus === '경기중') {
+                            bcFinalOfs = bcOfsIngame;
+                        } else if (l.gameStatus === '종료') {
+                            bcFinalOfs = bcIs1HrPassed ? bcOfsEnded : bcOfsJustEnded;
+                        }
                     }
                     ifr.style.top = bcFinalOfs;
                     
@@ -1369,7 +1372,7 @@
                 } else {
                     let luOfsPre = '-670px';       /* 🎯 타팀(라인업) 경기전 위치 */
                     let luOfsIngame = '-1001px';   /* 🎯 타팀(라인업) 경기중 위치 */
-                    let luOfsJustEnded = '-1001px';/* 🎯 타팀(라인업) 경기종료 직후 1시간 위치 (네이버 경기중 모듈 유지기간) */
+                    let luOfsJustEnded = '-1200px';/* 🎯 타팀(라인업) 경기종료 직후 1시간 위치 (네이버 경기중 모듈 유지기간) */
                     let luOfsEnded = '-941px';     /* 🎯 타팀(라인업) 경기종료 1시간 후 위치 (완전 종료) */
                     
                     let luFinalOfs = luOfsPre;
@@ -1380,8 +1383,11 @@
                     } else if (l.naverOffsetMode === 'live') {
                         luFinalOfs = luOfsIngame;
                     } else {
-                        if (l.gameStatus === '경기중') luFinalOfs = luOfsIngame;
-                        else if (l.gameStatus === '종료') luFinalOfs = luIs1HrPassed ? luOfsEnded : luOfsJustEnded;
+                        if (l.gameStatus === '경기중') {
+                            luFinalOfs = luOfsIngame;
+                        } else if (l.gameStatus === '종료') {
+                            luFinalOfs = luIs1HrPassed ? luOfsEnded : luOfsJustEnded;
+                        }
                     }
                     let tOfs = luFinalOfs;
                     
@@ -1398,7 +1404,7 @@
                                 <div class="absolute bottom-[5px] left-0 right-[100px] h-[100px] pointer-events-auto"></div>
                                 <div class="absolute bottom-[5px] right-0 w-[5px] h-[100px] pointer-events-auto"></div>
                             </div>
-                            <iframe class="opacity-0 transition-opacity duration-500 absolute w-full h-[1600px] left-0 border-none z-30" style="top:${tOfs}; background-color: var(--app-bg);" scrolling="no" src="${l.lineupLink}" onload="setTimeout(() => { const ld=document.getElementById('lu-loading');if(ld){ld.classList.add('hidden');ld.classList.remove('flex');}this.classList.remove('opacity-0'); }, 1500);"></iframe>
+                            <iframe class="opacity-0 transition-opacity duration-500 absolute w-full h-[2500px] left-0 border-none z-30" style="top:${tOfs}; background-color: var(--app-bg);" scrolling="no" src="${l.lineupLink}" onload="setTimeout(() => { const ld=document.getElementById('lu-loading');if(ld){ld.classList.add('hidden');ld.classList.remove('flex');}this.classList.remove('opacity-0'); }, 1500);"></iframe>
                         </div>`;
                 }
                 return;
