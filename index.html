@@ -1364,7 +1364,7 @@
                     let isPre = (!l.gameStatus || l.gameStatus === '경기전' || l.gameStatus === '예정');
                     let isIngame = (l.gameStatus === '경기중');
                     /* 🎯🎯🎯 타팀(라인업) 경기 화면 위치 조절 (경기전 / 경기중 / 경기종료 순서) 🎯🎯🎯 */
-                    let tOfs = isPre ? '-490px' : (isIngame ? '-1001px' : '-941px');
+                    let tOfs = isPre ? '-670px' : (isIngame ? '-1001px' : '-941px');
                     if (l.gameStatus === '종료') {
                         let useEnded = false;
                         if (l.naverOffsetMode === 'ended') useEnded = true;
