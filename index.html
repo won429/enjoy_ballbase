@@ -1291,6 +1291,10 @@
                     if (ifr.src && ifr.src.includes(l.broadcastLink)) {
                         ld.classList.add('hidden');
                         ld.classList.remove('flex');
+                        ifr.classList.remove('opacity-0', 'hidden');
+                    } else {
+                        ld.classList.remove('hidden');
+                        ld.classList.add('flex');
                         ifr.classList.add('opacity-0');
                         ifr.classList.remove('hidden');
                         ifr.src = l.broadcastLink;
@@ -1393,7 +1397,7 @@
                     
                     c.innerHTML = sbh + `
                         <!-- 🚨🚨🚨 타팀(라인업) 블럭 크기 조절: 아래 h-[580px] 숫자를 수정하세요 (예: h-[400px]) 🚨🚨🚨 -->
-                        <div class="w-[calc(100%+48px)] -ml-6 h-[580px] flex flex-col items-center justify-center relative overflow-hidden mt-2" style="background-color: var(--app-bg);">
+                        <div class="w-[calc(100%+48px)] -ml-6 h-[560px] flex flex-col items-center justify-center relative overflow-hidden mt-2" style="background-color: var(--app-bg);">
                             <div id="lu-loading" class="absolute inset-0 z-40 flex flex-col items-center justify-center" style="background-color: var(--app-bg);">
                                 <i class="fa-solid fa-baseball fa-spin text-3xl text-gray-400 mb-3"></i>
                                 <span class="text-xs font-bold text-gray-300">라인업을 불러오는 중...</span>
