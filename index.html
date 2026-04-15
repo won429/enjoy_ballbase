@@ -241,8 +241,6 @@
                     <div id="header-title-container" class="flex items-center gap-1.5 px-3 h-full min-w-0">
                         <h1 id="di-main-text" class="text-[13px] font-extrabold text-white flex items-center tracking-tight shrink-0">KBO 리그<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span></h1>
                         <span class="text-[11px] text-gray-400 font-medium whitespace-nowrap mb-0.5 truncate">2026시즌</span>
-                        <!-- ☀️ 라이트모드 토글 버튼 추가 ☀️ -->
-                        <button onclick="toggleThemeMode()" class="ml-1 w-6 h-6 flex items-center justify-center text-gray-400 hover:text-white transition-colors" title="라이트/다크 모드 변경"><i id="theme-icon" class="fa-solid fa-sun text-[13px]"></i></button>
                     </div>
                     <div id="header-calendar-nav" class="hidden items-center justify-between w-full h-full min-w-0">
                         <button onclick="navigateCalendar(-1)" class="w-8 h-8 shrink-0 flex text-white rounded-full bg-point shadow-sm items-center justify-center active:scale-95 transition-transform"><i class="fa-solid fa-chevron-left text-[11px]"></i></button>
@@ -371,15 +369,15 @@
             <div id="lineup-content" class="flex-1 overflow-y-auto scrollbar-hide px-6 pt-main relative pb-[260px]"></div>
             <div id="broadcast-content" class="render-hidden flex-1 overflow-y-auto scrollbar-hide px-5 pt-main relative pb-[260px] flex flex-col">
                 <!-- 🚨🚨🚨 상세중계(우리팀) 블럭 크기 조절: 아래 h-[300px] 숫자를 수정하세요 (예: h-[400px]) 🚨🚨🚨 -->
-                <div class="w-[calc(100%+40px)] -ml-5 h-[300px] bg-white flex flex-col items-center justify-center text-gray-800 relative overflow-hidden mt-2">
+                <div class="w-[calc(100%+40px)] -ml-5 h-[300px] flex flex-col items-center justify-center text-white relative overflow-hidden mt-2" style="background-color: var(--app-bg);">
                     <div id="broadcast-placeholder" class="flex flex-col items-center justify-center relative z-10 w-full h-full transition-opacity">
-                        <i class="fa-solid fa-baseball text-5xl mb-3 text-gray-300"></i>
-                        <p id="broadcast-msg-title" class="text-sm font-bold text-gray-800">상세중계 (그래픽 중계)</p>
-                        <p id="broadcast-msg-desc" class="text-[11px] mt-1.5 text-gray-500 text-center px-4">관리자 페이지에서 링크 연동 시<br>네이버 스포츠 중계가 표시됩니다.</p>
+                        <i class="fa-solid fa-baseball text-5xl mb-3 text-gray-500"></i>
+                        <p id="broadcast-msg-title" class="text-sm font-bold text-white">상세중계 (그래픽 중계)</p>
+                        <p id="broadcast-msg-desc" class="text-[11px] mt-1.5 text-gray-400 text-center px-4">관리자 페이지에서 링크 연동 시<br>네이버 스포츠 중계가 표시됩니다.</p>
                     </div>
-                    <div id="broadcast-loading" class="hidden absolute inset-0 z-40 flex-col items-center justify-center bg-white">
+                    <div id="broadcast-loading" class="hidden absolute inset-0 z-40 flex-col items-center justify-center" style="background-color: var(--app-bg);">
                         <i class="fa-solid fa-baseball fa-spin text-3xl text-gray-400 mb-3"></i>
-                        <span class="text-xs font-bold text-gray-600">중계 화면을 불러오는 중...</span>
+                        <span class="text-xs font-bold text-gray-300">중계 화면을 불러오는 중...</span>
                     </div>
                     <div class="absolute inset-0 z-[35] pointer-events-none">
                         <div class="absolute top-0 left-0 right-0 bottom-[105px] pointer-events-auto"></div>
@@ -387,7 +385,7 @@
                         <div class="absolute bottom-[5px] left-0 right-[100px] h-[100px] pointer-events-auto"></div>
                         <div class="absolute bottom-[5px] right-0 w-[5px] h-[100px] pointer-events-auto"></div>
                     </div>
-                    <iframe id="broadcast-iframe" class="opacity-0 transition-opacity duration-500 absolute w-full h-[1600px] left-0 border-none z-30 bg-white" scrolling="no" src="" onload="setTimeout(() => { const l=document.getElementById('broadcast-loading'); if(l) {l.classList.add('hidden'); l.classList.remove('flex');} this.classList.remove('opacity-0'); }, 1500);"></iframe>
+                    <iframe id="broadcast-iframe" class="opacity-0 transition-opacity duration-500 absolute w-full h-[1600px] left-0 border-none z-30" style="background-color: var(--app-bg);" scrolling="no" src="" onload="setTimeout(() => { const l=document.getElementById('broadcast-loading'); if(l) {l.classList.add('hidden'); l.classList.remove('flex');} this.classList.remove('opacity-0'); }, 1500);"></iframe>
                 </div>
             </div>
         </div>
@@ -1377,10 +1375,10 @@
                     
                     c.innerHTML = sbh + `
                         <!-- 🚨🚨🚨 타팀(라인업) 블럭 크기 조절: 아래 h-[580px] 숫자를 수정하세요 (예: h-[400px]) 🚨🚨🚨 -->
-                        <div class="w-[calc(100%+48px)] -ml-6 h-[580px] bg-white flex flex-col items-center justify-center relative overflow-hidden mt-2">
-                            <div id="lu-loading" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-white">
+                        <div class="w-[calc(100%+48px)] -ml-6 h-[580px] flex flex-col items-center justify-center relative overflow-hidden mt-2" style="background-color: var(--app-bg);">
+                            <div id="lu-loading" class="absolute inset-0 z-40 flex flex-col items-center justify-center" style="background-color: var(--app-bg);">
                                 <i class="fa-solid fa-baseball fa-spin text-3xl text-gray-400 mb-3"></i>
-                                <span class="text-xs font-bold text-gray-600">라인업을 불러오는 중...</span>
+                                <span class="text-xs font-bold text-gray-300">라인업을 불러오는 중...</span>
                             </div>
                             <div class="absolute inset-0 z-[35] pointer-events-none">
                                 <div class="absolute top-0 left-0 right-0 bottom-[105px] pointer-events-auto"></div>
@@ -1388,7 +1386,7 @@
                                 <div class="absolute bottom-[5px] left-0 right-[100px] h-[100px] pointer-events-auto"></div>
                                 <div class="absolute bottom-[5px] right-0 w-[5px] h-[100px] pointer-events-auto"></div>
                             </div>
-                            <iframe class="opacity-0 transition-opacity duration-500 absolute w-full h-[1600px] left-0 border-none z-30 bg-white" style="top:${tOfs};" scrolling="no" src="${l.lineupLink}" onload="setTimeout(() => { const ld=document.getElementById('lu-loading');if(ld){ld.classList.add('hidden');ld.classList.remove('flex');}this.classList.remove('opacity-0'); }, 1500);"></iframe>
+                            <iframe class="opacity-0 transition-opacity duration-500 absolute w-full h-[1600px] left-0 border-none z-30" style="top:${tOfs}; background-color: var(--app-bg);" scrolling="no" src="${l.lineupLink}" onload="setTimeout(() => { const ld=document.getElementById('lu-loading');if(ld){ld.classList.add('hidden');ld.classList.remove('flex');}this.classList.remove('opacity-0'); }, 1500);"></iframe>
                         </div>`;
                 }
                 return;
@@ -2050,28 +2048,20 @@
             else r.delete();
         }
 
-        // ☀️ 라이트모드 토글 함수 추가 ☀️
-        function toggleThemeMode() {
-            const html = document.documentElement;
-            const icon = document.getElementById('theme-icon');
-            if (html.classList.contains('light-mode')) {
-                html.classList.remove('light-mode');
-                if(icon) icon.className = 'fa-solid fa-sun text-[13px]';
-                localStorage.setItem('kbo_theme_mode', 'dark');
+        // ☀️ 기기 시스템 설정에 따른 라이트/다크모드 자동 감지 ☀️
+        const themeMediaQuery = window.matchMedia('(prefers-color-scheme: light)');
+        function handleThemeChange(e) {
+            if (e.matches) {
+                document.documentElement.classList.add('light-mode');
             } else {
-                html.classList.add('light-mode');
-                if(icon) icon.className = 'fa-solid fa-moon text-[13px]';
-                localStorage.setItem('kbo_theme_mode', 'light');
+                document.documentElement.classList.remove('light-mode');
             }
         }
+        themeMediaQuery.addEventListener('change', handleThemeChange);
 
         window.onload = async () => {
-            // ☀️ 저장된 라이트모드 설정 불러오기 ☀️
-            if (localStorage.getItem('kbo_theme_mode') === 'light') {
-                document.documentElement.classList.add('light-mode');
-                const icon = document.getElementById('theme-icon');
-                if(icon) icon.className = 'fa-solid fa-moon text-[13px]';
-            }
+            // ☀️ 시스템 설정 즉시 적용 ☀️
+            handleThemeChange(themeMediaQuery);
 
             let rt = setTimeout(() => {
                 let r = document.getElementById('reload-toast');
