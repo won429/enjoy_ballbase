@@ -1300,17 +1300,23 @@
                         ifr.src = l.broadcastLink;
                     }
                     
-                    if (l.gameStatus === '경기중') {
-                        ifr.style.top = '-1025px'; /* 🎯🎯🎯 상세중계(우리팀) 경기중 화면 위치 조절 🎯🎯🎯 */
-                    } else if (l.gameStatus === '경기전' || !l.gameStatus || l.gameStatus === '예정') {
-                        ifr.style.top = '-970px'; /* 🎯🎯🎯 상세중계(우리팀) 경기전 화면 위치 조절 🎯🎯🎯 */
+                    let bcOfsPre = '-970px';       /* 🎯 상세중계(우리팀) 경기전 위치 */
+                    let bcOfsIngame = '-1025px';   /* 🎯 상세중계(우리팀) 경기중 위치 */
+                    let bcOfsJustEnded = '-1205px';/* 🎯 상세중계(우리팀) 경기종료 직후 1시간 위치 (네이버 경기중 모듈 유지기간) */
+                    let bcOfsEnded = '-970px';     /* 🎯 상세중계(우리팀) 경기종료 1시간 후 위치 (완전 종료) */
+                    
+                    let bcFinalOfs = bcOfsPre;
+                    let bcIs1HrPassed = (l.gameStatus === '종료' && (!l.endTime || (Date.now() - l.endTime > 3600000)));
+                    
+                    if (l.naverOffsetMode === 'ended') {
+                        bcFinalOfs = bcOfsEnded;
+                    } else if (l.naverOffsetMode === 'live') {
+                        bcFinalOfs = bcOfsIngame;
                     } else {
-                        let useEnded = false;
-                        if (l.naverOffsetMode === 'ended') useEnded = true;
-                        else if (l.naverOffsetMode === 'live') useEnded = false;
-                        else useEnded = (!l.endTime || (Date.now() - l.endTime > 3600000));
-                        ifr.style.top = useEnded ? '-970px' : '-1206px'; /* 🎯🎯🎯 상세중계(우리팀) 경기종료 화면 위치 조절 🎯🎯🎯 */
+                        if (l.gameStatus === '경기중') bcFinalOfs = bcOfsIngame;
+                        else if (l.gameStatus === '종료') bcFinalOfs = bcIs1HrPassed ? bcOfsEnded : bcOfsJustEnded;
                     }
+                    ifr.style.top = bcFinalOfs;
                     
                     if (fb) {
                         fb.classList.remove('hidden');
@@ -1361,17 +1367,23 @@
                 if (!l || !l.lineupLink) {
                     c.innerHTML = sbh + `<div class="flex flex-col items-center justify-center h-48 text-gray-400 mt-2 gap-3 bg-white/5 rounded-2xl border border-white/5"><i class="fa-solid fa-clipboard-question text-4xl text-gray-500 mb-2"></i><span class="text-lg font-bold text-white tracking-wide">라인업 미발표</span><span class="text-[12px] text-gray-500 text-center">관리자가 아직 라인업 링크를<br>연동하지 않았습니다.</span></div>`;
                 } else {
-                    let isPre = (!l.gameStatus || l.gameStatus === '경기전' || l.gameStatus === '예정');
-                    let isIngame = (l.gameStatus === '경기중');
-                    /* 🎯🎯🎯 타팀(라인업) 경기 화면 위치 조절 (경기전 / 경기중 / 경기종료 순서) 🎯🎯🎯 */
-                    let tOfs = isPre ? '-670px' : (isIngame ? '-1001px' : '-941px');
-                    if (l.gameStatus === '종료') {
-                        let useEnded = false;
-                        if (l.naverOffsetMode === 'ended') useEnded = true;
-                        else if (l.naverOffsetMode === 'live') useEnded = false;
-                        else useEnded = (!l.endTime || (Date.now() - l.endTime > 3600000));
-                        tOfs = useEnded ? '-941px' : '-1001px';
+                    let luOfsPre = '-670px';       /* 🎯 타팀(라인업) 경기전 위치 */
+                    let luOfsIngame = '-1001px';   /* 🎯 타팀(라인업) 경기중 위치 */
+                    let luOfsJustEnded = '-1001px';/* 🎯 타팀(라인업) 경기종료 직후 1시간 위치 (네이버 경기중 모듈 유지기간) */
+                    let luOfsEnded = '-941px';     /* 🎯 타팀(라인업) 경기종료 1시간 후 위치 (완전 종료) */
+                    
+                    let luFinalOfs = luOfsPre;
+                    let luIs1HrPassed = (l.gameStatus === '종료' && (!l.endTime || (Date.now() - l.endTime > 3600000)));
+                    
+                    if (l.naverOffsetMode === 'ended') {
+                        luFinalOfs = luOfsEnded;
+                    } else if (l.naverOffsetMode === 'live') {
+                        luFinalOfs = luOfsIngame;
+                    } else {
+                        if (l.gameStatus === '경기중') luFinalOfs = luOfsIngame;
+                        else if (l.gameStatus === '종료') luFinalOfs = luIs1HrPassed ? luOfsEnded : luOfsJustEnded;
                     }
+                    let tOfs = luFinalOfs;
                     
                     c.innerHTML = sbh + `
                         <!-- 🚨🚨🚨 타팀(라인업) 블럭 크기 조절: 아래 h-[580px] 숫자를 수정하세요 (예: h-[400px]) 🚨🚨🚨 -->
