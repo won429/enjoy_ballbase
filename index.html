@@ -898,7 +898,7 @@
                         }
                     }
                     let tColorClass = isT ? 'text-point' : (isP ? 'text-gray-500' : (mt.length ? 'text-white font-bold' : 'text-gray-400'));
-                    grid.innerHTML += `<div class="calendar-day cursor-pointer relative ${mt.length ? 'has-match' : ''} ${isT ? 'today' : ''}" onclick="openDateSheet('${dStr}')">${stmp}${tic}<span class="text-[13px] relative z-10 ${tColorClass}">${i}</span>${dots}</div>`;
+                    grid.innerHTML += `<div class="calendar-day relative ${mt.length ? 'has-match' : ''} ${isT ? 'today' : ''} ${selectedTeam !== 'all' ? 'cursor-pointer' : ''}" ${selectedTeam !== 'all' ? `onclick="openDateSheet('${dStr}')"` : ''}>${stmp}${tic}<span class="text-[13px] relative z-10 ${tColorClass}">${i}</span>${dots}</div>`;
                 }
             } else {
                 document.getElementById('week-days-header').classList.add('hidden');
@@ -958,7 +958,7 @@
                                     }
                                 }
                             }
-                            return `<div class="bg-white/5 border border-white/5 rounded-xl p-3 flex justify-between items-center cursor-pointer active:scale-95 transition-transform relative overflow-hidden" onclick="openLineupPopup(${m.id})">${stmp}<div class="flex flex-col gap-1 w-full relative z-10">${sh}<div class="flex items-center justify-between mt-1"><div class="flex items-center gap-1.5 w-[40%]">${l1}<span class="text-sm font-bold text-white truncate">${m.team1}</span></div><div class="flex items-center justify-center w-[20%]">${sch}</div><div class="flex items-center justify-end gap-1.5 w-[40%]"><span class="text-sm font-bold text-white truncate">${m.team2}</span>${l2}</div></div></div></div>`;
+                            return `<div class="bg-white/5 border border-white/5 rounded-xl p-3 flex justify-between items-center relative overflow-hidden ${selectedTeam !== 'all' ? 'cursor-pointer active:scale-95 transition-transform' : ''}" ${selectedTeam !== 'all' ? `onclick="openLineupPopup(${m.id})"` : ''}>${stmp}<div class="flex flex-col gap-1 w-full relative z-10">${sh}<div class="flex items-center justify-between mt-1"><div class="flex items-center gap-1.5 w-[40%]">${l1}<span class="text-sm font-bold text-white truncate">${m.team1}</span></div><div class="flex items-center justify-center w-[20%]">${sch}</div><div class="flex items-center justify-end gap-1.5 w-[40%]"><span class="text-sm font-bold text-white truncate">${m.team2}</span>${l2}</div></div></div></div>`;
                         }).join('') + `</div>`;
                         
                         grid.innerHTML += `<div class="flex flex-col gap-3 scroll-mt-[350px]" ${cd.ds === todayStr ? 'id="weekly-today-group"' : ''}><div class="flex items-center gap-2"><h3 class="text-lg font-bold ${cd.ds === todayStr ? 'text-point' : (isP ? 'text-gray-500' : 'text-white')}">${cd.d.getMonth() + 1}월 ${cd.d.getDate()}일 일정</h3><span class="text-[10px] font-bold text-point bg-point-sub px-2 py-0.5 rounded-full ${isP ? 'opacity-50' : ''}">${cd.mt.length}경기</span></div>${mh}</div>`;
@@ -980,6 +980,7 @@
         }
 
         function openDateSheet(d) {
+            if (selectedTeam === 'all') return;
             let m = scheduleData.filter(x => x.date === d && (selectedTeam === 'all' || x.team1 === selectedTeam || x.team2 === selectedTeam));
             if (m.length === 1) {
                 openLineupPopup(m[0].id);
@@ -1164,13 +1165,17 @@
                 const l = liveDataStore[m.id];
                 const div = document.createElement('div');
                 
+                const bcName = m.broadcaster || (l && l.broadcaster) || '';
+                const bcHtmlCanceled = bcName ? `<span class="text-[9px] text-gray-600 mx-1">|</span><span class="text-[10px] font-bold text-gray-400">${bcName}</span>` : '';
+                const bcHtmlNormal = bcName ? `<span class="text-[9px] text-white/40 mx-1">|</span><span class="text-[10px] font-bold text-white/80">${bcName}</span>` : '';
+                
                 let iC = l && ((l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))));
                 if (iC) {
                     let ct = (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))) ? l.inning : (l.gameStatus || '우천취소');
                     if (ct === '취소') ct = '우천취소';
                     ct = ct.replace('우취', '우천취소');
                     div.className = 'min-w-full bg-[#18181b] shrink-0 px-7 py-5 transition-transform active:scale-[0.98] snap-center relative overflow-hidden shadow-lg h-[116px] flex flex-col justify-center rounded-[20px] border border-white/10';
-                    div.innerHTML = `<div class="absolute inset-0 pointer-events-none z-0" style="background: linear-gradient(135deg, ${h1} 0%, ${h2} 100%); opacity: 0.35;"></div><div class="absolute inset-0 pointer-events-none z-0 opacity-20" style="background: repeating-linear-gradient(-45deg, transparent, transparent 4px, #000 4px, #000 8px);"></div><div class="flex justify-between items-center mb-4 relative z-10 w-full opacity-50"><div class="flex items-center gap-1.5"><div class="w-1 h-3 rounded-sm bg-gray-500"></div><span class="text-[11px] font-extrabold text-white tracking-wider">${m.stadium}</span></div><span class="text-[10px] text-gray-300 font-medium bg-white/5 px-2 py-0.5 rounded-lg border border-white/5 tracking-wide">${ds}</span></div><div class="flex justify-between items-center relative z-10 w-full"><div class="flex items-center gap-3 w-[40%] opacity-40 grayscale"><img src="${teamLogos[m.team1]}" class="w-[42px] h-[42px] object-contain drop-shadow-md"><div class="flex flex-col"><span class="text-[9px] text-gray-300 font-bold mb-0.5 tracking-wider">AWAY</span><span class="text-[15px] font-bold text-white tracking-wide">${m.team1}</span></div></div><div class="flex justify-center w-[20%]"></div><div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center z-20 w-full"><div class="bg-black/70 backdrop-blur-md border border-white/10 rounded-full px-4 py-1.5 shadow-2xl flex items-center justify-center w-fit"><span class="text-[13px] font-black text-white tracking-widest drop-shadow-md whitespace-nowrap">${ct}</span></div></div><div class="flex items-center justify-end gap-3 w-[40%] text-right opacity-40 grayscale"><div class="flex flex-col"><span class="text-[9px] text-gray-300 font-bold mb-0.5 tracking-wider">HOME</span><span class="text-[15px] font-bold text-white tracking-wide">${m.team2}</span></div><img src="${teamLogos[m.team2]}" class="w-[42px] h-[42px] object-contain drop-shadow-md"></div></div>`;
+                    div.innerHTML = `<div class="absolute inset-0 pointer-events-none z-0" style="background: linear-gradient(135deg, ${h1} 0%, ${h2} 100%); opacity: 0.35;"></div><div class="absolute inset-0 pointer-events-none z-0 opacity-20" style="background: repeating-linear-gradient(-45deg, transparent, transparent 4px, #000 4px, #000 8px);"></div><div class="flex justify-between items-center mb-4 relative z-10 w-full opacity-50"><div class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-gray-500 text-[10px]"></i><span class="text-[11px] font-extrabold text-white tracking-wider">${m.stadium}</span>${bcHtmlCanceled}</div><span class="text-[10px] text-gray-300 font-medium bg-white/5 px-2 py-0.5 rounded-lg border border-white/5 tracking-wide">${ds}</span></div><div class="flex justify-between items-center relative z-10 w-full"><div class="flex items-center gap-3 w-[40%] opacity-40 grayscale"><img src="${teamLogos[m.team1]}" class="w-[42px] h-[42px] object-contain drop-shadow-md"><div class="flex flex-col"><span class="text-[9px] text-gray-300 font-bold mb-0.5 tracking-wider">AWAY</span><span class="text-[15px] font-bold text-white tracking-wide">${m.team1}</span></div></div><div class="flex justify-center w-[20%]"></div><div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center z-20 w-full"><div class="bg-black/70 backdrop-blur-md border border-white/10 rounded-full px-4 py-1.5 shadow-2xl flex items-center justify-center w-fit"><span class="text-[13px] font-black text-white tracking-widest drop-shadow-md whitespace-nowrap">${ct}</span></div></div><div class="flex items-center justify-end gap-3 w-[40%] text-right opacity-40 grayscale"><div class="flex flex-col"><span class="text-[9px] text-gray-300 font-bold mb-0.5 tracking-wider">HOME</span><span class="text-[15px] font-bold text-white tracking-wide">${m.team2}</span></div><img src="${teamLogos[m.team2]}" class="w-[42px] h-[42px] object-contain drop-shadow-md"></div></div>`;
                 } else {
                     div.className = 'min-w-full bg-[#18181b] shrink-0 px-6 py-5 transition-transform active:scale-[0.98] snap-center relative overflow-hidden shadow-xl h-[120px] flex flex-col justify-center rounded-[24px] border border-white/10';
                     let ch = `<div class="bg-black/30 backdrop-blur-sm px-3.5 py-1 rounded-full border border-white/10 shadow-inner"><span class="text-[11px] font-black text-white/60 tracking-widest">VS</span></div>`;
@@ -1185,8 +1190,14 @@
                     }
                     let ap = (l && l.awayPitcher) ? l.awayPitcher : '미정';
                     let hp = (l && l.homePitcher) ? l.homePitcher : '미정';
-                    div.innerHTML = `<div class="absolute inset-0 pointer-events-none z-0" style="background: linear-gradient(135deg, ${h1}90 0%, ${h2}90 100%); opacity: 0.85;"></div><div class="flex justify-between items-center mb-3 relative z-10 w-full"><div class="flex items-center gap-1.5"><div class="w-1.5 h-3.5 rounded-sm" style="background-color: ${h1}"></div><span class="text-[11px] font-extrabold text-white/95 tracking-wider">${m.stadium}</span></div><span class="text-[10px] text-white/80 font-bold bg-black/30 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/10 tracking-wide">${ds}</span></div><div class="flex justify-between items-center relative z-10 w-full"><div class="flex items-center gap-2.5 w-[38%]"><img src="${teamLogos[m.team1]}" class="w-[48px] h-[48px] object-contain drop-shadow-lg"><div class="flex flex-col w-[calc(100%-50px)]"><span class="text-[16px] font-black text-white tracking-wide truncate">${m.team1}</span><div class="flex items-center gap-1 mt-1"><span class="bg-black/40 text-white/80 text-[8px] font-bold px-1 py-0.5 rounded shadow-inner">P</span><span class="text-[11px] text-white/70 font-medium tracking-tight truncate">${ap}</span></div></div></div><div class="flex justify-center flex-1">${ch}</div><div class="flex items-center justify-end gap-2.5 w-[38%] text-right"><div class="flex flex-col items-end w-[calc(100%-50px)]"><span class="text-[16px] font-black text-white tracking-wide truncate">${m.team2}</span><div class="flex items-center gap-1 mt-1"><span class="text-[11px] text-white/70 font-medium tracking-tight truncate">${hp}</span><span class="bg-black/40 text-white/80 text-[8px] font-bold px-1 py-0.5 rounded shadow-inner">P</span></div></div><img src="${teamLogos[m.team2]}" class="w-[48px] h-[48px] object-contain drop-shadow-lg"></div></div>`;
+                    div.innerHTML = `<div class="absolute inset-0 pointer-events-none z-0" style="background: linear-gradient(135deg, ${h1}90 0%, ${h2}90 100%); opacity: 0.85;"></div><div class="flex justify-between items-center mb-3 relative z-10 w-full"><div class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-[11px]" style="color: ${h1}"></i><span class="text-[11px] font-extrabold text-white/95 tracking-wider">${m.stadium}</span>${bcHtmlNormal}</div><span class="text-[10px] text-white/80 font-bold bg-black/30 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/10 tracking-wide">${ds}</span></div><div class="flex justify-between items-center relative z-10 w-full"><div class="flex items-center gap-2.5 w-[38%]"><img src="${teamLogos[m.team1]}" class="w-[48px] h-[48px] object-contain drop-shadow-lg"><div class="flex flex-col w-[calc(100%-50px)]"><span class="text-[16px] font-black text-white tracking-wide truncate">${m.team1}</span><div class="flex items-center gap-1 mt-1"><span class="bg-black/40 text-white/80 text-[8px] font-bold px-1 py-0.5 rounded shadow-inner">P</span><span class="text-[11px] text-white/70 font-medium tracking-tight truncate">${ap}</span></div></div></div><div class="flex justify-center flex-1">${ch}</div><div class="flex items-center justify-end gap-2.5 w-[38%] text-right"><div class="flex flex-col items-end w-[calc(100%-50px)]"><span class="text-[16px] font-black text-white tracking-wide truncate">${m.team2}</span><div class="flex items-center gap-1 mt-1"><span class="text-[11px] text-white/70 font-medium tracking-tight truncate">${hp}</span><span class="bg-black/40 text-white/80 text-[8px] font-bold px-1 py-0.5 rounded shadow-inner">P</span></div></div><img src="${teamLogos[m.team2]}" class="w-[48px] h-[48px] object-contain drop-shadow-lg"></div></div>`;
                 }
+                
+                if (selectedTeam !== 'all') {
+                    div.classList.add('cursor-pointer');
+                    div.onclick = () => openLineupPopup(m.id);
+                }
+
                 c.appendChild(div);
             });
             
@@ -1222,6 +1233,7 @@
         }
 
         function openLineupPopup(id) {
+            if (selectedTeam === 'all') return;
             currentPopupMatchId = id;
             if (navigator.vibrate) navigator.vibrate(5);
             const p = document.getElementById('lineup-popup');
