@@ -508,6 +508,12 @@
         let viewMode = 'month', selectedTeam = localStorage.getItem('kbo_selected_team');
         if (selectedTeam !== 'KIA' && selectedTeam !== '삼성') selectedTeam = 'KIA';
 
+        // 🚨 오디오 및 전역 변수 중복 선언 방지 (오직 이곳에서 1번만 선언)
+        let audioPlayer, currentSongTitle = '', currentSongCover = '', currentPlaylist = [], currentSongIndex = -1, isSeeking = false, isRemoteTrigger = false;
+        let fpStartY = 0, fpCurrentY = 0, fpIsDragging = false;
+        let currentBanner = 0, totalBanners = 1, bannerInterval, isPlaying = true;
+        let isBroadcastView = false;
+
         function showToast(msg) {
             let t = document.getElementById('toast-msg');
             if (!t) {
@@ -1081,8 +1087,6 @@
             c.innerHTML = h;
         }
 
-        let currentBanner = 0, totalBanners = 1, bannerInterval, isPlaying = true;
-        
         function updateBannerDots(idx) {
             document.querySelectorAll('.banner-dot').forEach((d, i) => {
                 if (i === idx) {
@@ -1272,7 +1276,6 @@
             }
         }
 
-        let isBroadcastView = false;
         function toggleBroadcastView() {
             isBroadcastView = !isBroadcastView;
             const l = document.getElementById('lineup-content');
@@ -1319,10 +1322,10 @@
                         ifr.src = l.broadcastLink;
                     }
                     
-                    let bcOfsPre = '-970px';       /* 🎯 상세중계(우리팀) 경기전 위치 */
-                    let bcOfsIngame = '-1025px';   /* 🎯 상세중계(우리팀) 경기중 위치 */
-                    let bcOfsJustEnded = '-1205px';/* 🎯 상세중계(우리팀) 경기종료 직후 2시간 위치 (네이버 경기중 모듈 유지기간) */
-                    let bcOfsEnded = '-970px';     /* 🎯 상세중계(우리팀) 경기종료 2시간 후 위치 (완전 종료) */
+                    let bcOfsPre = '-970px';
+                    let bcOfsIngame = '-1025px';
+                    let bcOfsJustEnded = '-1205px';
+                    let bcOfsEnded = '-970px';
                     
                     let bcFinalOfs = bcOfsPre;
                     let bcIsDelayPassed = (l.gameStatus === '종료' && (!l.endTime || (Date.now() - l.endTime > 7200000)));
@@ -1391,10 +1394,10 @@
                 if (!l || !l.lineupLink) {
                     c.innerHTML = sbh + `<div class="flex flex-col items-center justify-center h-48 text-gray-400 mt-2 gap-3 bg-white/5 rounded-2xl border border-white/5"><i class="fa-solid fa-clipboard-question text-4xl text-gray-500 mb-2"></i><span class="text-lg font-bold text-white tracking-wide">라인업 미발표</span><span class="text-[12px] text-gray-500 text-center">관리자가 아직 라인업 링크를<br>연동하지 않았습니다.</span></div>`;
                 } else {
-                    let luOfsPre = '-670px';       /* 🎯 타팀(라인업) 경기전 위치 */
-                    let luOfsIngame = '-1001px';   /* 🎯 타팀(라인업) 경기중 위치 */
-                    let luOfsJustEnded = '-1200px';/* 🎯 타팀(라인업) 경기종료 직후 2시간 위치 (네이버 경기중 모듈 유지기간) */
-                    let luOfsEnded = '-941px';     /* 🎯 타팀(라인업) 경기종료 2시간 후 위치 (완전 종료) */
+                    let luOfsPre = '-670px';
+                    let luOfsIngame = '-1001px';
+                    let luOfsJustEnded = '-1200px';
+                    let luOfsEnded = '-941px';
                     
                     let luFinalOfs = luOfsPre;
                     let luIsDelayPassed = (l.gameStatus === '종료' && (!l.endTime || (Date.now() - l.endTime > 7200000)));
@@ -1415,7 +1418,6 @@
                     let tOfs = luFinalOfs;
                     
                     c.innerHTML = sbh + `
-                        <!-- 🚨🚨🚨 타팀(라인업) 블럭 크기 조절: 아래 h-[580px] 숫자를 수정하세요 (예: h-[400px]) 🚨🚨🚨 -->
                         <div class="w-[calc(100%+48px)] -ml-6 h-[560px] flex flex-col items-center justify-center relative overflow-hidden mt-2" style="background-color: var(--app-bg);">
                             <div id="lu-loading" class="absolute inset-0 z-40 flex flex-col items-center justify-center" style="background-color: var(--app-bg);">
                                 <i class="fa-solid fa-baseball fa-spin text-3xl text-gray-400 mb-3"></i>
@@ -1609,30 +1611,32 @@
             });
         }
 
-        let audioPlayer, currentSongTitle = '', currentSongCover = '', currentPlaylist = [], currentSongIndex = -1, isSeeking = false;
-        
         window.appPlayMusic = function() {
             if (audioPlayer && audioPlayer.src) {
                 audioPlayer.play();
                 const b = document.getElementById('mini-player-btn');
                 if (b) b.className = 'fa-solid fa-pause text-base';
+                
+                if (!isRemoteTrigger) db.collection("cheer_sync").doc("current").set({isPlaying: true, ts: Date.now()}, {merge:true});
             }
         };
-        
+
         window.appPauseMusic = function() {
             if (audioPlayer) {
                 audioPlayer.pause();
                 const b = document.getElementById('mini-player-btn');
                 if (b) b.className = 'fa-solid fa-play text-base ml-0.5';
+                
+                if (!isRemoteTrigger) db.collection("cheer_sync").doc("current").set({isPlaying: false, ts: Date.now()}, {merge:true});
             }
-        }
-        
+        };
+
         function sendStateToAndroid(s, t) {
             if (window.AndroidBridge && window.AndroidBridge.updateMusicState) {
                 window.AndroidBridge.updateMusicState(s, t);
             }
         }
-        
+
         window.appPrevMusic = function() {
             if (currentPlaylist.length > 0 && currentSongIndex >= 0) {
                 currentSongIndex--;
@@ -1646,7 +1650,7 @@
                 }
             }
         };
-        
+
         window.appNextMusic = function() {
             if (currentPlaylist.length > 0 && currentSongIndex >= 0) {
                 currentSongIndex++;
@@ -1763,8 +1767,18 @@
 
         function toggleMiniPlayerPlay() {
             if (!audioPlayer) return;
-            if (audioPlayer.paused) audioPlayer.play();
+            let willPlay = audioPlayer.paused;
+            if (willPlay) audioPlayer.play().catch(e => {});
             else audioPlayer.pause();
+            
+            if (!isRemoteTrigger) {
+                db.collection("cheer_sync").doc("current").set({
+                    url: audioPlayer.getAttribute('src') || audioPlayer.src || '',
+                    title: currentSongTitle,
+                    isPlaying: willPlay,
+                    ts: Date.now()
+                }, {merge: true}).catch(e=>console.error(e));
+            }
         }
 
         function closeMiniPlayer() {
@@ -1776,6 +1790,8 @@
             p.classList.add('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
             const pb = document.getElementById('mini-player-progress');
             if (pb) pb.style.width = '0%';
+            
+            if (!isRemoteTrigger) db.collection("cheer_sync").doc("current").set({isPlaying: false, ts: Date.now()}, {merge:true});
         }
 
         function playAllSongs(id) {
@@ -1836,8 +1852,13 @@
             audioPlayer.autoplay = true;
             audioPlayer.src = u;
             audioPlayer.load();
-            audioPlayer.play().catch(e => showToast('음원 재생 중 오류가 발생했습니다. (파일 확인 필요)'));
-            showToast(`🎵 ${t} 재생을 시작합니다.`);
+            audioPlayer.play().catch(e => {
+                if (isRemoteTrigger) showToast('동기화 재생: 화면을 한 번 터치해야 작동합니다.');
+                else showToast('음원 재생 중 오류가 발생했습니다. (파일 확인 필요)');
+            });
+            
+            if (isRemoteTrigger) showToast(`🎧 누군가 [${t}] 재생! (동기화)`);
+            else showToast(`🎵 ${t} 재생을 시작합니다.`);
             
             let cu = 'kia/kia_logo.png', dcu = teamLogos['KIA'];
             if (t.includes('삼성') || t.includes('엘도라도') || t.includes('구자욱') || t.includes('최형우')) {
@@ -1884,10 +1905,17 @@
             
             const p = document.getElementById('mini-player');
             p.classList.remove('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
+            
+            if (!isRemoteTrigger) {
+                db.collection("cheer_sync").doc("current").set({
+                    url: u,
+                    title: t,
+                    isPlaying: true,
+                    ts: Date.now()
+                }).catch(e => console.error(e));
+            }
         }
 
-        let fpStartY = 0, fpCurrentY = 0, fpIsDragging = false;
-        
         function fpTouchStart(e) {
             if (e.target.tagName.toLowerCase() === 'input') return;
             const p = document.getElementById('full-player');
@@ -1896,7 +1924,7 @@
             fpCurrentY = fpStartY;
             fpIsDragging = true;
         }
-        
+
         function fpTouchMove(e) {
             if (!fpIsDragging) return;
             fpCurrentY = e.touches[0].clientY;
@@ -1905,7 +1933,7 @@
             const p = document.getElementById('full-player');
             p.style.transform = `translateY(${d}px)`;
         }
-        
+
         function fpTouchEnd(e) {
             if (!fpIsDragging) return;
             fpIsDragging = false;
@@ -1915,7 +1943,7 @@
             if (d > 100) closeFullPlayer();
             else p.style.transform = '';
         }
-        
+
         function openFullPlayer() {
             const f = document.getElementById('full-player');
             if (f) {
@@ -1924,7 +1952,7 @@
                 f.classList.add('translate-y-0', 'pointer-events-auto');
             }
         }
-        
+
         function closeFullPlayer() {
             const f = document.getElementById('full-player');
             if (f) {
@@ -1933,7 +1961,7 @@
                 f.classList.add('translate-y-full', 'pointer-events-none');
             }
         }
-        
+
         function formatTime(s) {
             if (isNaN(s)) return "0:00";
             const m = Math.floor(s / 60), sec = Math.floor(s % 60);
@@ -2118,6 +2146,33 @@
             
             initAudioPlayer();
             renderCheerSongs();
+            
+            db.collection("cheer_sync").doc("current").onSnapshot(doc => {
+                if (!doc.exists || doc.metadata.hasPendingWrites) return;
+                const data = doc.data();
+                if (!data) return;
+
+                const currentUrl = audioPlayer ? (audioPlayer.getAttribute('src') || audioPlayer.src || '') : '';
+                const isSameSong = currentUrl.endsWith(data.url) || (data.url && data.url.endsWith(currentUrl));
+
+                isRemoteTrigger = true;
+
+                if (data.url && !isSameSong) {
+                    executePlay(data.url, data.title);
+                    if (!data.isPlaying && audioPlayer) {
+                        setTimeout(() => audioPlayer.pause(), 100);
+                    }
+                } else if (audioPlayer) {
+                    if (data.isPlaying && audioPlayer.paused) {
+                        audioPlayer.play().catch(e => showToast('동기화 재생: 화면을 한 번 터치해야 작동합니다.'));
+                    } else if (!data.isPlaying && !audioPlayer.paused) {
+                        audioPlayer.pause();
+                    }
+                }
+
+                isRemoteTrigger = false;
+            });
+            
             await syncWithFirestore();
             clearTimeout(rt);
             
