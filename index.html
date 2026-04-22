@@ -58,7 +58,7 @@
         .calendar-day.today span { color: var(--point-color) !important; text-shadow: 0 0 8px var(--point-bg) !important; font-weight: 900 !important; }
         .has-match { background: rgba(255,255,255,0.02) !important; border: 1px solid rgba(255,255,255,0.05) !important; box-shadow: none !important; }
         
-        #banner-carousel > div { border-radius: 20px !important; margin: 0 4px; border: 1px solid rgba(255,255,255,0.08) !important; box-shadow: none !important; }
+        #banner-carousel > div { border-radius: 0 !important; margin: 0 !important; border-left: none !important; border-right: none !important; border-top: 1px solid var(--glass-border) !important; border-bottom: 1px solid var(--glass-border) !important; box-shadow: none !important; }
         .banner-dot { background-color: rgba(255,255,255,0.2) !important; transition: all 0.3s; }
         .banner-dot.bg-white { background-color: var(--point-color) !important; box-shadow: 0 0 8px var(--point-color) !important; }
         .live-badge { background: rgba(234, 0, 41, 0.1) !important; color: #EA0029 !important; border: 1px solid rgba(234, 0, 41, 0.3) !important; box-shadow: 0 0 10px rgba(234, 0, 41, 0.3) !important; font-weight: 800 !important; border-radius: 8px !important; }
@@ -1216,9 +1216,9 @@
                     if (ct === '취소') ct = '우천취소'; 
                     ct = ct.replace('우취', '우천취소');
                     
-                    div.className = 'min-w-full shrink-0 px-2.5 snap-center transition-transform duration-300 active:scale-[0.98] py-1';
+                    div.className = 'min-w-full shrink-0 snap-center transition-transform duration-300 active:scale-[0.98] py-1';
                     div.innerHTML = `
-                        <div class="w-full h-[130px] bg-[#1C1C1E] rounded-[24px] border border-white/5 relative overflow-hidden px-4 py-3 shadow-lg flex flex-col justify-between">
+                        <div class="w-full h-[130px] bg-[#1C1C1E] relative overflow-hidden px-5 py-3 shadow-lg flex flex-col justify-between">
                             <div class="absolute inset-0 pointer-events-none z-0" style="background: linear-gradient(135deg, ${h1}20 0%, ${h2}20 100%);"></div>
                             
                             <div class="flex justify-between items-center z-10 opacity-60">
@@ -1251,7 +1251,7 @@
                             </div>
                         </div>`;
                 } else {
-                    div.className = 'min-w-full shrink-0 px-2.5 snap-center transition-transform duration-300 active:scale-[0.98] py-1';
+                    div.className = 'min-w-full shrink-0 snap-center transition-transform duration-300 active:scale-[0.98] py-1';
                     
                     let ch = `
                         <div class="w-9 h-9 rounded-full bg-black/20 border border-white/5 flex items-center justify-center shadow-inner mt-1">
@@ -1292,7 +1292,7 @@
                         `<div class="w-5 h-5 rounded-full bg-black/20 border border-white/5 flex items-center justify-center shrink-0"><span class="text-[9px] font-black text-gray-400">P</span></div>`;
                     
                     div.innerHTML = `
-                        <div class="w-full h-[130px] bg-[#1C1C1E] rounded-[24px] border border-white/5 relative overflow-hidden px-4 py-3 shadow-lg flex flex-col justify-between">
+                        <div class="w-full h-[130px] bg-[#1C1C1E] relative overflow-hidden px-5 py-3 shadow-lg flex flex-col justify-between">
                             <div class="absolute inset-0 pointer-events-none z-0" style="background: linear-gradient(to right, ${h1}25 -10%, transparent 35%, transparent 65%, ${h2}25 110%);"></div>
                             
                             <div class="flex justify-between items-center z-10">
