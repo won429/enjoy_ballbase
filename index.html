@@ -1201,7 +1201,7 @@
                             </div>
                             <div class="absolute inset-0 z-[35] pointer-events-auto"></div>
                             <!-- 🛠️ 아래 iframe의 top, left, transform(scale), width 등 값을 조정해서 점수판 영역을 맞춰주세요! -->
-                            <iframe class="opacity-0 transition-opacity duration-500 absolute w-full h-[2500px] border-none z-30" style="top: -800px; left: 0px; transform: scale(1.0); transform-origin: top center; background-color: var(--app-bg);" scrolling="no" src="${l.bannerLink}" onload="setTimeout(() => { const ld=document.getElementById('banner-loading-${m.id}'); if(ld){ld.classList.add('hidden');ld.classList.remove('flex');}this.classList.remove('opacity-0'); }, 1500);"></iframe>
+                            <iframe class="opacity-0 transition-opacity duration-500 absolute w-full h-[2500px] border-none z-30" style="top: -50px; left: 0px; transform: scale(1.0); transform-origin: top center; background-color: var(--app-bg);" scrolling="no" src="${l.bannerLink}" onload="setTimeout(() => { const ld=document.getElementById('banner-loading-${m.id}'); if(ld){ld.classList.add('hidden');ld.classList.remove('flex');}this.classList.remove('opacity-0'); }, 1500);"></iframe>
                         </div>`;
                 } else {
                     const bcName = m.broadcaster || (l && l.broadcaster) || '';
