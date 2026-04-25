@@ -1149,17 +1149,16 @@
             
             let vm = scheduleData.filter(m => {
                 if (selectedTeam !== 'all' && m.team1 !== selectedTeam && m.team2 !== selectedTeam && m.id !== '260711_ALLSTAR') return false;
+                
+                if (m.date < todayStr) return false; // 🛠️ 하루가 지난 경기는 배너에서 완전히 제외
+
                 const l = liveDataStore[m.id]; 
-                if (l && l.gameStatus === '종료') return false;
                 let iC = l && ((l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))));
-                if (iC) { 
+                if (iC && m.date === todayStr) { 
                     const clt = new Date(`${m.date}T19:30:00`); 
                     if (n >= clt) return false; 
-                    return true; 
                 }
-                const ms = new Date(`${m.date}T${m.time}:00`); 
-                if (l && l.gameStatus === '경기중') return true; 
-                return n < new Date(ms.getTime() + 5 * 60 * 60 * 1000);
+                return true; 
             }).sort((a, b) => { 
                 if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); 
                 return a.date.localeCompare(b.date); 
@@ -1167,18 +1166,21 @@
             
             let tm = [], st = new Set(), td = vm.length > 0 ? vm[0].date : null;
             for (let m of vm) {
-                if (td && m.date !== td) continue;
                 if (selectedTeam === 'all') { 
+                    if (td && m.date !== td) continue;
                     if (!st.has(m.team1) && !st.has(m.team2)) { 
                         tm.push(m); st.add(m.team1); st.add(m.team2); 
                     } 
                     if (tm.length >= 5) break; 
                 } else { 
-                    if (tm.length > 0) { 
-                        let fl = liveDataStore[tm[0].id]; 
-                        if (fl && fl.gameStatus === '경기중') break; 
-                    } 
                     tm.push(m); 
+                    let fl = liveDataStore[m.id]; 
+                    let isEnded = fl && fl.gameStatus === '종료';
+                    let isCanceled = fl && ((fl.gameStatus && (fl.gameStatus.includes('취소') || fl.gameStatus.includes('우취'))) || (fl.inning && (fl.inning.includes('취소') || fl.inning.includes('우취'))));
+                    
+                    // 🛠️ 경기 전이나 경기 중이면 다음 경기를 배너에 띄우지 않고 멈춤 (종료/취소 시에만 다음 경기 계속 추가)
+                    if (!isEnded && !isCanceled) break; 
+                    
                     if (tm.length >= 3) break; 
                 }
             }
