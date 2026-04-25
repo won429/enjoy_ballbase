@@ -1193,15 +1193,21 @@
                 const div = document.createElement('div');
                 
                 if (l && l.bannerLink) {
+                    // 🛠️ 경기 상태에 따른 배너 높이 및 위치 설정 (경기중/종료 vs 경기전)
+                    let isLiveOrEnded = (l.gameStatus === '경기중' || l.gameStatus === '종료');
+                    let bannerHeight = isLiveOrEnded ? '160px' : '100px'; // 🛠️ 배너 전체 높이 (앞: 경기중/종료, 뒤: 경기전)
+                    let iframeTop = isLiveOrEnded ? '-60px' : '-50px'; // 🛠️ iframe 상하 위치 (앞: 경기중/종료, 뒤: 경기전)
+                    let iframeScale = isLiveOrEnded ? '1.0' : '1.0'; // 🛠️ iframe 확대 비율 (앞: 경기중/종료, 뒤: 경기전)
+
                     div.className = 'min-w-full shrink-0 snap-center transition-transform duration-300 active:scale-[0.98] py-1';
                     div.innerHTML = `
-                        <div class="w-full h-[130px] bg-[#1C1C1E] relative overflow-hidden shadow-lg border-y border-white/5">
+                        <div class="w-full bg-[#1C1C1E] relative overflow-hidden shadow-lg border-y border-white/5" style="height: ${bannerHeight};">
                             <div id="banner-loading-${m.id}" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-[#1C1C1E]">
                                 <i class="fa-solid fa-baseball fa-spin text-2xl text-gray-500"></i>
                             </div>
                             <div class="absolute inset-0 z-[35] pointer-events-auto"></div>
-                            <!-- 🛠️ 아래 iframe의 top, left, transform(scale), width 등 값을 조정해서 점수판 영역을 맞춰주세요! -->
-                            <iframe class="opacity-0 transition-opacity duration-500 absolute w-full h-[2500px] border-none z-30" style="top: -50px; left: 0px; transform: scale(1.0); transform-origin: top center; background-color: var(--app-bg);" scrolling="no" src="${l.bannerLink}" onload="setTimeout(() => { const ld=document.getElementById('banner-loading-${m.id}'); if(ld){ld.classList.add('hidden');ld.classList.remove('flex');}this.classList.remove('opacity-0'); }, 1500);"></iframe>
+                            <!-- 🛠️ 설정된 변수들이 아래 iframe에 자동 적용됩니다. 세부 값은 위 변수에서 조절하세요! -->
+                            <iframe class="opacity-0 transition-opacity duration-500 absolute w-full h-[2500px] border-none z-30" style="top: ${iframeTop}; left: 0px; transform: scale(${iframeScale}); transform-origin: top center; background-color: var(--app-bg);" scrolling="no" src="${l.bannerLink}" onload="setTimeout(() => { const ld=document.getElementById('banner-loading-${m.id}'); if(ld){ld.classList.add('hidden');ld.classList.remove('flex');}this.classList.remove('opacity-0'); }, 1500);"></iframe>
                         </div>`;
                 } else {
                     const bcName = m.broadcaster || (l && l.broadcaster) || '';
