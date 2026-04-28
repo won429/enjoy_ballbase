@@ -19,7 +19,7 @@
         @font-face { font-family: 'KBO-Dia-Gothic'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/KBO-Dia-Gothic_medium.woff') format('woff'); font-weight: 500; font-style: normal; }
         @font-face { font-family: 'KBO-Dia-Gothic'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/KBO-Dia-Gothic_bold.woff') format('woff'); font-weight: 700; font-style: normal; }
         
-        :root { --point-color: #FFFFFF; --point-bg: rgba(255, 255, 255, 0.15); --app-bg: #030303; --glass-bg: rgba(24, 24, 27, 0.65); --glass-border: rgba(255, 255, 255, 0.08); --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5); }
+        :root { --point-color: #FFFFFF; --point-bg: rgba(255, 255, 255, 0.15); --app-bg: #030303; --glass-bg: rgba(24, 24, 27, 0.65); --glass-border: rgba(255, 255, 255, 0.08); --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5); --range-fill: #ffffff; --range-bg: rgba(255,255,255,0.2); }
         body[data-theme="KIA"] { --point-color: #EA0029; --point-bg: rgba(234, 0, 41, 0.2); --app-bg: #0a0002; }
         body[data-theme="삼성"] { --point-color: #074CA1; --point-bg: rgba(7, 76, 161, 0.2); --app-bg: #00020a; }
         body[data-theme="all"] { --point-color: #ffffff; --point-bg: rgba(255, 255, 255, 0.15); --app-bg: #030303; }
@@ -71,7 +71,7 @@
         
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
         input[type=range]::-webkit-slider-runnable-track { background: rgba(255,255,255,0.1) !important; height: 6px !important; border-radius: 3px !important; border: none !important; cursor: pointer; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; background: #fff !important; width: 18px !important; height: 18px !important; margin-top: -6px !important; border-radius: 50%; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; transition: transform 0.1s; cursor: pointer; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; background: var(--range-fill) !important; width: 18px !important; height: 18px !important; margin-top: -6px !important; border-radius: 50%; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; transition: transform 0.1s; cursor: pointer; }
         input[type=range]::-webkit-slider-thumb:active { transform: scale(1.2); }
         input[type=range]:focus { outline: none; }
         
@@ -88,7 +88,7 @@
         html { background-color: #030303; }
         html.light-mode { background-color: #f3f4f6; }
         html.light-mode:has(body[data-theme="all"]) { background-color: #ffffff; }
-        html.light-mode body { --app-bg: #f3f4f6; --glass-bg: rgba(255, 255, 255, 0.85); --glass-border: rgba(0, 0, 0, 0.1); --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05); color: #111827; }
+        html.light-mode body { --app-bg: #f3f4f6; --glass-bg: rgba(255, 255, 255, 0.85); --glass-border: rgba(0, 0, 0, 0.1); --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05); color: #111827; --range-fill: #111827; --range-bg: rgba(0,0,0,0.15); }
         html.light-mode body[data-theme="all"] { --app-bg: #ffffff; --point-color: #111827; --point-bg: rgba(0,0,0,0.1); }
         html.light-mode body[data-theme="KIA"] { --app-bg: #fff0f2; }
         html.light-mode body[data-theme="삼성"] { --app-bg: #f0f5fb; }
@@ -332,12 +332,12 @@
                     <i class="fa-solid fa-chevron-down text-[32px] pointer-events-none"></i>
                 </button>
             </div>
-            <div class="w-[76%] max-w-[300px] mx-auto aspect-square bg-white/5 rounded-[40px] shrink-0 flex items-center justify-center overflow-hidden border border-white/10 shadow-2xl mt-2 mb-10">
-                <img id="full-player-cover" src="" class="w-full h-full object-contain p-8 drop-shadow-2xl">
+            <div class="w-[76%] max-w-[300px] mx-auto aspect-square bg-white/5 rounded-[40px] shrink-0 flex items-center justify-center overflow-hidden border border-white/10 mt-2 mb-6">
+                <img id="full-player-cover" src="" class="w-full h-full object-contain p-8">
             </div>
             <div class="flex-1 flex flex-col justify-center w-full pb-6">
-                <div class="flex flex-col items-center w-full mb-10 text-center px-4">
-                    <h2 id="full-player-title" class="text-[24px] font-black text-white mb-2 tracking-tight">곡 제목</h2>
+                <div class="flex flex-col items-start w-full mb-6 text-left px-2">
+                    <h2 id="full-player-title" class="text-[24px] font-black text-white mb-1.5 tracking-tight">곡 제목</h2>
                     <span id="full-player-artist" class="text-[15px] text-point font-bold tracking-tight">KBO 리그 응원가</span>
                 </div>
                 <div class="flex flex-col w-full mb-12 px-2">
@@ -1539,12 +1539,12 @@
             audioPlayer.addEventListener('play', () => { const b = document.getElementById('mini-player-btn'), fb = document.getElementById('full-player-btn'); if (b) b.className = 'fa-solid fa-pause text-[22px]'; if (fb) fb.className = 'fa-solid fa-pause text-5xl'; updateMediaSession(); sendStateToAndroid("PLAYING", currentSongTitle); });
             audioPlayer.addEventListener('pause', () => { const b = document.getElementById('mini-player-btn'), fb = document.getElementById('full-player-btn'); if (b) b.className = 'fa-solid fa-play text-[22px] ml-0.5'; if (fb) fb.className = 'fa-solid fa-play text-5xl ml-1'; sendStateToAndroid("PAUSED", currentSongTitle); });
             audioPlayer.addEventListener('loadedmetadata', () => { if (audioPlayer.duration && !isNaN(audioPlayer.duration) && audioPlayer.duration !== Infinity) { document.getElementById('full-player-duration').innerText = formatTime(audioPlayer.duration); } else { document.getElementById('full-player-duration').innerText = "0:00"; } });
-            audioPlayer.addEventListener('timeupdate', () => { if (audioPlayer.duration && !isNaN(audioPlayer.duration) && audioPlayer.duration !== Infinity) { const p = (audioPlayer.currentTime / audioPlayer.duration) * 100; document.getElementById('mini-player-progress').style.width = p + '%'; if (!isSeeking && rs) { rs.value = p; rs.style.background = `linear-gradient(to right, #ffffff ${p}%, rgba(255,255,255,0.2) ${p}%)`; } document.getElementById('full-player-current').innerText = formatTime(audioPlayer.currentTime); } });
+            audioPlayer.addEventListener('timeupdate', () => { if (audioPlayer.duration && !isNaN(audioPlayer.duration) && audioPlayer.duration !== Infinity) { const p = (audioPlayer.currentTime / audioPlayer.duration) * 100; document.getElementById('mini-player-progress').style.width = p + '%'; if (!isSeeking && rs) { rs.value = p; rs.style.background = `linear-gradient(to right, var(--range-fill) ${p}%, var(--range-bg) ${p}%)`; } document.getElementById('full-player-current').innerText = formatTime(audioPlayer.currentTime); } });
             if (rs) {
-                rs.addEventListener('input', e => { isSeeking = true; const p = e.target.value; rs.style.background = `linear-gradient(to right, #ffffff ${p}%, rgba(255,255,255,0.2) ${p}%)`; if (audioPlayer.duration && !isNaN(audioPlayer.duration) && audioPlayer.duration !== Infinity) { document.getElementById('full-player-current').innerText = formatTime((p / 100) * audioPlayer.duration); } });
+                rs.addEventListener('input', e => { isSeeking = true; const p = e.target.value; rs.style.background = `linear-gradient(to right, var(--range-fill) ${p}%, var(--range-bg) ${p}%)`; if (audioPlayer.duration && !isNaN(audioPlayer.duration) && audioPlayer.duration !== Infinity) { document.getElementById('full-player-current').innerText = formatTime((p / 100) * audioPlayer.duration); } });
                 rs.addEventListener('change', e => { isSeeking = false; if (audioPlayer.duration && !isNaN(audioPlayer.duration) && audioPlayer.duration !== Infinity) { audioPlayer.currentTime = (e.target.value / 100) * audioPlayer.duration; } });
             }
-            audioPlayer.addEventListener('ended', () => { if (currentPlaylist.length > 0 && currentSongIndex >= 0 && currentSongIndex + 1 < currentPlaylist.length) { currentSongIndex++; const n = currentPlaylist[currentSongIndex]; executePlay(n.url, n.title); } else { const b = document.getElementById('mini-player-btn'), fb = document.getElementById('full-player-btn'); if (b) b.className = 'fa-solid fa-play text-[22px] ml-0.5'; if (fb) fb.className = 'fa-solid fa-play text-5xl ml-1'; document.getElementById('mini-player-progress').style.width = '0%'; if (rs) { rs.value = 0; rs.style.background = `rgba(255,255,255,0.2)`; document.getElementById('full-player-current').innerText = "0:00"; } sendStateToAndroid("PAUSED", currentSongTitle); } });
+            audioPlayer.addEventListener('ended', () => { if (currentPlaylist.length > 0 && currentSongIndex >= 0 && currentSongIndex + 1 < currentPlaylist.length) { currentSongIndex++; const n = currentPlaylist[currentSongIndex]; executePlay(n.url, n.title); } else { const b = document.getElementById('mini-player-btn'), fb = document.getElementById('full-player-btn'); if (b) b.className = 'fa-solid fa-play text-[22px] ml-0.5'; if (fb) fb.className = 'fa-solid fa-play text-5xl ml-1'; document.getElementById('mini-player-progress').style.width = '0%'; if (rs) { rs.value = 0; rs.style.background = `var(--range-bg)`; document.getElementById('full-player-current').innerText = "0:00"; } sendStateToAndroid("PAUSED", currentSongTitle); } });
             audioPlayer.addEventListener('error', () => { showToast('음원 파일을 불러올 수 없습니다. 경로를 확인해주세요.'); closeMiniPlayer(); });
         }
 
@@ -1572,10 +1572,10 @@
             let cu = 'kia/kia_logo.png', dcu = teamLogos['KIA']; if (t.includes('삼성') || t.includes('엘도라도') || t.includes('구자욱') || t.includes('최형우')) { cu = 'samsung/samsung_logo.png'; dcu = teamLogos['삼성']; }
             let ip = false; for (let p in playerImages) { if (t.includes(p)) { dcu = playerImages[p]; ip = true; break; } }
             document.getElementById('mini-player-title').innerText = t; const mc = document.getElementById('mini-player-cover'); mc.src = dcu; if (ip) mc.className = "w-full h-full object-cover object-top pt-0.5 scale-110 drop-shadow-md"; else mc.className = "w-full h-full object-contain opacity-95";
-            document.getElementById('full-player-title').innerText = t; const fc = document.getElementById('full-player-cover'); fc.src = dcu; if (ip) fc.className = "w-full h-full object-cover object-top pt-2 scale-110 drop-shadow-2xl"; else fc.className = "w-full h-full object-contain p-8 drop-shadow-2xl";
+            document.getElementById('full-player-title').innerText = t; const fc = document.getElementById('full-player-cover'); fc.src = dcu; if (ip) fc.className = "w-full h-full object-cover object-top pt-2 scale-110"; else fc.className = "w-full h-full object-contain p-8";
             let an = '팀 응원가'; if (ip || t.includes('김도영') || t.includes('구자욱') || t.includes('최형우')) an = '선수 응원가'; document.getElementById('full-player-artist').innerText = t.includes('KIA') ? 'KIA 타이거즈 응원가' : (t.includes('삼성') ? '삼성 라이온즈 응원가' : an);
             currentSongTitle = t; currentSongCover = dcu; updateMediaSession();
-            const pb = document.getElementById('mini-player-progress'); if (pb) pb.style.width = '0%'; const rs = document.getElementById('full-player-range'); if (rs) { rs.value = 0; rs.style.background = `rgba(255,255,255,0.2)`; }
+            const pb = document.getElementById('mini-player-progress'); if (pb) pb.style.width = '0%'; const rs = document.getElementById('full-player-range'); if (rs) { rs.value = 0; rs.style.background = `var(--range-bg)`; }
             const p = document.getElementById('mini-player'); p.classList.remove('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
         }
 
