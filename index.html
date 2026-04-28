@@ -332,16 +332,16 @@
                     <i class="fa-solid fa-chevron-down text-[32px] pointer-events-none"></i>
                 </button>
             </div>
-            <div class="w-[95%] max-w-[360px] mx-auto aspect-square bg-white/5 rounded-[40px] shrink-0 flex items-center justify-center overflow-hidden border border-white/10 shadow-2xl">
-                <img id="full-player-cover" src="" class="w-full h-full object-contain p-12 drop-shadow-2xl">
+            <div class="w-[76%] max-w-[300px] mx-auto aspect-square bg-white/5 rounded-[40px] shrink-0 flex items-center justify-center overflow-hidden border border-white/10 shadow-2xl mt-2 mb-10">
+                <img id="full-player-cover" src="" class="w-full h-full object-contain p-8 drop-shadow-2xl">
             </div>
-            <div class="flex-1 flex flex-col justify-end w-full pb-8">
-                <div class="flex flex-col w-full mb-10">
-                    <h2 id="full-player-title" class="text-[26px] font-black text-white mb-2 tracking-tight">곡 제목</h2>
-                    <span id="full-player-artist" class="text-[16px] text-point font-bold tracking-tight">KBO 리그 응원가</span>
+            <div class="flex-1 flex flex-col justify-center w-full pb-6">
+                <div class="flex flex-col items-center w-full mb-10 text-center px-4">
+                    <h2 id="full-player-title" class="text-[24px] font-black text-white mb-2 tracking-tight">곡 제목</h2>
+                    <span id="full-player-artist" class="text-[15px] text-point font-bold tracking-tight">KBO 리그 응원가</span>
                 </div>
-                <div class="flex flex-col w-full mb-12">
-                    <input type="range" id="full-player-range" min="0" max="100" value="0" class="w-full mb-4">
+                <div class="flex flex-col w-full mb-12 px-2">
+                    <input type="range" id="full-player-range" min="0" max="100" value="0" class="w-full mb-5">
                     <div class="flex justify-between text-[12px] font-bold text-gray-400 font-mono tracking-widest px-1">
                         <span id="full-player-current">0:00</span>
                         <span id="full-player-duration">0:00</span>
@@ -349,7 +349,7 @@
                 </div>
                 <div class="flex justify-center items-center gap-14">
                     <button onclick="appPrevMusic()" ontouchstart="event.stopPropagation()" class="text-white hover:text-gray-300 active:scale-95 transition-transform"><i class="fa-solid fa-backward text-[36px]"></i></button>
-                    <button onclick="toggleMiniPlayerPlay()" ontouchstart="event.stopPropagation()" class="text-white active:scale-95 transition-transform"><i id="full-player-btn" class="fa-solid fa-pause text-[52px]"></i></button>
+                    <button onclick="toggleMiniPlayerPlay()" ontouchstart="event.stopPropagation()" class="text-white active:scale-95 transition-transform"><i id="full-player-btn" class="fa-solid fa-pause text-[48px]"></i></button>
                     <button onclick="appNextMusic()" ontouchstart="event.stopPropagation()" class="text-white hover:text-gray-300 active:scale-95 transition-transform"><i class="fa-solid fa-forward text-[36px]"></i></button>
                 </div>
             </div>
@@ -1572,7 +1572,7 @@
             let cu = 'kia/kia_logo.png', dcu = teamLogos['KIA']; if (t.includes('삼성') || t.includes('엘도라도') || t.includes('구자욱') || t.includes('최형우')) { cu = 'samsung/samsung_logo.png'; dcu = teamLogos['삼성']; }
             let ip = false; for (let p in playerImages) { if (t.includes(p)) { dcu = playerImages[p]; ip = true; break; } }
             document.getElementById('mini-player-title').innerText = t; const mc = document.getElementById('mini-player-cover'); mc.src = dcu; if (ip) mc.className = "w-full h-full object-cover object-top pt-0.5 scale-110 drop-shadow-md"; else mc.className = "w-full h-full object-contain opacity-95";
-            document.getElementById('full-player-title').innerText = t; const fc = document.getElementById('full-player-cover'); fc.src = dcu; if (ip) fc.className = "w-full h-full object-cover object-top pt-2 scale-110 drop-shadow-2xl"; else fc.className = "w-full h-full object-contain p-12 drop-shadow-2xl";
+            document.getElementById('full-player-title').innerText = t; const fc = document.getElementById('full-player-cover'); fc.src = dcu; if (ip) fc.className = "w-full h-full object-cover object-top pt-2 scale-110 drop-shadow-2xl"; else fc.className = "w-full h-full object-contain p-8 drop-shadow-2xl";
             let an = '팀 응원가'; if (ip || t.includes('김도영') || t.includes('구자욱') || t.includes('최형우')) an = '선수 응원가'; document.getElementById('full-player-artist').innerText = t.includes('KIA') ? 'KIA 타이거즈 응원가' : (t.includes('삼성') ? '삼성 라이온즈 응원가' : an);
             currentSongTitle = t; currentSongCover = dcu; updateMediaSession();
             const pb = document.getElementById('mini-player-progress'); if (pb) pb.style.width = '0%'; const rs = document.getElementById('full-player-range'); if (rs) { rs.value = 0; rs.style.background = `rgba(255,255,255,0.2)`; }
