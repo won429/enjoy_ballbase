@@ -44,5 +44,6 @@ const playerImages = {
     '강승호':'https://sports-phinf.pstatic.net/player/kbo/default/63123.png?type=w150',
     '임종성':'https://sports-phinf.pstatic.net/player/kbo/default/54236.png?type=w150',
     '정수빈':'https://sports-phinf.pstatic.net/player/kbo/default/79231.png?type=w150',
-    '심재훈':'https://sports-phinf.pstatic.net/player/kbo/default/55438.png?type=w150'
+    '심재훈':'https://sports-phinf.pstatic.net/player/kbo/default/55438.png?type=w150',
+    '주효상':'https://sports-phinf.pstatic.net/player/kbo/default/66354.png?type=w150'
 };
