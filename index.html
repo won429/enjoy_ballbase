@@ -41,14 +41,14 @@
         body[data-theme="all"] #bottom-nav button .text-white { color: #000000 !important; }
         body[data-theme="all"] #bottom-nav button i.text-white { color: #000000 !important; }
         
-        #left-wrapper, #ctrl-wrapper { border: 1px solid rgba(255,255,255,0.08) !important; background: #151515 !important; padding: 2px !important; box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important; position: relative; z-index: 40; }
+        #left-wrapper, #ctrl-wrapper { border: 1px solid rgba(255,255,255,0.08) !important; background: #151515 !important; padding: 2px !important; box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important; position: relative; z-index: 40; pointer-events: auto !important; }
         #ctrl-team button.text-gray-400 { color: #94a3b8 !important; font-weight: 600 !important; }
         .pt-safe { padding-top: max(20px, env(safe-area-inset-top)) !important; }
         .pt-main { padding-top: calc(max(20px, env(safe-area-inset-top)) + 70px) !important; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         .ctrl-item { transition: max-width 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), padding 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.7s ease, visibility 0.7s; overflow: hidden; white-space: nowrap; width: max-content; justify-self: end; }
-        .ctrl-show { max-width: 250px; opacity: 1; padding-left: 16px; padding-right: 16px; z-index: 50; position: relative; pointer-events: auto; visibility: visible; }
+        .ctrl-show { max-width: 250px; opacity: 1; padding-left: 16px; padding-right: 16px; z-index: 50; position: relative; pointer-events: auto !important; visibility: visible; }
         #ctrl-team.ctrl-show, #ctrl-back.ctrl-show, #ctrl-ranking.ctrl-show { padding-left: 2px; padding-right: 2px; }
         .ctrl-hide { max-width: 0px; opacity: 0; padding-left: 0px; padding-right: 0px; z-index: -10; position: absolute !important; right: 2px; top: 2px; pointer-events: none !important; visibility: hidden; }
         .ctrl-show button { position: relative; z-index: 60; }
@@ -147,7 +147,7 @@
             <span class="text-sm font-bold text-white tracking-widest animate-pulse">데이터를 불러오는 중...</span>
         </div>
         
-        <header class="absolute top-0 left-0 right-0 pt-safe px-4 pb-2 z-30 app-bg">
+        <header class="absolute top-0 left-0 right-0 pt-safe px-4 pb-2 z-[60] app-bg">
             <div class="mt-2 flex items-center justify-between gap-2 w-full pb-1">
                 <div id="left-wrapper" class="flex items-center flex-1 min-w-0 rounded-full transition-all duration-300 h-[36px]">
                     <div id="header-title-container" class="flex items-center gap-1.5 px-3 h-full min-w-0">
@@ -388,10 +388,14 @@
         const firebaseConfig = { apiKey: "AIzaSyDTGun1KsU2Cepx0oSFF7yki2uu2NT2mfk", authDomain: "kbo-app-98418.firebaseapp.com", projectId: "kbo-app-98418", storageBucket: "kbo-app-98418.firebasestorage.app", messagingSenderId: "1046094812627", appId: "1:1046094812627:web:2c07ec94c7e8028daa4b26" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        
+        // 추가: 외부 접속 환경(보안 네트워크 등)에서 발생하는 Firestore 10초 타임아웃 에러 우회 (Long Polling 강제)
+        db.settings({ experimentalForceLongPolling: true, useFetchStreams: false });
 
         let scheduleData = [], rankingData = [], liveDataStore = {}, currentPopupMatchId = null, currentTabIndex = 0, watchRecords = [], recordPopupDate = new Date(), currentRecordTeam = null, currentRecordType = null;
         let audioPlayer, currentSongTitle = '', currentSongCover = '', currentPlaylist = [], currentSongIndex = -1, isSeeking = false;
         let fpStartY = 0, fpCurrentY = 0, fpIsDragging = false, currentBanner = 0, totalBanners = 1, bannerInterval, isPlaying = true, isBroadcastView = false;
+        let isInitialPopupChecked = false;
         
         const initialScheduleData = [];
         const initialRankingData = [{rank:'-',team:'KIA',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'삼성',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'LG',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'두산',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'KT',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'SSG',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'롯데',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'한화',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'NC',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'키움',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}];
@@ -517,6 +521,7 @@
                     renderBanners(); 
                     renderLineupCheerSongs();
                     if (currentTabIndex === 0) renderWinRate();
+                    checkInitialSamsungPopup();
                 } catch (e) { 
                     console.error("Schedule Error:", e); 
                     scheduleData = [...initialScheduleData]; 
@@ -534,6 +539,7 @@
                         return parseInt(a.rank) - parseInt(b.rank); 
                     });
                     if (currentTabIndex === 2) renderRanking();
+                    checkInitialSamsungPopup();
                 } else {
                     db.collection("rankings").onSnapshot(o => {
                         if (o.empty) rankingData = [...initialRankingData];
@@ -543,6 +549,7 @@
                             return parseInt(a.rank) - parseInt(b.rank); 
                         });
                         if (currentTabIndex === 2) renderRanking();
+                        checkInitialSamsungPopup();
                     }, err => console.error("Rankings fallback error:", err));
                 }
             }, err => console.error("Rankings error:", err));
@@ -560,6 +567,7 @@
                     renderBanners(); 
                     renderLineupCheerSongs();
                     if (currentTabIndex === 0) renderWinRate();
+                    checkInitialSamsungPopup();
                 } else {
                     db.collection("lineups").onSnapshot(o => {
                         o.forEach(d => liveDataStore[d.id] = d.data());
@@ -568,6 +576,7 @@
                         renderBanners(); 
                         renderLineupCheerSongs();
                         if (currentTabIndex === 0) renderWinRate();
+                        checkInitialSamsungPopup();
                     }, err => console.error("Lineups fallback error:", err));
                 }
             }, err => console.error("Lineups error:", err));
@@ -582,6 +591,43 @@
                     renderRecordCalendar(currentRecordTeam, currentRecordType); 
                 }
             }, err => console.error("Watch records error:", err));
+        }
+
+        function checkInitialSamsungPopup() {
+            if (isInitialPopupChecked || sessionStorage.getItem('kbo_notice_seen')) return;
+            if (scheduleData.length === 0 || rankingData.length === 0 || Object.keys(liveDataStore).length === 0) return;
+            
+            let tm = scheduleData.filter(m => (m.team1 === '삼성' || m.team2 === '삼성') && liveDataStore[m.id] && liveDataStore[m.id].gameStatus === '종료').sort((a, b) => b.date.localeCompare(a.date) || (b.time || "00:00").localeCompare(a.time || "00:00"));
+            let stType = '', stCount = 0;
+            if (tm.length > 0) {
+                for (let m of tm) {
+                    let l = liveDataStore[m.id], a = Number(l.awayScore || 0), h_ = Number(l.homeScore || 0);
+                    let iW = (m.team1 === '삼성' && a > h_) || (m.team2 === '삼성' && h_ > a);
+                    let iL = (m.team1 === '삼성' && a < h_) || (m.team2 === '삼성' && h_ < a);
+                    let r = iW ? '승' : iL ? '패' : '무';
+                    if (!stType) { stType = r; stCount = 1; } else if (stType === r) stCount++; else break;
+                }
+            } else {
+                let rData = rankingData.find(t => t.team === '삼성');
+                if (rData && rData.streak && rData.streak !== '-') {
+                    stType = rData.streak.includes('승') ? '승' : rData.streak.includes('패') ? '패' : '무';
+                    stCount = parseInt(rData.streak.replace(/[^0-9]/g, '')) || 0;
+                }
+            }
+            
+            if (stType === '패' && stCount >= 2) {
+                const np = document.getElementById('notice-popup');
+                if (np) {
+                    const pEl = np.querySelector('p');
+                    if (pEl) pEl.innerHTML = `최근 삼성 라이온즈의 지속적인 연패(<span class="text-[#074CA1] font-bold">${stCount}연패</span>)로 인하여,<br>당분간 <span class="text-[#074CA1] font-bold">삼성 라이온즈 메뉴 접근</span>을 차단합니다. 😭<br><br><span class="text-[12px] text-[#074CA1] font-bold">* 단, 응원가 탭은 정상 이용 가능합니다.</span>`;
+                    np.classList.remove('hidden');
+                    np.classList.add('flex');
+                }
+                if (selectedTeam === '삼성' && currentTabIndex !== 3) {
+                    setTeamFilter('KIA');
+                }
+            }
+            isInitialPopupChecked = true;
         }
 
         function updateHeaderCtrlForPopup(isOpen, titleStr) {
@@ -611,7 +657,7 @@
                 }
                 
                 if (els['btn-detail-broadcast']) {
-                    if (selectedTeam === 'all' || currentPopupMatchId === null || (titleStr && titleStr.includes('기록 추가'))) { 
+                    if (currentPopupMatchId === null || (titleStr && titleStr.includes('기록 추가'))) { 
                         els['btn-detail-broadcast'].classList.add('hidden'); 
                         els['btn-detail-broadcast'].classList.remove('flex'); 
                     } else { 
@@ -857,7 +903,7 @@
                     let tColorClass = isT ? 'text-point' : (isP ? 'text-gray-500' : (mt.length ? 'text-white font-bold' : 'text-gray-400'));
                     
                     grid.innerHTML += `
-                        <div class="calendar-day relative ${mt.length ? 'has-match' : ''} ${isT ? 'today' : ''} ${selectedTeam !== 'all' ? 'cursor-pointer' : ''}" ${selectedTeam !== 'all' ? `onclick="openDateSheet('${dStr}')"` : ''}>
+                        <div class="calendar-day relative ${mt.length ? 'has-match cursor-pointer active:scale-95 transition-transform' : ''} ${isT ? 'today' : ''}" ${mt.length ? `onclick="openDateSheet('${dStr}')"` : ''}>
                             ${stmp}${tic}
                             <span class="text-[13px] relative z-10 ${tColorClass}">${i}</span>
                             ${dots}
@@ -934,7 +980,7 @@
                             }
                             
                             return `
-                                <div class="bg-white/5 border border-white/5 rounded-xl p-3 flex justify-between items-center relative overflow-hidden ${selectedTeam !== 'all' ? 'cursor-pointer active:scale-95 transition-transform' : ''}" ${selectedTeam !== 'all' ? `onclick="openLineupPopup(${m.id})"` : ''}>
+                                <div class="bg-white/5 border border-white/5 rounded-xl p-3 flex justify-between items-center relative overflow-hidden cursor-pointer active:scale-95 transition-transform" onclick="openLineupPopup('${m.id}')">
                                     ${stmp}
                                     <div class="flex flex-col gap-1 w-full relative z-10">
                                         ${sh}
@@ -1394,10 +1440,8 @@
                     }
                 }
                 
-                if (selectedTeam !== 'all') { 
-                    div.classList.add('cursor-pointer'); 
-                    div.onclick = () => openLineupPopup(m.id); 
-                }
+                div.classList.add('cursor-pointer'); 
+                div.onclick = () => openLineupPopup(m.id); 
                 
                 c.appendChild(div);
             });
@@ -1432,7 +1476,6 @@
         }
 
         function openLineupPopup(id) {
-            if (selectedTeam === 'all') return;
             currentPopupMatchId = id; if (navigator.vibrate) navigator.vibrate(5);
             const p = document.getElementById('lineup-popup'); p.classList.remove('render-hidden');
             let ts = "경기 정보", m = scheduleData.find(x => x.id === parseInt(id) || x.id === id);
@@ -1448,6 +1491,82 @@
                 if (l) l.classList.remove('render-hidden', 'hidden'); if (b) b.classList.add('render-hidden');
                 if (btn) btn.innerHTML = `<i class="fa-solid fa-tv text-[10px] text-gray-300"></i>상세중계`;
             }
+        }
+
+        function openDateSheet(d) {
+            if (selectedTeam === 'all') return;
+            let m = scheduleData.filter(x => x.date === d && (selectedTeam === 'all' || x.team1 === selectedTeam || x.team2 === selectedTeam || x.id === '260711_ALLSTAR'));
+            if (m.length === 1) { 
+                openLineupPopup(m[0].id); 
+                return; 
+            }
+            
+            const s = document.getElementById('bottom-sheet'), c = document.getElementById('sheet-matches-container');
+            const [yr, mo, da] = d.split('-'); 
+            const t = m.length > 0 ? `${parseInt(mo)}월 ${parseInt(da)}일 일정 (${m.length}경기)` : `${parseInt(mo)}월 ${parseInt(da)}일 일정`;
+            
+            c.dataset.title = t; 
+            c.innerHTML = '';
+            
+            if (m.length === 0) {
+                c.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-6 text-gray-500">
+                        <i class="fa-regular fa-calendar-xmark text-3xl mb-2"></i>
+                        <p class="text-sm">이 날은 예정된 경기가 없습니다.</p>
+                    </div>`;
+            } else {
+                m.forEach(x => {
+                    const l = liveDataStore[x.id]; 
+                    let sh = `<span class="text-[10px] text-gray-400 font-bold"><i class="fa-solid fa-clock mr-1"></i>${x.time}</span>`;
+                    
+                    if (l) {
+                        let iC = (l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취')));
+                        if (iC) { 
+                            let txt = (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))) ? l.inning : (l.gameStatus || '취소'); 
+                            if (txt === '취소') txt = '우천취소'; txt = txt.replace('우취', '우천취소'); 
+                            sh = `<div class="flex items-center gap-1.5"><span class="bg-blue-600 text-[9px] font-bold text-white px-2 py-0.5 rounded-full">${txt}</span></div>`; 
+                        } else if (l.gameStatus !== '경기전') { 
+                            let ds = (l.gameStatus === '경기중' && l.inning) ? l.inning : l.gameStatus; 
+                            let badgeHtml = l.gameStatus !== '종료' 
+                                ? `<span class="text-[10px] font-black text-[#EA0029] flex items-center gap-1 tracking-widest"><span class="w-1 h-1 rounded-full bg-[#EA0029] animate-pulse"></span>${ds}</span>` 
+                                : `<span class="bg-gray-600/30 border border-gray-500/20 text-[9px] font-bold text-gray-400 px-1.5 py-0.5 rounded">${ds}</span>`; 
+                            sh = `
+                                <div class="flex items-center gap-1.5">
+                                    ${badgeHtml}
+                                    <span class="text-gray-600 text-[9px]">|</span>
+                                    <span class="text-[10px] text-gray-400 font-black">${l.awayScore}:${l.homeScore}</span>
+                                </div>`; 
+                        }
+                    }
+                    
+                    let l1 = uiTeamLogo(x.team1, 'w-7 h-7', 'w-7 h-7');
+                    let l2 = uiTeamLogo(x.team2, 'w-7 h-7', 'w-7 h-7');
+                    
+                    c.innerHTML += `
+                        <div class="bg-white/5 border border-white/5 rounded-xl p-3 flex justify-between items-center cursor-pointer active:scale-95 transition-transform" onclick="openLineupPopup('${x.id}')">
+                            <div class="flex flex-col gap-1">
+                                ${sh}
+                                <div class="flex items-center gap-2 mt-0.5">
+                                    <div class="flex items-center gap-1.5">
+                                        ${l1}
+                                        <span class="text-sm font-bold text-white">${x.team1}</span>
+                                    </div>
+                                    <span class="text-[11px] text-gray-500 font-bold">vs</span>
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-sm font-bold text-white">${x.team2}</span>
+                                        ${l2}
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="w-8 h-8 rounded-full bg-white/5 text-gray-400 hover:text-white flex items-center justify-center text-xs shrink-0">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                        </div>`;
+                });
+            }
+            s.classList.remove('hidden'); 
+            s.classList.add('flex'); 
+            updateHeaderCtrlForPopup(true, t);
         }
 
         function toggleBroadcastView() {
@@ -1651,8 +1770,6 @@
         window.onload = () => {
             applyTimeBasedTheme();
             
-            if (!sessionStorage.getItem('kbo_notice_seen')) { const np = document.getElementById('notice-popup'); if (np) { np.classList.remove('hidden'); np.classList.add('flex'); } }
-
             let rt = setTimeout(() => { let r = document.getElementById('reload-toast'); if (!r) { r = document.createElement('div'); r.id = 'reload-toast'; r.className = 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center bg-[#18181b]/95 backdrop-blur-md rounded-[32px] p-7 shadow-2xl z-[9999] border border-white/10 text-center min-w-[280px]'; r.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-[40px] text-point mb-4"></i><span class="text-white text-[18px] font-black mb-1.5 tracking-tight">서버 응답 지연 😭</span><span class="text-gray-400 text-[13px] font-medium mb-6 tracking-tight">네트워크 상태가 불안정합니다.</span><button onclick="location.reload()" class="bg-point text-white text-[15px] px-7 py-3 rounded-full font-bold shadow-lg active:scale-95 transition-transform tracking-tight"><i class="fa-solid fa-rotate-right mr-1.5"></i>재로딩하기</button>`; document.body.appendChild(r); } }, 6000);
             initAudioPlayer(); renderCheerSongs();
             
