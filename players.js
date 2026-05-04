@@ -45,5 +45,7 @@ const playerImages = {
     '임종성':'https://sports-phinf.pstatic.net/player/kbo/default/54236.png?type=w150',
     '정수빈':'https://sports-phinf.pstatic.net/player/kbo/default/79231.png?type=w150',
     '심재훈':'https://sports-phinf.pstatic.net/player/kbo/default/55438.png?type=w150',
-    '주효상':'https://sports-phinf.pstatic.net/player/kbo/default/66354.png?type=w150'
+    '주효상':'https://sports-phinf.pstatic.net/player/kbo/default/66354.png?type=w150',
+    '오러클린':'https://sports-phinf.pstatic.net/player/kbo/default/56464.png?type=w150',
+    '오석주':'https://sports-phinf.pstatic.net/player/kbo/default/67116.png?type=w150'
 };
