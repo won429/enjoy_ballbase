@@ -47,5 +47,15 @@ const playerImages = {
     '심재훈':'https://sports-phinf.pstatic.net/player/kbo/default/55438.png?type=w150',
     '주효상':'https://sports-phinf.pstatic.net/player/kbo/default/66354.png?type=w150',
     '오러클린':'https://sports-phinf.pstatic.net/player/kbo/default/56464.png?type=w150',
-    '오석주':'https://sports-phinf.pstatic.net/player/kbo/default/67116.png?type=w150'
+    '오석주':'https://sports-phinf.pstatic.net/player/kbo/default/67116.png?type=w150',
+    '박준현':'https://sports-phinf.pstatic.net/player/kbo/default/56318.png?type=w150',
+    '박주홍':'https://sports-phinf.pstatic.net/player/kbo/default/50357.png?type=w150',
+    '최주환':'https://sports-phinf.pstatic.net/player/kbo/default/76267.png?type=w150',
+    '안치홍':'https://sports-phinf.pstatic.net/player/kbo/default/79608.png?type=w150',
+    '임병욱':'https://sports-phinf.pstatic.net/player/kbo/default/64346.png?type=w150',
+    '브룩스':'https://sports-phinf.pstatic.net/player/kbo/default/56322.png?type=w150',
+    '양현종(키움)':'https://sports-phinf.pstatic.net/player/kbo/default/55370.png?type=w150',
+    '권혁빈':'https://sports-phinf.pstatic.net/player/kbo/default/55371.png?type=w150',
+    '송지후':'https://sports-phinf.pstatic.net/player/kbo/default/54394.png?type=w150',
+    '김재현':'https://sports-phinf.pstatic.net/player/kbo/default/62332.png?type=w150'
 };
