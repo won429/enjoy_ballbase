@@ -57,5 +57,8 @@ const playerImages = {
     '양현종 ':'https://sports-phinf.pstatic.net/player/kbo/default/55370.png?type=w150',
     '권혁빈':'https://sports-phinf.pstatic.net/player/kbo/default/55371.png?type=w150',
     '송지후':'https://sports-phinf.pstatic.net/player/kbo/default/54394.png?type=w150',
-    '김재현':'https://sports-phinf.pstatic.net/player/kbo/default/62332.png?type=w150'
+    '김재현':'https://sports-phinf.pstatic.net/player/kbo/default/62332.png?type=w150',
+    '테일러':'https://sports-phinf.pstatic.net/player/kbo/default/56966.png?type=w150',
+    '라일리':'https://sports-phinf.pstatic.net/player/kbo/default/55903.png?type=w150',
+    '신영우':'https://sports-phinf.pstatic.net/player/kbo/default/53919.png?type=w150'
 };
