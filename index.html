@@ -186,7 +186,7 @@
             <div class="w-full pt-main pb-[260px] px-4 flex flex-col min-h-full" id="winrate-container"></div>
         </main>
 
-        <main id="calendar-screen" class="flex flex-1 min-h-0 relative w-full flex-col overflow-y-auto scrollbar-hide pb-[260px]">
+        <main id="calendar-screen" class="flex flex-1 min-h-0 relative w-full flex-col overflow-y-auto scrollbar-hide">
             <div class="sticky top-0 z-20 px-5 pt-main pb-2 w-full app-bg">
                 <div class="relative mb-6 mt-1 shrink-0 -mx-5">
                     <div id="banner-carousel" class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-1" style="touch-action: pan-x pan-y;"></div>
@@ -213,7 +213,7 @@
                     <div class="text-xs font-bold text-[#074CA1]">토</div>
                 </div>
             </div>
-            <div class="px-5 flex-1 flex flex-col pt-3 pb-[260px] relative z-0">
+            <div class="px-5 flex-1 flex flex-col pt-3 pb-[140px] relative z-0">
                 <div id="calendar-grid" class="grid grid-cols-7 gap-2"></div>
             </div>
         </main>
@@ -949,24 +949,39 @@
                             let stmp = '';
                             
                             if (l && l.gameStatus !== '경기전') {
-                                let ds = (l.gameStatus === '경기중' && l.inning) ? l.inning : l.gameStatus;
-                                let badgeHtml = l.gameStatus !== '종료' 
-                                    ? `<span class="text-[10px] font-black text-[#EA0029] flex items-center gap-1 tracking-widest"><span class="w-1 h-1 rounded-full bg-[#EA0029] animate-pulse"></span>${ds}</span>` 
-                                    : `<span class="bg-gray-600/30 border border-gray-500/20 text-[9px] font-bold text-gray-400 px-1.5 py-0.5 rounded">${ds}</span>`;
+                                let isC = (l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취')));
                                 
-                                sh = `
-                                    <div class="flex items-center gap-1.5">
-                                        ${badgeHtml}
-                                        <span class="text-gray-600 text-[9px]">|</span>
-                                        <span class="text-[10px] text-gray-400 font-bold">${m.stadium}</span>
-                                    </div>`;
-                                sch = `
-                                    <span class="text-sm font-black ${l.awayScore > l.homeScore ? 'text-point' : 'text-white'}">${l.awayScore}</span>
-                                    <span class="text-xs text-gray-500 mx-1">:</span>
-                                    <span class="text-sm font-black ${l.homeScore > l.awayScore ? 'text-point' : 'text-white'}">${l.homeScore}</span>`;
+                                if (isC) {
+                                    let txt = (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))) ? l.inning : (l.gameStatus || '취소');
+                                    if (txt === '취소') txt = '우천취소'; txt = txt.replace('우취', '우천취소');
+                                    
+                                    sh = `
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="bg-gray-600/50 border border-gray-500/30 text-[9px] font-bold text-gray-300 px-1.5 py-0.5 rounded">${txt}</span>
+                                            <span class="text-gray-600 text-[9px]">|</span>
+                                            <span class="text-[10px] text-gray-400 font-bold">${m.stadium}</span>
+                                        </div>`;
+                                    sch = `<span class="text-xl font-black text-gray-600 tracking-widest">취소</span>`;
+                                } else {
+                                    let ds = (l.gameStatus === '경기중' && l.inning) ? l.inning : l.gameStatus;
+                                    let badgeHtml = l.gameStatus !== '종료' 
+                                        ? `<span class="text-[10px] font-black text-[#EA0029] flex items-center gap-1 tracking-widest"><span class="w-1 h-1 rounded-full bg-[#EA0029] animate-pulse"></span>${ds}</span>` 
+                                        : `<span class="bg-gray-600/30 border border-gray-500/20 text-[9px] font-bold text-gray-400 px-1.5 py-0.5 rounded">${ds}</span>`;
+                                    
+                                    sh = `
+                                        <div class="flex items-center gap-1.5">
+                                            ${badgeHtml}
+                                            <span class="text-gray-600 text-[9px]">|</span>
+                                            <span class="text-[10px] text-gray-400 font-bold">${m.stadium}</span>
+                                        </div>`;
+                                    sch = `
+                                        <span class="text-2xl font-black ${l.awayScore > l.homeScore ? 'text-point' : 'text-white'}">${l.awayScore}</span>
+                                        <span class="text-sm text-gray-500 mx-1.5 pb-0.5">:</span>
+                                        <span class="text-2xl font-black ${l.homeScore > l.awayScore ? 'text-point' : 'text-white'}">${l.homeScore}</span>`;
+                                }
                                 
                                 if (selectedTeam !== 'all') {
-                                    if (l.gameStatus && l.gameStatus.includes('취소')) {
+                                    if (isC) {
                                         stmp = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-blue-500 border-[3px] border-blue-500 rounded-tl-3xl rounded-br-3xl rounded-tr-md rounded-bl-md px-4 py-1 tracking-widest pointer-events-none z-0 bg-transparent whitespace-nowrap opacity-90">취소</div>`;
                                     } else if (l.gameStatus === '종료') {
                                         let a = parseInt(l.awayScore || 0), h = parseInt(l.homeScore || 0);
