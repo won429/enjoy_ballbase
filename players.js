@@ -60,5 +60,13 @@ const playerImages = {
     '김재현':'https://sports-phinf.pstatic.net/player/kbo/default/62332.png?type=w150',
     '테일러':'https://sports-phinf.pstatic.net/player/kbo/default/56966.png?type=w150',
     '라일리':'https://sports-phinf.pstatic.net/player/kbo/default/55903.png?type=w150',
-    '신영우':'https://sports-phinf.pstatic.net/player/kbo/default/53919.png?type=w150'
+    '신영우':'https://sports-phinf.pstatic.net/player/kbo/default/53919.png?type=w150',
+    '구창모':'https://sports-phinf.pstatic.net/player/kbo/default/65933.png?type=w150',
+    '김휘집':'https://sports-phinf.pstatic.net/player/kbo/default/51344.png?type=w150',
+    '서호철':'https://sports-phinf.pstatic.net/player/kbo/default/69995.png?type=w150',
+    '김형준':'https://sports-phinf.pstatic.net/player/kbo/default/68912.png?type=w150',
+    '토다':'https://sports-phinf.pstatic.net/player/kbo/default/56911.png?type=w150',
+    '오영수':'https://sports-phinf.pstatic.net/player/kbo/default/68904.png?type=w150',
+    '신재인':'https://sports-phinf.pstatic.net/player/kbo/default/56909.png?type=w150',
+    '김정호':'https://sports-phinf.pstatic.net/player/kbo/default/51903.png?type=w150'
 };
