@@ -138,6 +138,15 @@
         html.light-mode .bg-gray-500\/10, html.light-mode .bg-gray-500\/5 { background-color: rgba(75,85,99,0.05) !important; }
         html.light-mode .text-green-500, html.light-mode .border-green-500, html.light-mode .text-green-500\/80, html.light-mode .border-green-500\/80 { color: #10b981 !important; border-color: #10b981 !important; opacity: 1 !important; }
         html.light-mode .bg-green-500\/10, html.light-mode .bg-green-500\/5 { background-color: rgba(16,185,129,0.05) !important; }
+        html.light-mode .banner-card .text-white { color: #ffffff !important; }
+        html.light-mode .banner-card .text-white\/40 { color: rgba(255,255,255,0.4) !important; }
+        html.light-mode .banner-card .text-gray-400 { color: #9ca3af !important; }
+        html.light-mode .banner-card .text-gray-500 { color: #6b7280 !important; }
+        html.light-mode .banner-card .text-gray-600 { color: #4b5563 !important; }
+        html.light-mode .banner-card .bg-white\/20 { background-color: rgba(255,255,255,0.2) !important; }
+        html.light-mode .banner-card .border-white\/10 { border-color: rgba(255,255,255,0.1) !important; }
+        html.light-mode .banner-card .border-white\/5 { border-color: rgba(255,255,255,0.05) !important; }
+        html.light-mode body[data-theme="all"] .banner-card .text-point { color: #ffffff !important; text-shadow: 0 0 12px rgba(255,255,255,0.3); }
     </style>
 </head>
 <body class="w-full h-[100dvh] flex justify-center items-center overflow-hidden app-bg" data-theme="all">
@@ -1396,7 +1405,7 @@
                     div.className = 'min-w-full shrink-0 snap-center transition-transform duration-300 active:scale-[0.98] py-1';
                     div.style.cssText = 'border-top: none !important; border-bottom: none !important;';
                     div.innerHTML = `
-                        <div class="w-full bg-[#161618] relative overflow-hidden px-5 py-4 shadow-xl flex flex-col justify-center border-y border-white/5 gap-3.5">
+                        <div class="banner-card w-full bg-[#161618] relative overflow-hidden px-5 py-4 shadow-xl flex flex-col justify-center border-y border-white/5 gap-3.5">
                             <div class="absolute inset-0 pointer-events-none z-0" style="background: ${bgGradient};"></div>
                             <div class="flex justify-between items-center z-10 w-full">
                                 <div class="flex items-center">
@@ -1669,7 +1678,7 @@
                 rs.addEventListener('change', e => { isSeeking = false; if (audioPlayer.duration && !isNaN(audioPlayer.duration) && audioPlayer.duration !== Infinity) { audioPlayer.currentTime = (e.target.value / 100) * audioPlayer.duration; } });
             }
             audioPlayer.addEventListener('ended', () => { if (currentPlaylist.length > 0 && currentSongIndex >= 0 && currentSongIndex + 1 < currentPlaylist.length) { currentSongIndex++; const n = currentPlaylist[currentSongIndex]; executePlay(n.url, n.title); } else { const b = document.getElementById('mini-player-btn'), fb = document.getElementById('full-player-btn'); if (b) b.className = 'fa-solid fa-play text-[22px] ml-0.5'; if (fb) fb.className = 'fa-solid fa-play text-5xl ml-1'; document.getElementById('mini-player-progress').style.width = '0%'; if (rs) { rs.value = 0; rs.style.background = `var(--range-bg)`; document.getElementById('full-player-current').innerText = "0:00"; } sendStateToAndroid("PAUSED", currentSongTitle); } });
-            audioPlayer.addEventListener('error', () => { showToast('음원 파일을 불러올 수 없습니다. 경로를 확인해주세요.'); closeMiniPlayer(); });
+            audioPlayer.addEventListener('error', () => { showToast('음원 파일을 불러올 수 무 없습니다. 경로를 확인해주세요.'); closeMiniPlayer(); });
         }
 
         function updateMediaSession() { if ('mediaSession' in navigator && currentSongTitle) { let a = '팀 응원가'; if (currentSongTitle.includes('김도영') || currentSongTitle.includes('구자욱') || currentSongTitle.includes('최형우')) { a = '선수 응원가'; } navigator.mediaSession.metadata = new MediaMetadata({ title: currentSongTitle, artist: a, artwork: [ { src: currentSongCover, sizes: '512x512', type: 'image/png' }, { src: currentSongCover, sizes: '192x192', type: 'image/png' } ] }); navigator.mediaSession.setActionHandler('play', () => audioPlayer && audioPlayer.play()); navigator.mediaSession.setActionHandler('pause', () => audioPlayer && audioPlayer.pause()); navigator.mediaSession.setActionHandler('previoustrack', () => window.appPrevMusic()); navigator.mediaSession.setActionHandler('nexttrack', () => window.appNextMusic()); } }
