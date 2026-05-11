@@ -1359,6 +1359,16 @@
                     let winMark1 = '';
                     let winMark2 = '';
                     
+                    let r1 = rankingData.find(r => r.team === m.team1);
+                    let r2 = rankingData.find(r => r.team === m.team2);
+                    let r1Num = (r1 && r1.rank !== '-') ? String(r1.rank).replace('T', '') : '';
+                    let r2Num = (r2 && r2.rank !== '-') ? String(r2.rank).replace('T', '') : '';
+                    
+                    let getRankStyle = (n) => { let p = parseInt(n); if (p===1) return 'bg-[#FACC15] text-[#111827] border-black/10'; if (p===2) return 'bg-[#94A3B8] text-white border-black/10'; if (p===3) return 'bg-[#D97706] text-white border-white/20'; if (p===4) return 'bg-[#2DD4BF] text-[#111827] border-black/10'; if (p===5) return 'bg-[#38BDF8] text-[#111827] border-black/10'; return 'bg-gray-700 text-white border-black/20'; };
+                    
+                    let rank1Html = r1Num ? `<div class="absolute -top-1 -left-1 w-[15px] h-[15px] rounded-full border flex items-center justify-center shadow-lg z-20 ${getRankStyle(r1Num)}"><span class="text-[8.5px] font-black tracking-tighter leading-none">${r1Num}</span></div>` : '';
+                    let rank2Html = r2Num ? `<div class="absolute -top-1 -right-1 w-[15px] h-[15px] rounded-full border flex items-center justify-center shadow-lg z-20 ${getRankStyle(r2Num)}"><span class="text-[8.5px] font-black tracking-tighter leading-none">${r2Num}</span></div>` : '';
+                    
                     if (iC) {
                         bgGradient = `linear-gradient(135deg, ${h1}40 0%, ${h2}40 100%)`;
                         statusColor = 'text-[#EA0029]';
@@ -1420,9 +1430,12 @@
                             
                             <div class="flex justify-between items-center z-10 w-full ${iC ? 'opacity-50 grayscale' : ''}">
                                 <div class="flex flex-col w-[35%] gap-2">
-                                    <div class="flex items-center gap-2">
-                                        <img src="${teamLogos[m.team1]}" class="w-[34px] h-[34px] object-contain drop-shadow-md">
-                                        <span class="text-[18px] font-black text-white tracking-tight">${m.team1}</span>
+                                    <div class="flex items-center gap-1.5">
+                                        <div class="relative shrink-0 flex items-center justify-center">
+                                            <img src="${teamLogos[m.team1]}" class="w-[34px] h-[34px] object-contain drop-shadow-md">
+                                            ${rank1Html}
+                                        </div>
+                                        <span class="text-[18px] font-black text-white tracking-tight whitespace-nowrap">${m.team1}</span>
                                         ${winMark1}
                                     </div>
                                     ${!iC ? `
@@ -1439,10 +1452,13 @@
                                 </div>
                                 
                                 <div class="flex flex-col w-[35%] items-end gap-2 text-right">
-                                    <div class="flex items-center justify-end gap-2">
+                                    <div class="flex items-center justify-end gap-1.5">
                                         ${winMark2}
-                                        <span class="text-[18px] font-black text-white tracking-tight">${m.team2}</span>
-                                        <img src="${teamLogos[m.team2]}" class="w-[34px] h-[34px] object-contain drop-shadow-md">
+                                        <span class="text-[18px] font-black text-white tracking-tight whitespace-nowrap">${m.team2}</span>
+                                        <div class="relative shrink-0 flex items-center justify-center">
+                                            <img src="${teamLogos[m.team2]}" class="w-[34px] h-[34px] object-contain drop-shadow-md">
+                                            ${rank2Html}
+                                        </div>
                                     </div>
                                     ${!iC ? `
                                     <div class="flex items-center justify-end gap-1.5 pr-1 opacity-90">
@@ -1627,16 +1643,6 @@
             const l2Lg = uiTeamLogo(m.team2, 'w-12 h-12', 'w-12 h-12', 'drop-shadow-lg mb-1.5');
             
             const sbh = `<div class="flex justify-between items-center mb-5 px-1 mt-0 pb-5 border-b border-white/10"><div class="flex flex-col items-center w-[30%]">${l1Lg}<span class="text-[15px] font-black text-white tracking-wider">${m.team1}</span><span class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">AWAY</span></div><div class="flex flex-col items-center justify-center w-[40%]">${sch}</div><div class="flex flex-col items-center w-[30%]">${l2Lg}<span class="text-[15px] font-black text-white tracking-wider">${m.team2}</span><span class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">HOME</span></div></div>`;
-            
-            let isOurTeam = (m.team1 === 'KIA' || m.team1 === '삼성' || m.team2 === 'KIA' || m.team2 === '삼성');
-            if (!isOurTeam) {
-                if (!l || !l.lineupLink) c.innerHTML = sbh + `<div class="flex flex-col items-center justify-center h-48 text-gray-400 mt-2 gap-3 bg-white/5 rounded-2xl border border-white/5"><i class="fa-solid fa-clipboard-question text-4xl text-gray-500 mb-2"></i><span class="text-lg font-bold text-white tracking-wide">라인업 미발표</span><span class="text-[12px] text-gray-500 text-center">관리자가 아직 라인업 링크를<br>연동하지 않았습니다.</span></div>`;
-                else {
-                    let luFinalOfs = '-670px', luIsDelayPassed = (l.gameStatus === '종료' && (!l.endTime || (Date.now() - l.endTime > 7200000)));
-                    if (l.naverOffsetMode === 'ended') luFinalOfs = '-941px'; else if (l.naverOffsetMode === 'live') luFinalOfs = '-1001px'; else if (l.naverOffsetMode === 'just_ended') luFinalOfs = '-1200px'; else { if (l.gameStatus === '경기중') luFinalOfs = '-1001px'; else if (l.gameStatus === '종료') luFinalOfs = luIsDelayPassed ? '-941px' : '-1200px'; }
-                    c.innerHTML = sbh + `<div class="w-[calc(100%+48px)] -ml-6 h-[560px] flex flex-col items-center justify-center relative overflow-hidden mt-2" style="background-color: var(--app-bg);"><div id="lu-loading" class="absolute inset-0 z-40 flex flex-col items-center justify-center" style="background-color: var(--app-bg);"><i class="fa-solid fa-baseball fa-spin text-3xl text-gray-400 mb-3"></i><span class="text-xs font-bold text-gray-300">라인업을 불러오는 중...</span></div><div class="absolute inset-0 z-[35] pointer-events-none"><div class="absolute top-0 left-0 right-0 bottom-[105px] pointer-events-auto"></div><div class="absolute bottom-0 left-0 right-0 h-[5px] pointer-events-auto"></div><div class="absolute bottom-[5px] left-0 right-[100px] h-[100px] pointer-events-auto"></div><div class="absolute bottom-[5px] right-0 w-[5px] h-[100px] pointer-events-auto"></div></div><iframe class="opacity-0 transition-opacity duration-500 absolute w-full h-[2500px] left-0 border-none z-30" style="top:${luFinalOfs}; background-color: var(--app-bg);" scrolling="no" src="${l.lineupLink}" onload="setTimeout(() => { const ld=document.getElementById('lu-loading');if(ld){ld.classList.add('hidden');ld.classList.remove('flex');}this.classList.remove('opacity-0'); }, 1500);"></iframe></div>`;
-                } return;
-            }
             
             if (!l || (!l.awayPitcher && (!l.awayLineup || l.awayLineup.length === 0))) { c.innerHTML = sbh + `<div class="flex flex-col items-center justify-center h-48 text-gray-400 mt-2 gap-3 bg-white/5 rounded-2xl border border-white/5"><i class="fa-solid fa-clipboard-question text-4xl text-gray-500 mb-2"></i><span class="text-lg font-bold text-white tracking-wide">라인업 미발표</span><span class="text-[12px] text-gray-500 text-center">선발 라인업은<br>경기 시작 1~2시간 전에 공개됩니다.</span></div>`; return; }
             
