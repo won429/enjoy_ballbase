@@ -128,5 +128,7 @@ const playerImages = {
     '심우준':'https://sports-phinf.pstatic.net/player/kbo/default/64006.png?type=w150',
     '배동현':'https://sports-phinf.pstatic.net/player/kbo/default/51761.png?type=w150',
     '서건창':'https://sports-phinf.pstatic.net/player/kbo/default/78168.png?type=w150',
-    '김건희':'https://sports-phinf.pstatic.net/player/kbo/default/53312.png?type=w150'
+    '김건희':'https://sports-phinf.pstatic.net/player/kbo/default/53312.png?type=w150',
+    '톨허스트':'https://sports-phinf.pstatic.net/player/kbo/default/55130.png?type=w150',
+    '최준호':'https://sports-phinf.pstatic.net/player/kbo/default/53259.png?type=w150'
 };
