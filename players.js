@@ -90,5 +90,16 @@ const playerImages = {
     '박승욱':'https://sports-phinf.pstatic.net/player/kbo/default/62802.png?type=w150',
     '이호준':'https://sports-phinf.pstatic.net/player/kbo/default/54598.png?type=w150',
     '고승민':'https://sports-phinf.pstatic.net/player/kbo/default/69517.png?type=w150',
-    '나승엽':'https://sports-phinf.pstatic.net/player/kbo/default/51551.png?type=w150'
+    '나승엽':'https://sports-phinf.pstatic.net/player/kbo/default/51551.png?type=w150',
+    '장승현':'https://sports-phinf.pstatic.net/player/kbo/default/63202.png?type=w150',
+    '임찬규':'https://sports-phinf.pstatic.net/player/kbo/default/61101.png?type=w150',
+    '홍창기':'https://sports-phinf.pstatic.net/player/kbo/default/66108.png?type=w150',
+    '구본혁':'https://sports-phinf.pstatic.net/player/kbo/default/69100.png?type=w150',
+    '오스틴':'https://sports-phinf.pstatic.net/player/kbo/default/53123.png?type=w150',
+    '천성호':'https://sports-phinf.pstatic.net/player/kbo/default/50054.png?type=w150',
+    '송찬의':'https://sports-phinf.pstatic.net/player/kbo/default/68110.png?type=w150',
+    '오지환':'https://sports-phinf.pstatic.net/player/kbo/default/79109.png?type=w150',
+    '박해민':'https://sports-phinf.pstatic.net/player/kbo/default/62415.png?type=w150',
+    '이재원':'https://sports-phinf.pstatic.net/player/kbo/default/68106.png?type=w150',
+    '박동원':'https://sports-phinf.pstatic.net/player/kbo/default/79365.png?type=w150'
 };
