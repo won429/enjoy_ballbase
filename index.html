@@ -1754,7 +1754,28 @@
                     // 아래 링크를 지우고 변환하신 Base64 코드('data:image/png;base64,...')를 양따옴표 안에 직접 붙여넣으세요!
                     let outlineImg = 'https://github.com/won429/enjoy_ballbase/blob/main/slslsl.png?raw=true'; // <-- 여기에 흑백 테두리 Base64 붙여넣기
                     let colorImg = 'https://github.com/won429/enjoy_ballbase/blob/main/sl.png?raw=true'; // <-- 여기에 컬러 Base64 붙여넣기
-                    let mY = 195 - (190 * p / 100); // 0%~100%에 맞춰 y좌표 계산
+                    let mY = 190 - (150 * p / 100); // 0%~100%에 맞춰 y좌표 계산
+                    
+                    ch = `<svg width="100%" height="100%" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-2xl absolute inset-0 m-auto pointer-events-none select-none max-h-[100%] max-w-[100%] scale-[1.15]">
+                        <ellipse cx="80" cy="168" rx="45" ry="6" fill="rgba(0,0,0,0.15)"/>
+                        <defs>
+                            <mask id="mask-${ci}">
+                                <path fill="rgba(255,255,255,0.4)" d="M -200 ${mY} Q -150 ${mY+8} -100 ${mY} T 0 ${mY} T 100 ${mY} T 200 ${mY} T 300 ${mY} T 400 ${mY} V 250 H -200 Z">
+                                    <animateTransform attributeName="transform" type="translate" from="0,0" to="-200,0" dur="3s" repeatCount="indefinite" />
+                                </path>
+                                <path fill="white" d="M -200 ${mY} Q -150 ${mY-8} -100 ${mY} T 0 ${mY} T 100 ${mY} T 200 ${mY} T 300 ${mY} T 400 ${mY} V 250 H -200 Z">
+                                    <animateTransform attributeName="transform" type="translate" from="0,0" to="200,0" dur="2.5s" repeatCount="indefinite" />
+                                </path>
+                            </mask>
+                        </defs>
+                        <image href="${outlineImg}" x="-5" y="0" width="170" height="195" preserveAspectRatio="xMidYMid meet" opacity="0.25" />
+                        <image href="${colorImg}" x="-5" y="0" width="170" height="195" preserveAspectRatio="xMidYMid meet" mask="url(#mask-${ci})" />
+                    </svg>`;
+                } else if (t === 'KIA') {
+                    // KIA 타이거즈 커스텀 캐릭터 물결 채우기 (Base64 삽입용)
+                    let outlineImg = 'https://github.com/won429/enjoy_ballbase/blob/main/khkhkhkh.png?raw=true'; // <-- 흑백 테두리 Base64
+                    let colorImg = 'https://github.com/won429/enjoy_ballbase/blob/main/hghgh.png?raw=true'; // <-- 컬러 Base64
+                    let mY = 190 - (150 * p / 100); // 0%~100%에 맞춰 y좌표 계산
                     
                     ch = `<svg width="100%" height="100%" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-2xl absolute inset-0 m-auto pointer-events-none select-none max-h-[100%] max-w-[100%] scale-[1.15]">
                         <ellipse cx="80" cy="168" rx="45" ry="6" fill="rgba(0,0,0,0.15)"/>
