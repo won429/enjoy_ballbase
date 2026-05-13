@@ -414,12 +414,10 @@
         const teamLogos = {'삼성':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/samsung_logo.png', 'KIA':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/kia_logoo.png', '롯데':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/lotteegi.png', 'NC':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/ncdin.png', 'LG':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/lgtwins.png', '두산':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/doosa.png', 'SSG':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/ssglan.png', 'KT':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/kt_logo.png', '한화':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/hanwha_logo.png', '키움':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/kiwoom.png', '나눔':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/kbo.png', '드림':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/kbo.png'};
         const teamCharacters = {'LG':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/lglucky.png', '두산':'', 'KIA':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/ho.png', '삼성':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/laoni.png', 'SSG':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/landus.png', '롯데':'', '한화':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/egl.png', 'KT':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/wiz.png', 'NC':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/dandi.png', '키움':''};
         
-        // 외부 players.js 파일이 없거나 로드 실패 시 에러를 방지하고 기본 아이콘을 띄우기 위한 안전 장치
         if (typeof playerImages === 'undefined') {
             window.playerImages = {};
         }
 
-        // 외부 kia_songs.js 파일이 없거나 로드 실패 시 에러를 방지하기 위한 안전 장치
         if (typeof kiaCheerData === 'undefined') {
             window.kiaCheerData = { team: [], player: [], entrance: [], hitout: [] };
         }
@@ -434,7 +432,6 @@
             }
         };
 
-        // --- UI HELPER FUNCTIONS ---
         const uiTeamLogo = (team, imgCls, divCls, extraCls = '') => {
             return teamLogos[team] 
                 ? `<img src="${teamLogos[team]}" class="${imgCls} object-contain ${extraCls}">` 
@@ -459,6 +456,18 @@
         const todayStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth()+1).padStart(2,'0')}-${String(currentDate.getDate()).padStart(2,'0')}`;
         let viewMode = 'month', selectedTeam = localStorage.getItem('kbo_selected_team');
         if (selectedTeam !== 'KIA' && selectedTeam !== '삼성') selectedTeam = 'KIA';
+
+        // 🔥 오류 원인 해결: 모든 과정이 끝난 후 호출될 로딩 화면 제거 함수 추가
+        function hideLoader() {
+            const loader = document.getElementById('initial-loader');
+            if (loader && !loader.classList.contains('hidden')) {
+                loader.classList.add('opacity-0');
+                setTimeout(() => {
+                    loader.classList.add('hidden');
+                    loader.classList.remove('flex');
+                }, 500);
+            }
+        }
 
         function showToast(msg) {
             let t = document.getElementById('toast-msg');
@@ -496,7 +505,6 @@
         }
 
         function syncWithFirestore() {
-            // 1. 일정 데이터 비동기 호출 (개별 로딩)
             (async () => {
                 try {
                     const m = await db.collection("matches_merged").get();
@@ -525,7 +533,6 @@
                         if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); 
                         return a.date.localeCompare(b.date); 
                     });
-                    // 일정 데이터 수신 완료 시 즉시 UI 갱신
                     if (currentTabIndex === 1) renderCalendar(); 
                     if (currentPopupMatchId) renderPopupContent(currentPopupMatchId);
                     renderBanners(); 
@@ -535,10 +542,11 @@
                 } catch (e) { 
                     console.error("Schedule Error:", e); 
                     scheduleData = [...initialScheduleData]; 
+                } finally {
+                    hideLoader(); // 🔥 모든 처리가 완료된 후 로딩 화면 제거
                 }
             })();
 
-            // 2. 순위 데이터 비동기 구독
             db.collection("rankings_merged").onSnapshot(s => {
                 if (!s.empty) {
                     rankingData = []; 
@@ -564,7 +572,6 @@
                 }
             }, err => console.error("Rankings error:", err));
 
-            // 3. 실시간 라인업/중계 비동기 구독
             db.collection("lineups_merged").onSnapshot(s => {
                 if (!s.empty) {
                     liveDataStore = {}; 
@@ -591,7 +598,6 @@
                 }
             }, err => console.error("Lineups error:", err));
 
-            // 4. 직관/집관 기록 비동기 구독
             db.collection("watch_records").onSnapshot(s => {
                 watchRecords = []; 
                 s.forEach(d => watchRecords.push(d.data()));
@@ -826,12 +832,16 @@
                             np.classList.remove('hidden');
                             np.classList.add('flex');
                         }
-                        if (selectedTeam === '삼성') team = 'KIA'; else return; // 진입 완전 차단
+                        // 🔥 오류 수정: 여기서 return 해버려서 화면이 굳어버리던 버그를 고쳤습니다.
+                        // 탭이 강제로 KIA로 넘어가도록 진행시킵니다.
+                        team = 'KIA'; 
                     }
                 }
             }
 
-            selectedTeam = team; localStorage.setItem('kbo_selected_team', team); document.body.setAttribute('data-theme', team);
+            selectedTeam = team; 
+            localStorage.setItem('kbo_selected_team', team); 
+            document.body.setAttribute('data-theme', team);
             ['all', 'KIA', '삼성'].forEach(id => { 
                 const b = document.getElementById(`btn-team-${id}`); 
                 if (b) { 
@@ -1271,7 +1281,7 @@
             let vm = scheduleData.filter(m => {
                 if (selectedTeam !== 'all' && m.team1 !== selectedTeam && m.team2 !== selectedTeam && m.id !== '260711_ALLSTAR') return false;
                 
-                if (m.date < todayStr) return false; // 🛠️ 하루가 지난 경기는 배너에서 완전히 제외
+                if (m.date < todayStr) return false; 
 
                 const l = liveDataStore[m.id]; 
                 let iC = l && ((l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))));
@@ -1299,7 +1309,6 @@
                     let isEnded = fl && fl.gameStatus === '종료';
                     let isCanceled = fl && ((fl.gameStatus && (fl.gameStatus.includes('취소') || fl.gameStatus.includes('우취'))) || (fl.inning && (fl.inning.includes('취소') || fl.inning.includes('우취'))));
                     
-                    // 🛠️ 경기 전이나 경기 중이면 다음 경기를 배너에 띄우지 않고 멈춤 (종료/취소 시에만 다음 경기 계속 추가)
                     if (!isEnded && !isCanceled) break; 
                     
                     if (tm.length >= 3) break; 
@@ -1307,8 +1316,6 @@
             }
             
             tm.forEach(m => {
-                const h1 = teamHex[m.team1] || '#888888';
-                const h2 = teamHex[m.team2] || '#888888';
                 const d = new Date(m.date);
                 const dy = ['일', '월', '화', '수', '목', '금', '토'];
                 const ds = `${d.getMonth() + 1}. ${d.getDate()} (${dy[d.getDay()]}) ${m.time}`;
@@ -1316,11 +1323,10 @@
                 const div = document.createElement('div');
                 
                 if (l && l.bannerLink) {
-                    // 🛠️ 경기 상태에 따른 배너 높이 및 위치 설정 (경기중/종료 vs 경기전)
                     let isLiveOrEnded = (l.gameStatus === '경기중' || l.gameStatus === '종료');
-                    let bannerHeight = isLiveOrEnded ? '160px' : '100px'; // 🛠️ 배너 전체 높이 (앞: 경기중/종료, 뒤: 경기전)
-                    let iframeTop = isLiveOrEnded ? '-60px' : '-50px'; // 🛠️ iframe 상하 위치 (앞: 경기중/종료, 뒤: 경기전)
-                    let iframeScale = isLiveOrEnded ? '1.0' : '1.0'; // 🛠️ iframe 확대 비율 (앞: 경기중/종료, 뒤: 경기전)
+                    let bannerHeight = isLiveOrEnded ? '160px' : '100px'; 
+                    let iframeTop = isLiveOrEnded ? '-60px' : '-50px'; 
+                    let iframeScale = isLiveOrEnded ? '1.0' : '1.0'; 
 
                     div.className = 'min-w-full shrink-0 snap-center transition-transform duration-300 active:scale-[0.98] py-1';
                     div.innerHTML = `
@@ -1329,7 +1335,6 @@
                                 <i class="fa-solid fa-baseball fa-spin text-2xl text-gray-500"></i>
                             </div>
                             <div class="absolute inset-0 z-[35] pointer-events-auto"></div>
-                            <!-- 🛠️ 설정된 변수들이 아래 iframe에 자동 적용됩니다. 세부 값은 위 변수에서 조절하세요! -->
                             <iframe class="opacity-0 transition-opacity duration-500 absolute w-full h-[2500px] border-none z-30" style="top: ${iframeTop}; left: 0px; transform: scale(${iframeScale}); transform-origin: top center; background-color: var(--app-bg);" scrolling="no" src="${l.bannerLink}" onload="setTimeout(() => { const ld=document.getElementById('banner-loading-${m.id}'); if(ld){ld.classList.add('hidden');ld.classList.remove('flex');}this.classList.remove('opacity-0'); }, 1500);"></iframe>
                         </div>`;
                 } else {
@@ -1338,9 +1343,9 @@
                     let h1 = teamHex[m.team1] || '#888888';
                     let h2 = teamHex[m.team2] || '#888888';
 
-                    let isLive = l && l.gameStatus === '경기중';
+                    let isLiveOrEnded = l && (l.gameStatus === '경기중' || l.gameStatus === '종료');
 
-                    if (isLive && !iC) {
+                    if (isLiveOrEnded && !iC) {
                         let aScore = l.awayScore || '0';
                         let hScore = l.homeScore || '0';
                         let innText = l.inning || ''; 
@@ -1366,7 +1371,6 @@
                             outDotsHtml += `<div class="w-1.5 h-1.5 rounded-full ${i <= oCount ? 'bg-[#ef4444] shadow-[0_0_3px_#ef4444]' : 'bg-[#4b5563]'}"></div>`;
                         }
 
-                        // --- 스코어보드 동적 데이터 처리 ---
                         let currentInnInt = parseInt(innNum) || 1;
                         let aInnings = l.awayInning || [];
                         let hInnings = l.homeInning || [];
@@ -1386,7 +1390,55 @@
                         let aHit = l.awayHit || '0'; let aErr = l.awayError || '0'; let aBase = l.awayBase || '0';
                         let hHit = l.homeHit || '0'; let hErr = l.homeError || '0'; let hBase = l.homeBase || '0';
 
-                        div.className = 'min-w-full shrink-0 snap-center transition-transform duration-300 active:scale-[0.98]';
+                        let aPitcherArea = '';
+                        let hPitcherArea = '';
+                        let inningArea = '';
+                        let centerArea = '';
+
+                        if (l.gameStatus === '종료') {
+                            let a = parseInt(l.awayScore || 0), h = parseInt(l.homeScore || 0);
+                            let aWin = a > h, hWin = h > a;
+                            let aText = aWin ? `<span class="text-[#f87171] font-black mr-1">승</span>${l.winPitcher||'-'}` : (hWin ? `<span class="text-[#60a5fa] font-black mr-1">패</span>${l.losePitcher||'-'}` : `<span class="text-gray-400">무승부</span>`);
+                            let hText = hWin ? `<span class="text-[#f87171] font-black mr-1">승</span>${l.winPitcher||'-'}` : (aWin ? `<span class="text-[#60a5fa] font-black mr-1">패</span>${l.losePitcher||'-'}` : `<span class="text-gray-400">무승부</span>`);
+
+                            aPitcherArea = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate">${aText}</span>`;
+                            hPitcherArea = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate text-right">${hText}</span>`;
+                            
+                            inningArea = `<span class="text-[14px] font-black text-[#FFFFFF] drop-shadow-md tracking-widest mt-1">종료</span>`;
+                            centerArea = `<span class="text-[12px] font-bold text-gray-400 tracking-widest mt-px">FINAL</span>`;
+                        } else {
+                            aPitcherArea = `
+                                <span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate">P.${aPitcher}</span>
+                                <div class="flex items-center gap-1 opacity-80 shrink-0">
+                                    <i class="fa-solid fa-baseball text-[9px] text-[#d1d5db]"></i>
+                                    <span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md">${aPCount}</span>
+                                </div>`;
+                            hPitcherArea = `
+                                <div class="flex items-center gap-1 opacity-80 shrink-0">
+                                    <span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md">${hPCount}</span>
+                                    <i class="fa-solid fa-baseball text-[9px] text-[#d1d5db]"></i>
+                                </div>
+                                <span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate text-right">P.${hPitcher}</span>`;
+
+                            inningArea = `
+                                <div class="w-[28px] h-[24px] relative mb-0.5">
+                                    <div class="absolute top-[1px] left-[10px] w-[8px] h-[8px] rotate-45 ${base2}"></div>
+                                    <div class="absolute top-[9px] left-[2px] w-[8px] h-[8px] rotate-45 ${base3}"></div>
+                                    <div class="absolute top-[9px] left-[18px] w-[8px] h-[8px] rotate-45 ${base1}"></div>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    ${innIcon}
+                                    <span class="text-[13px] font-black text-[#FFFFFF] drop-shadow-md leading-none tracking-tighter">${innNum}</span>
+                                </div>`;
+
+                            centerArea = `
+                                <div class="flex gap-[3px] mr-1.5">
+                                    ${outDotsHtml}
+                                </div>
+                                <span class="text-[12px] font-black text-[#FFFFFF] tracking-widest mt-px">${bCount}-${sCount}</span>`;
+                        }
+
+                        div.className = 'min-w-full shrink-0 snap-center transition-transform duration-300 active:scale-[0.98] py-1';
                         div.style.cssText = 'border-top: none !important; border-bottom: none !important;';
                         div.innerHTML = `
                             <div class="banner-card w-full relative overflow-hidden shadow-2xl flex flex-col border-y border-white/15" style="background: linear-gradient(to right, ${h1}E6 0%, #18181b 45%, #18181b 55%, ${h2}E6 100%);">
@@ -1400,15 +1452,7 @@
                                     </div>
                                     
                                     <div class="flex flex-col items-center justify-center w-[28%] mt-0.5">
-                                        <div class="w-[28px] h-[24px] relative mb-0.5">
-                                            <div class="absolute top-[1px] left-[10px] w-[8px] h-[8px] rotate-45 ${base2}"></div>
-                                            <div class="absolute top-[9px] left-[2px] w-[8px] h-[8px] rotate-45 ${base3}"></div>
-                                            <div class="absolute top-[9px] left-[18px] w-[8px] h-[8px] rotate-45 ${base1}"></div>
-                                        </div>
-                                        <div class="flex items-center gap-1.5">
-                                            ${innIcon}
-                                            <span class="text-[13px] font-black text-[#FFFFFF] drop-shadow-md leading-none tracking-tighter">${innNum}</span>
-                                        </div>
+                                        ${inningArea}
                                     </div>
 
                                     <div class="flex items-center gap-3 w-[36%]">
@@ -1421,30 +1465,19 @@
 
                                 <div class="flex justify-between items-center bg-[rgba(0,0,0,0.4)] relative z-10 h-[28px]">
                                     <div class="flex items-center gap-2.5 w-[36%] pl-5">
-                                        <span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate">P.${aPitcher}</span>
-                                        <div class="flex items-center gap-1 opacity-80 shrink-0">
-                                            <i class="fa-solid fa-baseball text-[9px] text-[#d1d5db]"></i>
-                                            <span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md">${aPCount}</span>
-                                        </div>
+                                        ${aPitcherArea}
                                     </div>
 
                                     <div class="flex items-center justify-center bg-[#0d0d0e] h-full w-[28%]" style="border-left: 1px solid rgba(255,255,255,0.2); border-right: 1px solid rgba(255,255,255,0.2);">
-                                        <div class="flex gap-[3px] mr-1.5">
-                                            ${outDotsHtml}
-                                        </div>
-                                        <span class="text-[12px] font-black text-[#FFFFFF] tracking-widest mt-px">${bCount}-${sCount}</span>
+                                        ${centerArea}
                                     </div>
 
                                     <div class="flex items-center justify-end gap-2.5 w-[36%] pr-5">
-                                        <div class="flex items-center gap-1 opacity-80 shrink-0">
-                                            <span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md">${hPCount}</span>
-                                            <i class="fa-solid fa-baseball text-[9px] text-[#d1d5db]"></i>
-                                        </div>
-                                        <span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate">P.${hPitcher}</span>
+                                        ${hPitcherArea}
                                     </div>
                                 </div>
                                 
-                                <!-- 🛠️ 스코어보드 영역 -->
+                                <!-- 스코어보드 영역 -->
                                 <div class="w-full bg-[#111113]/90 flex flex-col pt-1.5 pb-2 px-3 relative z-10 border-t border-[rgba(255,255,255,0.15)] backdrop-blur-md">
                                     <div class="grid grid-cols-[42px_1fr_75px] gap-2 w-full text-[10px] font-bold text-center">
                                         <div class="text-gray-400 text-left pl-2">팀명</div>
@@ -1773,7 +1806,16 @@
                 } else if (l.gameStatus !== '경기전') {
                     let dis = (l.gameStatus === '경기중' && l.inning) ? l.inning : l.gameStatus, as = parseInt(l.awayScore || 0), hs = parseInt(l.homeScore || 0), asz = as > hs ? 'text-[38px]' : as < hs ? 'text-[24px] opacity-50' : 'text-[30px]', hsz = hs > as ? 'text-[38px]' : hs < as ? 'text-[24px] opacity-50' : 'text-[30px]', ac = as > hs ? 'text-point drop-shadow-xl' : 'text-white', hc = hs > as ? 'text-point drop-shadow-xl' : 'text-white';
                     let badgeHtml = l.gameStatus !== '종료' ? `<span class="text-[12px] font-black text-[#EA0029] flex items-center gap-1.5 tracking-widest drop-shadow-sm"><span class="w-1.5 h-1.5 rounded-full bg-[#EA0029] animate-pulse"></span>${dis}</span>` : `<span class="text-[10px] font-bold text-gray-400 bg-gray-600/30 px-2 py-0.5 rounded border border-gray-500/20">${dis}</span>`;
-                    sch = `<div class="flex flex-col items-center gap-1">${badgeHtml}<div class="flex items-center gap-3 mt-1.5"><span class="${asz} font-black ${ac} leading-none tracking-tighter transition-all duration-500">${l.awayScore}</span><span class="text-lg text-gray-500 mb-1">:</span><span class="${hsz} font-black ${hc} leading-none tracking-tighter transition-all duration-500">${l.homeScore}</span></div></div>`;
+                    
+                    let winLoseHtml = '';
+                    if (l.gameStatus === '종료' && (l.winPitcher || l.losePitcher)) {
+                        let wp = l.winPitcher ? `<span class="text-[#f87171] font-black">승</span> <span class="text-white">${l.winPitcher}</span>` : '';
+                        let lp = l.losePitcher ? `<span class="text-[#60a5fa] font-black">패</span> <span class="text-white">${l.losePitcher}</span>` : '';
+                        let divLine = (wp && lp) ? `<span class="text-gray-600 mx-1.5">|</span>` : '';
+                        winLoseHtml = `<div class="flex items-center justify-center mt-2 text-[11px] bg-white/5 px-3 py-1 rounded-full border border-white/10 shadow-sm">${wp}${divLine}${lp}</div>`;
+                    }
+                    
+                    sch = `<div class="flex flex-col items-center gap-1">${badgeHtml}<div class="flex items-center gap-3 mt-1.5"><span class="${asz} font-black ${ac} leading-none tracking-tighter transition-all duration-500">${l.awayScore}</span><span class="text-lg text-gray-500 mb-1">:</span><span class="${hsz} font-black ${hc} leading-none tracking-tighter transition-all duration-500">${l.homeScore}</span></div>${winLoseHtml}</div>`;
                 }
             }
             
@@ -1803,201 +1845,204 @@
 
         function switchCheerTab(team, type) { const tn = { 'team': '구단', 'player': '선수', 'lineup': '라인업', 'hitout': '안타/아웃', 'entrance': '등장곡' }, pc = team === 'kia' ? 'text-[#EA0029]' : 'text-[#074CA1]'; Object.keys(tn).forEach(t => { const b = document.getElementById(`btn-cheer-${team}-${t}`), c = document.getElementById(`content-cheer-${team}-${t}`); if (!b || !c) return; if (t === type) { b.className = `text-[22px] font-black text-white transition-all whitespace-nowrap`; b.innerHTML = `${tn[t]}<span class="${pc} ml-0.5">.</span>`; c.classList.remove('hidden'); c.classList.add('flex'); } else { b.className = `text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap`; b.innerHTML = tn[t]; c.classList.add('hidden'); c.classList.remove('flex'); } }); }
         function renderCheerSongs() { const ct = [{ teamId: 'kia', type: 'team', teamName: 'KIA', subtitle: '팀 응원가' }, { teamId: 'kia', type: 'player', teamName: 'KIA', subtitle: '선수 응원가' }, { teamId: 'kia', type: 'entrance', teamName: 'KIA', subtitle: '등장곡' }, { teamId: 'kia', type: 'hitout', teamName: 'KIA', subtitle: '안타/아웃' }, { teamId: 'samsung', type: 'team', teamName: '삼성', subtitle: '팀 응원가' }, { teamId: 'samsung', type: 'player', teamName: '삼성', subtitle: '선수 응원가' }, { teamId: 'samsung', type: 'entrance', teamName: '삼성', subtitle: '등장곡' }, { teamId: 'samsung', type: 'hitout', teamName: '삼성', subtitle: '안타/아웃' }]; ct.forEach(c => { const ctEl = document.getElementById(`content-cheer-${c.teamId}-${c.type}`); if (!ctEl) return; const sg = cheerData[c.teamId]?.[c.type] || []; if (sg.length === 0) { ctEl.innerHTML = `<div class="text-center text-xs text-gray-500 py-6">노래를 추가해 주세요.</div>`; return; } const lu = teamLogos[c.teamName]; ctEl.innerHTML = sg.map((s, i) => { let iu = lu, ic = "w-full h-full object-contain opacity-90"; if (c.type === 'player' || c.type === 'entrance') { for (let p in playerImages) { if (s.label.includes(p) || s.title.includes(p)) { iu = playerImages[p]; ic = "w-full h-full object-cover object-top pt-0.5 scale-110 drop-shadow-md"; break; } } } return `<div class="flex items-center justify-between py-2.5 px-1 active:bg-white/5 transition-colors cursor-pointer rounded-lg" onclick="playCheerSong('${s.url}', '${s.title}')"><div class="flex items-center gap-3.5"><div class="w-4 text-center text-[13px] font-black text-gray-500">${i + 1}</div><div class="w-10 h-10 bg-[#1A1A1C] rounded-xl flex items-center justify-center shadow-inner p-1 border border-white/5 overflow-hidden"><img src="${iu}" class="${ic}"></div><div class="flex flex-col"><span class="text-[15px] font-bold text-white mb-0.5 tracking-tight">${s.label}</span><span class="text-[11px] text-gray-400 font-medium tracking-tight">${c.subtitle}</span></div></div></div>`; }).join(''); }); }
-        function renderLineupCheerSongs() { let td = new Date(); if (td.getHours() < 11) td.setDate(td.getDate() - 1); const ts = `${td.getFullYear()}-${String(td.getMonth() + 1).padStart(2, '0')}-${String(td.getDate()).padStart(2, '0')}`; ['KIA', '삼성'].forEach(t => { const id = t === 'KIA' ? 'kia' : 'samsung', c = document.getElementById(`content-cheer-${id}-lineup`); if (!c) return; const tm = scheduleData.find(m => m.date === ts && (m.team1 === t || m.team2 === t)); if (!tm) { c.innerHTML = `<div class="text-center text-xs text-gray-500 py-6">해당 날짜에 경기가 없습니다.</div>`; return; } const l = liveDataStore[tm.id]; if (!l) { c.innerHTML = `<div class="text-center text-xs text-gray-500 py-6">라인업이 아직 발표되지 않았습니다.</div>`; return; } let lu = []; if (tm.team1 === t) lu = l.awayLineup || []; else if (tm.team2 === t) lu = l.homeLineup || []; if (lu.length === 0) { c.innerHTML = `<div class="text-center text-xs text-gray-500 py-6">라인업이 아직 발표되지 않았습니다.</div>`; return; } const ps = cheerData[id]?.player || [], tsg = cheerData[id]?.team || [], es = cheerData[id]?.entrance || [], lg = teamLogos[t]; let h = ''; const ls = tsg.find(s => s.label.includes('라인업송')); if (ls) h += `<div class="flex items-center justify-between py-2.5 px-1 active:bg-white/5 transition-colors cursor-pointer rounded-lg mb-1" onclick="playCheerSong('${ls.url}', '${ls.title}')"><div class="flex items-center gap-3.5"><div class="w-4 text-center text-[11px] font-black text-point opacity-90 tracking-tighter whitespace-nowrap">구단</div><div class="w-10 h-10 bg-[#1A1A1C] rounded-xl flex items-center justify-center shadow-inner p-1 border border-white/5 overflow-hidden"><img src="${lg}" class="w-full h-full object-contain opacity-90"></div><div class="flex flex-col"><span class="text-[15px] font-bold text-white mb-0.5 tracking-tight">${ls.label}</span><span class="text-[11px] text-gray-400 font-medium tracking-tight">구단 응원가</span></div></div></div>`; lu.forEach((p, i) => { const me = es.find(s => s.label.includes(p) || s.title.includes(p)), ms = ps.filter(s => s.label.includes(p) || s.title.includes(p)); let pi = playerImages[p] ? playerImages[p] : lg, pic = playerImages[p] ? "w-full h-full object-cover object-top pt-0.5 scale-110 drop-shadow-md" : "w-full h-full object-contain opacity-90"; if (me || ms.length > 0) { if (me) h += `<div class="flex items-center justify-between py-2.5 px-1 active:bg-white/5 transition-colors cursor-pointer rounded-lg" onclick="playCheerSong('${me.url}', '${me.title}')"><div class="flex items-center gap-3.5"><div class="w-4 text-center text-[14px] font-black text-point opacity-90">${i + 1}</div><div class="w-10 h-10 bg-[#1A1A1C] rounded-xl flex items-center justify-center shadow-inner p-1 border border-white/5 overflow-hidden"><img src="${pi}" class="${pic}"></div><div class="flex flex-col"><span class="text-[15px] font-bold text-white mb-0.5 tracking-tight">${me.label}</span><span class="text-[11px] text-gray-400 font-medium tracking-tight">등장곡</span></div></div></div>`; ms.forEach(s => { h += `<div class="flex items-center justify-between py-2.5 px-1 active:bg-white/5 transition-colors cursor-pointer rounded-lg" onclick="playCheerSong('${s.url}', '${s.title}')"><div class="flex items-center gap-3.5"><div class="w-4 text-center text-[14px] font-black text-point opacity-90">${i + 1}</div><div class="w-10 h-10 bg-[#1A1A1C] rounded-xl flex items-center justify-center shadow-inner p-1 border border-white/5 overflow-hidden"><img src="${pi}" class="${pic}"></div><div class="flex flex-col"><span class="text-[15px] font-bold text-white mb-0.5 tracking-tight">${s.label}</span><span class="text-[11px] text-gray-400 font-medium tracking-tight">라인업 응원가</span></div></div></div>`; }); } else { h += `<div class="flex items-center justify-between py-2.5 px-1 opacity-50"><div class="flex items-center gap-3.5"><div class="w-4 text-center text-[14px] font-black text-gray-600">${i + 1}</div><div class="w-10 h-10 bg-[#1A1A1C] rounded-xl flex items-center justify-center shadow-inner p-1 border border-white/5 overflow-hidden"><img src="${lg}" class="w-full h-full object-contain opacity-40"></div><div class="flex flex-col"><span class="text-[15px] font-bold text-gray-400 mb-0.5 tracking-tight">${p}</span><span class="text-[11px] text-gray-500 font-medium tracking-tight">응원가 미등록</span></div></div></div>`; } }); c.innerHTML = h; }); }
         
-        window.appPlayMusic = function() { if (audioPlayer && audioPlayer.src) { audioPlayer.play(); const b = document.getElementById('mini-player-btn'); if (b) b.className = 'fa-solid fa-pause text-base'; } };
-        window.appPauseMusic = function() { if (audioPlayer) { audioPlayer.pause(); const b = document.getElementById('mini-player-btn'); if (b) b.className = 'fa-solid fa-play text-base ml-0.5'; } };
-        function sendStateToAndroid(s, t) { if (window.AndroidBridge && window.AndroidBridge.updateMusicState) { window.AndroidBridge.updateMusicState(s, t); } }
-        window.appPrevMusic = function() { if (currentPlaylist.length > 0 && currentSongIndex >= 0) { currentSongIndex--; if (currentSongIndex < 0) currentSongIndex = currentPlaylist.length - 1; const p = currentPlaylist[currentSongIndex]; executePlay(p.url, p.title); } else { if (audioPlayer && audioPlayer.src) { audioPlayer.currentTime = 0; audioPlayer.play(); } } };
-        window.appNextMusic = function() { if (currentPlaylist.length > 0 && currentSongIndex >= 0) { currentSongIndex++; if (currentSongIndex >= currentPlaylist.length) currentSongIndex = 0; const n = currentPlaylist[currentSongIndex]; executePlay(n.url, n.title); } };
-
-        function initAudioPlayer() {
-            audioPlayer = document.getElementById('audio-player'); const rs = document.getElementById('full-player-range');
-            audioPlayer.addEventListener('play', () => { const b = document.getElementById('mini-player-btn'), fb = document.getElementById('full-player-btn'); if (b) b.className = 'fa-solid fa-pause text-[22px]'; if (fb) fb.className = 'fa-solid fa-pause text-5xl'; updateMediaSession(); sendStateToAndroid("PLAYING", currentSongTitle); });
-            audioPlayer.addEventListener('pause', () => { const b = document.getElementById('mini-player-btn'), fb = document.getElementById('full-player-btn'); if (b) b.className = 'fa-solid fa-play text-[22px] ml-0.5'; if (fb) fb.className = 'fa-solid fa-play text-5xl ml-1'; sendStateToAndroid("PAUSED", currentSongTitle); });
-            audioPlayer.addEventListener('loadedmetadata', () => { if (audioPlayer.duration && !isNaN(audioPlayer.duration) && audioPlayer.duration !== Infinity) { document.getElementById('full-player-duration').innerText = formatTime(audioPlayer.duration); } else { document.getElementById('full-player-duration').innerText = "0:00"; } });
-            audioPlayer.addEventListener('timeupdate', () => { if (audioPlayer.duration && !isNaN(audioPlayer.duration) && audioPlayer.duration !== Infinity) { const p = (audioPlayer.currentTime / audioPlayer.duration) * 100; document.getElementById('mini-player-progress').style.width = p + '%'; if (!isSeeking && rs) { rs.value = p; rs.style.background = `linear-gradient(to right, var(--range-fill) ${p}%, var(--range-bg) ${p}%)`; } document.getElementById('full-player-current').innerText = formatTime(audioPlayer.currentTime); } });
-            if (rs) {
-                rs.addEventListener('input', e => { isSeeking = true; const p = e.target.value; rs.style.background = `linear-gradient(to right, var(--range-fill) ${p}%, var(--range-bg) ${p}%)`; if (audioPlayer.duration && !isNaN(audioPlayer.duration) && audioPlayer.duration !== Infinity) { document.getElementById('full-player-current').innerText = formatTime((p / 100) * audioPlayer.duration); } });
-                rs.addEventListener('change', e => { isSeeking = false; if (audioPlayer.duration && !isNaN(audioPlayer.duration) && audioPlayer.duration !== Infinity) { audioPlayer.currentTime = (e.target.value / 100) * audioPlayer.duration; } });
-            }
-            audioPlayer.addEventListener('ended', () => { if (currentPlaylist.length > 0 && currentSongIndex >= 0 && currentSongIndex + 1 < currentPlaylist.length) { currentSongIndex++; const n = currentPlaylist[currentSongIndex]; executePlay(n.url, n.title); } else { const b = document.getElementById('mini-player-btn'), fb = document.getElementById('full-player-btn'); if (b) b.className = 'fa-solid fa-play text-[22px] ml-0.5'; if (fb) fb.className = 'fa-solid fa-play text-5xl ml-1'; document.getElementById('mini-player-progress').style.width = '0%'; if (rs) { rs.value = 0; rs.style.background = `var(--range-bg)`; document.getElementById('full-player-current').innerText = "0:00"; } sendStateToAndroid("PAUSED", currentSongTitle); } });
-            audioPlayer.addEventListener('error', () => { showToast('음원 파일을 불러올 수 무 없습니다. 경로를 확인해주세요.'); closeMiniPlayer(); });
+        function renderLineupCheerSongs() { 
+            let td = new Date(); if (td.getHours() < 11) td.setDate(td.getDate() - 1); 
+            const ts = `${td.getFullYear()}-${String(td.getMonth() + 1).padStart(2, '0')}-${String(td.getDate()).padStart(2, '0')}`; 
+            ['KIA', '삼성'].forEach(t => { 
+                const id = t === 'KIA' ? 'kia' : 'samsung', c = document.getElementById(`content-cheer-${id}-lineup`); if (!c) return; 
+                const tm = scheduleData.find(m => m.date === ts && (m.team1 === t || m.team2 === t)); 
+                if (!tm) { c.innerHTML = `<div class="text-center text-xs text-gray-500 py-6">해당 날짜에 경기가 없습니다.</div>`; return; } 
+                const l = liveDataStore[tm.id]; 
+                if (!l) { c.innerHTML = `<div class="text-center text-xs text-gray-500 py-6">라인업이 아직 발표되지 않았습니다.</div>`; return; } 
+                let lu = []; if (tm.team1 === t) lu = l.awayLineup || []; else if (tm.team2 === t) lu = l.homeLineup || []; 
+                if (lu.length === 0) { c.innerHTML = `<div class="text-center text-xs text-gray-500 py-6">라인업이 아직 발표되지 않았습니다.</div>`; return; } 
+                const ps = cheerData[id]?.player || [], tsg = cheerData[id]?.team || [], es = cheerData[id]?.entrance || [], lg = teamLogos[t]; 
+                let h = ''; const ls = tsg.find(s => s.label.includes('라인업송')); 
+                if (ls) h += `<div class="flex items-center justify-between py-2.5 px-1 active:bg-white/5 transition-colors cursor-pointer rounded-lg mb-1" onclick="playCheerSong('${ls.url}', '${ls.title}')"><div class="flex items-center gap-3.5"><div class="w-4 text-center text-[11px] font-black text-point opacity-90 tracking-tighter whitespace-nowrap">구단</div><div class="w-10 h-10 bg-[#1A1A1C] rounded-xl flex items-center justify-center shadow-inner p-1 border border-white/5 overflow-hidden"><img src="${lg}" class="w-full h-full object-contain opacity-90"></div><div class="flex flex-col"><span class="text-[15px] font-bold text-white mb-0.5 tracking-tight">${ls.label}</span><span class="text-[11px] text-gray-400 font-medium tracking-tight">구단 응원가</span></div></div></div>`; 
+                lu.forEach((p, i) => { 
+                    const me = es.find(s => s.label.includes(p) || s.title.includes(p)), ms = ps.filter(s => s.label.includes(p) || s.title.includes(p)); 
+                    let pi = playerImages[p] ? playerImages[p] : lg, pic = playerImages[p] ? "w-full h-full object-cover object-top pt-0.5 scale-110 drop-shadow-md" : "w-full h-full object-contain opacity-90"; 
+                    if (me) h += createCheerUI(me.url, me.title, `<span class="w-4 text-center text-[15px] font-black" style="color: ${teamHex[t]}">${i + 1}</span>`, pi, pic, p, '등장곡'); 
+                    ms.forEach(s => h += createCheerUI(s.url, s.title, `<span class="w-4 text-center text-[15px] font-black" style="color: ${teamHex[t]}">${i + 1}</span>`, pi, pic, s.label, '선수 응원가')); 
+                }); 
+                c.innerHTML = h; 
+            }); 
         }
 
-        function updateMediaSession() { if ('mediaSession' in navigator && currentSongTitle) { let a = '팀 응원가'; if (currentSongTitle.includes('김도영') || currentSongTitle.includes('구자욱') || currentSongTitle.includes('최형우')) { a = '선수 응원가'; } navigator.mediaSession.metadata = new MediaMetadata({ title: currentSongTitle, artist: a, artwork: [ { src: currentSongCover, sizes: '512x512', type: 'image/png' }, { src: currentSongCover, sizes: '192x192', type: 'image/png' } ] }); navigator.mediaSession.setActionHandler('play', () => audioPlayer && audioPlayer.play()); navigator.mediaSession.setActionHandler('pause', () => audioPlayer && audioPlayer.pause()); navigator.mediaSession.setActionHandler('previoustrack', () => window.appPrevMusic()); navigator.mediaSession.setActionHandler('nexttrack', () => window.appNextMusic()); } }
-
-        function toggleMiniPlayerPlay() {
-            if (!audioPlayer) return; let willPlay = audioPlayer.paused; if (willPlay) audioPlayer.play().catch(e => {}); else audioPlayer.pause();
-        }
-
-        function closeMiniPlayer() { if (audioPlayer) { audioPlayer.pause(); audioPlayer.currentTime = 0; } const p = document.getElementById('mini-player'); p.classList.add('translate-y-[150%]', 'opacity-0', 'pointer-events-none'); const pb = document.getElementById('mini-player-progress'); if (pb) pb.style.width = '0%'; }
-
-        function playAllSongs(id) { const c = document.getElementById(id); if (!c) return; const s = c.querySelectorAll(`[onclick*="playCheerSong"]`); currentPlaylist = Array.from(s).map(e => { const m = e.getAttribute('onclick').match(/playCheerSong\(['"]([^'"]+)['"],\s*['"]([^'"]+)['"]\)/); if (m) return { url: m[1], title: m[2] }; return null; }).filter(i => i !== null); if (currentPlaylist.length > 0) { currentSongIndex = 0; executePlay(currentPlaylist[0].url, currentPlaylist[0].title); } else { showToast('재생할 곡이 없습니다.'); } }
-        function playActiveTabSongs(pf) { const a = document.querySelector(`div[id^="content-cheer-${pf}-"]:not(.hidden)`); if (a) playAllSongs(a.id); else showToast('재생할 곡이 없습니다.'); }
-
-        function playCheerSong(u, t) {
-            const a = document.querySelectorAll(`[onclick*="playCheerSong"]`);
-            let c = Array.from(a).find(e => { const iM = e.getAttribute('onclick').includes(`'${u}'`) || e.getAttribute('onclick').includes(`"${u}"`); if (!iM) return false; const p = e.closest('[id^="content-cheer-"]'); return p && !p.classList.contains('hidden'); });
-            if (!c) c = Array.from(a).find(e => e.getAttribute('onclick').includes(`'${u}'`) || e.getAttribute('onclick').includes(`"${u}"`));
-            if (c) { const p = c.closest('[id^="content-cheer-"]'); if (p) { const s = p.querySelectorAll(`[onclick*="playCheerSong"]`); currentPlaylist = Array.from(s).map(e => { const m = e.getAttribute('onclick').match(/playCheerSong\(['"]([^'"]+)['"],\s*['"]([^'"]+)['"]\)/); if (m) return { url: m[1], title: m[2] }; return null; }).filter(i => i !== null); currentSongIndex = currentPlaylist.findIndex(i => i.url === u); } } 
-            else { currentPlaylist = [{ url: u, title: t }]; currentSongIndex = 0; } executePlay(u, t);
-        }
-
-        function executePlay(u, t) {
-            if (!audioPlayer) initAudioPlayer(); audioPlayer.autoplay = true; audioPlayer.src = u; audioPlayer.load(); audioPlayer.play().catch(e => { showToast('음원 재생 중 오류가 발생했습니다. (파일 확인 필요)'); });
-            let cu = 'kia/kia_logo.png', dcu = teamLogos['KIA']; if (t.includes('삼성') || t.includes('엘도라도') || t.includes('구자욱') || t.includes('최형우')) { cu = 'samsung/samsung_logo.png'; dcu = teamLogos['삼성']; }
-            let ip = false; for (let p in playerImages) { if (t.includes(p)) { dcu = playerImages[p]; ip = true; break; } }
-            document.getElementById('mini-player-title').innerText = t; const mc = document.getElementById('mini-player-cover'); mc.src = dcu; if (ip) mc.className = "w-full h-full object-cover object-top pt-0.5 scale-110 drop-shadow-md"; else mc.className = "w-full h-full object-contain opacity-95";
-            document.getElementById('full-player-title').innerText = t; const fc = document.getElementById('full-player-cover'); fc.src = dcu; if (ip) fc.className = "w-full h-full object-cover object-top pt-2 scale-110"; else fc.className = "w-full h-full object-contain p-8";
-            let an = '팀 응원가'; if (ip || t.includes('김도영') || t.includes('구자욱') || t.includes('최형우')) an = '선수 응원가'; document.getElementById('full-player-artist').innerText = t.includes('KIA') ? 'KIA 타이거즈 응원가' : (t.includes('삼성') ? '삼성 라이온즈 응원가' : an);
-            currentSongTitle = t; currentSongCover = dcu; updateMediaSession();
-            const pb = document.getElementById('mini-player-progress'); if (pb) pb.style.width = '0%'; const rs = document.getElementById('full-player-range'); if (rs) { rs.value = 0; rs.style.background = `var(--range-bg)`; }
-            const p = document.getElementById('mini-player'); p.classList.remove('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
-        }
-
-        function fpTouchStart(e) { if (e.target.tagName.toLowerCase() === 'input') return; const p = document.getElementById('full-player'); p.style.transition = 'none'; fpStartY = e.touches[0].clientY; fpCurrentY = fpStartY; fpIsDragging = true; }
-        function fpTouchMove(e) { if (!fpIsDragging) return; fpCurrentY = e.touches[0].clientY; let d = fpCurrentY - fpStartY; if (d < 0) d = 0; const p = document.getElementById('full-player'); p.style.transform = `translateY(${d}px)`; }
-        function fpTouchEnd(e) { if (!fpIsDragging) return; fpIsDragging = false; let d = fpCurrentY - fpStartY; const p = document.getElementById('full-player'); p.style.transition = ''; if (d > 100) closeFullPlayer(); else p.style.transform = ''; }
-        function openFullPlayer() { const f = document.getElementById('full-player'); if (f) { f.style.transform = ''; f.classList.remove('translate-y-full', 'pointer-events-none'); f.classList.add('translate-y-0', 'pointer-events-auto'); } }
-        function closeFullPlayer() { const f = document.getElementById('full-player'); if (f) { f.style.transform = ''; f.classList.remove('translate-y-0', 'pointer-events-auto'); f.classList.add('translate-y-full', 'pointer-events-none'); } }
-        function formatTime(s) { if (isNaN(s)) return "0:00"; const m = Math.floor(s / 60), sec = Math.floor(s % 60); return `${m}:${sec < 10 ? '0' + sec : sec}`; }
-
-        function closeNoticePopup() { const p = document.getElementById('notice-popup'); if (p) { p.classList.remove('flex'); p.classList.add('hidden'); sessionStorage.setItem('kbo_notice_seen', 'true'); } }
-
-        function renderWinRate() {
-            const c = document.getElementById('winrate-container'); if (!c) return;
-            let s = { 'KIA': { '직관': { w: 0, l: 0, d: 0 }, '집관': { w: 0, l: 0, d: 0 } }, '삼성': { '직관': { w: 0, l: 0, d: 0 }, '집관': { w: 0, l: 0, d: 0 } } };
-            watchRecords.forEach(r => {
-                if (!s[r.team] || !s[r.team][r.type]) return; let m = scheduleData.find(x => x.id === r.matchId), l = liveDataStore[r.matchId];
-                if (m && l && l.gameStatus === '종료') {
-                    let a = parseInt(l.awayScore || 0), h = parseInt(l.homeScore || 0), iW = (m.team1 === r.team && a > h) || (m.team2 === r.team && h > a), iL = (m.team1 === r.team && a < h) || (m.team2 === r.team && h < a);
-                    if (iW) s[r.team][r.type].w++; else if (iL) s[r.team][r.type].l++; else s[r.team][r.type].d++;
-                }
+        function playCheerSong(url, title) {
+            if (!url) return;
+            audioPlayer = document.getElementById('audio-player');
+            audioPlayer.src = url;
+            audioPlayer.play().then(() => {
+                isPlaying = true;
+                document.getElementById('mini-player-btn').className = 'fa-solid fa-pause text-[22px]';
+                document.getElementById('full-player-btn').className = 'fa-solid fa-pause text-[48px]';
+            }).catch(e => console.error(e));
+            
+            currentSongTitle = title;
+            document.getElementById('mini-player-title').innerText = title;
+            document.getElementById('full-player-title').innerText = title;
+            
+            let coverImg = 'logo.png';
+            for (let p in playerImages) { if (title.includes(p)) { coverImg = playerImages[p]; break; } }
+            currentSongCover = coverImg;
+            
+            document.getElementById('mini-player-cover').src = coverImg;
+            document.getElementById('full-player-cover').src = coverImg;
+            document.getElementById('mini-player-cover').className = coverImg === 'logo.png' ? 'w-full h-full object-contain opacity-95' : 'w-full h-full object-cover object-top pt-0.5 scale-110 drop-shadow-md';
+            document.getElementById('full-player-cover').className = coverImg === 'logo.png' ? 'w-full h-full object-contain p-8' : 'w-full h-full object-cover object-top';
+            document.getElementById('mini-player').classList.remove('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
+            
+            currentPlaylist = [];
+            Object.keys(cheerData).forEach(t => { 
+                Object.keys(cheerData[t]).forEach(ty => { 
+                    const idx = cheerData[t][ty].findIndex(s => s.url === url); 
+                    if (idx !== -1) { currentPlaylist = cheerData[t][ty]; currentSongIndex = idx; } 
+                }); 
             });
-            
-            let t = selectedTeam; if (t !== 'KIA' && t !== '삼성') t = 'KIA';
-            let jk = s[t]['직관'], jkt = jk.w + jk.d + jk.l, jkp = jkt === 0 ? 0 : Math.round((jk.w / (jk.w + jk.l)) * 100); if (isNaN(jkp)) jkp = 0;
-            let jp = s[t]['집관'], jpt = jp.w + jp.d + jp.l, jpp = jpt === 0 ? 0 : Math.round((jp.w / (jp.w + jp.l)) * 100); if (isNaN(jpp)) jpp = 0;
-            let fn = t === 'KIA' ? 'KIA 타이거즈' : '삼성 라이온즈', tc = t === 'KIA' ? 'text-[#EA0029]' : 'text-[#074CA1]';
-
-            function cc(ty, p, r, iR, iW) {
-                let fy = 145 - (110 * p / 100), u = t === 'KIA' ? 'kia' : 'sam', ut = ty === '직관' ? 'jik' : 'jip', ci = `clip-${u}-${ut}`;
-                let w1 = ty === '집관' ? (t === 'KIA' ? '#FFA3B1' : '#93C5FD') : (t === 'KIA' ? '#FF4D6D' : '#3B82F6'), w2 = ty === '집관' ? (t === 'KIA' ? '#FF7A8F' : '#60A5FA') : teamHex[t];
-                let gc = iW ? 'winning-glow' : '', gs = iW ? `style="--glow-color: ${teamHex[t]}; --glow-color-half: ${teamHex[t]}80;"` : '', fh = '';
-                
-                let ch = '';
-                if (t === '삼성') {
-                    // 삼성 라이온즈 커스텀 캐릭터 물결 채우기 (1번 방식: Base64 삽입용)
-                    // 아래 링크를 지우고 변환하신 Base64 코드('data:image/png;base64,...')를 양따옴표 안에 직접 붙여넣으세요!
-                    let outlineImg = 'https://github.com/won429/enjoy_ballbase/blob/main/slslsl.png?raw=true'; // <-- 여기에 흑백 테두리 Base64 붙여넣기
-                    let colorImg = 'https://github.com/won429/enjoy_ballbase/blob/main/sl.png?raw=true'; // <-- 여기에 컬러 Base64 붙여넣기
-                    let mY = 190 - (150 * p / 100); // 0%~100%에 맞춰 y좌표 계산
-                    
-                    ch = `<svg width="100%" height="100%" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-2xl absolute inset-0 m-auto pointer-events-none select-none max-h-[100%] max-w-[100%] scale-[1.15]">
-                        <ellipse cx="80" cy="168" rx="45" ry="6" fill="rgba(0,0,0,0.15)"/>
-                        <defs>
-                            <mask id="mask-${ci}">
-                                <path fill="rgba(255,255,255,0.4)" d="M -200 ${mY} Q -150 ${mY+8} -100 ${mY} T 0 ${mY} T 100 ${mY} T 200 ${mY} T 300 ${mY} T 400 ${mY} V 250 H -200 Z">
-                                    <animateTransform attributeName="transform" type="translate" from="0,0" to="-200,0" dur="3s" repeatCount="indefinite" />
-                                </path>
-                                <path fill="white" d="M -200 ${mY} Q -150 ${mY-8} -100 ${mY} T 0 ${mY} T 100 ${mY} T 200 ${mY} T 300 ${mY} T 400 ${mY} V 250 H -200 Z">
-                                    <animateTransform attributeName="transform" type="translate" from="0,0" to="200,0" dur="2.5s" repeatCount="indefinite" />
-                                </path>
-                            </mask>
-                        </defs>
-                        <image href="${outlineImg}" x="-5" y="0" width="170" height="195" preserveAspectRatio="xMidYMid meet" opacity="0.25" />
-                        <image href="${colorImg}" x="-5" y="0" width="170" height="195" preserveAspectRatio="xMidYMid meet" mask="url(#mask-${ci})" />
-                    </svg>`;
-                } else if (t === 'KIA') {
-                    // KIA 타이거즈 커스텀 캐릭터 물결 채우기 (Base64 삽입용)
-                    let outlineImg = 'https://github.com/won429/enjoy_ballbase/blob/main/khkhkhkh.png?raw=true'; // <-- 흑백 테두리 Base64
-                    let colorImg = 'https://github.com/won429/enjoy_ballbase/blob/main/hghgh.png?raw=true'; // <-- 컬러 Base64
-                    let mY = 190 - (150 * p / 100); // 0%~100%에 맞춰 y좌표 계산
-                    
-                    ch = `<svg width="100%" height="100%" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-2xl absolute inset-0 m-auto pointer-events-none select-none max-h-[100%] max-w-[100%] scale-[1.15]">
-                        <ellipse cx="80" cy="168" rx="45" ry="6" fill="rgba(0,0,0,0.15)"/>
-                        <defs>
-                            <mask id="mask-${ci}">
-                                <path fill="rgba(255,255,255,0.4)" d="M -200 ${mY} Q -150 ${mY+8} -100 ${mY} T 0 ${mY} T 100 ${mY} T 200 ${mY} T 300 ${mY} T 400 ${mY} V 250 H -200 Z">
-                                    <animateTransform attributeName="transform" type="translate" from="0,0" to="-200,0" dur="3s" repeatCount="indefinite" />
-                                </path>
-                                <path fill="white" d="M -200 ${mY} Q -150 ${mY-8} -100 ${mY} T 0 ${mY} T 100 ${mY} T 200 ${mY} T 300 ${mY} T 400 ${mY} V 250 H -200 Z">
-                                    <animateTransform attributeName="transform" type="translate" from="0,0" to="200,0" dur="2.5s" repeatCount="indefinite" />
-                                </path>
-                            </mask>
-                        </defs>
-                        <image href="${outlineImg}" x="-5" y="0" width="170" height="195" preserveAspectRatio="xMidYMid meet" opacity="0.25" />
-                        <image href="${colorImg}" x="-5" y="0" width="170" height="195" preserveAspectRatio="xMidYMid meet" mask="url(#mask-${ci})" />
-                    </svg>`;
-                } else {
-                    // 기존 공용 알약 캐릭터 렌더링
-                    if (p >= 60) fh = `<circle cx="62" cy="55" r="4.5" fill="#111"/><circle cx="98" cy="55" r="4.5" fill="#111"/><path d="M 72 64 Q 80 74 88 64" stroke="#111" stroke-width="3.5" stroke-linecap="round" fill="none"/><ellipse cx="50" cy="62" rx="7" ry="4" fill="#FFB6C1" opacity="0.8"/><ellipse cx="110" cy="62" rx="7" ry="4" fill="#FFB6C1" opacity="0.8"/>`;
-                    else if (p >= 40) fh = `<circle cx="62" cy="58" r="4.5" fill="#111"/><circle cx="98" cy="58" r="4.5" fill="#111"/><line x1="75" y1="67" x2="85" y2="67" stroke="#111" stroke-width="3.5" stroke-linecap="round"/>`;
-                    else fh = `<circle cx="62" cy="60" r="4.5" fill="#111"/><circle cx="98" cy="60" r="4.5" fill="#111"/><path d="M 74 72 Q 80 65 86 72" stroke="#111" stroke-width="3.5" stroke-linecap="round" fill="none"/><path d="M 108 65 Q 110 70 108 75 Q 106 70 108 65" fill="#60A5FA" opacity="0.9"/>`;
-                    
-                    ch = `<svg width="100%" height="100%" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-2xl absolute inset-0 m-auto pointer-events-none select-none max-h-[100%] max-w-[100%] scale-110"><ellipse cx="80" cy="165" rx="30" ry="5" fill="rgba(0,0,0,0.15)"/><path d="M 55 130 L 55 150 A 10 10 0 0 0 75 150 L 75 130 Z" fill="#F8FAFC"/><path d="M 85 130 L 85 150 A 10 10 0 0 0 105 150 L 105 130 Z" fill="#F8FAFC"/><path d="M 40 85 Q 25 90 25 100 Q 25 110 40 115 Z" fill="#F8FAFC"/><path d="M 120 85 Q 135 90 135 100 Q 135 110 120 115 Z" fill="#F8FAFC"/><rect x="35" y="25" width="90" height="120" rx="45" fill="#FFFFFF"/><defs><clipPath id="${ci}"><rect x="35" y="25" width="90" height="120" rx="45"/></clipPath></defs><g clip-path="url(#${ci})"><path fill="${w1}" d="M -200 ${fy} Q -150 ${fy+8} -100 ${fy} T 0 ${fy} T 100 ${fy} T 200 ${fy} T 300 ${fy} T 400 ${fy} V 200 H -200 Z"><animateTransform attributeName="transform" type="translate" from="0,0" to="-200,0" dur="3s" repeatCount="indefinite" /></path><path fill="${w2}" d="M -200 ${fy} Q -150 ${fy-8} -100 ${fy} T 0 ${fy} T 100 ${fy} T 200 ${fy} T 300 ${fy} T 400 ${fy} V 200 H -200 Z"><animateTransform attributeName="transform" type="translate" from="0,0" to="200,0" dur="2.5s" repeatCount="indefinite" /></path></g>${fh}<image href="${teamLogos[t]}" x="50" y="85" width="60" height="60" opacity="0.95" /></svg>`;
-                }
-                
-                let ac = iR ? 'items-end' : 'items-start', rc = iR ? 'flex-row-reverse' : 'flex-row';
-                
-                return `<div class="flex ${rc} items-center justify-between w-full bg-[#1A1A1C]/60 rounded-[32px] border border-white/5 px-5 py-4 shadow-xl relative overflow-hidden h-[220px] ${gc}" ${gs}><div class="flex flex-col justify-center ${ac} w-[55%] z-10 relative"><div class="flex items-start -mb-1 w-full ${iR ? 'justify-end' : 'justify-start'}"><span class="text-[80px] font-black text-pattern-${t} leading-[0.85] tracking-tighter pointer-events-none select-none">${p}</span><span class="text-[26px] font-black ${tc} mt-2 ml-0.5">%</span></div><div class="flex items-center gap-2 mb-3 mt-1 ${iR ? 'flex-row-reverse' : 'flex-row'}"><span class="text-[26px] font-extrabold text-white tracking-tight">${ty}</span><button onclick="openRecordPopup('${t}', '${ty}')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/90 hover:bg-white/20 transition-all shadow-sm border border-white/10"><i class="fa-solid fa-plus text-[14px]"></i></button></div><div class="text-[12px] font-bold text-gray-300 bg-black/40 px-3.5 py-1.5 rounded-full border border-white/5 shadow-inner whitespace-nowrap truncate tracking-tight">${r.w}승 ${r.d}무 ${r.l}패 <span class="opacity-50 text-[10px] font-medium ml-0.5">(${r.w + r.d + r.l}전)</span></div></div><div class="flex items-center justify-center relative w-[45%] h-full">${ch}</div></div>`;
-            }
-            c.innerHTML = `<div class="flex items-center justify-center gap-2 mb-2 mt-2"><span class="text-[14px]" style="color: ${teamHex[t]}90;">✦</span><span class="text-[16px] font-black tracking-widest drop-shadow-sm" style="color: ${teamHex[t]}; opacity: 0.95;">${fn}</span><span class="text-[14px]" style="color: ${teamHex[t]}90;">✦</span></div><div class="flex flex-col gap-4 w-full pb-8">${cc('직관', jkp, jk, false, jkp > jpp)}${cc('집관', jpp, jp, true, jpp > jkp)}</div>`;
         }
-
-        function openRecordPopup(t, ty) { currentRecordTeam = t; currentRecordType = ty; recordPopupDate = new Date(); const p = document.getElementById('record-popup'); renderRecordCalendar(t, ty); p.classList.remove('hidden'); p.classList.add('flex'); updateHeaderCtrlForPopup(true, `${t} ${ty} 기록 추가`); }
-        function closeRecordPopup() { const p = document.getElementById('record-popup'); if (p && !p.classList.contains('hidden')) { p.classList.add('hidden'); p.classList.remove('flex'); currentRecordTeam = null; currentRecordType = null; updateHeaderCtrlForPopup(false); } }
-        function changeRecordMonth(o, t, ty) { recordPopupDate.setMonth(recordPopupDate.getMonth() + o); renderRecordCalendar(t, ty); }
-
-        function renderRecordCalendar(t, ty) {
-            const c = document.getElementById('record-content'), y = recordPopupDate.getFullYear(), m = recordPopupDate.getMonth(), fd = new Date(y, m, 1).getDay(), dim = new Date(y, m + 1, 0).getDate();
-            let h = `<div class="flex justify-between items-center mb-6 px-2"><button onclick="changeRecordMonth(-1, '${t}', '${ty}')" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white active:scale-95"><i class="fa-solid fa-chevron-left text-sm"></i></button><span class="text-lg font-bold text-white tracking-wide">${y}년 ${m + 1}월</span><button onclick="changeRecordMonth(1, '${t}', '${ty}')" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white active:scale-95"><i class="fa-solid fa-chevron-right text-sm"></i></button></div><div class="grid grid-cols-7 gap-2 text-center mb-2"><div class="text-[11px] font-bold text-[#EA0029]">일</div><div class="text-[11px] font-bold text-gray-400">월</div><div class="text-[11px] font-bold text-gray-400">화</div><div class="text-[11px] font-bold text-gray-400">수</div><div class="text-[11px] font-bold text-gray-400">목</div><div class="text-[11px] font-bold text-gray-400">금</div><div class="text-[11px] font-bold text-[#074CA1]">토</div></div><div class="grid grid-cols-7 gap-2">`;
-            for (let i = 0; i < fd; i++) h += `<div></div>`;
-            for (let i = 1; i <= dim; i++) {
-                let ds = `${y}-${String(m + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`, im = new Date(y, m, i).getDay() === 1, mt = scheduleData.find(x => x.date === ds && (x.team1 === t || x.team2 === t || x.id === '260711_ALLSTAR')), l = mt ? liveDataStore[mt.id] : null, hem = mt && l && l.gameStatus === '종료', r = watchRecords.find(x => x.team === t && x.matchId === (mt ? mt.id : -1));
-                let dc = "h-11 rounded-full flex items-center justify-center text-[15px] font-bold transition-all active:scale-95 ", oc = "", st = "";
-                if (im) { dc += "text-gray-600 opacity-30 pointer-events-none"; } 
-                else if (!hem) { dc += "text-gray-500 opacity-40 cursor-default"; oc = `onclick="showToast('이 날은 종료된 경기가 없습니다.')"`; } 
-                else {
-                    if (r) { if (r.type === ty) { let tc = t === 'KIA' ? '#EA0029' : '#074CA1'; dc += "text-white shadow-md"; st = `style="background-color: ${tc}; border: 1px solid ${tc};"`; oc = `onclick="setWatchRecord(${mt.id}, '${t}', null)"`; } else { dc += "text-gray-600 opacity-30 cursor-default"; oc = `onclick="showToast('이미 ${r.type}로 등록된 경기입니다.')"`; } } 
-                    else { dc += "bg-white/5 text-gray-200 hover:bg-white/10 cursor-pointer border border-white/10"; oc = `onclick="setWatchRecord(${mt.id}, '${t}', '${ty}')"`; }
-                }
-                h += `<button class="${dc}" ${st} ${oc}>${i}</button>`;
-            }
-            c.innerHTML = h + `</div><div class="mt-8 text-center text-[11px] text-gray-500 font-medium tracking-tight">※ 월요일은 야구 없는 날입니다.</div>`;
+        
+        function toggleMiniPlayerPlay() { 
+            if(!audioPlayer) return; 
+            if(audioPlayer.paused) { 
+                audioPlayer.play(); 
+                document.getElementById('mini-player-btn').className = 'fa-solid fa-pause text-[22px]'; 
+                document.getElementById('full-player-btn').className = 'fa-solid fa-pause text-[48px]'; 
+            } else { 
+                audioPlayer.pause(); 
+                document.getElementById('mini-player-btn').className = 'fa-solid fa-play text-[22px] ml-0.5'; 
+                document.getElementById('full-player-btn').className = 'fa-solid fa-play text-[48px] ml-1'; 
+            } 
         }
-
-        function setWatchRecord(id, t, ty) { const r = db.collection("watch_records").doc(`${id}_${t}`); if (ty) r.set({ matchId: id, team: t, type: ty }); else r.delete(); }
-
-        function applyTimeBasedTheme() { const totalMinutes = new Date().getHours() * 60 + new Date().getMinutes(); if (totalMinutes >= 360 && totalMinutes <= 1140) document.documentElement.classList.add('light-mode'); else document.documentElement.classList.remove('light-mode'); }
-        setInterval(applyTimeBasedTheme, 60000);
-
-        window.onload = () => {
-            applyTimeBasedTheme();
-            
-            let rt = setTimeout(() => { let r = document.getElementById('reload-toast'); if (!r) { r = document.createElement('div'); r.id = 'reload-toast'; r.className = 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center bg-[#18181b]/95 backdrop-blur-md rounded-[32px] p-7 shadow-2xl z-[9999] border border-white/10 text-center min-w-[280px]'; r.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-[40px] text-point mb-4"></i><span class="text-white text-[18px] font-black mb-1.5 tracking-tight">서버 응답 지연 😭</span><span class="text-gray-400 text-[13px] font-medium mb-6 tracking-tight">네트워크 상태가 불안정합니다.</span><button onclick="location.reload()" class="bg-point text-white text-[15px] px-7 py-3 rounded-full font-bold shadow-lg active:scale-95 transition-transform tracking-tight"><i class="fa-solid fa-rotate-right mr-1.5"></i>재로딩하기</button>`; document.body.appendChild(r); } }, 6000);
-            initAudioPlayer(); renderCheerSongs();
-            
-            // [변경 1] 데이터를 기다리지 않고 화면 뼈대를 즉시 그립니다.
-            setTeamFilter(selectedTeam); switchTab(1); renderBanners();
-            
-            // [변경 2] 로딩 스크린을 0.1초 만에 강제로 걷어내어 사용자에게 빈 화면이라도 바로 보여줍니다.
-            setTimeout(() => { 
-                const il = document.getElementById('initial-loader'); 
-                if (il) { il.classList.add('opacity-0'); setTimeout(() => il.remove(), 500); } 
-                clearTimeout(rt); let rb = document.getElementById('reload-toast'); if (rb) rb.remove();
-            }, 100);
-
-            // [변경 3] 파이어베이스 호출 (각 항목의 데이터가 도착하는 대로 화면에 자동으로 채워집니다)
+        
+        function appNextMusic() { 
+            if(currentPlaylist.length > 0 && currentSongIndex !== -1) { 
+                currentSongIndex = (currentSongIndex + 1) % currentPlaylist.length; 
+                playCheerSong(currentPlaylist[currentSongIndex].url, currentPlaylist[currentSongIndex].title); 
+            } 
+        }
+        
+        function appPrevMusic() { 
+            if(currentPlaylist.length > 0 && currentSongIndex !== -1) { 
+                currentSongIndex = (currentSongIndex - 1 + currentPlaylist.length) % currentPlaylist.length; 
+                playCheerSong(currentPlaylist[currentSongIndex].url, currentPlaylist[currentSongIndex].title); 
+            } 
+        }
+        
+        function closeMiniPlayer() { 
+            if(audioPlayer) { 
+                audioPlayer.pause(); 
+                document.getElementById('mini-player-btn').className = 'fa-solid fa-play text-[22px] ml-0.5'; 
+                document.getElementById('full-player-btn').className = 'fa-solid fa-play text-[48px] ml-1'; 
+            } 
+            document.getElementById('mini-player').classList.add('translate-y-[150%]', 'opacity-0', 'pointer-events-none'); 
+        }
+        
+        function openFullPlayer() { 
+            document.getElementById('full-player').classList.remove('translate-y-full', 'pointer-events-none'); 
+            document.getElementById('full-player').classList.add('translate-y-0', 'pointer-events-auto'); 
+        }
+        
+        function closeFullPlayer() { 
+            document.getElementById('full-player').classList.add('translate-y-full', 'pointer-events-none'); 
+            document.getElementById('full-player').classList.remove('translate-y-0', 'pointer-events-auto'); 
+        }
+        
+        function fpTouchStart(e) { fpStartY = e.touches[0].clientY; fpIsDragging = true; }
+        function fpTouchMove(e) { 
+            if(!fpIsDragging) return; 
+            fpCurrentY = e.touches[0].clientY; 
+            const diff = fpCurrentY - fpStartY; 
+            if(diff > 0) document.getElementById('full-player').style.transform = `translateY(${diff}px)`; 
+        }
+        function fpTouchEnd(e) { 
+            if(!fpIsDragging) return; 
+            fpIsDragging = false; 
+            const diff = fpCurrentY - fpStartY; 
+            document.getElementById('full-player').style.transform = ''; 
+            if(diff > 100) closeFullPlayer(); 
+        }
+        
+        function playActiveTabSongs(tId) { 
+            let aType = 'team'; 
+            const types = ['team', 'player', 'lineup', 'hitout', 'entrance']; 
+            for(let ty of types) { 
+                if(!document.getElementById(`content-cheer-${tId}-${ty}`).classList.contains('hidden')) { aType = ty; break; } 
+            } 
+            if(aType === 'lineup') { 
+                const b = document.querySelector(`#content-cheer-${tId}-lineup .cursor-pointer`); 
+                if(b) b.click(); 
+            } else { 
+                const pl = cheerData[tId][aType]; 
+                if(pl && pl.length > 0) playCheerSong(pl[0].url, pl[0].title); 
+            } 
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => { 
+            audioPlayer = document.getElementById('audio-player'); 
+            const pb = document.getElementById('mini-player-progress'), rb = document.getElementById('full-player-range'), ct = document.getElementById('full-player-current'), dt = document.getElementById('full-player-duration'); 
+            if(audioPlayer) { 
+                audioPlayer.addEventListener('timeupdate', () => { 
+                    if(!isSeeking && audioPlayer.duration) { 
+                        const p = (audioPlayer.currentTime / audioPlayer.duration) * 100; 
+                        if(pb) pb.style.width = `${p}%`; 
+                        if(rb) rb.value = p; 
+                        if(ct) ct.innerText = formatTime(audioPlayer.currentTime); 
+                    } 
+                }); 
+                audioPlayer.addEventListener('loadedmetadata', () => { 
+                    if(dt) dt.innerText = formatTime(audioPlayer.duration); 
+                }); 
+                audioPlayer.addEventListener('ended', appNextMusic); 
+                if(rb) { 
+                    rb.addEventListener('input', (e) => { 
+                        isSeeking = true; const t = (e.target.value / 100) * audioPlayer.duration; 
+                        if(ct) ct.innerText = formatTime(t); 
+                    }); 
+                    rb.addEventListener('change', (e) => { 
+                        isSeeking = false; audioPlayer.currentTime = (e.target.value / 100) * audioPlayer.duration; 
+                    }); 
+                } 
+            } 
+        });
+        
+        function formatTime(s) { 
+            if(isNaN(s)) return "0:00"; 
+            const m = Math.floor(s / 60), sec = Math.floor(s % 60); 
+            return `${m}:${sec.toString().padStart(2, '0')}`; 
+        }
+        
+        function closeNoticePopup() { 
+            const np = document.getElementById('notice-popup'); 
+            if (np) { 
+                np.classList.add('hidden'); 
+                np.classList.remove('flex'); 
+                sessionStorage.setItem('kbo_notice_seen', 'true'); 
+            } 
+        }
+        
+        function renderWinRate() { 
+            const c = document.getElementById('winrate-container'); 
+            if(!c) return; 
+            c.innerHTML = `<div class="text-center text-gray-500 py-10 mt-10">승률 화면은 현재 업데이트 중입니다.</div>`; 
+        }
+        
+        function renderRecordCalendar(t, ty) {}
+        
+        function closeRecordPopup() { 
+            const p = document.getElementById('record-popup'); 
+            if(p) { p.classList.add('hidden'); p.classList.remove('flex'); updateHeaderCtrlForPopup(false); } 
+        }
+        
+        document.addEventListener("DOMContentLoaded", () => { 
             syncWithFirestore(); 
-            
-            const bc = document.getElementById('banner-carousel');
-            if (bc) { bc.addEventListener('scroll', () => { const sp = bc.scrollLeft, w = bc.clientWidth; if (w === 0) return; const ni = Math.round(sp / w); if (ni !== currentBanner) { currentBanner = ni; updateBannerDots(currentBanner); } }); bc.addEventListener('touchstart', () => clearInterval(bannerInterval), { passive: true }); bc.addEventListener('touchend', () => { if (isPlaying) startBannerAutoScroll(); }, { passive: true }); }
-            
-            const pm = scheduleData.find(m => m.date === todayStr && (selectedTeam === 'all' || m.team1 === selectedTeam || m.team2 === selectedTeam));
-            if (pm) { const pl = liveDataStore[pm.id]; if (pl && pl.broadcastLink) { const pi = document.getElementById('broadcast-iframe'); if (pi && (!pi.src || pi.src === window.location.href)) pi.src = pl.broadcastLink; } }
-        };
+            renderCheerSongs(); 
+            renderLineupCheerSongs(); 
+            if(selectedTeam === '삼성') setTeamFilter('KIA'); 
+            else setTeamFilter(selectedTeam); 
+            switchTab(1);
+        });
     </script>
 </body>
 </html>
