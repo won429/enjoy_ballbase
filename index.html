@@ -128,7 +128,7 @@
         html.light-mode #full-player { background: rgba(255,255,255,0.95) !important; }
         html.light-mode #lineup-popup { background-color: var(--app-bg) !important; background-image: none !important; }
         html.light-mode:has(#lineup-popup:not(.render-hidden)) .app-bg { background-color: var(--app-bg) !important; background-image: none !important; }
-        html.light-mode #broadcast-content .bg-white, html.light-mode #lineup-content .bg-white { background-color: var(--app-bg) !important; }
+        html.light-mode #lineup-content .bg-white { background-color: var(--app-bg) !important; }
         html.light-mode #winrate-container svg rect[fill="#FFFFFF"] { fill: #e5e7eb !important; } html.light-mode #winrate-container svg path[fill="#F8FAFC"] { fill: #d1d5db !important; }
         html.light-mode .text-red-500, html.light-mode .border-red-500, html.light-mode .text-red-500\/80, html.light-mode .border-red-500\/80, html.light-mode .text-red-500\/30, html.light-mode .border-red-500\/30 { color: #EA0029 !important; border-color: #EA0029 !important; opacity: 1 !important; }
         html.light-mode .bg-red-500\/10, html.light-mode .bg-red-500\/5 { background-color: rgba(234,0,41,0.05) !important; }
@@ -181,7 +181,6 @@
                     </div>
                     <div id="ctrl-back" class="ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full" style="grid-area: 1/1;">
                         <button onclick="goBackFromPopup()" class="px-3.5 py-1.5 text-[11px] font-bold rounded-full bg-point transition-all text-white shadow-sm active:scale-95 cursor-pointer shrink-0 flex items-center gap-1.5"><i class="fa-solid fa-arrow-left text-[10px]"></i>뒤로가기</button>
-                        <button id="btn-detail-broadcast" onclick="toggleBroadcastView()" class="px-3.5 py-1.5 text-[11px] font-bold rounded-full bg-white/10 hover:bg-white/20 border border-white/10 transition-all text-white shadow-sm active:scale-95 cursor-pointer shrink-0 flex items-center gap-1.5"><i class="fa-solid fa-tv text-[10px] text-gray-300"></i>상세중계</button>
                     </div>
                     <div id="ctrl-sort" class="ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full" style="grid-area: 1/1;">
                         <span id="sort-text" class="text-[12px] font-bold text-gray-400">날짜순</span>
@@ -293,26 +292,6 @@
 
         <div id="lineup-popup" class="absolute inset-0 z-[25] render-hidden flex flex-col app-bg overflow-hidden">
             <div id="lineup-content" class="flex-1 overflow-y-auto scrollbar-hide px-6 pt-main relative pb-[260px]"></div>
-            <div id="broadcast-content" class="render-hidden flex-1 overflow-y-auto scrollbar-hide px-5 pt-main relative pb-[260px] flex flex-col">
-                <div id="bc-container" class="w-[calc(100%+40px)] -ml-5 h-[300px] flex flex-col items-center justify-center text-white relative overflow-hidden mt-2" style="background-color: var(--app-bg);">
-                    <div id="broadcast-placeholder" class="flex flex-col items-center justify-center relative z-10 w-full h-full transition-opacity">
-                        <i class="fa-solid fa-baseball text-5xl mb-3 text-gray-500"></i>
-                        <p id="broadcast-msg-title" class="text-sm font-bold text-white">상세중계 (그래픽 중계)</p>
-                        <p id="broadcast-msg-desc" class="text-[11px] mt-1.5 text-gray-400 text-center px-4">관리자 페이지에서 링크 연동 시<br>네이버 스포츠 중계가 표시됩니다.</p>
-                    </div>
-                    <div id="broadcast-loading" class="hidden absolute inset-0 z-40 flex-col items-center justify-center" style="background-color: var(--app-bg);">
-                        <i class="fa-solid fa-baseball fa-spin text-3xl text-gray-400 mb-3"></i>
-                        <span class="text-xs font-bold text-gray-300">중계 화면을 불러오는 중...</span>
-                    </div>
-                    <div class="absolute inset-0 z-[35] pointer-events-none">
-                        <div class="absolute top-0 left-0 right-0 bottom-[105px] pointer-events-auto"></div>
-                        <div class="absolute bottom-0 left-0 right-0 h-[5px] pointer-events-auto"></div>
-                        <div class="absolute bottom-[5px] left-0 right-[100px] h-[100px] pointer-events-auto"></div>
-                        <div class="absolute bottom-[5px] right-0 w-[5px] h-[100px] pointer-events-auto"></div>
-                    </div>
-                    <iframe id="broadcast-iframe" class="opacity-0 transition-opacity duration-500 absolute w-full h-[2500px] left-0 border-none z-30" style="background-color: var(--app-bg);" scrolling="no" src="" onload="setTimeout(() => { const l=document.getElementById('broadcast-loading'); if(l) {l.classList.add('hidden'); l.classList.remove('flex');} this.classList.remove('opacity-0'); }, 1500);"></iframe>
-                </div>
-            </div>
         </div>
 
         <div id="mini-player" onclick="openFullPlayer()" class="absolute bottom-[104px] left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-[380px] bg-[#1C1C1E] rounded-[32px] p-2 pr-4 flex items-center justify-between transition-all duration-300 translate-y-[150%] opacity-0 pointer-events-none overflow-hidden cursor-pointer">
@@ -403,7 +382,7 @@
 
         let scheduleData = [], rankingData = [], liveDataStore = {}, currentPopupMatchId = null, currentTabIndex = 0, watchRecords = [], recordPopupDate = new Date(), currentRecordTeam = null, currentRecordType = null;
         let audioPlayer, currentSongTitle = '', currentSongCover = '', currentPlaylist = [], currentSongIndex = -1, isSeeking = false;
-        let fpStartY = 0, fpCurrentY = 0, fpIsDragging = false, currentBanner = 0, totalBanners = 1, bannerInterval, isPlaying = true, isBroadcastView = false;
+        let fpStartY = 0, fpCurrentY = 0, fpIsDragging = false, currentBanner = 0, totalBanners = 1, bannerInterval, isPlaying = true;
         let isInitialPopupChecked = false;
         
         const initialScheduleData = [];
@@ -540,7 +519,7 @@
                 const np = document.getElementById('notice-popup');
                 if (np) {
                     const pEl = np.querySelector('p');
-                    if (pEl) pEl.innerHTML = `최근 삼성 라이온즈의 지속적인 연패(<span class="text-[#074CA1] font-bold">${stCount}연패</span>)로 인하여,<br>당분간 <span class="text-[#074CA1] font-bold">삼성 라이온즈 메뉴 접근</span>을 차단합니다. 😭<br><br><span class="text-[12px] text-[#074CA1] font-bold">* 단, 응원가 탭은 정상 이용 가능합니다.</span>`;
+                    if (pEl) pEl.innerHTML = `최근 삼성 라이온즈의 지속적인 연패(<span class="text-[#074CA1] font-bold">${stCount}연패</span>)로 인하여,<br>당분간 <span class="text-[#074CA1] font-bold">삼성 라이온즈 경기 실시간 업데이트</span>를 중단합니다. 😭<br><br><span class="text-[#074CA1] font-bold">* 단, 응원가 탭은 정상 이용 가능합니다.</span><br><br>팬 여러분의 너른 양해 부탁드립니다.`;
                     np.classList.remove('hidden'); np.classList.add('flex');
                 }
                 if (selectedTeam === '삼성' && currentTabIndex !== 3) setTeamFilter('KIA');
@@ -549,7 +528,7 @@
         }
 
         function updateHeaderCtrlForPopup(isOpen, titleStr) {
-            const els = ['ctrl-team', 'ctrl-sort', 'ctrl-back', 'ctrl-ranking', 'ctrl-wrapper', 'header-title-container', 'header-calendar-nav', 'header-popup-title', 'header-popup-text', 'btn-detail-broadcast'].reduce((a, id) => ({...a, [id]: document.getElementById(id)}), {});
+            const els = ['ctrl-team', 'ctrl-sort', 'ctrl-back', 'ctrl-ranking', 'ctrl-wrapper', 'header-title-container', 'header-calendar-nav', 'header-popup-title', 'header-popup-text'].reduce((a, id) => ({...a, [id]: document.getElementById(id)}), {});
             
             if (isOpen) {
                 if (els['ctrl-team']) els['ctrl-team'].className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full';
@@ -562,11 +541,6 @@
                 if (els['header-calendar-nav']) { els['header-calendar-nav'].classList.add('hidden'); els['header-calendar-nav'].classList.remove('flex'); }
                 if (els['header-popup-title']) { els['header-popup-title'].classList.remove('hidden'); els['header-popup-title'].classList.add('flex'); }
                 if (els['header-popup-text'] && titleStr) { els['header-popup-text'].innerText = titleStr; }
-                
-                if (els['btn-detail-broadcast']) {
-                    if (currentPopupMatchId === null || (titleStr && titleStr.includes('기록 추가'))) { els['btn-detail-broadcast'].classList.add('hidden'); els['btn-detail-broadcast'].classList.remove('flex'); } 
-                    else { els['btn-detail-broadcast'].classList.remove('hidden'); els['btn-detail-broadcast'].classList.add('flex'); }
-                }
             } else {
                 if (els['ctrl-back']) els['ctrl-back'].className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full';
                 if ([0, 1, 3].includes(currentTabIndex)) {
@@ -801,12 +775,6 @@
             s.classList.remove('hidden'); s.classList.add('flex'); updateHeaderCtrlForPopup(true, t);
         }
 
-        function navigateCalendar(o) {
-            if (viewMode === 'week') currentDate.setDate(currentDate.getDate() + (o * 7));
-            else { currentDate.setDate(1); currentDate.setMonth(currentDate.getMonth() + o); }
-            renderCalendar(); closeBottomSheet();
-        }
-
         function renderRanking() {
             const c = document.getElementById('ranking-container'); if (!c) return;
             const rc = {}; rankingData.forEach(t => { if (t.rank !== '-') rc[t.rank] = (rc[t.rank] || 0) + 1; });
@@ -980,39 +948,15 @@
         function closeLineupPopup() {
             const p = document.getElementById('lineup-popup');
             if (p && !p.classList.contains('render-hidden')) {
-                currentPopupMatchId = null; p.classList.add('render-hidden'); updateHeaderCtrlForPopup(false); isBroadcastView = false;
-                const l = document.getElementById('lineup-content'), b = document.getElementById('broadcast-content'), btn = document.getElementById('btn-detail-broadcast');
-                if (l) l.classList.remove('render-hidden', 'hidden'); if (b) b.classList.add('render-hidden');
-                if (btn) btn.innerHTML = `<i class="fa-solid fa-tv text-[10px] text-gray-300"></i>상세중계`;
+                currentPopupMatchId = null; p.classList.add('render-hidden'); updateHeaderCtrlForPopup(false);
+                const l = document.getElementById('lineup-content');
+                if (l) l.classList.remove('render-hidden', 'hidden');
             }
-        }
-
-        function toggleBroadcastView() {
-            isBroadcastView = !isBroadcastView;
-            const l = document.getElementById('lineup-content'), b = document.getElementById('broadcast-content'), btn = document.getElementById('btn-detail-broadcast');
-            if (isBroadcastView) { l.classList.add('render-hidden'); b.classList.remove('render-hidden'); if (btn) btn.innerHTML = `<i class="fa-solid fa-list text-[10px] text-gray-300"></i>라인업`; } 
-            else { l.classList.remove('render-hidden'); b.classList.add('render-hidden'); if (btn) btn.innerHTML = `<i class="fa-solid fa-tv text-[10px] text-gray-300"></i>상세중계`; }
         }
 
         function renderPopupContent(id) {
             const c = document.getElementById('lineup-content'), m = scheduleData.find(x => x.id === parseInt(id) || x.id === id); if (!m) return;
-            const l = liveDataStore[id], ifr = document.getElementById('broadcast-iframe'), plh = document.getElementById('broadcast-placeholder'), ld = document.getElementById('broadcast-loading'), fb = document.getElementById('broadcast-fallback'), bo = document.getElementById('btn-open-broadcast'), mti = document.getElementById('broadcast-msg-title'), mdc = document.getElementById('broadcast-msg-desc');
-            
-            if (ifr && plh && ld) {
-                if (l && l.broadcastLink) {
-                    plh.classList.add('hidden'); plh.classList.remove('flex');
-                    if (ifr.src && ifr.src.includes(l.broadcastLink)) { ld.classList.add('hidden'); ld.classList.remove('flex'); ifr.classList.remove('opacity-0', 'hidden'); } 
-                    else { ld.classList.remove('hidden'); ld.classList.add('flex'); ifr.classList.add('opacity-0'); ifr.classList.remove('hidden'); ifr.src = l.broadcastLink; }
-                    let bcFinalOfs = '-970px', bcIsDelayPassed = (l.gameStatus === '종료' && (!l.endTime || (Date.now() - l.endTime > 7200000)));
-                    if (l.naverOffsetMode === 'ended') bcFinalOfs = '-970px'; else if (l.naverOffsetMode === 'live') bcFinalOfs = '-1025px'; else if (l.naverOffsetMode === 'just_ended') bcFinalOfs = '-1205px'; else { if (l.gameStatus === '경기중') bcFinalOfs = '-1025px'; else if (l.gameStatus === '종료') bcFinalOfs = bcIsDelayPassed ? '-970px' : '-1205px'; }
-                    ifr.style.top = bcFinalOfs;
-                    if (fb) { fb.classList.remove('hidden'); fb.classList.add('flex'); } if (bo) bo.onclick = () => window.open(l.broadcastLink, '_blank');
-                } else {
-                    ifr.src = ''; ifr.classList.add('hidden', 'opacity-0'); ld.classList.add('hidden'); ld.classList.remove('flex'); plh.classList.remove('hidden'); plh.classList.add('flex');
-                    if (mti) mti.innerText = "등록된 상세중계가 없습니다"; if (mdc) mdc.innerHTML = "관리자가 아직 상세중계 링크를<br>연동하지 않았습니다.";
-                    if (fb) { fb.classList.add('hidden'); fb.classList.remove('flex'); }
-                }
-            }
+            const l = liveDataStore[id];
             
             let sch = `<span class="text-2xl font-black text-gray-700">VS</span>`;
             if (l) {
@@ -1379,9 +1323,6 @@
             
             const bc = document.getElementById('banner-carousel');
             if (bc) { bc.addEventListener('scroll', () => { const sp = bc.scrollLeft, w = bc.clientWidth; if (w === 0) return; const ni = Math.round(sp / w); if (ni !== currentBanner) { currentBanner = ni; updateBannerDots(currentBanner); } }); bc.addEventListener('touchstart', () => clearInterval(bannerInterval), { passive: true }); bc.addEventListener('touchend', () => { if (isPlaying) startBannerAutoScroll(); }, { passive: true }); }
-            
-            const pm = scheduleData.find(m => m.date === todayStr && (selectedTeam === 'all' || m.team1 === selectedTeam || m.team2 === selectedTeam));
-            if (pm) { const pl = liveDataStore[pm.id]; if (pl && pl.broadcastLink) { const pi = document.getElementById('broadcast-iframe'); if (pi && (!pi.src || pi.src === window.location.href)) pi.src = pl.broadcastLink; } }
         };
     </script>
 </body>
