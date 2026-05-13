@@ -1050,14 +1050,17 @@
         }
 
         function playAllSongs(id) { const c = document.getElementById(id); if (!c) return; const s = c.querySelectorAll(`[onclick*="playCheerSong"]`); currentPlaylist = Array.from(s).map(e => { const m = e.getAttribute('onclick').match(/playCheerSong\(['"]([^'"]+)['"],\s*['"]([^'"]+)['"]\)/); if (m) return { url: m[1], title: m[2] }; return null; }).filter(i => i !== null); if (currentPlaylist.length > 0) { currentSongIndex = 0; executePlay(currentPlaylist[0].url, currentPlaylist[0].title); } else { showToast('재생할 곡이 없습니다.'); } }
+        
         function playActiveTabSongs(pf) { const a = document.querySelector(`div[id^="content-cheer-${pf}-"]:not(.hidden)`); if (a) playAllSongs(a.id); else showToast('재생할 곡이 없습니다.'); }
 
         function playCheerSong(u, t) {
+            if (!u) return;
             const a = document.querySelectorAll(`[onclick*="playCheerSong"]`);
             let c = Array.from(a).find(e => { const iM = e.getAttribute('onclick').includes(`'${u}'`) || e.getAttribute('onclick').includes(`"${u}"`); if (!iM) return false; const p = e.closest('[id^="content-cheer-"]'); return p && !p.classList.contains('hidden'); });
             if (!c) c = Array.from(a).find(e => e.getAttribute('onclick').includes(`'${u}'`) || e.getAttribute('onclick').includes(`"${u}"`));
             if (c) { const p = c.closest('[id^="content-cheer-"]'); if (p) { const s = p.querySelectorAll(`[onclick*="playCheerSong"]`); currentPlaylist = Array.from(s).map(e => { const m = e.getAttribute('onclick').match(/playCheerSong\(['"]([^'"]+)['"],\s*['"]([^'"]+)['"]\)/); if (m) return { url: m[1], title: m[2] }; return null; }).filter(i => i !== null); currentSongIndex = currentPlaylist.findIndex(i => i.url === u); } } 
-            else { currentPlaylist = [{ url: u, title: t }]; currentSongIndex = 0; } executePlay(u, t);
+            else { currentPlaylist = [{ url: u, title: t }]; currentSongIndex = 0; } 
+            executePlay(u, t);
         }
 
         function executePlay(u, t) {
@@ -1071,36 +1074,66 @@
             }).catch(e => console.error(e));
             
             currentSongTitle = t;
-            document.getElementById('mini-player-title').innerText = t;
-            document.getElementById('full-player-title').innerText = t;
+            const mt = document.getElementById('mini-player-title'); if(mt) mt.innerText = t;
+            const ft = document.getElementById('full-player-title'); if(ft) ft.innerText = t;
             
-            let dcu = teamLogos['KIA']; 
-            if (t.includes('삼성') || t.includes('엘도라도') || t.includes('구자욱') || t.includes('최형우') || t.includes('지중해') || t.includes('라이온즈')) { dcu = teamLogos['삼성']; }
-            let ip = false; 
-            for (let p in playerImages) { if (t.includes(p)) { dcu = playerImages[p]; ip = true; break; } }
-            currentSongCover = dcu;
+            let coverImg = 'logo.png';
+            let isPlayer = false;
+            for (let p in playerImages) { if (t.includes(p)) { coverImg = playerImages[p]; isPlayer = true; break; } }
+            if (!isPlayer) {
+                if (t.includes('KIA') || t.includes('호랑이')) coverImg = teamLogos['KIA'];
+                else if (t.includes('삼성') || t.includes('엘도라도') || t.includes('라이온즈') || t.includes('지중해')) coverImg = teamLogos['삼성'];
+            }
+            currentSongCover = coverImg;
             
-            const mc = document.getElementById('mini-player-cover'); if(mc) { mc.src = dcu; mc.className = ip ? "w-full h-full object-cover object-top pt-0.5 scale-110 drop-shadow-md" : "w-full h-full object-contain opacity-95"; }
-            const fc = document.getElementById('full-player-cover'); if(fc) { fc.src = dcu; fc.className = ip ? "w-full h-full object-cover object-top pt-2 scale-110" : "w-full h-full object-contain p-8"; }
+            const mc = document.getElementById('mini-player-cover'); 
+            if(mc) { mc.src = coverImg; mc.className = isPlayer ? "w-full h-full object-cover object-top pt-0.5 scale-110 drop-shadow-md" : "w-full h-full object-contain opacity-95"; }
+            const fc = document.getElementById('full-player-cover'); 
+            if(fc) { fc.src = coverImg; fc.className = isPlayer ? "w-full h-full object-cover object-top pt-2 scale-110" : "w-full h-full object-contain p-8"; }
             
-            let an = '팀 응원가'; if (ip || t.includes('김도영') || t.includes('구자욱') || t.includes('최형우')) an = '선수 응원가'; 
+            let an = '팀 응원가'; if (isPlayer || t.includes('김도영') || t.includes('구자욱') || t.includes('최형우')) an = '선수 응원가'; 
             const fpa = document.getElementById('full-player-artist'); if(fpa) fpa.innerText = t.includes('KIA') ? 'KIA 타이거즈 응원가' : (t.includes('삼성') ? '삼성 라이온즈 응원가' : an);
             
-            document.getElementById('mini-player').classList.remove('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
+            const mp = document.getElementById('mini-player'); if(mp) mp.classList.remove('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
             const pb = document.getElementById('mini-player-progress'); if (pb) pb.style.width = '0%'; 
             const rs = document.getElementById('full-player-range'); if (rs) { rs.value = 0; rs.style.background = `var(--range-bg)`; }
+
+            updateMediaSession();
+        }
+
+        function updateMediaSession() {
+            if ('mediaSession' in navigator && currentSongTitle) {
+                let a = '팀 응원가';
+                if (currentSongTitle.includes('김도영') || currentSongTitle.includes('구자욱') || currentSongTitle.includes('최형우') || currentSongTitle.includes('선수')) {
+                    a = '선수 응원가';
+                }
+                const artworkUrl = currentSongCover.startsWith('http') ? currentSongCover : new URL(currentSongCover, window.location.href).href;
+
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: currentSongTitle,
+                    artist: a,
+                    artwork: [
+                        { src: artworkUrl, sizes: '512x512', type: 'image/png' },
+                        { src: artworkUrl, sizes: '192x192', type: 'image/png' }
+                    ]
+                });
+                navigator.mediaSession.setActionHandler('play', () => { if(audioPlayer) audioPlayer.play(); });
+                navigator.mediaSession.setActionHandler('pause', () => { if(audioPlayer) audioPlayer.pause(); });
+                navigator.mediaSession.setActionHandler('previoustrack', () => appPrevMusic());
+                navigator.mediaSession.setActionHandler('nexttrack', () => appNextMusic());
+            }
         }
         
         function toggleMiniPlayerPlay() { 
             if(!audioPlayer) return; 
             if(audioPlayer.paused) { 
                 audioPlayer.play(); 
-                document.getElementById('mini-player-btn').className = 'fa-solid fa-pause text-[22px]'; 
-                document.getElementById('full-player-btn').className = 'fa-solid fa-pause text-[48px]'; 
+                const mpb = document.getElementById('mini-player-btn'); if(mpb) mpb.className = 'fa-solid fa-pause text-[22px]'; 
+                const fpb = document.getElementById('full-player-btn'); if(fpb) fpb.className = 'fa-solid fa-pause text-[48px]'; 
             } else { 
                 audioPlayer.pause(); 
-                document.getElementById('mini-player-btn').className = 'fa-solid fa-play text-[22px] ml-0.5'; 
-                document.getElementById('full-player-btn').className = 'fa-solid fa-play text-[48px] ml-1'; 
+                const mpb = document.getElementById('mini-player-btn'); if(mpb) mpb.className = 'fa-solid fa-play text-[22px] ml-0.5'; 
+                const fpb = document.getElementById('full-player-btn'); if(fpb) fpb.className = 'fa-solid fa-play text-[48px] ml-1'; 
             } 
         }
         
@@ -1121,20 +1154,18 @@
         function closeMiniPlayer() { 
             if(audioPlayer) { 
                 audioPlayer.pause(); 
-                document.getElementById('mini-player-btn').className = 'fa-solid fa-play text-[22px] ml-0.5'; 
-                document.getElementById('full-player-btn').className = 'fa-solid fa-play text-[48px] ml-1'; 
+                const mpb = document.getElementById('mini-player-btn'); if(mpb) mpb.className = 'fa-solid fa-play text-[22px] ml-0.5'; 
+                const fpb = document.getElementById('full-player-btn'); if(fpb) fpb.className = 'fa-solid fa-play text-[48px] ml-1'; 
             } 
-            document.getElementById('mini-player').classList.add('translate-y-[150%]', 'opacity-0', 'pointer-events-none'); 
+            const mp = document.getElementById('mini-player'); if(mp) mp.classList.add('translate-y-[150%]', 'opacity-0', 'pointer-events-none'); 
         }
         
         function openFullPlayer() { 
-            document.getElementById('full-player').classList.remove('translate-y-full', 'pointer-events-none'); 
-            document.getElementById('full-player').classList.add('translate-y-0', 'pointer-events-auto'); 
+            const fp = document.getElementById('full-player'); if(fp) { fp.classList.remove('translate-y-full', 'pointer-events-none'); fp.classList.add('translate-y-0', 'pointer-events-auto'); }
         }
         
         function closeFullPlayer() { 
-            document.getElementById('full-player').classList.add('translate-y-full', 'pointer-events-none'); 
-            document.getElementById('full-player').classList.remove('translate-y-0', 'pointer-events-auto'); 
+            const fp = document.getElementById('full-player'); if(fp) { fp.classList.add('translate-y-full', 'pointer-events-none'); fp.classList.remove('translate-y-0', 'pointer-events-auto'); }
         }
         
         function fpTouchStart(e) { fpStartY = e.touches[0].clientY; fpIsDragging = true; }
@@ -1142,13 +1173,13 @@
             if(!fpIsDragging) return; 
             fpCurrentY = e.touches[0].clientY; 
             const diff = fpCurrentY - fpStartY; 
-            if(diff > 0) document.getElementById('full-player').style.transform = `translateY(${diff}px)`; 
+            if(diff > 0) { const fp = document.getElementById('full-player'); if(fp) fp.style.transform = `translateY(${diff}px)`; }
         }
         function fpTouchEnd(e) { 
             if(!fpIsDragging) return; 
             fpIsDragging = false; 
             const diff = fpCurrentY - fpStartY; 
-            document.getElementById('full-player').style.transform = ''; 
+            const fp = document.getElementById('full-player'); if(fp) fp.style.transform = ''; 
             if(diff > 100) closeFullPlayer(); 
         }
 
