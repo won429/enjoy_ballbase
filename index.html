@@ -641,6 +641,16 @@
             else { setTimeout(() => { const sc = document.getElementById('calendar-screen'); if (sc) sc.scrollTop = 0; }, 10); }
         }
 
+        function navigateCalendar(offset) {
+            if (viewMode === 'month') {
+                currentDate.setMonth(currentDate.getMonth() + offset);
+            } else {
+                currentDate.setDate(currentDate.getDate() + (offset * 7));
+            }
+            renderCalendar();
+            closeBottomSheet();
+        }
+
         function setTeamFilter(team) {
             if (team === '삼성') {
                 let tm = scheduleData.filter(m => (m.team1 === '삼성' || m.team2 === '삼성') && liveDataStore[m.id] && liveDataStore[m.id].gameStatus === '종료').sort((a, b) => b.date.localeCompare(a.date) || (b.time || "00:00").localeCompare(a.time || "00:00"));
