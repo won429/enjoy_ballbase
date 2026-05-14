@@ -51,7 +51,7 @@
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         .ctrl-item { transition: max-width 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), padding 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.7s ease, visibility 0.7s; overflow: hidden; white-space: nowrap; width: max-content; justify-self: end; }
         .ctrl-show { max-width: 250px; opacity: 1; padding-left: 16px; padding-right: 16px; z-index: 50; position: relative; pointer-events: auto !important; visibility: visible; }
-        #ctrl-team.ctrl-show, #ctrl-back.ctrl-show, #ctrl-ranking.ctrl-show { padding-left: 2px; padding-right: 2px; }
+        #ctrl-team.ctrl-show, #ctrl-back.ctrl-show, #ctrl-ranking.ctrl-show { padding-left: 6px; padding-right: 6px; }
         .ctrl-hide { max-width: 0px; opacity: 0; padding-left: 0px; padding-right: 0px; z-index: -10; position: absolute !important; right: 2px; top: 2px; pointer-events: none !important; visibility: hidden; }
         .ctrl-show button { position: relative; z-index: 60; }
         
@@ -176,9 +176,9 @@
                 </div>
                 <div id="ctrl-wrapper" class="grid rounded-full h-[36px] shrink-0 overflow-hidden relative transition-all duration-700 origin-right">
                     <div id="ctrl-team" class="ctrl-item ctrl-show flex items-center justify-center gap-1 h-full" style="grid-area: 1/1;">
-                        <button onclick="setTeamFilter('all')" id="btn-team-all" class="team-btn-anim px-3.5 py-1.5 text-[11px] font-bold rounded-full bg-point text-white shadow-sm active:scale-95 cursor-pointer shrink-0">전체</button>
-                        <button onclick="setTeamFilter('KIA')" id="btn-team-KIA" class="team-btn-anim px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 active:scale-95 cursor-pointer shrink-0">KIA</button>
-                        <button onclick="setTeamFilter('삼성')" id="btn-team-삼성" class="team-btn-anim px-3.5 py-1.5 text-[11px] font-medium rounded-full text-gray-400 active:scale-95 cursor-pointer shrink-0">삼성</button>
+                        <button onclick="setTeamFilter('all')" id="btn-team-all" class="team-btn-anim px-3.5 py-2 text-[11px] font-bold rounded-full bg-point text-white shadow-sm active:scale-[0.98] cursor-pointer shrink-0">전체</button>
+                        <button onclick="setTeamFilter('KIA')" id="btn-team-KIA" class="team-btn-anim px-3.5 py-2 text-[11px] font-medium rounded-full text-gray-400 active:scale-[0.98] cursor-pointer shrink-0">KIA</button>
+                        <button onclick="setTeamFilter('삼성')" id="btn-team-삼성" class="team-btn-anim px-3.5 py-2 text-[11px] font-medium rounded-full text-gray-400 active:scale-[0.98] cursor-pointer shrink-0">삼성</button>
                     </div>
                     <div id="ctrl-back" class="ctrl-item ctrl-hide flex items-center justify-center gap-1 h-full" style="grid-area: 1/1;">
                         <button onclick="goBackFromPopup()" class="px-3.5 py-1.5 text-[11px] font-bold rounded-full bg-point transition-all text-white shadow-sm active:scale-95 cursor-pointer shrink-0 flex items-center gap-1.5"><i class="fa-solid fa-arrow-left text-[10px]"></i>뒤로가기</button>
