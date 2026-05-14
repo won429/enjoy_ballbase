@@ -919,7 +919,7 @@
                     let bottomInfoHtml = `<div class="w-full flex justify-end mt-2 px-1"><span class="text-white font-bold text-[11px] tracking-tight">${m.stadium}${bcName ? ' <span class="text-gray-500 mx-1.5 font-normal">|</span> ' + bcName : ''}</span></div>`;
                     
                     div.className = 'min-w-full shrink-0 snap-center transition-transform duration-300 active:scale-[0.98] py-1 flex flex-col';
-                    div.innerHTML = `<div class="w-full bg-[#1C1C1E] relative overflow-hidden shadow-lg border-y border-white/5" style="height: ${bannerHeight};"><div id="banner-loading-${m.id}" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-[#1C1C1E]"><i class="fa-solid fa-baseball fa-spin text-2xl text-gray-500"></i></div><div class="absolute inset-0 z-[35] pointer-events-auto"></div><iframe class="opacity-0 transition-opacity duration-500 absolute w-full h-[2500px] border-none z-30" style="top: ${iframeTop}; left: 0px; transform: scale(${iframeScale}); transform-origin: top center; background-color: var(--app-bg);" scrolling="no" src="${l.bannerLink}" onload="setTimeout(() => { const ld=document.getElementById('banner-loading-${m.id}'); if(ld){ld.classList.add('hidden');ld.classList.remove('flex');}this.classList.remove('opacity-0'); }, 1500);"></iframe></div>${bottomInfoHtml}`;
+                    div.innerHTML = `<div class="w-full bg-[#1C1C1E] relative overflow-hidden shadow-lg border-y border-white/5" style="height: ${bannerHeight};"><div id="banner-loading-${m.id}" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-[#1C1C1E]"><i class="fa-solid fa-baseball fa-spin text-2xl text-gray-500"></i></div><div class="absolute inset-0 z-[35] pointer-events-auto"></div><iframe class="opacity-0 transition-opacity duration-500 absolute w-full h-[2500px] border-none z-30" style="top: ${iframeTop}; left: 0px; transform: scale(${iframeScale}); transform-origin: top center; background-color: var(--app-bg);" scrolling="no" src="${l.bannerLink}" onload="setTimeout(() => { const ld=document.getElementById('banner-loading-${m.id}'); if(ld){ld.classList.add('hidden');ld.classList.remove('flex');}this.classList.remove('opacity-0'); }, 100);"></iframe></div>${bottomInfoHtml}`;
                 } else {
                     let iC = l && ((l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))));
                     let isLiveOrEnded = l && (l.gameStatus === '경기중' || l.gameStatus === '종료');
@@ -1337,7 +1337,7 @@
             const c = document.getElementById('winrate-container'); if (!c) return;
             let s = { 'KIA': { '직관': { w: 0, l: 0, d: 0 }, '집관': { w: 0, l: 0, d: 0 } }, '삼성': { '직관': { w: 0, l: 0, d: 0 }, '집관': { w: 0, l: 0, d: 0 } } };
             watchRecords.forEach(r => {
-                if (!s[r.team] || !s[r.team][r.type]) return; let m = scheduleData.find(x => x.id === r.matchId), l = liveDataStore[r.matchId];
+                if (!s[r.team] || !s[r.team][r.type]) return; let m = scheduleData.find(x => String(x.id) === String(r.matchId)), l = liveDataStore[r.matchId];
                 if (m && l && l.gameStatus === '종료') {
                     let a = parseInt(l.awayScore || 0), h = parseInt(l.homeScore || 0), iW = (m.team1 === r.team && a > h) || (m.team2 === r.team && h > a), iL = (m.team1 === r.team && a < h) || (m.team2 === r.team && h < a);
                     if (iW) s[r.team][r.type].w++; else if (iL) s[r.team][r.type].l++; else s[r.team][r.type].d++;
@@ -1419,13 +1419,13 @@
             let h = `<div class="flex justify-between items-center mb-6 px-2"><button onclick="changeRecordMonth(-1, '${t}', '${ty}')" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white active:scale-95"><i class="fa-solid fa-chevron-left text-sm"></i></button><span class="text-lg font-bold text-white tracking-wide">${y}년 ${m + 1}월</span><button onclick="changeRecordMonth(1, '${t}', '${ty}')" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white active:scale-95"><i class="fa-solid fa-chevron-right text-sm"></i></button></div><div class="grid grid-cols-7 gap-2 text-center mb-2"><div class="text-[11px] font-bold text-[#EA0029]">일</div><div class="text-[11px] font-bold text-gray-400">월</div><div class="text-[11px] font-bold text-gray-400">화</div><div class="text-[11px] font-bold text-gray-400">수</div><div class="text-[11px] font-bold text-gray-400">목</div><div class="text-[11px] font-bold text-gray-400">금</div><div class="text-[11px] font-bold text-[#074CA1]">토</div></div><div class="grid grid-cols-7 gap-2">`;
             for (let i = 0; i < fd; i++) h += `<div></div>`;
             for (let i = 1; i <= dim; i++) {
-                let ds = `${y}-${String(m + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`, im = new Date(y, m, i).getDay() === 1, mt = scheduleData.find(x => x.date === ds && (x.team1 === t || x.team2 === t || x.id === '260711_ALLSTAR')), l = mt ? liveDataStore[mt.id] : null, hem = mt && l && l.gameStatus === '종료', r = watchRecords.find(x => x.team === t && x.matchId === (mt ? mt.id : -1));
+                let ds = `${y}-${String(m + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`, im = new Date(y, m, i).getDay() === 1, mt = scheduleData.find(x => x.date === ds && (x.team1 === t || x.team2 === t || x.id === '260711_ALLSTAR')), l = mt ? liveDataStore[mt.id] : null, hem = mt && l && l.gameStatus === '종료', r = watchRecords.find(x => x.team === t && String(x.matchId) === String(mt ? mt.id : -1));
                 let dc = "h-11 rounded-full flex items-center justify-center text-[15px] font-bold transition-all active:scale-95 ", oc = "", st = "";
                 if (im) { dc += "text-gray-600 opacity-30 pointer-events-none"; } 
                 else if (!hem) { dc += "text-gray-500 opacity-40 cursor-default"; oc = `onclick="showToast('이 날은 종료된 경기가 없습니다.')"`; } 
                 else {
-                    if (r) { if (r.type === ty) { let tc = t === 'KIA' ? '#EA0029' : '#074CA1'; dc += "text-white shadow-md"; st = `style="background-color: ${tc}; border: 1px solid ${tc};"`; oc = `onclick="setWatchRecord(${mt.id}, '${t}', null)"`; } else { dc += "text-gray-600 opacity-30 cursor-default"; oc = `onclick="showToast('이미 ${r.type}로 등록된 경기입니다.')"`; } } 
-                    else { dc += "bg-white/5 text-gray-200 hover:bg-white/10 cursor-pointer border border-white/10"; oc = `onclick="setWatchRecord(${mt.id}, '${t}', '${ty}')"`; }
+                    if (r) { if (r.type === ty) { let tc = t === 'KIA' ? '#EA0029' : '#074CA1'; dc += "text-white shadow-md"; st = `style="background-color: ${tc}; border: 1px solid ${tc};"`; oc = `onclick="setWatchRecord('${mt.id}', '${t}', null)"`; } else { dc += "text-gray-600 opacity-30 cursor-default"; oc = `onclick="showToast('이미 ${r.type}로 등록된 경기입니다.')"`; } } 
+                    else { dc += "bg-white/5 text-gray-200 hover:bg-white/10 cursor-pointer border border-white/10"; oc = `onclick="setWatchRecord('${mt.id}', '${t}', '${ty}')"`; }
                 }
                 h += `<button class="${dc}" ${st} ${oc}>${i}</button>`;
             }
@@ -1436,12 +1436,12 @@
             const r = db.collection("watch_records").doc(`${id}_${t}`); 
             if (ty) {
                 r.set({ matchId: id, team: t, type: ty }); 
-                const existingIdx = watchRecords.findIndex(x => x.matchId === id && x.team === t);
+                const existingIdx = watchRecords.findIndex(x => String(x.matchId) === String(id) && x.team === t);
                 if (existingIdx > -1) watchRecords[existingIdx].type = ty;
                 else watchRecords.push({ matchId: id, team: t, type: ty });
             } else {
                 r.delete(); 
-                watchRecords = watchRecords.filter(x => !(x.matchId === id && x.team === t));
+                watchRecords = watchRecords.filter(x => !(String(x.matchId) === String(id) && x.team === t));
             }
             if (currentRecordTeam && currentRecordType) renderRecordCalendar(currentRecordTeam, currentRecordType);
             if (currentTabIndex === 0) renderWinRate();
