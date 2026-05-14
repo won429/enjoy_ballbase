@@ -728,7 +728,7 @@
                                     else if (iD) stmp = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 -rotate-[15deg] text-[11px] font-black text-green-500 border-[1.5px] border-green-500 rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm px-2 py-0.5 tracking-widest pointer-events-none z-20 bg-transparent whitespace-nowrap">DRAW</div>`;
                                 }
                             }
-                            let dt = mt.map(m => { let dtm = m.team1 === selectedTeam ? m.team2 : m.team1; let iH = m.team2 === selectedTeam; if (iH) tic = `<i class="fa-solid fa-house text-point text-[10px] absolute top-1.5 left-1/2 -translate-x-1/2 ${isP ? 'grayscale opacity-50' : ''}"></i>`; return uiTeamLogo(dtm, 'w-[22px] h-[22px]', 'w-[7px] h-[7px]', isP ? 'grayscale opacity-50' : ''); }).join('');
+                            let dt = mt.map(m => { let dtm = m.team1 === selectedTeam ? m.team2 : m.team1; let iH = m.team2 === selectedTeam; if (iH) tic = `<i class="fa-solid fa-house text-point text-[10px] absolute top-1.5 left-1/2 -translate-x-1/2 ${isP ? 'grayscale opacity-50' : ''}"></i>`; let isDal = (m.date === '2026-05-15' || m.date === '2026-05-16' || m.date === '2026-05-17') && ((m.team1 === 'KIA' && m.team2 === '삼성') || (m.team1 === '삼성' && m.team2 === 'KIA')); return isDal ? `<img src="https://github.com/won429/enjoy_ballbase/blob/main/dal.png?raw=true" class="w-[24px] h-[24px] object-contain ${isP ? 'grayscale opacity-50' : ''}">` : uiTeamLogo(dtm, 'w-[22px] h-[22px]', 'w-[7px] h-[7px]', isP ? 'grayscale opacity-50' : ''); }).join('');
                             dots = `<div class="flex justify-center gap-0.5 items-center mt-auto mb-1.5">${dt}</div>`;
                         }
                     }
@@ -750,8 +750,9 @@
                     if (cd.mt.length > 0) {
                         let mh = `<div class="space-y-3">` + cd.mt.map(m => {
                             let iH = selectedTeam !== 'all' && m.team2 === selectedTeam;
-                            let l1 = uiTeamLogo(m.team1, 'w-[26px] h-[26px]', 'w-3.5 h-3.5', isP ? 'grayscale opacity-50' : '');
-                            let l2 = uiTeamLogo(m.team2, 'w-[26px] h-[26px]', 'w-3.5 h-3.5', isP ? 'grayscale opacity-50' : '');
+                            let isDal = (m.date === '2026-05-15' || m.date === '2026-05-16' || m.date === '2026-05-17') && ((m.team1 === 'KIA' && m.team2 === '삼성') || (m.team1 === '삼성' && m.team2 === 'KIA'));
+                            let l1 = isDal ? `<img src="https://github.com/won429/enjoy_ballbase/blob/main/dal.png?raw=true" class="w-[26px] h-[26px] object-contain ${isP ? 'grayscale opacity-50' : ''}">` : uiTeamLogo(m.team1, 'w-[26px] h-[26px]', 'w-3.5 h-3.5', isP ? 'grayscale opacity-50' : '');
+                            let l2 = isDal ? `<img src="https://github.com/won429/enjoy_ballbase/blob/main/dal.png?raw=true" class="w-[26px] h-[26px] object-contain ${isP ? 'grayscale opacity-50' : ''}">` : uiTeamLogo(m.team2, 'w-[26px] h-[26px]', 'w-3.5 h-3.5', isP ? 'grayscale opacity-50' : '');
                             let l = liveDataStore[m.id];
                             let sh = `<span class="text-[10px] text-gray-400 font-bold"><i class="fa-solid fa-clock mr-1"></i>${m.time} · ${iH ? `<i class="fa-solid fa-house text-point mx-0.5"></i>` : ''}${m.stadium}</span>`;
                             let sch = `<span class="text-xs text-gray-500">vs</span>`;
@@ -821,7 +822,9 @@
                         if (iC) { let txt = (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))) ? l.inning : (l.gameStatus || '취소'); if (txt === '취소') txt = '우천취소'; txt = txt.replace('우취', '우천취소'); sh = `<div class="flex items-center gap-1.5"><span class="bg-blue-600 text-[9px] font-bold text-white px-2 py-0.5 rounded-full">${txt}</span></div>`; } 
                         else if (l.gameStatus !== '경기전') { let ds = (l.gameStatus === '경기중' && l.inning) ? l.inning : l.gameStatus; let badgeHtml = l.gameStatus !== '종료' ? `<span class="text-[10px] font-black text-[#EA0029] flex items-center gap-1 tracking-widest"><span class="w-1 h-1 rounded-full bg-[#EA0029] animate-pulse"></span>${ds}</span>` : `<span class="bg-gray-600/30 border border-gray-500/20 text-[9px] font-bold text-gray-400 px-1.5 py-0.5 rounded">${ds}</span>`; sh = `<div class="flex items-center gap-1.5">${badgeHtml}<span class="text-gray-600 text-[9px]">|</span><span class="text-[10px] text-gray-400 font-black">${l.awayScore}:${l.homeScore}</span></div>`; }
                     }
-                    let l1 = uiTeamLogo(x.team1, 'w-7 h-7', 'w-7 h-7'), l2 = uiTeamLogo(x.team2, 'w-7 h-7', 'w-7 h-7');
+                    let isDal = (x.date === '2026-05-15' || x.date === '2026-05-16' || x.date === '2026-05-17') && ((x.team1 === 'KIA' && x.team2 === '삼성') || (x.team1 === '삼성' && x.team2 === 'KIA'));
+                    let l1 = isDal ? `<img src="https://github.com/won429/enjoy_ballbase/blob/main/dal.png?raw=true" class="w-7 h-7 object-contain">` : uiTeamLogo(x.team1, 'w-7 h-7', 'w-7 h-7');
+                    let l2 = isDal ? `<img src="https://github.com/won429/enjoy_ballbase/blob/main/dal.png?raw=true" class="w-7 h-7 object-contain">` : uiTeamLogo(x.team2, 'w-7 h-7', 'w-7 h-7');
                     c.innerHTML += `<div class="bg-white/5 border border-white/5 rounded-xl p-3 flex justify-between items-center cursor-pointer active:scale-95 transition-transform" onclick="openLineupPopup('${x.id}')"><div class="flex flex-col gap-1">${sh}<div class="flex items-center gap-2 mt-0.5"><div class="flex items-center gap-1.5">${l1}<span class="text-sm font-bold text-white">${x.team1}</span></div><span class="text-[11px] text-gray-500 font-bold">vs</span><div class="flex items-center gap-1.5"><span class="text-sm font-bold text-white">${x.team2}</span>${l2}</div></div></div><button class="w-8 h-8 rounded-full bg-white/5 text-gray-400 hover:text-white flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-chevron-right"></i></button></div>`;
                 });
             }
