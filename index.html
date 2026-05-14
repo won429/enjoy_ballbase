@@ -374,7 +374,7 @@
     </div>
 
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyDTGun1KsU2Cepx0oSFF7yki2uu2NT2mfk", authDomain: "kbo-app-98418.firebaseapp.com", projectId: "kbo-app-98418", storageBucket: "kbo-app-98418.firebasestorage.app", messagingSenderId: "1046094812627", appId: "1:1046094812627:web:2c07ec94c7e8028daa4b26" };
+        const firebaseConfig = { apiKey: "AIzaSyCQt6_wZA5oXTDVBlK0R6Rm2EXMfzCsOx0", authDomain: "enjoykbooo.firebaseapp.com", projectId: "enjoykbooo", storageBucket: "enjoykbooo.firebasestorage.app", messagingSenderId: "878790224198", appId: "1:878790224198:web:56a3b91d2538e11627dd47" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         
@@ -384,6 +384,10 @@
         let audioPlayer, currentSongTitle = '', currentSongCover = '', currentPlaylist = [], currentSongIndex = -1, isSeeking = false;
         let fpStartY = 0, fpCurrentY = 0, fpIsDragging = false, currentBanner = 0, totalBanners = 1, bannerInterval, isPlaying = true;
         let isInitialPopupChecked = false;
+        
+        let fetchedMonths = new Set(), fetchingMonths = new Set();
+        let fetchedDates = new Set(), fetchingDates = new Set();
+        let livePollingInterval = null;
         
         const initialScheduleData = [];
         const initialRankingData = [{rank:'-',team:'KIA',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'삼성',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'LG',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'두산',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'KT',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'SSG',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'롯데',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'한화',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'NC',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'키움',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}];
@@ -440,57 +444,88 @@
             if (cur.length > 0) c.push(cur); return c;
         }
 
+        async function fetchMonthSchedule(year, month) {
+            let ym = `${year}-${String(month).padStart(2, '0')}`;
+            if (fetchedMonths.has(ym) || fetchingMonths.has(ym)) return;
+            fetchingMonths.add(ym);
+            try {
+                let snap = await db.collection("schedule").doc(ym).get();
+                if (snap.exists) {
+                    let data = snap.data(); let arr = data.games || [];
+                    arr.forEach(g => {
+                        g.team1 = g.awayTeam || g.team1; g.team2 = g.homeTeam || g.team2; g.time = g.gameTime || g.time; g.bannerLink = "";
+                        let existing = scheduleData.find(x => x.id === g.id);
+                        if (!existing) scheduleData.push(g); else Object.assign(existing, g);
+                    });
+                    scheduleData.sort((a, b) => { if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); return a.date.localeCompare(b.date); });
+                }
+                fetchedMonths.add(ym);
+            } catch(e) {} finally { fetchingMonths.delete(ym); }
+        }
+
+        async function fetchPastGame(dateStr) {
+            if (fetchedDates.has(dateStr) || fetchingDates.has(dateStr)) return;
+            fetchingDates.add(dateStr);
+            try {
+                let snap = await db.collection("games").doc(dateStr).get();
+                if (snap.exists) {
+                    let data = snap.data(); let arr = data.games || [];
+                    arr.forEach(g => {
+                        g.team1 = g.awayTeam || g.team1; g.team2 = g.homeTeam || g.team2; g.time = g.gameTime || g.time; g.bannerLink = "";
+                        liveDataStore[g.id] = g;
+                        let existing = scheduleData.find(x => x.id === g.id);
+                        if (!existing) scheduleData.push(g); else Object.assign(existing, g);
+                    });
+                }
+                fetchedDates.add(dateStr);
+            } catch(e) {} finally { fetchingDates.delete(dateStr); }
+        }
+
+        async function pollLiveToday() {
+            try {
+                let snap = await db.collection("live").doc("today").get();
+                if (snap.exists) {
+                    let data = snap.data(); let arr = data.games || [];
+                    arr.forEach(g => {
+                        g.team1 = g.awayTeam || g.team1; g.team2 = g.homeTeam || g.team2; g.time = g.gameTime || g.time; g.bannerLink = "";
+                        liveDataStore[g.id] = g;
+                        let existing = scheduleData.find(x => x.id === g.id);
+                        if (!existing) scheduleData.push(g); else Object.assign(existing, g);
+                    });
+                    scheduleData.sort((a, b) => { if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); return a.date.localeCompare(b.date); });
+                    
+                    if (currentTabIndex === 1) renderCalendar();
+                    if (currentPopupMatchId) renderPopupContent(currentPopupMatchId);
+                    renderBanners(); renderLineupCheerSongs();
+                    if (currentTabIndex === 0) renderWinRate();
+                    checkInitialSamsungPopup();
+
+                    if (data.allDone === true) { if (livePollingInterval) clearInterval(livePollingInterval); }
+                }
+            } catch(e) { console.error(e); }
+        }
+
         function syncWithFirestore() {
             (async () => {
                 try {
-                    const m = await db.collection("matches_merged").get();
-                    if (!m.empty) { scheduleData = []; m.forEach(d => { scheduleData.push(...(d.data().data || [])); }); } else {
-                        const o = await db.collection("matches").get();
-                        if (!o.empty) {
-                            scheduleData = o.docs.map(d => d.data()); const c = chunkDataForFirestore(scheduleData); const b = db.batch();
-                            c.forEach((ck, i) => { b.set(db.collection("matches_merged").doc(`chunk_${i}`), { data: ck }); }); await b.commit();
-                        } else {
-                            scheduleData = [...initialScheduleData];
-                            if (scheduleData.length > 0) { const c = chunkDataForFirestore(scheduleData); const b = db.batch(); c.forEach((ck, i) => { b.set(db.collection("matches_merged").doc(`chunk_${i}`), { data: ck }); }); await b.commit(); }
-                        }
+                    let rSnap = await db.collection("rankings").doc("current").get();
+                    if (rSnap.exists) {
+                        rankingData = rSnap.data().data || rSnap.data().rankings || [];
+                        rankingData.sort((a, b) => { if (a.rank === '-') return 1; if (b.rank === '-') return -1; return parseInt(a.rank) - parseInt(b.rank); });
                     }
-                    scheduleData.sort((a, b) => { if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); return a.date.localeCompare(b.date); });
-                    if (currentTabIndex === 1) renderCalendar(); if (currentPopupMatchId) renderPopupContent(currentPopupMatchId);
-                    renderBanners(); renderLineupCheerSongs(); if (currentTabIndex === 0) renderWinRate(); checkInitialSamsungPopup();
-                } catch (e) { console.error("Schedule Error:", e); scheduleData = [...initialScheduleData]; } finally { hideLoader(); }
+
+                    let wSnap = await db.collection("watch_records").get();
+                    watchRecords = []; wSnap.forEach(d => watchRecords.push(d.data()));
+
+                    await fetchMonthSchedule(currentDate.getFullYear(), currentDate.getMonth() + 1);
+                    await pollLiveToday();
+
+                    livePollingInterval = setInterval(pollLiveToday, 30000);
+                    
+                    if (currentTabIndex === 2) renderRanking();
+                    if (currentTabIndex === 0) renderWinRate();
+                } catch (e) { console.error("Fetch Error:", e); } finally { hideLoader(); }
             })();
-
-            db.collection("rankings_merged").onSnapshot(s => {
-                if (!s.empty) {
-                    rankingData = []; s.forEach(d => rankingData.push(...(d.data().data || [])));
-                    rankingData.sort((a, b) => { if (a.rank === '-') return 1; if (b.rank === '-') return -1; return parseInt(a.rank) - parseInt(b.rank); });
-                    if (currentTabIndex === 2) renderRanking(); checkInitialSamsungPopup();
-                } else {
-                    db.collection("rankings").onSnapshot(o => {
-                        if (o.empty) rankingData = [...initialRankingData]; else rankingData = o.docs.map(d => d.data()).sort((a, b) => { if (a.rank === '-') return 1; if (b.rank === '-') return -1; return parseInt(a.rank) - parseInt(b.rank); });
-                        if (currentTabIndex === 2) renderRanking(); checkInitialSamsungPopup();
-                    }, err => console.error("Rankings fallback error:", err));
-                }
-            }, err => console.error("Rankings error:", err));
-
-            db.collection("lineups_merged").onSnapshot(s => {
-                if (!s.empty) {
-                    liveDataStore = {}; s.forEach(d => { const c = d.data(); Object.keys(c).forEach(k => liveDataStore[k] = c[k]); });
-                    if (currentTabIndex === 1) renderCalendar(); if (currentPopupMatchId) renderPopupContent(currentPopupMatchId);
-                    renderBanners(); renderLineupCheerSongs(); if (currentTabIndex === 0) renderWinRate(); checkInitialSamsungPopup();
-                } else {
-                    db.collection("lineups").onSnapshot(o => {
-                        o.forEach(d => liveDataStore[d.id] = d.data());
-                        if (currentTabIndex === 1) renderCalendar(); if (currentPopupMatchId) renderPopupContent(currentPopupMatchId);
-                        renderBanners(); renderLineupCheerSongs(); if (currentTabIndex === 0) renderWinRate(); checkInitialSamsungPopup();
-                    }, err => console.error("Lineups fallback error:", err));
-                }
-            }, err => console.error("Lineups error:", err));
-
-            db.collection("watch_records").onSnapshot(s => {
-                watchRecords = []; s.forEach(d => watchRecords.push(d.data())); if (currentTabIndex === 0) renderWinRate();
-                const p = document.getElementById('record-popup'); if (p && !p.classList.contains('hidden') && currentRecordTeam && currentRecordType) { renderRecordCalendar(currentRecordTeam, currentRecordType); }
-            }, err => console.error("Watch records error:", err));
         }
 
         function checkInitialSamsungPopup() {
@@ -647,8 +682,11 @@
         }
 
         function renderCalendar() {
-            const grid = document.getElementById('calendar-grid'); if (!grid) return; grid.innerHTML = '';
+            const grid = document.getElementById('calendar-grid'); if (!grid) return; 
             const year = currentDate.getFullYear(), month = currentDate.getMonth();
+            const ym = `${year}-${String(month + 1).padStart(2, '0')}`;
+            if (!fetchedMonths.has(ym) && !fetchingMonths.has(ym)) { fetchMonthSchedule(year, month + 1).then(() => { renderCalendar(); }); }
+            grid.innerHTML = '';
             
             let getRankStyle = (n) => { let p = parseInt(n); if (p===1) return 'bg-[#FACC15] text-[#111827] border-black/10'; if (p===2) return 'bg-[#94A3B8] text-white border-black/10'; if (p===3) return 'bg-[#D97706] text-white border-white/20'; if (p===4) return 'bg-[#2DD4BF] text-[#111827] border-black/10'; if (p===5) return 'bg-[#38BDF8] text-[#111827] border-black/10'; return 'bg-gray-700 text-white border-black/20'; };
 
@@ -750,8 +788,10 @@
             }
         }
 
-        function openDateSheet(d) {
+        async function openDateSheet(d) {
             if (selectedTeam === 'all') return;
+            if (d < todayStr) await fetchPastGame(d);
+            
             let m = scheduleData.filter(x => x.date === d && (selectedTeam === 'all' || x.team1 === selectedTeam || x.team2 === selectedTeam || x.id === '260711_ALLSTAR'));
             if (m.length === 1) { openLineupPopup(m[0].id); return; }
             
@@ -951,7 +991,10 @@
             if (currentBanner >= totalBanners) currentBanner = 0; updateBannerDots(currentBanner); startBannerAutoScroll();
         }
 
-        function openLineupPopup(id) {
+        async function openLineupPopup(id) {
+            let tempM = scheduleData.find(x => x.id === parseInt(id) || x.id === id);
+            if (tempM && tempM.date < todayStr) await fetchPastGame(tempM.date);
+
             currentPopupMatchId = id; if (navigator.vibrate) navigator.vibrate(5);
             const p = document.getElementById('lineup-popup'); p.classList.remove('render-hidden');
             let ts = "경기 정보", m = scheduleData.find(x => x.id === parseInt(id) || x.id === id);
