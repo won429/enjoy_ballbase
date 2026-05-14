@@ -15,6 +15,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
     <script src="players.js"></script>
     <script src="kia_songs.js"></script>
+    <script src="kbo_history_2026.js"></script>
     <style>
         @font-face { font-family: 'KBO-Dia-Gothic'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/KBO-Dia-Gothic_light.woff') format('woff'); font-weight: 300; font-style: normal; }
         @font-face { font-family: 'KBO-Dia-Gothic'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/KBO-Dia-Gothic_medium.woff') format('woff'); font-weight: 500; font-style: normal; }
@@ -398,6 +399,7 @@
         
         if (typeof playerImages === 'undefined') window.playerImages = {};
         if (typeof kiaCheerData === 'undefined') window.kiaCheerData = { team: [], player: [], entrance: [], hitout: [] };
+        if (typeof kboHistoryData === 'undefined') window.kboHistoryData = [];
 
         const cheerData = {
             kia: kiaCheerData,
@@ -554,7 +556,7 @@
                 const np = document.getElementById('notice-popup');
                 if (np) {
                     const pEl = np.querySelector('p');
-                    if (pEl) pEl.innerHTML = `최근 삼성 라이온즈의 지속적인 연패(<span class="text-[#074CA1] font-bold">${stCount}연패</span>)로 인하여,<br>당분간 <span class="text-[#074CA1] font-bold">삼성 라이온즈 메뉴 접근</span>을 차단합니다. 😭<br><br><span class="text-[12px] text-[#074CA1] font-bold">* 단, 응원가 탭은 정상 이용 가능합니다.</span>`;
+                    if (pEl) pEl.innerHTML = `최근 삼성 라이온즈의 지속적인 연패(<span class="text-[#074CA1] font-bold">${stCount}연패</span>)로 인하여,<br>당분간 <span class="text-[#074CA1] font-bold">삼성 라이온즈 메뉴 접근</span>을 차단합니다. 😭<br><br><span class="text-[#074CA1] font-bold">* 단, 응원가 탭은 정상 이용 가능합니다.</span>`;
                     np.classList.remove('hidden'); np.classList.add('flex');
                 }
                 if (selectedTeam === '삼성' && currentTabIndex !== 3) setTeamFilter('KIA');
@@ -1432,6 +1434,16 @@
             let rt = setTimeout(() => { let r = document.getElementById('reload-toast'); if (!r) { r = document.createElement('div'); r.id = 'reload-toast'; r.className = 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center bg-[#18181b]/95 backdrop-blur-md rounded-[32px] p-7 shadow-2xl z-[9999] border border-white/10 text-center min-w-[280px]'; r.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-[40px] text-point mb-4"></i><span class="text-white text-[18px] font-black mb-1.5 tracking-tight">서버 응답 지연 😭</span><span class="text-gray-400 text-[13px] font-medium mb-6 tracking-tight">네트워크 상태가 불안정합니다.</span><button onclick="location.reload()" class="bg-point text-white text-[15px] px-7 py-3 rounded-full font-bold shadow-lg active:scale-95 transition-transform tracking-tight"><i class="fa-solid fa-rotate-right mr-1.5"></i>재로딩하기</button>`; document.body.appendChild(r); } }, 6000);
             initAudioPlayer(); renderCheerSongs();
             
+            if (typeof kboHistoryData !== 'undefined' && kboHistoryData.length > 0) {
+                kboHistoryData.forEach(g => {
+                    g.team1 = g.awayTeam || g.team1; g.team2 = g.homeTeam || g.team2; g.time = g.gameTime || g.time; g.bannerLink = g.bannerLink || "";
+                    liveDataStore[g.id] = g;
+                    let existing = scheduleData.find(x => x.id === g.id);
+                    if (!existing) scheduleData.push(g); else Object.assign(existing, g);
+                });
+                scheduleData.sort((a, b) => { if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); return a.date.localeCompare(b.date); });
+            }
+
             setTeamFilter(selectedTeam); switchTab(1); renderBanners();
             
             setTimeout(() => { 
