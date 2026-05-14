@@ -1432,7 +1432,20 @@
             c.innerHTML = h + `</div><div class="mt-8 text-center text-[11px] text-gray-500 font-medium tracking-tight">※ 월요일은 야구 없는 날입니다.</div>`;
         }
 
-        function setWatchRecord(id, t, ty) { const r = db.collection("watch_records").doc(`${id}_${t}`); if (ty) r.set({ matchId: id, team: t, type: ty }); else r.delete(); }
+        function setWatchRecord(id, t, ty) { 
+            const r = db.collection("watch_records").doc(`${id}_${t}`); 
+            if (ty) {
+                r.set({ matchId: id, team: t, type: ty }); 
+                const existingIdx = watchRecords.findIndex(x => x.matchId === id && x.team === t);
+                if (existingIdx > -1) watchRecords[existingIdx].type = ty;
+                else watchRecords.push({ matchId: id, team: t, type: ty });
+            } else {
+                r.delete(); 
+                watchRecords = watchRecords.filter(x => !(x.matchId === id && x.team === t));
+            }
+            if (currentRecordTeam && currentRecordType) renderRecordCalendar(currentRecordTeam, currentRecordType);
+            if (currentTabIndex === 0) renderWinRate();
+        }
 
         function applyTimeBasedTheme() { const totalMinutes = new Date().getHours() * 60 + new Date().getMinutes(); if (totalMinutes >= 360 && totalMinutes <= 1140) document.documentElement.classList.add('light-mode'); else document.documentElement.classList.remove('light-mode'); }
         setInterval(applyTimeBasedTheme, 60000);
