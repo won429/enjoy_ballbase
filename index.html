@@ -464,43 +464,43 @@
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 
-                const sizeDate = 9;
-                const sizeTable = 11; 
+                const sizeDate = 8.5;
+                const sizeTable = 10.5; 
                 
                 ctx.font = "bold " + sizeDate + "px" + fontFamily;
-                ctx.fillText(dateStr.replace(/-/g, '.'), cw * 0.31, ch * 0.678);
-                ctx.fillText(`(${dayEn})`, cw * 0.31, ch * 0.698);
+                ctx.fillText(dateStr.replace(/-/g, '.'), cw * 0.335, ch * 0.67);
+                ctx.fillText(`(${dayEn})`, cw * 0.345, ch * 0.69);
                 
                 ctx.font = "bold " + sizeTable + "px" + fontFamily;
-                ctx.fillText(gate, cw * 0.435, ch * 0.688);
-                ctx.fillText(section, cw * 0.548, ch * 0.688);
-                ctx.fillText(row, cw * 0.655, ch * 0.688);
-                ctx.fillText(seat, cw * 0.755, ch * 0.688);
+                ctx.fillText(gate, cw * 0.46, ch * 0.68);
+                ctx.fillText(section, cw * 0.56, ch * 0.68);
+                ctx.fillText(row, cw * 0.655, ch * 0.68);
+                ctx.fillText(seat, cw * 0.745, ch * 0.68);
                 
                 // 2. 하단 영수증 부분 글씨 (검정색 텍스트)
                 ctx.fillStyle = "#111827";
                 ctx.textAlign = "left";
                 ctx.textBaseline = "alphabetic";
                 
-                const sizeInfo = 8.5;
-                const sizeSmall = 6.5;
-                const startX = cw * 0.245;
+                const sizeInfo = 8;
+                const sizeSmall = 6;
+                const startX = cw * 0.11;
                 
                 ctx.font = "bold " + sizeInfo + "px" + fontFamily;
-                ctx.fillText(`${dateStr.split('-')[0]}년 ${dateStr.split('-')[1]}월 ${dateStr.split('-')[2]}일(${dayKo}) ${matchTime}`, startX, ch * 0.81);
-                ctx.fillText(`${section}석 1-2구역 ${row}열 ${seat}번`, startX, ch * 0.835);
-                ctx.fillText(`0원`, startX, ch * 0.86);
-                ctx.fillText(`${section} 특가`, startX, ch * 0.885);
+                ctx.fillText(`${dateStr.split('-')[0]}년 ${dateStr.split('-')[1]}월 ${dateStr.split('-')[2]}일(${dayKo}) ${matchTime}`, startX, ch * 0.86);
+                ctx.fillText(`${section}석 1-2구역 ${row}열 ${seat}번`, startX, ch * 0.885);
+                ctx.fillText(`0원`, startX, ch * 0.91);
+                ctx.fillText(`엔조이 특가`, startX, ch * 0.935);
                 
                 ctx.font = sizeSmall + "px" + fontFamily;
-                ctx.fillText(bookingNum, startX, ch * 0.925);
-                ctx.fillText(bottomBarcodeStr, startX, ch * 0.945);
+                ctx.fillText(bookingNum, startX, ch * 0.965);
+                ctx.fillText(bottomBarcodeStr, startX, ch * 0.985);
                 
                 // 3. QR 아래 발권 번호 (가운데 정렬)
                 ctx.textAlign = "center";
-                ctx.fillText("발권번호", cw * 0.745, ch * 0.855);
-                ctx.fillText(issueNum1, cw * 0.745, ch * 0.875);
-                ctx.fillText(issueNum2, cw * 0.745, ch * 0.895);
+                ctx.fillText("발권번호", cw * 0.81, ch * 0.89);
+                ctx.fillText(issueNum1, cw * 0.81, ch * 0.91);
+                ctx.fillText(issueNum2, cw * 0.81, ch * 0.93);
                 
                 // 생성된 이미지를 화면 및 다운로드 링크에 적용
                 const finalDataUrl = canvas.toDataURL('image/png');
