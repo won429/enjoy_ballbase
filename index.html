@@ -405,7 +405,7 @@
         let isInitialPopupChecked = false;
         
         // ======== [달빛시리즈 티켓 이미지 링크 (이곳에 완성된 링크를 붙여넣으세요)] ========
-        const TICKET_IMAGE_URL = "https://i.ibb.co/LznqYv7r/image.png"; 
+        const TICKET_IMAGE_URL = "https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/dadadada.png"; 
         // ==============================================================================
         
         let fetchedMonths = new Set(), fetchingMonths = new Set();
@@ -450,16 +450,16 @@
             baseImg.crossOrigin = "Anonymous"; // CORS 허용 (외부 링크 이미지 대비)
             baseImg.onload = () => {
                 const canvas = document.createElement('canvas');
-                // 다운로드 화질을 위해 3배 해상도(1200x1800)로 스케일업
-                canvas.width = 1200;
-                canvas.height = 1800;
+                // 다운로드 화질을 위해 6배 해상도(2400x3600)로 초고화질 스케일업
+                canvas.width = 2400;
+                canvas.height = 3600;
                 const ctx = canvas.getContext('2d');
                 
                 // 원본 이미지 그리기
-                ctx.drawImage(baseImg, 0, 0, 1200, 1800);
+                ctx.drawImage(baseImg, 0, 0, 2400, 3600);
                 
-                const cw = 1200;
-                const ch = 1800;
+                const cw = 2400;
+                const ch = 3600;
                 const fontFamily = " 'KBO-Dia-Gothic', sans-serif";
                 
                 // 1. 표 안쪽 글씨 (흰색 텍스트)
@@ -467,9 +467,9 @@
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 
-                // 스케일업에 맞게 글자 크기도 3배로 조절
-                const sizeDate = 26;
-                const sizeTable = 32; 
+                // 스케일업에 맞게 글자 크기도 6배로 조절
+                const sizeDate = 52;
+                const sizeTable = 64; 
                 
                 ctx.font = "bold " + sizeDate + "px" + fontFamily;
                 // 왼쪽, 오른쪽으로 튀어나가던 좌표들을 정중앙으로 완벽하게 다시 깎음
@@ -487,8 +487,8 @@
                 ctx.textAlign = "left";
                 ctx.textBaseline = "alphabetic";
                 
-                const sizeInfo = 24;
-                const sizeSmall = 18;
+                const sizeInfo = 48;
+                const sizeSmall = 36;
                 // 화면 밖으로 나가던 영수증 X좌표를 안쪽으로 쑥 밀어넣음
                 const startX = cw * 0.27;
                 
