@@ -376,7 +376,7 @@
                     <div id="ticket-loading" class="absolute inset-0 flex items-center justify-center z-0"><i class="fa-solid fa-circle-notch fa-spin text-blue-500 text-2xl"></i></div>
                 </div>
                 <a id="ticket-download-btn" href="#" class="mt-1 w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-black text-[15px] py-3.5 rounded-xl transition-all active:scale-[0.98] shadow-[0_4px_15px_rgba(37,99,235,0.3)] tracking-tight flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-share-nodes"></i> 공유하기
+                    <i class="fa-solid fa-download"></i> 다운로드
                 </a>
             </div>
         </div>
@@ -504,25 +504,31 @@
                 img.src = finalDataUrl;
                 ld.style.display = 'none';
                 
-                btn.onclick = async (e) => {
+                btn.onclick = (e) => {
                     e.preventDefault();
-                    try {
-                        const response = await fetch(finalDataUrl);
-                        const blob = await response.blob();
-                        const file = new File([blob], `Moonlight_Ticket_${dateStr}.png`, { type: blob.type });
-                        
-                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                            await navigator.share({
-                                files: [file],
-                                title: 'MOONLIGHT 스페셜 티켓',
-                                text: 'MOONLIGHT 스페셜 티켓을 공유합니다!'
-                            });
-                        } else {
-                            showToast('공유 기능을 지원하지 않습니다. 이미지를 꾹 눌러 저장해주세요.');
+                    const fileName = `Moonlight_Ticket_${dateStr}.png`;
+
+                    // KBO Android WebView 앱 안에서 실행 중이면 앱 네이티브 저장 기능 사용
+                    if (
+                        window.AndroidBridge &&
+                        typeof window.AndroidBridge.saveBase64Image === "function"
+                    ) {
+                        const result = window.AndroidBridge.saveBase64Image(finalDataUrl, fileName);
+
+                        if (!result) {
+                            alert("이미지 저장에 실패했습니다.");
                         }
-                    } catch (err) {
-                        showToast('이미지 공유 실패. 이미지를 꾹 눌러 저장해주세요.');
+
+                        return;
                     }
+
+                    // 일반 브라우저에서는 기존 방식대로 다운로드
+                    const a = document.createElement("a");
+                    a.href = finalDataUrl;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
                 };
             };
             
@@ -530,20 +536,15 @@
                 img.src = TICKET_IMAGE_URL;
                 ld.style.display = 'none';
                 
-                btn.onclick = async (e) => {
+                btn.onclick = (e) => {
                     e.preventDefault();
-                    try {
-                        const response = await fetch(TICKET_IMAGE_URL);
-                        const blob = await response.blob();
-                        const file = new File([blob], `Moonlight_Ticket_${dateStr}.png`, { type: blob.type });
-                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                            await navigator.share({ files: [file] });
-                        } else {
-                            showToast('공유 기능을 지원하지 않습니다. 이미지를 꾹 눌러 저장해주세요.');
-                        }
-                    } catch (err) {
-                        showToast('이미지 공유 실패. 이미지를 꾹 눌러 저장해주세요.');
-                    }
+                    const a = document.createElement('a');
+                    a.href = TICKET_IMAGE_URL;
+                    a.download = `Moonlight_Ticket_${dateStr}.png`;
+                    a.target = "_blank";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
                 };
             };
             
