@@ -424,9 +424,11 @@
             ld.style.display = 'flex';
             
             const matchData = scheduleData.find(x => x.date === dateStr);
-            const matchTime = matchData ? (matchData.time || '18:30') : '18:30';
+            let matchTime = matchData ? (matchData.time || '18:30') : '18:30';
             
             const dateObj = new Date(dateStr);
+            if (dateObj.getDay() === 6) matchTime = '17:00';
+            if (dateObj.getDay() === 0) matchTime = '14:00';
             const daysEn = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
             const daysKo = ['일','월','화','수','목','금','토'];
             const dayEn = daysEn[dateObj.getDay()];
@@ -469,7 +471,7 @@
                 
                 ctx.font = "bold " + sizeDate + "px" + fontFamily;
                 ctx.fillText(dateStr.replace(/-/g, '.'), cw * 0.335, ch * 0.67);
-                ctx.fillText(`(${dayEn})`, cw * 0.345, ch * 0.69);
+                ctx.fillText(`(${dayEn})`, cw * 0.34, ch * 0.69);
                 
                 ctx.font = "bold " + sizeTable + "px" + fontFamily;
                 ctx.fillText(gate, cw * 0.46, ch * 0.68);
