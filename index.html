@@ -376,7 +376,7 @@
                     <div id="ticket-loading" class="absolute inset-0 flex items-center justify-center z-0"><i class="fa-solid fa-circle-notch fa-spin text-blue-500 text-2xl"></i></div>
                 </div>
                 <a id="ticket-download-btn" href="#" class="mt-1 w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-black text-[15px] py-3.5 rounded-xl transition-all active:scale-[0.98] shadow-[0_4px_15px_rgba(37,99,235,0.3)] tracking-tight flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-download"></i> 다운로드
+                    <i class="fa-solid fa-share-nodes"></i> 공유하기
                 </a>
             </div>
         </div>
@@ -447,32 +447,27 @@
             const bottomBarcodeStr = `${dateStr.replace(/-/g,'')}~${Math.floor(100000+Math.random()*900000)}~K120~70 (3/4)`;
 
             const baseImg = new Image();
-            baseImg.crossOrigin = "Anonymous"; // CORS 허용 (외부 링크 이미지 대비)
+            baseImg.crossOrigin = "Anonymous"; // CORS 허용
             baseImg.onload = () => {
                 const canvas = document.createElement('canvas');
-                // 다운로드 화질을 위해 6배 해상도(2400x3600)로 초고화질 스케일업
                 canvas.width = 2400;
                 canvas.height = 3600;
                 const ctx = canvas.getContext('2d');
                 
-                // 원본 이미지 그리기
                 ctx.drawImage(baseImg, 0, 0, 2400, 3600);
                 
                 const cw = 2400;
                 const ch = 3600;
                 const fontFamily = " 'KBO-Dia-Gothic', sans-serif";
                 
-                // 1. 표 안쪽 글씨 (흰색 텍스트)
                 ctx.fillStyle = "#FFFFFF";
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 
-                // 스케일업에 맞게 글자 크기도 6배로 조절
                 const sizeDate = 52;
                 const sizeTable = 64; 
                 
                 ctx.font = "bold " + sizeDate + "px" + fontFamily;
-                // 왼쪽, 오른쪽으로 튀어나가던 좌표들을 정중앙으로 완벽하게 다시 깎음
                 ctx.fillText(dateStr.replace(/-/g, '.'), cw * 0.335, ch * 0.67);
                 ctx.fillText(`(${dayEn})`, cw * 0.34, ch * 0.69);
                 
@@ -482,18 +477,15 @@
                 ctx.fillText(row, cw * 0.655, ch * 0.68);
                 ctx.fillText(seat, cw * 0.745, ch * 0.68);
                 
-                // 2. 하단 영수증 부분 글씨 (검정색 텍스트)
                 ctx.fillStyle = "#111827";
                 ctx.textAlign = "left";
                 ctx.textBaseline = "alphabetic";
                 
                 const sizeInfo = 48;
                 const sizeSmall = 36;
-                // 화면 밖으로 나가던 영수증 X좌표를 안쪽으로 쑥 밀어넣음
                 const startX = cw * 0.27;
                 
                 ctx.font = "bold " + sizeInfo + "px" + fontFamily;
-                // Y좌표도 인쇄된 글씨가 겹치지 않게 조절
                 ctx.fillText(`${dateStr.split('-')[0]}년 ${dateStr.split('-')[1]}월 ${dateStr.split('-')[2]}일(${dayKo}) ${matchTime}`, startX, ch * 0.83);
                 ctx.fillText(`${section}석 1-2구역 ${row}열 ${seat}번`, startX, ch * 0.855);
                 ctx.fillText(`0원`, startX, ch * 0.88);
@@ -503,42 +495,55 @@
                 ctx.fillText(bookingNum, startX, ch * 0.915);
                 ctx.fillText(bottomBarcodeStr, startX, ch * 0.925);
                 
-                // 3. QR 아래 발권 번호 (가운데 정렬)
-                // 잘리던 텍스트를 QR코드 중앙으로 당겨옴
                 ctx.textAlign = "center";
                 ctx.fillText("발권번호", cw * 0.745, ch * 0.86);
                 ctx.fillText(issueNum1, cw * 0.745, ch * 0.878);
                 ctx.fillText(issueNum2, cw * 0.745, ch * 0.888);
                 
-                // 생성된 이미지를 화면 및 다운로드 링크에 적용
                 const finalDataUrl = canvas.toDataURL('image/png');
                 img.src = finalDataUrl;
                 ld.style.display = 'none';
                 
-                btn.onclick = (e) => {
+                btn.onclick = async (e) => {
                     e.preventDefault();
-                    const a = document.createElement('a');
-                    a.href = finalDataUrl;
-                    a.download = `Moonlight_Ticket_${dateStr}.png`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
+                    try {
+                        const response = await fetch(finalDataUrl);
+                        const blob = await response.blob();
+                        const file = new File([blob], `Moonlight_Ticket_${dateStr}.png`, { type: blob.type });
+                        
+                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                            await navigator.share({
+                                files: [file],
+                                title: 'MOONLIGHT 스페셜 티켓',
+                                text: 'MOONLIGHT 스페셜 티켓을 공유합니다!'
+                            });
+                        } else {
+                            showToast('공유 기능을 지원하지 않습니다. 이미지를 꾹 눌러 저장해주세요.');
+                        }
+                    } catch (err) {
+                        showToast('이미지 공유 실패. 이미지를 꾹 눌러 저장해주세요.');
+                    }
                 };
             };
             
-            // 이미지 로드 실패 시 원본 링크만 띄워주는 Fallback 처리
             baseImg.onerror = () => {
                 img.src = TICKET_IMAGE_URL;
                 ld.style.display = 'none';
-                btn.onclick = (e) => {
+                
+                btn.onclick = async (e) => {
                     e.preventDefault();
-                    const a = document.createElement('a');
-                    a.href = TICKET_IMAGE_URL;
-                    a.download = `Moonlight_Ticket_${dateStr}.png`;
-                    a.target = "_blank";
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
+                    try {
+                        const response = await fetch(TICKET_IMAGE_URL);
+                        const blob = await response.blob();
+                        const file = new File([blob], `Moonlight_Ticket_${dateStr}.png`, { type: blob.type });
+                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                            await navigator.share({ files: [file] });
+                        } else {
+                            showToast('공유 기능을 지원하지 않습니다. 이미지를 꾹 눌러 저장해주세요.');
+                        }
+                    } catch (err) {
+                        showToast('이미지 공유 실패. 이미지를 꾹 눌러 저장해주세요.');
+                    }
                 };
             };
             
