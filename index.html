@@ -423,24 +423,106 @@
             img.src = '';
             ld.style.display = 'flex';
             
-            img.onload = () => { ld.style.display = 'none'; };
-            img.src = TICKET_IMAGE_URL;
+            const matchData = scheduleData.find(x => x.date === dateStr);
+            const matchTime = matchData ? (matchData.time || '18:30') : '18:30';
             
-            btn.onclick = async (e) => {
-                e.preventDefault();
-                try {
-                    const response = await fetch(TICKET_IMAGE_URL);
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
+            const dateObj = new Date(dateStr);
+            const daysEn = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+            const daysKo = ['일','월','화','수','목','금','토'];
+            const dayEn = daysEn[dateObj.getDay()];
+            const dayKo = daysKo[dateObj.getDay()];
+            
+            // 랜덤 정보 생성
+            const gate = Math.floor(Math.random() * 5) + 1;
+            const sections = ['엔조이', '블루', '레드', '챔피언', '스카이', '가족'];
+            const section = sections[Math.floor(Math.random() * sections.length)];
+            const row = Math.floor(Math.random() * 25) + 1;
+            const seat = Math.floor(Math.random() * 30) + 1;
+            
+            const bookingNum = Math.floor(10000000000 + Math.random() * 90000000000).toString();
+            const issueNum1 = Math.random().toString(36).substring(2, 8).toUpperCase();
+            const issueNum2 = Math.random().toString(36).substring(2, 6).toUpperCase();
+            const bottomBarcodeStr = `${dateStr.replace(/-/g,'')}~${Math.floor(100000+Math.random()*900000)}~K120~70 (3/4)`;
+
+            const baseImg = new Image();
+            baseImg.crossOrigin = "Anonymous"; // CORS 허용 (외부 링크 이미지 대비)
+            baseImg.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = baseImg.width;
+                canvas.height = baseImg.height;
+                const ctx = canvas.getContext('2d');
+                
+                // 원본 이미지 그리기
+                ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
+                
+                const cw = canvas.width;
+                const ch = canvas.height;
+                const fontFamily = " 'KBO-Dia-Gothic', sans-serif";
+                
+                // 1. 표 안쪽 글씨 (흰색 텍스트)
+                ctx.fillStyle = "#FFFFFF";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                
+                const sizeDate = cw * 0.045;
+                const sizeTable = cw * 0.055; 
+                
+                ctx.font = "bold " + sizeDate + "px" + fontFamily;
+                ctx.fillText(dateStr.replace(/-/g, '.'), cw * 0.19, ch * 0.675);
+                ctx.fillText(`(${dayEn})`, cw * 0.19, ch * 0.70);
+                
+                ctx.font = "bold " + sizeTable + "px" + fontFamily;
+                ctx.fillText(gate, cw * 0.385, ch * 0.685);
+                ctx.fillText(section, cw * 0.535, ch * 0.685);
+                ctx.fillText(row, cw * 0.685, ch * 0.685);
+                ctx.fillText(seat, cw * 0.835, ch * 0.685);
+                
+                // 2. 하단 영수증 부분 글씨 (검정색 텍스트)
+                ctx.fillStyle = "#111827";
+                ctx.textAlign = "left";
+                
+                const sizeInfo = cw * 0.035;
+                const sizeSmall = cw * 0.025;
+                const startX = cw * 0.12;
+                
+                ctx.font = sizeInfo + "px" + fontFamily;
+                ctx.fillText(`${dateStr.split('-')[0]}년 ${dateStr.split('-')[1]}월 ${dateStr.split('-')[2]}일(${dayKo}) ${matchTime}`, startX, ch * 0.81);
+                ctx.fillText(`${section}석 1-2구역 ${row}열 ${seat}번`, startX, ch * 0.84);
+                ctx.fillText(`0원`, startX, ch * 0.87);
+                ctx.fillText(`${section} 특가`, startX, ch * 0.895);
+                
+                ctx.font = sizeSmall + "px" + fontFamily;
+                ctx.fillText(bookingNum, startX, ch * 0.92);
+                ctx.fillText(bottomBarcodeStr, startX, ch * 0.94);
+                
+                // 3. QR 아래 발권 번호 (가운데 정렬)
+                ctx.textAlign = "center";
+                ctx.fillText("발권번호", cw * 0.81, ch * 0.875);
+                ctx.fillText(issueNum1, cw * 0.81, ch * 0.895);
+                ctx.fillText(issueNum2, cw * 0.81, ch * 0.915);
+                
+                // 생성된 이미지를 화면 및 다운로드 링크에 적용
+                const finalDataUrl = canvas.toDataURL('image/png');
+                img.src = finalDataUrl;
+                ld.style.display = 'none';
+                
+                btn.onclick = (e) => {
+                    e.preventDefault();
                     const a = document.createElement('a');
-                    a.style.display = 'none';
-                    a.href = url;
+                    a.href = finalDataUrl;
                     a.download = `Moonlight_Ticket_${dateStr}.png`;
                     document.body.appendChild(a);
                     a.click();
-                    window.URL.revokeObjectURL(url);
                     document.body.removeChild(a);
-                } catch (err) {
+                };
+            };
+            
+            // 이미지 로드 실패 시 원본 링크만 띄워주는 Fallback 처리
+            baseImg.onerror = () => {
+                img.src = TICKET_IMAGE_URL;
+                ld.style.display = 'none';
+                btn.onclick = (e) => {
+                    e.preventDefault();
                     const a = document.createElement('a');
                     a.href = TICKET_IMAGE_URL;
                     a.download = `Moonlight_Ticket_${dateStr}.png`;
@@ -448,8 +530,10 @@
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
-                }
+                };
             };
+            
+            baseImg.src = TICKET_IMAGE_URL;
             
             p.classList.remove('hidden');
             p.classList.add('flex');
