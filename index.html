@@ -448,15 +448,15 @@
             baseImg.crossOrigin = "Anonymous"; // CORS 허용 (외부 링크 이미지 대비)
             baseImg.onload = () => {
                 const canvas = document.createElement('canvas');
-                canvas.width = baseImg.width;
-                canvas.height = baseImg.height;
+                canvas.width = 400;
+                canvas.height = 600;
                 const ctx = canvas.getContext('2d');
                 
                 // 원본 이미지 그리기
-                ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
+                ctx.drawImage(baseImg, 0, 0, 400, 600);
                 
-                const cw = canvas.width;
-                const ch = canvas.height;
+                const cw = 400;
+                const ch = 600;
                 const fontFamily = " 'KBO-Dia-Gothic', sans-serif";
                 
                 // 1. 표 안쪽 글씨 (흰색 텍스트)
@@ -464,42 +464,43 @@
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 
-                const sizeDate = cw * 0.045;
-                const sizeTable = cw * 0.055; 
+                const sizeDate = 9;
+                const sizeTable = 11; 
                 
                 ctx.font = "bold " + sizeDate + "px" + fontFamily;
-                ctx.fillText(dateStr.replace(/-/g, '.'), cw * 0.19, ch * 0.675);
-                ctx.fillText(`(${dayEn})`, cw * 0.19, ch * 0.70);
+                ctx.fillText(dateStr.replace(/-/g, '.'), cw * 0.31, ch * 0.678);
+                ctx.fillText(`(${dayEn})`, cw * 0.31, ch * 0.698);
                 
                 ctx.font = "bold " + sizeTable + "px" + fontFamily;
-                ctx.fillText(gate, cw * 0.385, ch * 0.685);
-                ctx.fillText(section, cw * 0.535, ch * 0.685);
-                ctx.fillText(row, cw * 0.685, ch * 0.685);
-                ctx.fillText(seat, cw * 0.835, ch * 0.685);
+                ctx.fillText(gate, cw * 0.435, ch * 0.688);
+                ctx.fillText(section, cw * 0.548, ch * 0.688);
+                ctx.fillText(row, cw * 0.655, ch * 0.688);
+                ctx.fillText(seat, cw * 0.755, ch * 0.688);
                 
                 // 2. 하단 영수증 부분 글씨 (검정색 텍스트)
                 ctx.fillStyle = "#111827";
                 ctx.textAlign = "left";
+                ctx.textBaseline = "alphabetic";
                 
-                const sizeInfo = cw * 0.035;
-                const sizeSmall = cw * 0.025;
-                const startX = cw * 0.12;
+                const sizeInfo = 8.5;
+                const sizeSmall = 6.5;
+                const startX = cw * 0.245;
                 
-                ctx.font = sizeInfo + "px" + fontFamily;
+                ctx.font = "bold " + sizeInfo + "px" + fontFamily;
                 ctx.fillText(`${dateStr.split('-')[0]}년 ${dateStr.split('-')[1]}월 ${dateStr.split('-')[2]}일(${dayKo}) ${matchTime}`, startX, ch * 0.81);
-                ctx.fillText(`${section}석 1-2구역 ${row}열 ${seat}번`, startX, ch * 0.84);
-                ctx.fillText(`0원`, startX, ch * 0.87);
-                ctx.fillText(`${section} 특가`, startX, ch * 0.895);
+                ctx.fillText(`${section}석 1-2구역 ${row}열 ${seat}번`, startX, ch * 0.835);
+                ctx.fillText(`0원`, startX, ch * 0.86);
+                ctx.fillText(`${section} 특가`, startX, ch * 0.885);
                 
                 ctx.font = sizeSmall + "px" + fontFamily;
-                ctx.fillText(bookingNum, startX, ch * 0.92);
-                ctx.fillText(bottomBarcodeStr, startX, ch * 0.94);
+                ctx.fillText(bookingNum, startX, ch * 0.925);
+                ctx.fillText(bottomBarcodeStr, startX, ch * 0.945);
                 
                 // 3. QR 아래 발권 번호 (가운데 정렬)
                 ctx.textAlign = "center";
-                ctx.fillText("발권번호", cw * 0.81, ch * 0.875);
-                ctx.fillText(issueNum1, cw * 0.81, ch * 0.895);
-                ctx.fillText(issueNum2, cw * 0.81, ch * 0.915);
+                ctx.fillText("발권번호", cw * 0.745, ch * 0.855);
+                ctx.fillText(issueNum1, cw * 0.745, ch * 0.875);
+                ctx.fillText(issueNum2, cw * 0.745, ch * 0.895);
                 
                 // 생성된 이미지를 화면 및 다운로드 링크에 적용
                 const finalDataUrl = canvas.toDataURL('image/png');
