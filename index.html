@@ -656,6 +656,24 @@
             return true;
         }
 
+        function loadHistoryMonth(ym) {
+            const hist = window.KBO_HISTORY_2026;
+            if (!hist || !hist.gamesByDate) return false;
+            let loaded = false;
+            Object.keys(hist.gamesByDate).forEach(dateStr => {
+                if (dateStr.startsWith(ym + '-') && dateStr < todayStr) {
+                    const arr = hist.gamesByDate[dateStr] || [];
+                    arr.forEach(g => mergeGameIntoStore(g));
+                    fetchedDates.add(dateStr);
+                    loaded = true;
+                }
+            });
+            if (loaded) {
+                scheduleData.sort((a, b) => { if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); return a.date.localeCompare(b.date); });
+            }
+            return loaded;
+        }
+
         async function fetchMonthSchedule(year, month) {
             let ym = `${year}-${String(month).padStart(2, '0')}`;
             if (fetchedMonths.has(ym) || fetchingMonths.has(ym)) return;
@@ -672,8 +690,12 @@
                     arr.forEach(g => { if (g.date && g.date < todayStr) loadHistoryDate(g.date); });
                     scheduleData.sort((a, b) => { if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); return a.date.localeCompare(b.date); });
                 }
+                if (ym < todayStr.slice(0, 7) || ym === todayStr.slice(0, 7)) loadHistoryMonth(ym);
                 fetchedMonths.add(ym);
-            } catch(e) {} finally { fetchingMonths.delete(ym); }
+            } catch(e) {
+                if (ym < todayStr.slice(0, 7) || ym === todayStr.slice(0, 7)) loadHistoryMonth(ym);
+                fetchedMonths.add(ym);
+            } finally { fetchingMonths.delete(ym); }
         }
 
         async function fetchPastGame(dateStr) {
@@ -790,13 +812,14 @@
             const sort = document.getElementById('ctrl-sort');
 
             if (title) { title.classList.add('hidden'); title.classList.remove('flex'); }
-            if (nav) { nav.classList.remove('hidden'); nav.classList.add('flex'); }
-            if (popupTitle) { popupTitle.classList.add('hidden'); popupTitle.classList.remove('flex'); }
+            if (nav) { nav.classList.remove('hidden'); nav.classList.add('flex'); nav.style.display = 'flex'; nav.style.visibility = 'visible'; nav.style.opacity = '1'; }
+            if (popupTitle) { popupTitle.classList.add('hidden'); popupTitle.classList.remove('flex'); popupTitle.style.display = 'none'; }
             if (wrapper) {
                 wrapper.classList.remove('opacity-0', 'pointer-events-none', 'w-collapse');
                 wrapper.classList.add('w-expand');
+                wrapper.style.maxWidth = '250px'; wrapper.style.opacity = '1'; wrapper.style.visibility = 'visible'; wrapper.style.pointerEvents = 'auto';
             }
-            if (team) team.className = 'ctrl-item ctrl-show flex items-center justify-center gap-1 h-[32px]';
+            if (team) { team.className = 'ctrl-item ctrl-show flex items-center justify-center gap-1 h-[32px]'; team.style.position = 'relative'; team.style.visibility = 'visible'; team.style.opacity = '1'; team.style.pointerEvents = 'auto'; }
             if (back) back.className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-[32px]';
             if (ranking) ranking.className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-[32px]';
             if (sort) sort.className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-[32px]';
@@ -929,6 +952,7 @@
             ['all', 'KIA', '삼성'].forEach(id => { const b = document.getElementById(`btn-team-${id}`); if (b) { b.classList.remove('font-bold', 'bg-point', 'text-white', 'shadow-sm'); b.classList.add('font-medium', 'text-gray-400'); } });
             const tb = document.getElementById(`btn-team-${team}`); if (tb) { tb.classList.remove('font-medium', 'text-gray-400'); tb.classList.add('font-bold', 'bg-point', 'text-white', 'shadow-sm'); }
             if (currentTabIndex === 0) renderWinRate(); renderCalendar(); closeBottomSheet(); renderBanners();
+            requestAnimationFrame(forceCalendarHeaderVisible);
         }
 
         function closeBottomSheet() { 
