@@ -793,73 +793,87 @@
             isInitialPopupChecked = true;
         }
 
-        function forceCalendarHeaderVisible() {
-            if (currentTabIndex !== 1) return;
+        function setDisplay(el, shouldShow, displayClass = 'flex') {
+            if (!el) return;
+            el.classList.toggle('hidden', !shouldShow);
+            el.classList.toggle(displayClass, shouldShow);
+            el.style.display = shouldShow ? displayClass : 'none';
+            el.style.visibility = shouldShow ? 'visible' : '';
+            el.style.opacity = shouldShow ? '1' : '';
+        }
+
+        function setCtrlState(el, state) {
+            if (!el) return;
+            const base = 'ctrl-item flex items-center justify-center gap-1 h-[32px]';
+            el.className = `${base} ${state === 'show' ? 'ctrl-show' : 'ctrl-hide'}`;
+            el.style.maxWidth = '';
+            el.style.opacity = '';
+            el.style.visibility = '';
+            el.style.pointerEvents = '';
+            el.style.position = '';
+        }
+
+        function setCtrlWrapperVisible(el, shouldShow) {
+            if (!el) return;
+            el.classList.toggle('opacity-0', !shouldShow);
+            el.classList.toggle('pointer-events-none', !shouldShow);
+            el.classList.toggle('w-collapse', !shouldShow);
+            el.classList.toggle('w-expand', shouldShow);
+            el.style.maxWidth = '';
+            el.style.opacity = '';
+            el.style.visibility = '';
+            el.style.pointerEvents = '';
+        }
+
+        function getHeaderPopupTitle() {
             const popup = document.getElementById('lineup-popup');
             const sheet = document.getElementById('bottom-sheet');
             const record = document.getElementById('record-popup');
-            if (popup && !popup.classList.contains('render-hidden')) return;
-            if (sheet && !sheet.classList.contains('hidden')) return;
-            if (record && !record.classList.contains('hidden')) return;
-
-            const title = document.getElementById('header-title-container');
-            const nav = document.getElementById('header-calendar-nav');
-            const popupTitle = document.getElementById('header-popup-title');
-            const wrapper = document.getElementById('ctrl-wrapper');
-            const team = document.getElementById('ctrl-team');
-            const back = document.getElementById('ctrl-back');
-            const ranking = document.getElementById('ctrl-ranking');
-            const sort = document.getElementById('ctrl-sort');
-
-            if (title) { title.classList.add('hidden'); title.classList.remove('flex'); }
-            if (nav) { nav.classList.remove('hidden'); nav.classList.add('flex'); nav.style.display = 'flex'; nav.style.visibility = 'visible'; nav.style.opacity = '1'; }
-            if (popupTitle) { popupTitle.classList.add('hidden'); popupTitle.classList.remove('flex'); popupTitle.style.display = 'none'; }
-            if (wrapper) {
-                wrapper.classList.remove('opacity-0', 'pointer-events-none', 'w-collapse');
-                wrapper.classList.add('w-expand');
-                wrapper.style.maxWidth = '250px'; wrapper.style.opacity = '1'; wrapper.style.visibility = 'visible'; wrapper.style.pointerEvents = 'auto';
+            if (popup && !popup.classList.contains('render-hidden')) {
+                const m = scheduleData.find(x => String(x.id) === String(currentPopupMatchId));
+                if (m) {
+                    const d = new Date(m.date), dy = ['일', '월', '화', '수', '목', '금', '토'];
+                    return `${d.getMonth() + 1}월 ${d.getDate()}일 ${dy[d.getDay()]}요일 경기 정보`;
+                }
+                return '경기 정보';
             }
-            if (team) { team.className = 'ctrl-item ctrl-show flex items-center justify-center gap-1 h-[32px]'; team.style.position = 'relative'; team.style.visibility = 'visible'; team.style.opacity = '1'; team.style.pointerEvents = 'auto'; }
-            if (back) back.className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-[32px]';
-            if (ranking) ranking.className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-[32px]';
-            if (sort) sort.className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-[32px]';
+            if (sheet && !sheet.classList.contains('hidden')) {
+                return document.getElementById('sheet-matches-container')?.dataset.title || '일정';
+            }
+            if (record && !record.classList.contains('hidden')) {
+                return currentRecordTeam && currentRecordType ? `${currentRecordTeam} ${currentRecordType} 기록 추가` : '기록 추가';
+            }
+            return '';
+        }
+
+        function renderHeaderState(explicitPopupTitle) {
+            const els = ['ctrl-team', 'ctrl-sort', 'ctrl-back', 'ctrl-ranking', 'ctrl-wrapper', 'header-title-container', 'header-calendar-nav', 'header-popup-title', 'header-popup-text'].reduce((a, id) => ({...a, [id]: document.getElementById(id)}), {});
+            const popupTitle = explicitPopupTitle || getHeaderPopupTitle();
+            const isOverlayOpen = !!popupTitle;
+            const isCalendarTab = currentTabIndex === 1;
+            const isRankingTab = currentTabIndex === 2;
+            const showTeamCtrl = !isOverlayOpen && !isRankingTab;
+            const showRankingCtrl = !isOverlayOpen && isRankingTab;
+            const showWrapper = isOverlayOpen || showTeamCtrl || showRankingCtrl;
+
+            setCtrlWrapperVisible(els['ctrl-wrapper'], showWrapper);
+            setCtrlState(els['ctrl-back'], isOverlayOpen ? 'show' : 'hide');
+            setCtrlState(els['ctrl-team'], showTeamCtrl ? 'show' : 'hide');
+            setCtrlState(els['ctrl-ranking'], showRankingCtrl ? 'show' : 'hide');
+            setCtrlState(els['ctrl-sort'], 'hide');
+
+            setDisplay(els['header-popup-title'], isOverlayOpen);
+            setDisplay(els['header-calendar-nav'], !isOverlayOpen && isCalendarTab);
+            setDisplay(els['header-title-container'], !isOverlayOpen && !isCalendarTab);
+            if (els['header-popup-text'] && isOverlayOpen) els['header-popup-text'].innerText = popupTitle;
+        }
+
+        function forceCalendarHeaderVisible() {
+            renderHeaderState();
         }
 
         function updateHeaderCtrlForPopup(isOpen, titleStr) {
-            const els = ['ctrl-team', 'ctrl-sort', 'ctrl-back', 'ctrl-ranking', 'ctrl-wrapper', 'header-title-container', 'header-calendar-nav', 'header-popup-title', 'header-popup-text'].reduce((a, id) => ({...a, [id]: document.getElementById(id)}), {});
-            
-            if (isOpen) {
-                if (els['ctrl-team']) els['ctrl-team'].className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-[32px]';
-                if (els['ctrl-sort']) els['ctrl-sort'].className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-[32px]';
-                if (els['ctrl-ranking']) els['ctrl-ranking'].className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-[32px]';
-                if (els['ctrl-back']) els['ctrl-back'].className = 'ctrl-item ctrl-show flex items-center justify-center gap-1 h-[32px]';
-                if (els['ctrl-wrapper']) els['ctrl-wrapper'].classList.remove('opacity-0', 'pointer-events-none', 'w-collapse');
-                
-                if (els['header-title-container']) { els['header-title-container'].classList.add('hidden'); els['header-title-container'].classList.remove('flex'); }
-                if (els['header-calendar-nav']) { els['header-calendar-nav'].classList.add('hidden'); els['header-calendar-nav'].classList.remove('flex'); els['header-calendar-nav'].style.display = 'none'; els['header-calendar-nav'].style.visibility = ''; els['header-calendar-nav'].style.opacity = ''; }
-                if (els['header-popup-title']) { els['header-popup-title'].classList.remove('hidden'); els['header-popup-title'].classList.add('flex'); }
-                if (els['header-popup-text'] && titleStr) { els['header-popup-text'].innerText = titleStr; }
-            } else {
-                if (els['ctrl-back']) els['ctrl-back'].className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-[32px]';
-                if ([0, 1, 3].includes(currentTabIndex)) {
-                    if (els['ctrl-team']) els['ctrl-team'].className = 'ctrl-item ctrl-show flex items-center justify-center gap-1 h-[32px]';
-                    if (els['ctrl-ranking']) els['ctrl-ranking'].className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-[32px]';
-                    if (els['ctrl-wrapper']) els['ctrl-wrapper'].classList.remove('opacity-0', 'pointer-events-none', 'w-collapse');
-                } else if (currentTabIndex === 2) {
-                    if (els['ctrl-team']) { els['ctrl-team'].className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-[32px]'; els['ctrl-team'].style.visibility = ''; els['ctrl-team'].style.opacity = ''; els['ctrl-team'].style.pointerEvents = ''; }
-                    if (els['ctrl-ranking']) els['ctrl-ranking'].className = 'ctrl-item ctrl-show flex items-center justify-center gap-1 h-[32px]';
-                    if (els['ctrl-wrapper']) { els['ctrl-wrapper'].classList.add('opacity-0', 'pointer-events-none', 'w-collapse'); els['ctrl-wrapper'].style.maxWidth = ''; els['ctrl-wrapper'].style.opacity = ''; els['ctrl-wrapper'].style.visibility = ''; els['ctrl-wrapper'].style.pointerEvents = ''; }
-                }
-                
-                if (els['header-popup-title']) { els['header-popup-title'].classList.add('hidden'); els['header-popup-title'].classList.remove('flex'); }
-                if (currentTabIndex === 1) {
-                    if (els['header-title-container']) { els['header-title-container'].classList.add('hidden'); els['header-title-container'].classList.remove('flex'); }
-                    if (els['header-calendar-nav']) { els['header-calendar-nav'].classList.remove('hidden'); els['header-calendar-nav'].classList.add('flex'); els['header-calendar-nav'].style.display = 'flex'; els['header-calendar-nav'].style.visibility = 'visible'; els['header-calendar-nav'].style.opacity = '1'; }
-                } else {
-                    if (els['header-title-container']) { els['header-title-container'].classList.remove('hidden'); els['header-title-container'].classList.add('flex'); }
-                    if (els['header-calendar-nav']) { els['header-calendar-nav'].classList.add('hidden'); els['header-calendar-nav'].classList.remove('flex'); els['header-calendar-nav'].style.display = 'none'; els['header-calendar-nav'].style.visibility = ''; els['header-calendar-nav'].style.opacity = ''; }
-                }
-            }
+            renderHeaderState(isOpen ? titleStr : '');
         }
 
         function goBackFromPopup() {
