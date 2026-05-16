@@ -624,6 +624,38 @@
             if (cur.length > 0) c.push(cur); return c;
         }
 
+        function normalizeGameData(g) {
+            const n = Object.assign({}, g);
+            n.team1 = n.awayTeam || n.team1;
+            n.team2 = n.homeTeam || n.team2;
+            n.time = n.gameTime || n.time;
+            n.bannerLink = "";
+            return n;
+        }
+
+        function mergeGameIntoStore(g) {
+            const n = normalizeGameData(g);
+            liveDataStore[n.id] = n;
+            liveDataStore[String(n.id)] = n;
+            let existing = scheduleData.find(x => String(x.id) === String(n.id));
+            if (!existing) scheduleData.push(n); else Object.assign(existing, n);
+        }
+
+        function getHistoryGamesForDate(dateStr) {
+            if (typeof window.getKboHistoryGames === 'function') return window.getKboHistoryGames(dateStr) || [];
+            if (window.KBO_HISTORY_2026 && window.KBO_HISTORY_2026.gamesByDate) return window.KBO_HISTORY_2026.gamesByDate[dateStr] || [];
+            return [];
+        }
+
+        function loadHistoryDate(dateStr) {
+            const arr = getHistoryGamesForDate(dateStr);
+            if (!arr || arr.length === 0) return false;
+            arr.forEach(g => mergeGameIntoStore(g));
+            scheduleData.sort((a, b) => { if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); return a.date.localeCompare(b.date); });
+            fetchedDates.add(dateStr);
+            return true;
+        }
+
         async function fetchMonthSchedule(year, month) {
             let ym = `${year}-${String(month).padStart(2, '0')}`;
             if (fetchedMonths.has(ym) || fetchingMonths.has(ym)) return;
@@ -633,10 +665,11 @@
                 if (snap.exists) {
                     let data = snap.data(); let arr = data.games || [];
                     arr.forEach(g => {
-                        g.team1 = g.awayTeam || g.team1; g.team2 = g.homeTeam || g.team2; g.time = g.gameTime || g.time; g.bannerLink = "";
-                        let existing = scheduleData.find(x => x.id === g.id);
-                        if (!existing) scheduleData.push(g); else Object.assign(existing, g);
+                        const n = normalizeGameData(g);
+                        let existing = scheduleData.find(x => String(x.id) === String(n.id));
+                        if (!existing) scheduleData.push(n); else Object.assign(existing, n);
                     });
+                    arr.forEach(g => { if (g.date && g.date < todayStr) loadHistoryDate(g.date); });
                     scheduleData.sort((a, b) => { if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); return a.date.localeCompare(b.date); });
                 }
                 fetchedMonths.add(ym);
@@ -647,15 +680,13 @@
             if (fetchedDates.has(dateStr) || fetchingDates.has(dateStr)) return;
             fetchingDates.add(dateStr);
             try {
+                if (loadHistoryDate(dateStr)) return;
+
                 let snap = await db.collection("games").doc(dateStr).get();
                 if (snap.exists) {
                     let data = snap.data(); let arr = data.games || [];
-                    arr.forEach(g => {
-                        g.team1 = g.awayTeam || g.team1; g.team2 = g.homeTeam || g.team2; g.time = g.gameTime || g.time; g.bannerLink = "";
-                        liveDataStore[g.id] = g;
-                        let existing = scheduleData.find(x => x.id === g.id);
-                        if (!existing) scheduleData.push(g); else Object.assign(existing, g);
-                    });
+                    arr.forEach(g => mergeGameIntoStore(g));
+                    scheduleData.sort((a, b) => { if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); return a.date.localeCompare(b.date); });
                 }
                 fetchedDates.add(dateStr);
             } catch(e) {} finally { fetchingDates.delete(dateStr); }
@@ -667,10 +698,8 @@
                 if (snap.exists) {
                     let data = snap.data(); let arr = data.games || [];
                     arr.forEach(g => {
-                        g.team1 = g.awayTeam || g.team1; g.team2 = g.homeTeam || g.team2; g.time = g.gameTime || g.time; g.bannerLink = "";
-                        liveDataStore[g.id] = g;
-                        let existing = scheduleData.find(x => x.id === g.id);
-                        if (!existing) scheduleData.push(g); else Object.assign(existing, g);
+                        if (g.date && g.date < todayStr && loadHistoryDate(g.date)) return;
+                        mergeGameIntoStore(g);
                     });
                     scheduleData.sort((a, b) => { if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); return a.date.localeCompare(b.date); });
                     
