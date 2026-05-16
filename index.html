@@ -771,6 +771,37 @@
             isInitialPopupChecked = true;
         }
 
+        function forceCalendarHeaderVisible() {
+            if (currentTabIndex !== 1) return;
+            const popup = document.getElementById('lineup-popup');
+            const sheet = document.getElementById('bottom-sheet');
+            const record = document.getElementById('record-popup');
+            if (popup && !popup.classList.contains('render-hidden')) return;
+            if (sheet && !sheet.classList.contains('hidden')) return;
+            if (record && !record.classList.contains('hidden')) return;
+
+            const title = document.getElementById('header-title-container');
+            const nav = document.getElementById('header-calendar-nav');
+            const popupTitle = document.getElementById('header-popup-title');
+            const wrapper = document.getElementById('ctrl-wrapper');
+            const team = document.getElementById('ctrl-team');
+            const back = document.getElementById('ctrl-back');
+            const ranking = document.getElementById('ctrl-ranking');
+            const sort = document.getElementById('ctrl-sort');
+
+            if (title) { title.classList.add('hidden'); title.classList.remove('flex'); }
+            if (nav) { nav.classList.remove('hidden'); nav.classList.add('flex'); }
+            if (popupTitle) { popupTitle.classList.add('hidden'); popupTitle.classList.remove('flex'); }
+            if (wrapper) {
+                wrapper.classList.remove('opacity-0', 'pointer-events-none', 'w-collapse');
+                wrapper.classList.add('w-expand');
+            }
+            if (team) team.className = 'ctrl-item ctrl-show flex items-center justify-center gap-1 h-[32px]';
+            if (back) back.className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-[32px]';
+            if (ranking) ranking.className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-[32px]';
+            if (sort) sort.className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-[32px]';
+        }
+
         function updateHeaderCtrlForPopup(isOpen, titleStr) {
             const els = ['ctrl-team', 'ctrl-sort', 'ctrl-back', 'ctrl-ranking', 'ctrl-wrapper', 'header-title-container', 'header-calendar-nav', 'header-popup-title', 'header-popup-text'].reduce((a, id) => ({...a, [id]: document.getElementById(id)}), {});
             
@@ -860,6 +891,8 @@
             renderCalendar();
             closeBottomSheet();
             updateHeaderCtrlForPopup(false);
+            requestAnimationFrame(forceCalendarHeaderVisible);
+            setTimeout(forceCalendarHeaderVisible, 80);
         }
 
         function setTeamFilter(team) {
@@ -904,6 +937,7 @@
         }
 
         function renderCalendar() {
+            forceCalendarHeaderVisible();
             const grid = document.getElementById('calendar-grid'); if (!grid) return; 
             const year = currentDate.getFullYear(), month = currentDate.getMonth(), date = currentDate.getDate();
             const ym = `${year}-${String(month + 1).padStart(2, '0')}`;
