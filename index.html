@@ -836,7 +836,7 @@
                 if (els['ctrl-wrapper']) els['ctrl-wrapper'].classList.remove('opacity-0', 'pointer-events-none', 'w-collapse');
                 
                 if (els['header-title-container']) { els['header-title-container'].classList.add('hidden'); els['header-title-container'].classList.remove('flex'); }
-                if (els['header-calendar-nav']) { els['header-calendar-nav'].classList.add('hidden'); els['header-calendar-nav'].classList.remove('flex'); }
+                if (els['header-calendar-nav']) { els['header-calendar-nav'].classList.add('hidden'); els['header-calendar-nav'].classList.remove('flex'); els['header-calendar-nav'].style.display = 'none'; els['header-calendar-nav'].style.visibility = ''; els['header-calendar-nav'].style.opacity = ''; }
                 if (els['header-popup-title']) { els['header-popup-title'].classList.remove('hidden'); els['header-popup-title'].classList.add('flex'); }
                 if (els['header-popup-text'] && titleStr) { els['header-popup-text'].innerText = titleStr; }
             } else {
@@ -846,18 +846,18 @@
                     if (els['ctrl-ranking']) els['ctrl-ranking'].className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-[32px]';
                     if (els['ctrl-wrapper']) els['ctrl-wrapper'].classList.remove('opacity-0', 'pointer-events-none', 'w-collapse');
                 } else if (currentTabIndex === 2) {
-                    if (els['ctrl-team']) els['ctrl-team'].className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-[32px]';
+                    if (els['ctrl-team']) { els['ctrl-team'].className = 'ctrl-item ctrl-hide flex items-center justify-center gap-1 h-[32px]'; els['ctrl-team'].style.visibility = ''; els['ctrl-team'].style.opacity = ''; els['ctrl-team'].style.pointerEvents = ''; }
                     if (els['ctrl-ranking']) els['ctrl-ranking'].className = 'ctrl-item ctrl-show flex items-center justify-center gap-1 h-[32px]';
-                    if (els['ctrl-wrapper']) els['ctrl-wrapper'].classList.add('opacity-0', 'pointer-events-none', 'w-collapse');
+                    if (els['ctrl-wrapper']) { els['ctrl-wrapper'].classList.add('opacity-0', 'pointer-events-none', 'w-collapse'); els['ctrl-wrapper'].style.maxWidth = ''; els['ctrl-wrapper'].style.opacity = ''; els['ctrl-wrapper'].style.visibility = ''; els['ctrl-wrapper'].style.pointerEvents = ''; }
                 }
                 
                 if (els['header-popup-title']) { els['header-popup-title'].classList.add('hidden'); els['header-popup-title'].classList.remove('flex'); }
                 if (currentTabIndex === 1) {
                     if (els['header-title-container']) { els['header-title-container'].classList.add('hidden'); els['header-title-container'].classList.remove('flex'); }
-                    if (els['header-calendar-nav']) { els['header-calendar-nav'].classList.remove('hidden'); els['header-calendar-nav'].classList.add('flex'); }
+                    if (els['header-calendar-nav']) { els['header-calendar-nav'].classList.remove('hidden'); els['header-calendar-nav'].classList.add('flex'); els['header-calendar-nav'].style.display = 'flex'; els['header-calendar-nav'].style.visibility = 'visible'; els['header-calendar-nav'].style.opacity = '1'; }
                 } else {
                     if (els['header-title-container']) { els['header-title-container'].classList.remove('hidden'); els['header-title-container'].classList.add('flex'); }
-                    if (els['header-calendar-nav']) { els['header-calendar-nav'].classList.add('hidden'); els['header-calendar-nav'].classList.remove('flex'); }
+                    if (els['header-calendar-nav']) { els['header-calendar-nav'].classList.add('hidden'); els['header-calendar-nav'].classList.remove('flex'); els['header-calendar-nav'].style.display = 'none'; els['header-calendar-nav'].style.visibility = ''; els['header-calendar-nav'].style.opacity = ''; }
                 }
             }
         }
