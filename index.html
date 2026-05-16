@@ -890,7 +890,7 @@
             
             ['winrate-screen', 'calendar-screen', 'ranking-screen', 'cheer-screen'].forEach((id, i) => { const sc = document.getElementById(id); if (sc) { sc.classList.toggle('hidden', i !== index); sc.classList.toggle('flex', i === index); } });
             
-            if (index === 0) renderWinRate(); else if (index === 1) renderCalendar(); else if (index === 2) renderRanking();
+            if (index === 0) renderWinRate(); else if (index === 1) renderCalendar(); else if (index === 2) renderRanking(); else if (index === 3) { renderCheerSongs(); renderLineupCheerSongs(); }
         }
 
         function setViewMode(mode) {
@@ -1549,8 +1549,6 @@
 
         function playAllSongs(id) { const c = document.getElementById(id); if (!c) return; const s = c.querySelectorAll(`[onclick*="playCheerSong"]`); currentPlaylist = Array.from(s).map(e => { const m = e.getAttribute('onclick').match(/playCheerSong\(['"]([^'"]+)['"],\s*['"]([^'"]+)['"]\)/); if (m) return { url: m[1], title: m[2] }; return null; }).filter(i => i !== null); if (currentPlaylist.length > 0) { currentSongIndex = 0; executePlay(currentPlaylist[0].url, currentPlaylist[0].title); } else { showToast('재생할 곡이 없습니다.'); } }
         
-        function playActiveTabSongs(pf) { const a = document.querySelector(`div[id^="content-cheer-${pf}-"]:not(.hidden)`); if (a) playAllSongs(a.id); else showToast('재생할 곡이 없습니다.'); }
-
         function playCheerSong(u, t) {
             if (!u) return;
             const a = document.querySelectorAll(`[onclick*="playCheerSong"]`);
@@ -1682,18 +1680,8 @@
         }
         
         function playActiveTabSongs(tId) { 
-            let aType = 'team'; 
-            const types = ['team', 'player', 'lineup', 'hitout', 'entrance']; 
-            for(let ty of types) { 
-                if(!document.getElementById(`content-cheer-${tId}-${ty}`).classList.contains('hidden')) { aType = ty; break; } 
-            } 
-            if(aType === 'lineup') { 
-                const b = document.querySelector(`#content-cheer-${tId}-lineup .cursor-pointer`); 
-                if(b) b.click(); 
-            } else { 
-                const pl = cheerData[tId][aType]; 
-                if(pl && pl.length > 0) playCheerSong(pl[0].url, pl[0].title); 
-            } 
+            const active = document.querySelector(`div[id^="content-cheer-${tId}-"]:not(.hidden)`);
+            if (active) playAllSongs(active.id); else showToast('재생할 곡이 없습니다.');
         }
 
         window.appPlayMusic = function() { 
@@ -1891,6 +1879,8 @@
         }
 
         window.addEventListener('load', () => {
+            renderCheerSongs();
+            renderLineupCheerSongs();
             syncWithFirestore();
             switchTab(1);
             if (selectedTeam !== 'all') setTeamFilter(selectedTeam);
