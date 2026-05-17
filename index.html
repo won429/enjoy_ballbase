@@ -408,9 +408,7 @@
         
         function applyTimeBasedTheme() {
             const currentHour = new Date().getHours();
-            // 오전 7시부터 오후 6시(18시) 전까지는 라이트 모드, 그 외 밤 시간은 다크 모드
             const isDayTime = currentHour >= 7 && currentHour < 18;
-            
             if (isDayTime) {
                 document.documentElement.classList.add('light-mode');
             } else {
@@ -419,11 +417,9 @@
         }
         
         applyTimeBasedTheme();
-        setInterval(applyTimeBasedTheme, 60000); // 1분마다 시간을 체크하여 테마 자동 업데이트
+        setInterval(applyTimeBasedTheme, 60000);
         
-        // ======== [달빛시리즈 티켓 이미지 링크 (이곳에 완성된 링크를 붙여넣으세요)] ========
         const TICKET_IMAGE_URL = "https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/dadadada.png"; 
-        // ==============================================================================
         
         let fetchedMonths = new Set(), fetchingMonths = new Set();
         let fetchedDates = new Set(), fetchingDates = new Set();
@@ -451,7 +447,6 @@
             const dayEn = daysEn[dateObj.getDay()];
             const dayKo = daysKo[dateObj.getDay()];
             
-            // 랜덤 정보 생성
             const gate = Math.floor(Math.random() * 5) + 1;
             const sections = ['엔조이', '블루', '레드', '챔피언', '스카이', '가족'];
             const section = sections[Math.floor(Math.random() * sections.length)];
@@ -464,7 +459,7 @@
             const bottomBarcodeStr = `${dateStr.replace(/-/g,'')}~${Math.floor(100000+Math.random()*900000)}~K120~70 (3/4)`;
 
             const baseImg = new Image();
-            baseImg.crossOrigin = "Anonymous"; // CORS 허용
+            baseImg.crossOrigin = "Anonymous";
             baseImg.onload = () => {
                 const canvas = document.createElement('canvas');
                 canvas.width = 2400;
@@ -525,21 +520,12 @@
                     e.preventDefault();
                     const fileName = `Moonlight_Ticket_${dateStr}.png`;
 
-                    // KBO Android WebView 앱 안에서 실행 중이면 앱 네이티브 저장 기능 사용
-                    if (
-                        window.AndroidBridge &&
-                        typeof window.AndroidBridge.saveBase64Image === "function"
-                    ) {
+                    if (window.AndroidBridge && typeof window.AndroidBridge.saveBase64Image === "function") {
                         const result = window.AndroidBridge.saveBase64Image(finalDataUrl, fileName);
-
-                        if (!result) {
-                            alert("이미지 저장에 실패했습니다.");
-                        }
-
+                        if (!result) alert("이미지 저장에 실패했습니다.");
                         return;
                     }
 
-                    // 일반 브라우저에서는 기존 방식대로 다운로드
                     const a = document.createElement("a");
                     a.href = finalDataUrl;
                     a.download = fileName;
@@ -1185,7 +1171,7 @@
             
             tm.forEach(m => {
                 const d = new Date(m.date), dy = ['일', '월', '화', '수', '목', '금', '토'], ds = `${d.getMonth() + 1}. ${d.getDate()} (${dy[d.getDay()]}) ${m.time}`;
-                const l = liveDataStore[m.id], div = document.createElement('div');
+                const l = liveDataStore[m.id] || {}, div = document.createElement('div');
                 let h1 = teamHex[m.team1] || '#888888', h2 = teamHex[m.team2] || '#888888';
                 
                 if (l && l.bannerLink) {
@@ -1206,9 +1192,11 @@
                     if (isLiveOrEnded && !iC) {
                         let aScore = l.awayScore || '0', hScore = l.homeScore || '0', innText = l.inning || '', innNum = innText.replace(/[^0-9]/g, '') || '1';
                         let isTop = innText.includes('초'), innIcon = isTop ? `<div class="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[6px] border-b-[#6ee7b7] mt-0.5"></div>` : `<div class="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[6px] border-t-[#6ee7b7] mt-0.5"></div>`;
-                        let aPitcherRaw = l.awayPitcher || '미정', hPitcherRaw = l.homePitcher || '미정';
-                        let aPitcher = typeof aPitcherRaw === 'object' && aPitcherRaw !== null ? aPitcherRaw.name : aPitcherRaw;
-                        let hPitcher = typeof hPitcherRaw === 'object' && hPitcherRaw !== null ? hPitcherRaw.name : hPitcherRaw;
+                        
+                        let apRaw = l.awayPitcherDetail || l.awayPitcher || '-';
+                        let hpRaw = l.homePitcherDetail || l.homePitcher || '-';
+                        let aPitcher = typeof apRaw === 'object' && apRaw !== null ? apRaw.name : apRaw;
+                        let hPitcher = typeof hpRaw === 'object' && hpRaw !== null ? hpRaw.name : hpRaw;
                         let aPCount = l.awayPitcherCount || '0', hPCount = l.homePitcherCount || '0';
                         let base1 = l.base1 ? 'bg-[#6ee7b7] shadow-[0_0_5px_rgba(110,231,183,0.6)]' : 'bg-[#374151]', base2 = l.base2 ? 'bg-[#6ee7b7] shadow-[0_0_5px_rgba(110,231,183,0.6)]' : 'bg-[#374151]', base3 = l.base3 ? 'bg-[#6ee7b7] shadow-[0_0_5px_rgba(110,231,183,0.6)]' : 'bg-[#374151]';
                         let bCount = parseInt(l.ball || 0), sCount = parseInt(l.strike || 0), oCount = parseInt(l.out || 0);
@@ -1245,7 +1233,8 @@
                         div.className = 'min-w-full shrink-0 snap-center transition-transform duration-300 active:scale-[0.98] py-1 flex flex-col'; div.style.cssText = 'border-top: none !important; border-bottom: none !important;';
                         div.innerHTML = `<div class="banner-card w-full relative overflow-hidden shadow-2xl flex flex-col border-y border-white/15" style="background: linear-gradient(to right, ${h1}E6 0%, #18181b 45%, #18181b 55%, ${h2}E6 100%);"><img src="${teamLogos[m.team1]}" class="absolute -left-6 top-[35%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><img src="${teamLogos[m.team2]}" class="absolute -right-6 top-[35%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><div class="flex justify-between items-center px-5 py-2 relative z-10 h-[62px]"><div class="flex items-center gap-3 w-[36%]"><span class="text-[26px] font-black text-[#FFFFFF] tracking-tighter drop-shadow-md">${m.team1}</span><span class="text-[34px] font-black text-[#FFFFFF] drop-shadow-md ml-auto leading-none">${aScore}</span></div><div class="flex flex-col items-center justify-center w-[28%] mt-0.5">${inningArea}</div><div class="flex items-center gap-3 w-[36%]"><span class="text-[34px] font-black text-[#FFFFFF] drop-shadow-md mr-auto leading-none">${hScore}</span><span class="text-[26px] font-black text-[#FFFFFF] tracking-tighter drop-shadow-md">${m.team2}</span></div></div><div class="w-full h-px bg-[rgba(255,255,255,0.3)] relative z-10"></div><div class="flex justify-between items-center bg-[rgba(0,0,0,0.4)] relative z-10 h-[28px]"><div class="flex items-center gap-2.5 w-[36%] pl-5">${aPitcherArea}</div><div class="flex items-center justify-center bg-[#0d0d0e] h-full w-[28%]" style="border-left: 1px solid rgba(255,255,255,0.2); border-right: 1px solid rgba(255,255,255,0.2);">${centerArea}</div><div class="flex items-center justify-end gap-2.5 w-[36%] pr-5">${hPitcherArea}</div></div><div class="w-full bg-[#111113]/90 flex flex-col pt-1.5 pb-2 px-3 relative z-10 border-t border-[rgba(255,255,255,0.15)] backdrop-blur-md"><div class="grid grid-cols-[42px_1fr_75px] gap-2 w-full text-[10px] font-bold text-center"><div class="text-gray-400 text-left pl-2">팀명</div><div class="grid grid-cols-9 text-gray-400"><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div></div><div class="grid grid-cols-4 text-[#60A5FA]"><div class="font-black">R</div><div>H</div><div>E</div><div>B</div></div><div class="text-white text-left pl-2 truncate mt-1">${m.team1}</div><div class="grid grid-cols-9 text-gray-300 mt-1">${aInningsHtml}</div><div class="grid grid-cols-4 mt-1"><div class="text-white font-black">${aScore}</div><div class="text-gray-400">${aHit}</div><div class="text-gray-400">${aErr}</div><div class="text-gray-400">${aBase}</div></div><div class="text-white text-left pl-2 truncate mt-0.5">${m.team2}</div><div class="grid grid-cols-9 text-gray-300 mt-0.5">${hInningsHtml}</div><div class="grid grid-cols-4 mt-0.5"><div class="text-white font-black">${hScore}</div><div class="text-gray-400">${hHit}</div><div class="text-gray-400">${hErr}</div><div class="text-gray-400">${hBase}</div></div></div></div></div>${bottomInfoHtml}`;
                     } else {
-                        let apRaw = (l && l.awayPitcher) ? l.awayPitcher : '미정', hpRaw = (l && l.homePitcher) ? l.homePitcher : '미정';
+                        let apRaw = l.awayPitcherDetail || l.awayPitcher || '-';
+                        let hpRaw = l.homePitcherDetail || l.homePitcher || '-';
                         let ap = typeof apRaw === 'object' && apRaw !== null ? apRaw.name : apRaw;
                         let hp = typeof hpRaw === 'object' && hpRaw !== null ? hpRaw.name : hpRaw;
                         let api = playerImages[ap], hpi = playerImages[hp];
@@ -1341,10 +1330,10 @@
 
         function renderPopupContent(id) {
             const c = document.getElementById('lineup-content'), m = scheduleData.find(x => x.id === parseInt(id) || x.id === id); if (!m) return;
-            const l = liveDataStore[id];
+            const l = liveDataStore[id] || {};
             
             let sch = `<span class="text-2xl font-black text-gray-700">VS</span>`;
-            if (l) {
+            if (l && l.gameStatus) {
                 let iC = (l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취')));
                 if (iC) {
                     let txt = (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))) ? l.inning : (l.gameStatus || '취소'); if (txt === '취소') txt = '우천취소'; txt = txt.replace('우취', '우천취소');
@@ -1403,41 +1392,47 @@
                 sbh = `<div class="flex justify-between items-center mb-5 px-1 mt-0 pb-5 border-b border-white/10"><div class="flex flex-col items-center w-[30%]">${l1Lg}<span class="text-[15px] font-black text-white tracking-wider">${m.team1}</span><span class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">AWAY</span></div><div class="flex flex-col items-center justify-center w-[40%]">${sch}</div><div class="flex flex-col items-center w-[30%]">${l2Lg}<span class="text-[15px] font-black text-white tracking-wider">${m.team2}</span><span class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">HOME</span></div></div>`;
             }
             
-            if (!l || (!l.awayPitcher && (!l.awayLineup || l.awayLineup.length === 0))) { c.innerHTML = sbh + `<div class="flex flex-col items-center justify-center h-48 text-gray-400 mt-2 gap-3 bg-white/5 rounded-2xl border border-white/5"><i class="fa-solid fa-clipboard-question text-4xl text-gray-500 mb-2"></i><span class="text-lg font-bold text-white tracking-wide">라인업 미발표</span><span class="text-[12px] text-gray-500 text-center">선발 라인업은<br>경기 시작 1~2시간 전에 공개됩니다.</span></div>`; return; }
+            let apRaw = l.awayPitcherDetail || l.awayPitcher || '-';
+            let hpRaw = l.homePitcherDetail || l.homePitcher || '-';
+            let aLineupSrc = (l.awayLineupDetail && l.awayLineupDetail.length > 0) ? l.awayLineupDetail : (l.awayLineup || []);
+            let hLineupSrc = (l.homeLineupDetail && l.homeLineupDetail.length > 0) ? l.homeLineupDetail : (l.homeLineup || []);
+
+            if (apRaw === '-' && aLineupSrc.length === 0) { 
+                c.innerHTML = sbh + `<div class="flex flex-col items-center justify-center h-48 text-gray-400 mt-2 gap-3 bg-white/5 rounded-2xl border border-white/5"><i class="fa-solid fa-clipboard-question text-4xl text-gray-500 mb-2"></i><span class="text-lg font-bold text-white tracking-wide">라인업 미발표</span><span class="text-[12px] text-gray-500 text-center">선발 라인업은<br>경기 시작 1~2시간 전에 공개됩니다.</span></div>`; 
+                return; 
+            }
             
             let h1 = teamHex[m.team1] || '#888888', h2 = teamHex[m.team2] || '#888888';
             let lg1 = uiTeamLogo(m.team1, 'w-6 h-6', 'w-6 h-6');
             let lg2 = uiTeamLogo(m.team2, 'w-6 h-6', 'w-6 h-6');
             
-            let apRaw = l.awayPitcherDetail || l.awayPitcher || '-', hpRaw = l.homePitcherDetail || l.homePitcher || '-';
-            let apn = typeof apRaw === 'object' && apRaw !== null ? apRaw.name : apRaw;
-            let hpn = typeof hpRaw === 'object' && hpRaw !== null ? hpRaw.name : hpRaw;
+            let ap = typeof apRaw === 'object' && apRaw !== null ? apRaw.name : apRaw;
+            let hp = typeof hpRaw === 'object' && hpRaw !== null ? hpRaw.name : hpRaw;
             let apPos = typeof apRaw === 'object' && apRaw !== null && apRaw.position ? apRaw.position : '투수';
             let hpPos = typeof hpRaw === 'object' && hpRaw !== null && hpRaw.position ? hpRaw.position : '투수';
             let apBat = typeof apRaw === 'object' && apRaw !== null && apRaw.batsThrows ? `<span class="text-[9px] font-bold text-gray-500 border border-gray-600/50 rounded-sm px-1 ml-1 leading-none inline-flex items-center justify-center h-[14px] opacity-80">${apRaw.batsThrows}</span>` : '';
             let hpBat = typeof hpRaw === 'object' && hpRaw !== null && hpRaw.batsThrows ? `<span class="text-[9px] font-bold text-gray-500 border border-gray-600/50 rounded-sm px-1 ml-1 leading-none inline-flex items-center justify-center h-[14px] opacity-80">${hpRaw.batsThrows}</span>` : '';
-            
-            let api = playerImages[apn], hpi = playerImages[hpn];
+            let api = playerImages[ap], hpi = playerImages[hp];
             let apim = api ? `<img src="${api}" class="w-full h-full object-contain object-bottom scale-[1.3] drop-shadow-md origin-bottom">` : `<i class="fa-solid fa-user text-gray-500 text-[16px] mt-1.5"></i>`, hpim = hpi ? `<img src="${hpi}" class="w-full h-full object-contain object-bottom scale-[1.3] drop-shadow-md origin-bottom">` : `<i class="fa-solid fa-user text-gray-500 text-[16px] mt-1.5"></i>`;
             let apf = api ? "w-9 h-9 flex items-end justify-center shrink-0" : "w-9 h-9 bg-[#222224] rounded-full flex items-center justify-center overflow-hidden shrink-0 border border-white/10", hpf = hpi ? "w-9 h-9 flex items-end justify-center shrink-0" : "w-9 h-9 bg-[#222224] rounded-full flex items-center justify-center overflow-hidden shrink-0 border border-white/10";
             
-            let aph = `<div class="flex items-center gap-2.5 mb-3.5"><div class="w-[22px] flex justify-center shrink-0"><span style="background-color: ${h1}; border: 1px solid ${h1}; color: #ffffff !important;" class="text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">선발</span></div><div class="${apf}">${apim}</div><div class="flex flex-col truncate"><div class="flex items-center"><span class="text-[14px] font-bold text-white truncate tracking-tight">${apn}</span>${apBat}</div><span class="text-[10px] text-gray-400 truncate mt-0.5">${apPos}</span></div></div>`;
-            let hph = `<div class="flex items-center gap-2.5 mb-3.5"><div class="w-[22px] flex justify-center shrink-0"><span style="background-color: ${h2}; border: 1px solid ${h2}; color: #ffffff !important;" class="text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">선발</span></div><div class="${hpf}">${hpim}</div><div class="flex flex-col truncate"><div class="flex items-center"><span class="text-[14px] font-bold text-white truncate tracking-tight">${hpn}</span>${hpBat}</div><span class="text-[10px] text-gray-400 truncate mt-0.5">${hpPos}</span></div></div>`;
+            let aph = `<div class="flex items-center gap-2.5 mb-3.5"><div class="w-[22px] flex justify-center shrink-0"><span style="background-color: ${h1}; border: 1px solid ${h1}; color: #ffffff !important;" class="text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">선발</span></div><div class="${apf}">${apim}</div><div class="flex flex-col truncate"><div class="flex items-center"><span class="text-[14px] font-bold text-white truncate tracking-tight">${ap}</span>${apBat}</div><span class="text-[10px] text-gray-400 truncate mt-0.5">${apPos}</span></div></div>`;
+            let hph = `<div class="flex items-center gap-2.5 mb-3.5"><div class="w-[22px] flex justify-center shrink-0"><span style="background-color: ${h2}; border: 1px solid ${h2}; color: #ffffff !important;" class="text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">선발</span></div><div class="${hpf}">${hpim}</div><div class="flex flex-col truncate"><div class="flex items-center"><span class="text-[14px] font-bold text-white truncate tracking-tight">${hp}</span>${hpBat}</div><span class="text-[10px] text-gray-400 truncate mt-0.5">${hpPos}</span></div></div>`;
             
-            let aLineupSrc = (l.awayLineupDetail && l.awayLineupDetail.length > 0) ? l.awayLineupDetail : (l.awayLineup || []);
-            let hLineupSrc = (l.homeLineupDetail && l.homeLineupDetail.length > 0) ? l.homeLineupDetail : (l.homeLineup || []);
-
             let abh = (aLineupSrc && aLineupSrc.length > 0) ? aLineupSrc.map((pObj, i) => { 
                 let p = typeof pObj === 'object' && pObj !== null ? pObj.name : pObj;
                 let pos = typeof pObj === 'object' && pObj !== null && pObj.position ? pObj.position : '타자';
-                let bat = typeof pObj === 'object' && pObj !== null && pObj.batsThrows ? `<span class="text-[9px] font-bold text-gray-500 border border-gray-600/50 rounded-sm px-1 ml-1 leading-none inline-flex items-center justify-center h-[14px] opacity-80">${pObj.batsThrows}</span>` : '';
+                let batRaw = typeof pObj === 'object' && pObj !== null && pObj.batsThrows ? pObj.batsThrows : '';
+                let bat = batRaw ? `<span class="text-[9px] font-bold text-gray-500 border border-gray-600/50 rounded-sm px-1 ml-1 leading-none inline-flex items-center justify-center h-[14px] opacity-80">${batRaw}</span>` : '';
                 let hi = playerImages[p], pim = hi ? `<img src="${hi}" class="w-full h-full object-contain object-bottom scale-[1.3] drop-shadow-md origin-bottom">` : `<i class="fa-solid fa-user text-gray-500 text-[16px] mt-1.5"></i>`, pf = hi ? "w-9 h-9 flex items-end justify-center shrink-0" : "w-9 h-9 bg-[#222224] rounded-full flex items-center justify-center overflow-hidden shrink-0 border border-white/10"; 
                 return `<div class="flex items-center gap-2.5 mb-3.5"><span class="w-[22px] text-center text-[15px] font-black shrink-0" style="color: ${h1}">${i + 1}</span><div class="${pf}">${pim}</div><div class="flex flex-col truncate"><div class="flex items-center"><span class="text-[14px] font-bold text-white truncate tracking-tight">${p}</span>${bat}</div><span class="text-[10px] text-gray-400 truncate mt-0.5">${pos}</span></div></div>`; 
             }).join('') : '<div class="text-center text-xs text-gray-500 py-4">라인업 정보 없음</div>';
+            
             let hbh = (hLineupSrc && hLineupSrc.length > 0) ? hLineupSrc.map((pObj, i) => { 
                 let p = typeof pObj === 'object' && pObj !== null ? pObj.name : pObj;
                 let pos = typeof pObj === 'object' && pObj !== null && pObj.position ? pObj.position : '타자';
-                let bat = typeof pObj === 'object' && pObj !== null && pObj.batsThrows ? `<span class="text-[9px] font-bold text-gray-500 border border-gray-600/50 rounded-sm px-1 ml-1 leading-none inline-flex items-center justify-center h-[14px] opacity-80">${pObj.batsThrows}</span>` : '';
+                let batRaw = typeof pObj === 'object' && pObj !== null && pObj.batsThrows ? pObj.batsThrows : '';
+                let bat = batRaw ? `<span class="text-[9px] font-bold text-gray-500 border border-gray-600/50 rounded-sm px-1 ml-1 leading-none inline-flex items-center justify-center h-[14px] opacity-80">${batRaw}</span>` : '';
                 let hi = playerImages[p], pim = hi ? `<img src="${hi}" class="w-full h-full object-contain object-bottom scale-[1.3] drop-shadow-md origin-bottom">` : `<i class="fa-solid fa-user text-gray-500 text-[16px] mt-1.5"></i>`, pf = hi ? "w-9 h-9 flex items-end justify-center shrink-0" : "w-9 h-9 bg-[#222224] rounded-full flex items-center justify-center overflow-hidden shrink-0 border border-white/10"; 
                 return `<div class="flex items-center gap-2.5 mb-3.5"><span class="w-[22px] text-center text-[15px] font-black shrink-0" style="color: ${h2}">${i + 1}</span><div class="${pf}">${pim}</div><div class="flex flex-col truncate"><div class="flex items-center"><span class="text-[14px] font-bold text-white truncate tracking-tight">${p}</span>${bat}</div><span class="text-[10px] text-gray-400 truncate mt-0.5">${pos}</span></div></div>`; 
             }).join('') : '<div class="text-center text-xs text-gray-500 py-4">라인업 정보 없음</div>';
@@ -1808,7 +1803,7 @@
                     btnCls += ' bg-[#1C1C1E] text-white border border-white/10 active:scale-95 cursor-pointer';
                 }
                 
-                h += `<button class="${btnCls}" ${isPast && mData ? `onclick="toggleRecord('${t}', '${ty}', ${mData.id})"` : 'disabled'}>${i}</button>`;
+                h += `<button class="${btnCls}" ${isPast && mData ? `onclick="toggleRecord('${t}', '${ty}', '${mData.id}')"` : 'disabled'}>${i}</button>`;
             }
             h += `</div>`;
             c.innerHTML = h;
@@ -1835,7 +1830,9 @@
         }
 
         window.addEventListener('load', () => {
-            // JS 파일에서 과거 기록이 로드되었다면 즉시 병합
+            const ic = document.getElementById('theme-icon');
+            if (ic) ic.className = isLightMode ? 'fa-solid fa-moon text-[13px]' : 'fa-solid fa-sun text-[13px]';
+
             if (window.KBO_HISTORY_2026 && window.KBO_HISTORY_2026.gamesByDate) {
                 Object.keys(window.KBO_HISTORY_2026.gamesByDate).forEach(dateStr => {
                     let games = window.KBO_HISTORY_2026.gamesByDate[dateStr];
