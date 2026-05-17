@@ -406,6 +406,21 @@
         let fpStartY = 0, fpCurrentY = 0, fpIsDragging = false, currentBanner = 0, totalBanners = 1, bannerInterval, isPlaying = true;
         let isInitialPopupChecked = false;
         
+        function applyTimeBasedTheme() {
+            const currentHour = new Date().getHours();
+            // 오전 7시부터 오후 6시(18시) 전까지는 라이트 모드, 그 외 밤 시간은 다크 모드
+            const isDayTime = currentHour >= 7 && currentHour < 18;
+            
+            if (isDayTime) {
+                document.documentElement.classList.add('light-mode');
+            } else {
+                document.documentElement.classList.remove('light-mode');
+            }
+        }
+        
+        applyTimeBasedTheme();
+        setInterval(applyTimeBasedTheme, 60000); // 1분마다 시간을 체크하여 테마 자동 업데이트
+        
         // ======== [달빛시리즈 티켓 이미지 링크 (이곳에 완성된 링크를 붙여넣으세요)] ========
         const TICKET_IMAGE_URL = "https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/dadadada.png"; 
         // ==============================================================================
