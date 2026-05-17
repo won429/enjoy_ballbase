@@ -1713,6 +1713,8 @@
             watchRecords.forEach(r => {
                 if (!s[r.team] || !s[r.team][r.type]) return; let m = scheduleData.find(x => String(x.id) === String(r.matchId)), l = liveDataStore[r.matchId];
                 if (m && l && l.gameStatus === '종료') {
+                    if (m.team1 !== r.team && m.team2 !== r.team) return; // [수정점] 해당 팀의 경기가 아니면 제외하는 방어 로직 추가
+                    
                     let a = parseInt(l.awayScore || 0), h = parseInt(l.homeScore || 0), iW = (m.team1 === r.team && a > h) || (m.team2 === r.team && h > a), iL = (m.team1 === r.team && a < h) || (m.team2 === r.team && h < a);
                     if (iW) s[r.team][r.type].w++; else if (iL) s[r.team][r.type].l++; else s[r.team][r.type].d++;
                 }
