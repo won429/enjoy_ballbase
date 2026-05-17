@@ -15,7 +15,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
     <script src="players.js"></script>
     <script src="kia_songs.js"></script>
-    <script src="kbo_history_2026.js"></script>
+    <script src="./kbo_history_2026.js?v=20260516"></script>
     <style>
         @font-face { font-family: 'KBO-Dia-Gothic'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/KBO-Dia-Gothic_light.woff') format('woff'); font-weight: 300; font-style: normal; }
         @font-face { font-family: 'KBO-Dia-Gothic'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/KBO-Dia-Gothic_medium.woff') format('woff'); font-weight: 500; font-style: normal; }
@@ -647,15 +647,31 @@
             if (fetchedDates.has(dateStr) || fetchingDates.has(dateStr)) return;
             fetchingDates.add(dateStr);
             try {
-                let snap = await db.collection("games").doc(dateStr).get();
-                if (snap.exists) {
-                    let data = snap.data(); let arr = data.games || [];
-                    arr.forEach(g => {
+                let pastGames = null;
+                if (typeof window.getKboHistoryGames === 'function') {
+                    pastGames = window.getKboHistoryGames(dateStr);
+                } else if (window.KBO_HISTORY_2026 && window.KBO_HISTORY_2026.gamesByDate) {
+                    pastGames = window.KBO_HISTORY_2026.gamesByDate[dateStr];
+                }
+
+                if (pastGames && pastGames.length > 0) {
+                    pastGames.forEach(g => {
                         g.team1 = g.awayTeam || g.team1; g.team2 = g.homeTeam || g.team2; g.time = g.gameTime || g.time; g.bannerLink = "";
                         liveDataStore[g.id] = g;
                         let existing = scheduleData.find(x => x.id === g.id);
                         if (!existing) scheduleData.push(g); else Object.assign(existing, g);
                     });
+                } else {
+                    let snap = await db.collection("games").doc(dateStr).get();
+                    if (snap.exists) {
+                        let data = snap.data(); let arr = data.games || [];
+                        arr.forEach(g => {
+                            g.team1 = g.awayTeam || g.team1; g.team2 = g.homeTeam || g.team2; g.time = g.gameTime || g.time; g.bannerLink = "";
+                            liveDataStore[g.id] = g;
+                            let existing = scheduleData.find(x => x.id === g.id);
+                            if (!existing) scheduleData.push(g); else Object.assign(existing, g);
+                        });
+                    }
                 }
                 fetchedDates.add(dateStr);
             } catch(e) {} finally { fetchingDates.delete(dateStr); }
@@ -1804,6 +1820,20 @@
         }
 
         window.addEventListener('load', () => {
+            // JS 파일에서 과거 기록이 로드되었다면 즉시 병합
+            if (window.KBO_HISTORY_2026 && window.KBO_HISTORY_2026.gamesByDate) {
+                Object.keys(window.KBO_HISTORY_2026.gamesByDate).forEach(dateStr => {
+                    let games = window.KBO_HISTORY_2026.gamesByDate[dateStr];
+                    games.forEach(g => {
+                        g.team1 = g.awayTeam || g.team1; g.team2 = g.homeTeam || g.team2; g.time = g.gameTime || g.time; g.bannerLink = "";
+                        liveDataStore[g.id] = g;
+                        let existing = scheduleData.find(x => x.id === g.id);
+                        if (!existing) scheduleData.push(g); else Object.assign(existing, g);
+                    });
+                    fetchedDates.add(dateStr);
+                });
+            }
+
             syncWithFirestore();
             switchTab(1);
             if (selectedTeam !== 'all') setTeamFilter(selectedTeam);
