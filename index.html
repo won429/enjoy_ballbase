@@ -714,13 +714,17 @@
                     let wSnap = await db.collection("watch_records").get();
                     watchRecords = []; wSnap.forEach(d => watchRecords.push(d.data()));
 
+                    // [수정점] 사용자가 말씀하신 대로 초기 로딩 시 무식하게 모든 달을 가져오지 않고,
+                    // 무조건 '현재 선택된 달' 하나만 가져옵니다. 
                     await fetchMonthSchedule(currentDate.getFullYear(), currentDate.getMonth() + 1);
+
                     await pollLiveToday();
 
                     livePollingInterval = setInterval(pollLiveToday, 30000);
                     
                     if (currentTabIndex === 2) renderRanking();
                     if (currentTabIndex === 0) renderWinRate();
+                    if (currentTabIndex === 1) renderCalendar();
                 } catch (e) { console.error("Fetch Error:", e); } finally { hideLoader(); }
             })();
         }
@@ -841,7 +845,12 @@
             if (selectedTeam === 'all') {
                 currentDate.setDate(currentDate.getDate() + offset);
             } else if (viewMode === 'month') {
+                // [수정점] 달력을 넘길 때 31일이 없는 달에서 월이 꼬이는 현상을 방지하는 안전장치 추가
+                let currentDay = currentDate.getDate();
+                currentDate.setDate(1);
                 currentDate.setMonth(currentDate.getMonth() + offset);
+                let maxDays = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+                currentDate.setDate(Math.min(currentDay, maxDays));
             } else {
                 currentDate.setDate(currentDate.getDate() + (offset * 7));
             }
@@ -1179,7 +1188,7 @@
                     let statusColor = 'text-gray-400', dotColor = 'bg-gray-500', statusText = m.time;
                     let iC = l && ((l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))));
                     if (iC) { statusColor = 'text-[#EA0029]'; dotColor = 'bg-[#EA0029]'; let ct = (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))) ? l.inning : (l.gameStatus || '우천취소'); if (ct === '취소') ct = '우취'; ct = ct.replace('우천취소', '우취').replace('경기취소', '취소'); statusText = ct; }
-                    else if (l.gameStatus !== '경기전') { if (l.gameStatus === '종료') { statusColor = 'text-gray-300'; dotColor = 'bg-gray-400'; statusText = '종료'; } else { statusColor = 'text-[#EA0029]'; dotColor = 'bg-[#EA0029 animate-pulse'; statusText = (l.inning) ? l.inning : l.gameStatus; } }
+                    else if (l.gameStatus !== '경기전') { if (l.gameStatus === '종료') { statusColor = 'text-gray-300'; dotColor = 'bg-gray-400'; statusText = '종료'; } else { statusColor = 'text-[#EA0029]'; dotColor = 'bg-[#EA0029] animate-pulse'; statusText = (l.inning) ? l.inning : l.gameStatus; } }
                     const bcName = m.broadcaster || (l && l.broadcaster) || '';
                     let bottomInfoHtml = `<div class="w-full flex justify-end mt-2 px-1"><span class="text-white font-bold text-[11px] tracking-tight">${m.stadium}${bcName ? ' <span class="text-gray-500 mx-1.5 font-normal">|</span> ' + bcName : ''}</span></div>`;
                     
@@ -1832,6 +1841,8 @@
         window.addEventListener('load', () => {
             const ic = document.getElementById('theme-icon');
             if (ic) ic.className = isLightMode ? 'fa-solid fa-moon text-[13px]' : 'fa-solid fa-sun text-[13px]';
+
+            renderCheerSongs(); 
 
             if (window.KBO_HISTORY_2026 && window.KBO_HISTORY_2026.gamesByDate) {
                 Object.keys(window.KBO_HISTORY_2026.gamesByDate).forEach(dateStr => {
