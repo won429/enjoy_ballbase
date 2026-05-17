@@ -1797,7 +1797,7 @@
                 const dStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
                 let mData = scheduleData.find(x => x.date === dStr && (x.team1 === t || x.team2 === t));
                 let isPast = dStr <= todayStr;
-                let rec = mData ? watchRecords.find(r => r.team === t && r.type === ty && r.matchId === mData.id) : null;
+                let rec = mData ? watchRecords.find(r => r.team === t && r.type === ty && String(r.matchId) === String(mData.id)) : null;
                 
                 let btnCls = 'w-full aspect-square rounded-2xl flex items-center justify-center text-sm font-bold transition-all duration-300';
                 if (!isPast || !mData) {
@@ -1816,14 +1816,14 @@
 
         async function toggleRecord(t, ty, mId) {
             if (navigator.vibrate) navigator.vibrate(5);
-            let ex = watchRecords.find(r => r.team === t && r.type === ty && r.matchId === mId);
+            let ex = watchRecords.find(r => r.team === t && r.type === ty && String(r.matchId) === String(mId));
             try {
                 if (ex) {
                     await db.collection("watch_records").doc(ex.id).delete();
                     watchRecords = watchRecords.filter(r => r.id !== ex.id);
                 } else {
                     let ref = db.collection("watch_records").doc();
-                    let n = { id: ref.id, team: t, type: ty, matchId: mId };
+                    let n = { id: ref.id, team: t, type: ty, matchId: String(mId) };
                     await ref.set(n);
                     watchRecords.push(n);
                 }
