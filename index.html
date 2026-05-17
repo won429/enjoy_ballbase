@@ -924,12 +924,12 @@
                         let l1 = isDal ? `<img src="https://github.com/won429/enjoy_ballbase/blob/main/dal.png?raw=true" class="w-[26px] h-[26px] object-contain ${isP ? 'grayscale opacity-50' : ''}">` : uiTeamLogo(m.team1, 'w-[26px] h-[26px]', 'w-[26px] h-[26px]', isP ? 'grayscale opacity-50' : '');
                         let l2 = isDal ? `<img src="https://github.com/won429/enjoy_ballbase/blob/main/dal.png?raw=true" class="w-[26px] h-[26px] object-contain ${isP ? 'grayscale opacity-50' : ''}">` : uiTeamLogo(m.team2, 'w-[26px] h-[26px]', 'w-[26px] h-[26px]', isP ? 'grayscale opacity-50' : '');
                         
-                        let l = liveDataStore[m.id];
+                        let l = liveDataStore[m.id] || {}; if (!l.gameStatus) l.gameStatus = '경기전';
                         let centerHtml = `<span class="text-[14px] font-black text-gray-500 tracking-wider leading-none mb-0.5">VS</span><span class="text-[10px] text-gray-500 font-bold mt-1 leading-none">${m.time}</span>`;
                         let scoreA = '', scoreH = '';
                         let opacityClass = isP ? 'opacity-60 grayscale' : '';
                         
-                        if (l && l.gameStatus !== '경기전') {
+                        if (l.gameStatus !== '경기전') {
                             let isC = (l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취')));
                             if (isC) {
                                 let txt = (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))) ? l.inning : (l.gameStatus || '취소'); if (txt === '취소') txt = '우천취소'; txt = txt.replace('우취', '우천취소');
@@ -978,8 +978,8 @@
                     if (mt.length > 0) {
                         if (selectedTeam === 'all') { dots = `<div class="flex justify-center items-center gap-1 mt-auto mb-1.5 bg-white/10 px-2 py-0.5 rounded-full border border-white/10 shadow-sm ${isP ? 'opacity-50 grayscale' : ''}"><i class="fa-solid fa-baseball text-gray-300 text-[9px]"></i><span class="text-[10px] font-bold text-white">+${mt.length}</span></div>`; } 
                         else {
-                            const l = liveDataStore[mt[0].id];
-                            if (l) {
+                            const l = liveDataStore[mt[0].id] || {}; if (!l.gameStatus) l.gameStatus = '경기전';
+                            if (l.gameStatus !== '경기전') {
                                 let isC = (l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취')));
                                 if (isC) {
                                     let t = (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))) ? l.inning : (l.gameStatus || '취소'); if (t === '취소') t = '우천취소'; t = t.replace('우취', '우천취소');
@@ -1018,12 +1018,12 @@
                             let isDal = (m.date === '2026-05-15' || m.date === '2026-05-16' || m.date === '2026-05-17') && ((m.team1 === 'KIA' && m.team2 === '삼성') || (m.team1 === '삼성' && m.team2 === 'KIA'));
                             let l1 = isDal ? `<img src="https://github.com/won429/enjoy_ballbase/blob/main/dal.png?raw=true" class="w-[26px] h-[26px] object-contain ${isP ? 'grayscale opacity-50' : ''}">` : uiTeamLogo(m.team1, 'w-[26px] h-[26px]', 'w-3.5 h-3.5', isP ? 'grayscale opacity-50' : '');
                             let l2 = isDal ? `<img src="https://github.com/won429/enjoy_ballbase/blob/main/dal.png?raw=true" class="w-[26px] h-[26px] object-contain ${isP ? 'grayscale opacity-50' : ''}">` : uiTeamLogo(m.team2, 'w-[26px] h-[26px]', 'w-3.5 h-3.5', isP ? 'grayscale opacity-50' : '');
-                            let l = liveDataStore[m.id];
+                            let l = liveDataStore[m.id] || {}; if (!l.gameStatus) l.gameStatus = '경기전';
                             let sh = `<span class="text-[10px] text-gray-400 font-bold"><i class="fa-solid fa-clock mr-1"></i>${m.time} · ${iH ? `<i class="fa-solid fa-house text-point mx-0.5"></i>` : ''}${m.stadium}</span>`;
                             let sch = `<span class="text-xs text-gray-500">vs</span>`;
                             let stmp = '';
                             
-                            if (l && l.gameStatus !== '경기전') {
+                            if (l.gameStatus !== '경기전') {
                                 let isC = (l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취')));
                                 if (isC) {
                                     let txt = (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))) ? l.inning : (l.gameStatus || '취소'); if (txt === '취소') txt = '우천취소'; txt = txt.replace('우취', '우천취소');
@@ -1081,8 +1081,9 @@
                 c.innerHTML = `<div class="flex flex-col items-center justify-center py-6 text-gray-500"><i class="fa-regular fa-calendar-xmark text-3xl mb-2"></i><p class="text-sm">이 날은 예정된 경기가 없습니다.</p></div>`;
             } else {
                 m.forEach(x => {
-                    const l = liveDataStore[x.id]; let sh = `<span class="text-[10px] text-gray-400 font-bold"><i class="fa-solid fa-clock mr-1"></i>${x.time}</span>`;
-                    if (l) {
+                    const l = liveDataStore[x.id] || {}; if (!l.gameStatus) l.gameStatus = '경기전';
+                    let sh = `<span class="text-[10px] text-gray-400 font-bold"><i class="fa-solid fa-clock mr-1"></i>${x.time}</span>`;
+                    if (l.gameStatus !== '경기전') {
                         let iC = (l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취')));
                         if (iC) { let txt = (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))) ? l.inning : (l.gameStatus || '취소'); if (txt === '취소') txt = '우천취소'; txt = txt.replace('우취', '우천취소'); sh = `<div class="flex items-center gap-1.5"><span class="bg-blue-600 text-[9px] font-bold text-white px-2 py-0.5 rounded-full">${txt}</span></div>`; } 
                         else if (l.gameStatus !== '경기전') { let ds = (l.gameStatus === '경기중' && l.inning) ? l.inning : l.gameStatus; let badgeHtml = l.gameStatus !== '종료' ? `<span class="text-[10px] font-black text-[#EA0029] flex items-center gap-1 tracking-widest"><span class="w-1.5 h-1.5 rounded-full bg-[#EA0029] animate-pulse"></span>${ds}</span>` : `<span class="bg-gray-600/30 border border-gray-500/20 text-[9px] font-bold text-gray-400 px-1.5 py-0.5 rounded">${ds}</span>`; sh = `<div class="flex items-center gap-1.5">${badgeHtml}<span class="text-gray-600 text-[9px]">|</span><span class="text-[10px] text-gray-400 font-black">${l.awayScore}:${l.homeScore}</span></div>`; }
@@ -1174,10 +1175,11 @@
             
             tm.forEach(m => {
                 const d = new Date(m.date), dy = ['일', '월', '화', '수', '목', '금', '토'], ds = `${d.getMonth() + 1}. ${d.getDate()} (${dy[d.getDay()]}) ${m.time}`;
-                const l = liveDataStore[m.id] || {}, div = document.createElement('div');
+                const l = liveDataStore[m.id] || {}; if (!l.gameStatus) l.gameStatus = '경기전';
+                const div = document.createElement('div');
                 let h1 = teamHex[m.team1] || '#888888', h2 = teamHex[m.team2] || '#888888';
                 
-                if (l && l.bannerLink) {
+                if (l.bannerLink) {
                     let isLiveOrEnded = (l.gameStatus === '경기중' || l.gameStatus === '종료'), bannerHeight = isLiveOrEnded ? '160px' : '100px', iframeTop = isLiveOrEnded ? '-60px' : '-50px', iframeScale = '1.0'; 
                     let statusColor = 'text-gray-400', dotColor = 'bg-gray-500', statusText = m.time;
                     let iC = l && ((l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))));
@@ -1333,10 +1335,10 @@
 
         function renderPopupContent(id) {
             const c = document.getElementById('lineup-content'), m = scheduleData.find(x => x.id === parseInt(id) || x.id === id); if (!m) return;
-            const l = liveDataStore[id] || {};
+            const l = liveDataStore[id] || {}; if (!l.gameStatus) l.gameStatus = '경기전';
             
             let sch = `<span class="text-2xl font-black text-gray-700">VS</span>`;
-            if (l && l.gameStatus) {
+            if (l.gameStatus !== '경기전') {
                 let iC = (l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취')));
                 if (iC) {
                     let txt = (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))) ? l.inning : (l.gameStatus || '취소'); if (txt === '취소') txt = '우천취소'; txt = txt.replace('우취', '우천취소');
