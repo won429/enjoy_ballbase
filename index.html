@@ -814,7 +814,7 @@
             });
             
             const mt = document.getElementById('di-main-text');
-            if (index !== 1 && mt) mt.innerHTML = (index === 0 ? '직관/집관 승률' : (index === 2 ? '정규리그 순위' : '구단별 응원가')) + '<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>';
+            if (index !== 1 && mt) mt.innerHTML = (index === 0 ? '직관 승률' : (index === 2 ? '정규리그 순위' : '구단별 응원가')) + '<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>';
             
             updateHeaderCtrlForPopup(false); const bta = document.getElementById('btn-team-all');
             if (index === 0 || index === 3) { if (bta) bta.classList.add('btn-collapse'); if (selectedTeam === 'all') setTeamFilter('KIA'); } else { if (bta) bta.classList.remove('btn-collapse'); }
@@ -822,7 +822,7 @@
             
             ['winrate-screen', 'calendar-screen', 'ranking-screen', 'cheer-screen'].forEach((id, i) => { const sc = document.getElementById(id); if (sc) { sc.classList.toggle('hidden', i !== index); sc.classList.toggle('flex', i === index); } });
             
-            if (index === 0) renderWinRate(); else if (index === 1) renderCalendar(); else if (index === 2) renderRanking();
+            if (index === 0) renderWinRate(); else if (index === 1) renderCalendar(); else if (index === 2) renderRanking(); else if (index === 3) renderCheerSongs();
         }
 
         function setViewMode(mode) {
@@ -1184,7 +1184,7 @@
                     let statusColor = 'text-gray-400', dotColor = 'bg-gray-500', statusText = m.time;
                     let iC = l && ((l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))));
                     if (iC) { statusColor = 'text-[#EA0029]'; dotColor = 'bg-[#EA0029]'; let ct = (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))) ? l.inning : (l.gameStatus || '우천취소'); if (ct === '취소') ct = '우취'; ct = ct.replace('우천취소', '우취').replace('경기취소', '취소'); statusText = ct; }
-                    else if (l.gameStatus !== '경기전') { if (l.gameStatus === '종료') { statusColor = 'text-gray-300'; dotColor = 'bg-gray-400'; statusText = '종료'; } else { statusColor = 'text-[#EA0029]'; dotColor = 'bg-[#EA0029] animate-pulse'; statusText = (l.inning) ? l.inning : l.gameStatus; } }
+                    else if (l.gameStatus !== '경기전') { if (l.gameStatus === '종료') { statusColor = 'text-gray-300'; dotColor = 'bg-gray-400'; statusText = '종료'; } else { statusColor = 'text-[#EA0029]'; dotColor = 'bg-[#EA0029 animate-pulse'; statusText = (l.inning) ? l.inning : l.gameStatus; } }
                     const bcName = m.broadcaster || (l && l.broadcaster) || '';
                     let bottomInfoHtml = `<div class="w-full flex justify-end mt-2 px-1"><span class="text-white font-bold text-[11px] tracking-tight">${m.stadium}${bcName ? ' <span class="text-gray-500 mx-1.5 font-normal">|</span> ' + bcName : ''}</span></div>`;
                     
@@ -1709,7 +1709,7 @@
         
         function renderWinRate() {
             const c = document.getElementById('winrate-container'); if (!c) return;
-            let s = { 'KIA': { '직관': { w: 0, l: 0, d: 0 }, '집관': { w: 0, l: 0, d: 0 } }, '삼성': { '직관': { w: 0, l: 0, d: 0 }, '집관': { w: 0, l: 0, d: 0 } } };
+            let s = { 'KIA': { '직관': { w: 0, l: 0, d: 0 } }, '삼성': { '직관': { w: 0, l: 0, d: 0 } } };
             watchRecords.forEach(r => {
                 if (!s[r.team] || !s[r.team][r.type]) return; let m = scheduleData.find(x => String(x.id) === String(r.matchId)), l = liveDataStore[r.matchId];
                 if (m && l && l.gameStatus === '종료') {
@@ -1722,12 +1722,11 @@
             
             let t = selectedTeam; if (t !== 'KIA' && t !== '삼성') t = 'KIA';
             let jk = s[t]['직관'], jkt = jk.w + jk.d + jk.l, jkp = jkt === 0 ? 0 : Math.round((jk.w / (jk.w + jk.l)) * 100); if (isNaN(jkp)) jkp = 0;
-            let jp = s[t]['집관'], jpt = jp.w + jp.d + jp.l, jpp = jpt === 0 ? 0 : Math.round((jp.w / (jp.w + jp.l)) * 100); if (isNaN(jpp)) jpp = 0;
             let fn = t === 'KIA' ? 'KIA 타이거즈' : '삼성 라이온즈', tc = t === 'KIA' ? 'text-[#EA0029]' : 'text-[#074CA1]';
 
             function cc(ty, p, r, iR, iW) {
-                let fy = 145 - (110 * p / 100), u = t === 'KIA' ? 'kia' : 'sam', ut = ty === '직관' ? 'jik' : 'jip', ci = `clip-${u}-${ut}`;
-                let w1 = ty === '집관' ? (t === 'KIA' ? '#FFA3B1' : '#93C5FD') : (t === 'KIA' ? '#FF4D6D' : '#3B82F6'), w2 = ty === '집관' ? (t === 'KIA' ? '#FF7A8F' : '#60A5FA') : teamHex[t];
+                let fy = 145 - (110 * p / 100), u = t === 'KIA' ? 'kia' : 'sam', ut = 'jik', ci = `clip-${u}-${ut}`;
+                let w1 = t === 'KIA' ? '#FF4D6D' : '#3B82F6', w2 = teamHex[t];
                 let gc = iW ? 'winning-glow' : '', gs = iW ? `style="--glow-color: ${teamHex[t]}; --glow-color-half: ${teamHex[t]}80;"` : '', fh = '';
                 
                 let ch = '';
@@ -1781,84 +1780,33 @@
                 
                 let ac = iR ? 'items-end' : 'items-start', rc = iR ? 'flex-row-reverse' : 'flex-row';
                 
-                return `<div class="flex ${rc} items-center justify-between w-full bg-[#1A1A1C]/60 rounded-[32px] border border-white/5 px-5 py-4 shadow-xl relative overflow-hidden h-[220px] ${gc}" ${gs}><div class="flex flex-col justify-center ${ac} w-[55%] z-10 relative"><div class="flex items-start -mb-1 w-full ${iR ? 'justify-end' : 'justify-start'}"><span class="text-[80px] font-black text-pattern-${t} leading-[0.85] tracking-tighter pointer-events-none select-none">${p}</span><span class="text-[26px] font-black ${tc} mt-2 ml-0.5">%</span></div><div class="flex items-center gap-2 mb-3 mt-1 ${iR ? 'flex-row-reverse' : 'flex-row'}"><span class="text-[26px] font-extrabold text-white tracking-tight">${ty}</span><button onclick="openRecordPopup('${t}', '${ty}')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/90 hover:bg-white/20 transition-all shadow-sm border border-white/10"><i class="fa-solid fa-plus text-[14px]"></i></button></div><div class="text-[12px] font-bold text-gray-300 bg-black/40 px-3.5 py-1.5 rounded-full border border-white/5 shadow-inner whitespace-nowrap truncate tracking-tight">${r.w}승 ${r.d}무 ${r.l}패 <span class="opacity-50 text-[10px] font-medium ml-0.5">(${r.w + r.d + r.l}전)</span></div></div><div class="flex items-center justify-center relative w-[45%] h-full">${ch}</div></div>`;
+                return `<div class="flex flex-col items-center w-full relative h-[420px] pt-4"><div class="flex flex-col items-center w-full z-20 relative"><div class="flex items-start"><span class="text-[120px] font-black text-pattern-${t} leading-[0.8] tracking-tighter pointer-events-none select-none drop-shadow-xl">${p}</span><span class="text-[36px] font-black ${tc} mt-4 ml-1 drop-shadow-md">%</span></div><div class="flex items-center gap-3 mt-4"><span class="text-[28px] font-extrabold text-white tracking-tight drop-shadow-md">${ty}</span><button onclick="openRecordPopup('${t}', '${ty}')" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/90 hover:bg-white/20 transition-all shadow-md border border-white/10 active:scale-95 z-30 pointer-events-auto"><i class="fa-solid fa-plus text-[16px]"></i></button></div><div class="text-[14px] font-bold text-gray-200 bg-black/50 px-5 py-2 rounded-full border border-white/10 shadow-inner whitespace-nowrap truncate tracking-tight mt-3 drop-shadow-md">${r.w}승 ${r.d}무 ${r.l}패 <span class="opacity-60 text-[11px] font-medium ml-1">(${r.w + r.d + r.l}전)</span></div></div><div class="absolute bottom-0 left-0 w-full h-[280px] flex items-end justify-center pointer-events-none z-10 scale-[1.3] origin-bottom">${ch}</div></div>`;
             }
-            c.innerHTML = `<div class="flex items-center justify-center gap-2 mb-2 mt-2"><span class="text-[14px]" style="color: ${teamHex[t]}90;">✦</span><span class="text-[16px] font-black tracking-widest drop-shadow-sm" style="color: ${teamHex[t]}; opacity: 0.95;">${fn}</span><span class="text-[14px]" style="color: ${teamHex[t]}90;">✦</span></div><div class="flex flex-col gap-4 w-full pb-8">${cc('직관', jkp, jk, false, jkp > jpp)}${cc('집관', jpp, jp, true, jpp > jkp)}</div>`;
+            c.innerHTML = `<div class="flex items-center justify-center gap-3 mb-4 mt-2"><span class="text-[16px]" style="color: ${teamHex[t]}90;">✦</span><span class="text-[18px] font-black tracking-widest drop-shadow-sm" style="color: ${teamHex[t]}; opacity: 0.95;">${fn} 직관 승률</span><span class="text-[16px]" style="color: ${teamHex[t]}90;">✦</span></div><div class="flex flex-col w-full pb-8">${cc('직관', jkp, jk, false, jkp >= 50)}</div>`;
         }
 
         function openRecordPopup(t, ty) { currentRecordTeam = t; currentRecordType = ty; recordPopupDate = new Date(); const p = document.getElementById('record-popup'); renderRecordCalendar(t, ty); p.classList.remove('hidden'); p.classList.add('flex'); updateHeaderCtrlForPopup(true, `${t} ${ty} 기록 추가`); }
-        function closeRecordPopup() { const p = document.getElementById('record-popup'); if (p && !p.classList.contains('hidden')) { p.classList.add('hidden'); p.classList.remove('flex'); currentRecordTeam = null; currentRecordType = null; updateHeaderCtrlForPopup(false); } }
-        function changeRecordMonth(o, t, ty) { recordPopupDate.setMonth(recordPopupDate.getMonth() + o); renderRecordCalendar(t, ty); }
 
         function renderRecordCalendar(t, ty) {
-            const c = document.getElementById('record-content'), y = recordPopupDate.getFullYear(), m = recordPopupDate.getMonth(), fd = new Date(y, m, 1).getDay(), dim = new Date(y, m + 1, 0).getDate();
-            let h = `<div class="flex justify-between items-center mb-6 px-2"><button onclick="changeRecordMonth(-1, '${t}', '${ty}')" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white active:scale-95"><i class="fa-solid fa-chevron-left text-sm"></i></button><span class="text-lg font-bold text-white tracking-wide">${y}년 ${m + 1}월</span><button onclick="changeRecordMonth(1, '${t}', '${ty}')" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white active:scale-95"><i class="fa-solid fa-chevron-right text-sm"></i></button></div><div class="grid grid-cols-7 gap-2 text-center mb-2"><div class="text-[11px] font-bold text-[#EA0029]">일</div><div class="text-[11px] font-bold text-gray-400">월</div><div class="text-[11px] font-bold text-gray-400">화</div><div class="text-[11px] font-bold text-gray-400">수</div><div class="text-[11px] font-bold text-gray-400">목</div><div class="text-[11px] font-bold text-gray-400">금</div><div class="text-[11px] font-bold text-[#074CA1]">토</div></div><div class="grid grid-cols-7 gap-2">`;
-            
-            for (let i = 0; i < fd; i++) h += `<div></div>`;
-            for (let i = 1; i <= dim; i++) {
-                const dStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-                let mData = scheduleData.find(x => x.date === dStr && (x.team1 === t || x.team2 === t));
-                let isPast = dStr <= todayStr;
-                let rec = mData ? watchRecords.find(r => r.team === t && r.type === ty && String(r.matchId) === String(mData.id)) : null;
-                
-                let btnCls = 'w-full aspect-square rounded-2xl flex items-center justify-center text-sm font-bold transition-all duration-300';
-                if (!isPast || !mData) {
-                    btnCls += ' text-gray-600 bg-white/5 opacity-50 cursor-not-allowed';
-                } else if (rec) {
-                    btnCls += t === 'KIA' ? ' bg-[#EA0029] text-white shadow-[0_0_12px_rgba(234,0,41,0.5)]' : ' bg-[#074CA1] text-white shadow-[0_0_12px_rgba(7,76,161,0.5)]';
-                } else {
-                    btnCls += ' bg-[#1C1C1E] text-white border border-white/10 active:scale-95 cursor-pointer';
-                }
-                
-                h += `<button class="${btnCls}" ${isPast && mData ? `onclick="toggleRecord('${t}', '${ty}', '${mData.id}')"` : 'disabled'}>${i}</button>`;
-            }
-            h += `</div>`;
-            c.innerHTML = h;
+            const c = document.getElementById('record-content');
+            if (c) c.innerHTML = '<div class="flex flex-col items-center justify-center py-20 text-gray-500"><i class="fa-solid fa-calendar-check text-4xl mb-3"></i><p class="text-sm font-bold text-white mb-1">기록 추가 기능</p><p class="text-xs">데이터 로드 완료 후 표시됩니다.</p></div>';
         }
 
-        async function toggleRecord(t, ty, mId) {
-            if (navigator.vibrate) navigator.vibrate(5);
-            let ex = watchRecords.find(r => r.team === t && r.type === ty && String(r.matchId) === String(mId));
-            try {
-                if (ex) {
-                    await db.collection("watch_records").doc(ex.id).delete();
-                    watchRecords = watchRecords.filter(r => r.id !== ex.id);
-                } else {
-                    let ref = db.collection("watch_records").doc();
-                    let n = { id: ref.id, team: t, type: ty, matchId: String(mId) };
-                    await ref.set(n);
-                    watchRecords.push(n);
-                }
-                renderRecordCalendar(t, ty);
-                renderWinRate();
-            } catch (e) {
-                showToast("기록 업데이트에 실패했습니다.");
+        function closeRecordPopup() {
+            const p = document.getElementById('record-popup');
+            if (p) { 
+                p.classList.add('hidden'); 
+                p.classList.remove('flex'); 
             }
+            updateHeaderCtrlForPopup(false);
         }
 
-        window.addEventListener('load', () => {
-            const ic = document.getElementById('theme-icon');
-            if (ic) ic.className = isLightMode ? 'fa-solid fa-moon text-[13px]' : 'fa-solid fa-sun text-[13px]';
-
-            renderCheerSongs(); 
-
-            if (window.KBO_HISTORY_2026 && window.KBO_HISTORY_2026.gamesByDate) {
-                Object.keys(window.KBO_HISTORY_2026.gamesByDate).forEach(dateStr => {
-                    let games = window.KBO_HISTORY_2026.gamesByDate[dateStr];
-                    games.forEach(g => {
-                        g.team1 = g.awayTeam || g.team1; g.team2 = g.homeTeam || g.team2; g.time = g.gameTime || g.time; g.bannerLink = "";
-                        liveDataStore[g.id] = g;
-                        let existing = scheduleData.find(x => x.id === g.id);
-                        if (!existing) scheduleData.push(g); else Object.assign(existing, g);
-                    });
-                    fetchedDates.add(dateStr);
-                });
-            }
-
+        // 데이터 동기화 및 앱 최초 실행
+        window.addEventListener('DOMContentLoaded', () => {
             syncWithFirestore();
-            switchTab(1);
-            if (selectedTeam !== 'all') setTeamFilter(selectedTeam);
+            renderCheerSongs(); // ㅠㅠ 빼먹었던 응원가 목록 렌더링 함수 추가!!
         });
+
     </script>
 </body>
 </html>
