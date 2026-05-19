@@ -395,7 +395,7 @@
         
         db.settings({ experimentalForceLongPolling: true, useFetchStreams: false });
 
-        let scheduleData = [], rankingData = [], liveDataStore = {}, currentPopupMatchId = null, currentTabIndex = 0, watchRecords = [], recordPopupDate = new Date(), currentRecordTeam = null, currentRecordType = null;
+        let scheduleData = [], rankingData = [], liveDataStore = {}, currentPopupMatchId = null, currentTabIndex = 1, watchRecords = [], recordPopupDate = new Date(), currentRecordTeam = null, currentRecordType = null;
         let audioPlayer, currentSongTitle = '', currentSongCover = '', currentPlaylist = [], currentSongIndex = -1, isSeeking = false;
         let fpStartY = 0, fpCurrentY = 0, fpIsDragging = false, currentBanner = 0, totalBanners = 1, bannerInterval, isPlaying = true;
         let isInitialPopupChecked = false;
@@ -839,7 +839,6 @@
             if (selectedTeam === 'all') {
                 currentDate.setDate(currentDate.getDate() + offset);
             } else if (viewMode === 'month') {
-                // [수정점] 달력을 넘길 때 31일이 없는 달에서 월이 꼬이는 현상을 방지하는 안전장치 추가
                 let currentDay = currentDate.getDate();
                 currentDate.setDate(1);
                 currentDate.setMonth(currentDate.getMonth() + offset);
@@ -1803,6 +1802,26 @@
 
         // 데이터 동기화 및 앱 최초 실행
         window.addEventListener('DOMContentLoaded', () => {
+            // [추가] 달력에 과거 경기 WIN/LOSE가 즉시 뜨도록 KBO_HISTORY 데이터를 미리 병합
+            if (window.KBO_HISTORY_2026 && window.KBO_HISTORY_2026.gamesByDate) {
+                Object.values(window.KBO_HISTORY_2026.gamesByDate).forEach(dayGames => {
+                    dayGames.forEach(g => {
+                        g.team1 = g.awayTeam || g.team1; 
+                        g.team2 = g.homeTeam || g.team2; 
+                        g.time = g.gameTime || g.time;
+                        if (!liveDataStore[g.id]) liveDataStore[g.id] = g;
+                        if (!scheduleData.find(x => x.id === g.id)) scheduleData.push(g);
+                    });
+                });
+                scheduleData.sort((a, b) => { if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); return a.date.localeCompare(b.date); });
+            }
+
+            // [추가] 렌더링 직후 초기 UI 탭(야구) 및 팀 필터 상태 강제 동기화 (버튼 꼬임 오류 해결)
+            setTimeout(() => {
+                switchTab(1);
+                setTeamFilter(selectedTeam);
+            }, 10);
+
             syncWithFirestore();
             renderCheerSongs(); // ㅠㅠ 빼먹었던 응원가 목록 렌더링 함수 추가!!
         });
