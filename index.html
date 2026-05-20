@@ -1254,8 +1254,8 @@
                         if (iC) {
                             bgGradient = `linear-gradient(135deg, ${h1}40 0%, ${h2}40 100%)`; statusColor = 'text-[#EA0029]'; dotColor = 'bg-[#EA0029]';
                             let ct = (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))) ? l.inning : (l.gameStatus || '우천취소'); if (ct === '취소') ct = '우취'; ct = ct.replace('우천취소', '우취').replace('경기취소', '취소');
-                            statusText = ct; let a = l.awayScore || '0', h = l.homeScore || '0';
-                            scoreHtml = `<span class="text-[34px] font-black text-white">${a}</span><span class="text-base text-gray-500 mx-2 pb-1">:</span><span class="text-[34px] font-black text-white">${h}</span>`;
+                            statusText = ct;
+                            scoreHtml = `<span class="text-[32px] font-black text-gray-500 tracking-widest drop-shadow-md">취소</span>`;
                         } else if (l && l.gameStatus !== '경기전') {
                             let dis = (l.gameStatus === '경기중' && l.inning) ? l.inning : l.gameStatus, a = parseInt(l.awayScore || 0), h = parseInt(l.homeScore || 0);
                             if (l.gameStatus === '종료') {
