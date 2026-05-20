@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="referrer" content="no-referrer">
     <title>KBO League Schedule</title>
-    <link rel="icon" href="logo.png">
+    <link class="tab-logo" rel="icon" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -395,7 +395,7 @@
         
         db.settings({ experimentalForceLongPolling: true, useFetchStreams: false });
 
-        let scheduleData = [], rankingData = [], liveDataStore = {}, currentPopupMatchId = null, currentTabIndex = 1, watchRecords = [], recordPopupDate = new Date(), currentRecordTeam = null, currentRecordType = null;
+        let scheduleData = [], rankingData = [], liveDataStore = {}, currentPopupMatchId = null, currentTabIndex = 0, watchRecords = [], recordPopupDate = new Date(), currentRecordTeam = null, currentRecordType = null;
         let audioPlayer, currentSongTitle = '', currentSongCover = '', currentPlaylist = [], currentSongIndex = -1, isSeeking = false;
         let fpStartY = 0, fpCurrentY = 0, fpIsDragging = false, currentBanner = 0, totalBanners = 1, bannerInterval, isPlaying = true;
         let isInitialPopupChecked = false;
@@ -1438,7 +1438,7 @@
                 let batRaw = typeof pObj === 'object' && pObj !== null && pObj.batsThrows ? pObj.batsThrows : '';
                 let bat = batRaw ? `<span class="text-[9px] font-bold text-gray-500 border border-gray-600/50 rounded-sm px-1 ml-1 leading-none inline-flex items-center justify-center h-[14px] opacity-80">${batRaw}</span>` : '';
                 let hi = playerImages[p], pim = hi ? `<img src="${hi}" class="w-full h-full object-contain object-bottom scale-[1.3] drop-shadow-md origin-bottom">` : `<i class="fa-solid fa-user text-gray-500 text-[16px] mt-1.5"></i>`, pf = hi ? "w-9 h-9 flex items-end justify-center shrink-0" : "w-9 h-9 bg-[#222224] rounded-full flex items-center justify-center overflow-hidden shrink-0 border border-white/10"; 
-                return `<div class="flex items-center gap-2.5 mb-3.5"><span class="w-[22px] text-center text-[15px] font-black shrink-0" style="color: ${h2}">${i + 1}</span><div class="${pf}">${pim}</div><div class="flex flex-col truncate"><div class="flex items-center"><span class="text-[14px] font-bold text-white truncate tracking-tight">${p}</span>${bat}</div><span class="text-[10px] text-gray-400 truncate mt-0.5">${pos}</span></div></div>`; 
+                return `<div class="flex items-center gap-2.5 mb-3.5"><span class="w-[22px] text-center text-[15px] font-black shrink-0" style="color: ${h2}">${i + 1}</span><div class="${pf}">${pim}</div><div class="flex flex-col truncate"><div class="flex items-center"><span class="text-[14px] font-bold text-white truncate tracking-tight">${hp}</span>${bat}</div><span class="text-[10px] text-gray-400 truncate mt-0.5">${pos}</span></div></div>`; 
             }).join('') : '<div class="text-center text-xs text-gray-500 py-4">라인업 정보 없음</div>';
             
             c.innerHTML = sbh + `<div class="flex w-full pt-1 px-1"><div class="flex-1 flex flex-col pr-2 min-w-0"><div class="flex items-center gap-1.5 mb-3"><div class="w-6 h-6 flex items-center justify-center shrink-0">${lg1}</div><span class="text-[14px] font-bold text-gray-200 truncate">${m.team1}선발</span></div>${aph}<div class="w-full h-px bg-white/5 mb-3.5"></div>${abh}</div><div class="w-px bg-white/10 shrink-0 mx-2 mb-4"></div><div class="flex-1 flex flex-col pl-2 min-w-0"><div class="flex items-center gap-1.5 mb-3"><div class="w-6 h-6 flex items-center justify-center shrink-0">${lg2}</div><span class="text-[14px] font-bold text-gray-200 truncate">${m.team2}선발</span></div>${hph}<div class="w-full h-px bg-white/5 mb-3.5"></div>${hbh}</div></div>`;
@@ -1779,7 +1779,7 @@
                 
                 let ac = iR ? 'items-end' : 'items-start', rc = iR ? 'flex-row-reverse' : 'flex-row';
                 
-                return `<div class="flex flex-col items-center w-full relative h-[420px] pt-8"><div class="flex flex-col items-center w-full z-20 relative"><div class="flex items-start justify-center w-full"><span class="text-[120px] font-black text-pattern-${t} leading-normal tracking-tighter pointer-events-none select-none drop-shadow-xl">${p}</span><span class="text-[36px] font-black ${tc} mt-8 ml-1 drop-shadow-md">%</span></div><div class="flex justify-between items-center w-full px-8 mt-2"><div class="flex items-center gap-3"><span class="text-[28px] font-extrabold text-white tracking-tight drop-shadow-md">${ty}</span><button onclick="openRecordPopup('${t}', '${ty}')" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/90 hover:bg-white/20 transition-all shadow-md border border-white/10 active:scale-95 z-30 pointer-events-auto"><i class="fa-solid fa-plus text-[16px]"></i></button></div><div class="text-[14px] font-bold text-gray-200 bg-black/50 px-4 py-2 rounded-xl border border-white/10 shadow-inner whitespace-nowrap tracking-tight drop-shadow-md flex flex-col items-end"><span>${r.w}승 ${r.d}무 ${r.l}패</span><span class="opacity-60 text-[11px] font-medium mt-0.5">총 ${r.w + r.d + r.l}전</span></div></div></div><div class="absolute bottom-0 left-0 w-full h-[280px] flex items-end justify-center pointer-events-none z-10 scale-[1.3] origin-bottom">${ch}</div></div>`;
+                return `<div class="flex flex-col items-center w-full relative h-[420px] pt-8"><div class="flex flex-col items-center w-full z-20 relative"><div class="flex items-start justify-center w-full"><span class="text-[120px] font-black text-pattern-${t} leading-normal tracking-tighter pointer-events-none select-none drop-shadow-xl">${p}</span><span class="text-[36px] font-black ${tc} mt-8 ml-1 drop-shadow-md">%</span></div><div class="flex justify-between items-center w-full px-8 mt-2"><div class="flex items-center gap-3"><span class="text-[28px] font-extrabold text-white tracking-tight drop-shadow-md">${ty}</span><button onclick="openRecordPopup('${t}', '${ty}')" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/90 hover:bg-white/20 transition-all shadow-md border border-white/10 active:scale-95 z-30 pointer-events-auto"><i class="fa-solid fa-plus text-[16px]"></i></button></div><div class="text-[14px] font-bold text-gray-200 bg-black/50 px-4 py-2 rounded-xl border border-white/10 shadow-inner whitespace-nowrap tracking-tight drop-shadow-md flex flex-col items-end"><span>${r.w}승 ${r.d}무 ${r.l}패</span><span class="opacity-60 text-[11px] font-medium mt-0.5">총 ${r.w + r.d + r.l}전</span></div></div></div><div class="absolute bottom-0 left-0 w-full h-[230px] flex items-end justify-center pointer-events-none z-10 scale-[1.05] origin-bottom">${ch}</div></div>`;
             }
             c.innerHTML = `<div class="flex flex-col w-full pb-8 pt-4">${cc('직관', jkp, jk, false, jkp >= 50)}</div>`;
         }
@@ -1800,9 +1800,8 @@
             updateHeaderCtrlForPopup(false);
         }
 
-        // 데이터 동기화 및 앱 최초 실행
+        // [수정점] 데이터 동기화 및 앱 최초 실행 동기화 보강
         window.addEventListener('DOMContentLoaded', () => {
-            // [추가] 달력에 과거 경기 WIN/LOSE가 즉시 뜨도록 KBO_HISTORY 데이터를 미리 병합
             if (window.KBO_HISTORY_2026 && window.KBO_HISTORY_2026.gamesByDate) {
                 Object.values(window.KBO_HISTORY_2026.gamesByDate).forEach(dayGames => {
                     dayGames.forEach(g => {
@@ -1816,14 +1815,13 @@
                 scheduleData.sort((a, b) => { if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); return a.date.localeCompare(b.date); });
             }
 
-            // [추가] 렌더링 직후 초기 UI 탭(야구) 및 팀 필터 상태 강제 동기화 (버튼 꼬임 오류 해결)
             setTimeout(() => {
                 switchTab(1);
                 setTeamFilter(selectedTeam);
             }, 10);
 
             syncWithFirestore();
-            renderCheerSongs(); // ㅠㅠ 빼먹었던 응원가 목록 렌더링 함수 추가!!
+            renderCheerSongs();
         });
 
     </script>
