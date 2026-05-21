@@ -380,8 +380,8 @@
         <nav id="bottom-nav" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-[380px] px-2 touch-pan-x select-none">
             <div class="flex items-center justify-between bg-[#1C1C1E] relative">
                 <div id="nav-indicator" class="absolute bg-point z-0 nav-transition" style="left: 4px; width: 66px;"></div>
-                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(0)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-chart-pie text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">승률</span></div></button>
-                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(1)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-calendar-days text-base text-white"></i><span class="text-[10px] font-bold text-white">야구</span></div></button>
+                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(0)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-house text-base text-white"></i><span class="text-[10px] font-bold text-white">홈</span></div></button>
+                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(1)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-clover text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">요정</span></div></button>
                 <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(2)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-trophy text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">순위</span></div></button>
                 <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(3)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-headphones text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">응원가</span></div></button>
             </div>
@@ -685,10 +685,10 @@
                     });
                     scheduleData.sort((a, b) => { if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); return a.date.localeCompare(b.date); });
                     
-                    if (currentTabIndex === 1) renderCalendar();
+                    if (currentTabIndex === 0) renderCalendar();
                     if (currentPopupMatchId) renderPopupContent(currentPopupMatchId);
                     renderBanners(); renderLineupCheerSongs();
-                    if (currentTabIndex === 0) renderWinRate();
+                    if (currentTabIndex === 1) renderWinRate();
                     checkInitialSamsungPopup();
 
                     if (data.allDone === true) { if (livePollingInterval) clearInterval(livePollingInterval); }
@@ -717,8 +717,8 @@
                     livePollingInterval = setInterval(pollLiveToday, 30000);
                     
                     if (currentTabIndex === 2) renderRanking();
-                    if (currentTabIndex === 0) renderWinRate();
-                    if (currentTabIndex === 1) renderCalendar();
+                    if (currentTabIndex === 1) renderWinRate();
+                    if (currentTabIndex === 0) renderCalendar();
                 } catch (e) { console.error("Fetch Error:", e); } finally { hideLoader(); }
             })();
         }
@@ -784,7 +784,7 @@
                 }
                 
                 if (els['header-popup-title']) { els['header-popup-title'].classList.add('hidden'); els['header-popup-title'].classList.remove('flex'); }
-                if (currentTabIndex === 1) {
+                if (currentTabIndex === 0) {
                     if (els['header-title-container']) { els['header-title-container'].classList.add('hidden'); els['header-title-container'].classList.remove('flex'); }
                     if (els['header-calendar-nav']) { els['header-calendar-nav'].classList.remove('hidden'); els['header-calendar-nav'].classList.add('flex'); }
                 } else {
@@ -810,19 +810,19 @@
             
             nb.forEach((b, i) => {
                 const ic = b.querySelector('i'), l = b.querySelector('span');
-                if (ic && l) { ic.className = `fa-solid ${['fa-chart-pie', 'fa-calendar-days', 'fa-trophy', 'fa-headphones'][i]} text-base ${i === index ? 'text-white' : 'text-gray-400 transition-colors'}`; l.className = `text-[10px] whitespace-nowrap transition-colors ${i === index ? 'text-white font-bold' : 'text-gray-400 font-medium'}`; }
+                if (ic && l) { ic.className = `fa-solid ${['fa-house', 'fa-clover', 'fa-trophy', 'fa-headphones'][i]} text-base ${i === index ? 'text-white' : 'text-gray-400 transition-colors'}`; l.className = `text-[10px] whitespace-nowrap transition-colors ${i === index ? 'text-white font-bold' : 'text-gray-400 font-medium'}`; }
             });
             
             const mt = document.getElementById('di-main-text');
-            if (index !== 1 && mt) mt.innerHTML = (index === 0 ? '직관 승률' : (index === 2 ? '정규리그 순위' : '구단별 응원가')) + '<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>';
+            if (index !== 0 && mt) mt.innerHTML = (index === 1 ? '직관 요정' : (index === 2 ? '정규리그 순위' : '구단별 응원가')) + '<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span>';
             
             updateHeaderCtrlForPopup(false); const bta = document.getElementById('btn-team-all');
-            if (index === 0 || index === 3) { if (bta) bta.classList.add('btn-collapse'); if (selectedTeam === 'all') setTeamFilter('KIA'); } else { if (bta) bta.classList.remove('btn-collapse'); }
+            if (index === 1 || index === 3) { if (bta) bta.classList.add('btn-collapse'); if (selectedTeam === 'all') setTeamFilter('KIA'); } else { if (bta) bta.classList.remove('btn-collapse'); }
             if (index !== 3 && selectedTeam === '삼성') setTeamFilter('삼성');
             
-            ['winrate-screen', 'calendar-screen', 'ranking-screen', 'cheer-screen'].forEach((id, i) => { const sc = document.getElementById(id); if (sc) { sc.classList.toggle('hidden', i !== index); sc.classList.toggle('flex', i === index); } });
+            ['calendar-screen', 'winrate-screen', 'ranking-screen', 'cheer-screen'].forEach((id, i) => { const sc = document.getElementById(id); if (sc) { sc.classList.toggle('hidden', i !== index); sc.classList.toggle('flex', i === index); } });
             
-            if (index === 0) renderWinRate(); else if (index === 1) renderCalendar(); else if (index === 2) renderRanking(); else if (index === 3) renderCheerSongs();
+            if (index === 1) renderWinRate(); else if (index === 0) renderCalendar(); else if (index === 2) renderRanking(); else if (index === 3) renderCheerSongs();
         }
 
         function setViewMode(mode) {
@@ -885,7 +885,7 @@
             selectedTeam = team; localStorage.setItem('kbo_selected_team', team); document.body.setAttribute('data-theme', team);
             ['all', 'KIA', '삼성'].forEach(id => { const b = document.getElementById(`btn-team-${id}`); if (b) { b.classList.remove('font-bold', 'bg-point', 'text-white', 'shadow-sm'); b.classList.add('font-medium', 'text-gray-400'); } });
             const tb = document.getElementById(`btn-team-${team}`); if (tb) { tb.classList.remove('font-medium', 'text-gray-400'); tb.classList.add('font-bold', 'bg-point', 'text-white', 'shadow-sm'); }
-            if (currentTabIndex === 0) renderWinRate(); renderCalendar(); closeBottomSheet(); renderBanners();
+            if (currentTabIndex === 1) renderWinRate(); renderCalendar(); closeBottomSheet(); renderBanners();
         }
 
         function closeBottomSheet() { 
@@ -1438,7 +1438,7 @@
                 let batRaw = typeof pObj === 'object' && pObj !== null && pObj.batsThrows ? pObj.batsThrows : '';
                 let bat = batRaw ? `<span class="text-[9px] font-bold text-gray-500 border border-gray-600/50 rounded-sm px-1 ml-1 leading-none inline-flex items-center justify-center h-[14px] opacity-80">${batRaw}</span>` : '';
                 let hi = playerImages[p], pim = hi ? `<img src="${hi}" class="w-full h-full object-contain object-bottom scale-[1.3] drop-shadow-md origin-bottom">` : `<i class="fa-solid fa-user text-gray-500 text-[16px] mt-1.5"></i>`, pf = hi ? "w-9 h-9 flex items-end justify-center shrink-0" : "w-9 h-9 bg-[#222224] rounded-full flex items-center justify-center overflow-hidden shrink-0 border border-white/10"; 
-                return `<div class="flex items-center gap-2.5 mb-3.5"><span class="w-[22px] text-center text-[15px] font-black shrink-0" style="color: ${h2}">${i + 1}</span><div class="${pf}">${pim}</div><div class="flex flex-col truncate"><div class="flex items-center"><span class="text-[14px] font-bold text-white truncate tracking-tight">${hp}</span>${bat}</div><span class="text-[10px] text-gray-400 truncate mt-0.5">${pos}</span></div></div>`; 
+                return `<div class="flex items-center gap-2.5 mb-3.5"><span class="w-[22px] text-center text-[15px] font-black shrink-0" style="color: ${h2}">${i + 1}</span><div class="${pf}">${pim}</div><div class="flex flex-col truncate"><div class="flex items-center"><span class="text-[14px] font-bold text-white truncate tracking-tight">${p}</span>${bat}</div><span class="text-[10px] text-gray-400 truncate mt-0.5">${pos}</span></div></div>`; 
             }).join('') : '<div class="text-center text-xs text-gray-500 py-4">라인업 정보 없음</div>';
             
             c.innerHTML = sbh + `<div class="flex w-full pt-1 px-1"><div class="flex-1 flex flex-col pr-2 min-w-0"><div class="flex items-center gap-1.5 mb-3"><div class="w-6 h-6 flex items-center justify-center shrink-0">${lg1}</div><span class="text-[14px] font-bold text-gray-200 truncate">${m.team1}선발</span></div>${aph}<div class="w-full h-px bg-white/5 mb-3.5"></div>${abh}</div><div class="w-px bg-white/10 shrink-0 mx-2 mb-4"></div><div class="flex-1 flex flex-col pl-2 min-w-0"><div class="flex items-center gap-1.5 mb-3"><div class="w-6 h-6 flex items-center justify-center shrink-0">${lg2}</div><span class="text-[14px] font-bold text-gray-200 truncate">${m.team2}선발</span></div>${hph}<div class="w-full h-px bg-white/5 mb-3.5"></div>${hbh}</div></div>`;
@@ -1816,7 +1816,7 @@
             }
 
             setTimeout(() => {
-                switchTab(1);
+                switchTab(0);
                 setTeamFilter(selectedTeam);
             }, 10);
 
