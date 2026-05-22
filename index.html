@@ -1425,12 +1425,13 @@
                 sbh = `
                 <style>
                     /* 팝업 전체 테마 덮어쓰기 (클래식 모드) */
-                    #lineup-popup { background-color: #f0f2f5 !important; background-image: none !important; }
+                    html body #mobile-wrapper div#lineup-popup.app-bg { background-color: #EBE7DF !important; background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px) !important; background-size: 15px 15px !important; }
+                    html.light-mode body #mobile-wrapper div#lineup-popup.app-bg { background-color: #EBE7DF !important; background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px) !important; background-size: 15px 15px !important; }
                     #lineup-content { color: #111 !important; }
                     #lineup-content span.text-white, #lineup-content div.text-white { color: #111 !important; text-shadow: none !important; }
                     #lineup-content span.text-gray-200, #lineup-content span.text-gray-400, #lineup-content span.text-gray-500, #lineup-content div.text-gray-500 { color: #444 !important; }
                     #lineup-content .text-gray-400\\/60 { color: #555 !important; }
-                    #lineup-content .bg-white\\/5 { background-color: transparent !important; border-color: rgba(0,0,0,0.05) !important; border-bottom: 1px solid rgba(0,0,0,0.05) !important;}
+                    #lineup-content .bg-white\\/5 { background-color: rgba(255,255,255,0.4) !important; border-color: rgba(0,0,0,0.1) !important; border-bottom: 1px solid rgba(0,0,0,0.1) !important;}
                     #lineup-content .bg-\\[\\#222224\\] { background-color: #fff !important; border-color: #e5e7eb !important; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
                     #lineup-content .bg-white\\/10 { background-color: rgba(0,0,0,0.05) !important; }
                     #lineup-content .fa-user, #lineup-content .fa-clipboard-question { color: #9ca3af !important; }
@@ -1446,7 +1447,7 @@
                     #ctrl-back button { background: #004A99 !important; color: #fff !important; box-shadow: 0 4px 10px rgba(0,74,153,0.3) !important; }
                     #ctrl-wrapper { background: transparent !important; box-shadow: none !important; border: none !important; }
                 </style>
-                <div class="relative overflow-hidden px-4 py-6 mb-2 mt-2 border-[3px] border-[#2A2A2A] rounded-[24px] shadow-[4px_4px_0_rgba(0,0,0,0.15)] bg-[#EBE7DF]" style="background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 15px 15px;">
+                <div class="relative px-4 py-6 mb-2 mt-2">
                     <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-[#2A2A2A] px-6 py-1 rounded-b-[12px] flex items-center justify-center shadow-sm z-10 border-x-2 border-b-2 border-[#111]" style="background-color: #2A2A2A !important;">
                         <span class="text-[10px] font-black text-[#F4F1EA] tracking-[0.2em] ml-0.5" style="color: #F4F1EA !important;">CLASSIC SERIES</span>
                     </div>
