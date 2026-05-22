@@ -1866,7 +1866,72 @@
 
         function renderRecordCalendar(t, ty) {
             const c = document.getElementById('record-content');
-            if (c) c.innerHTML = '<div class="flex flex-col items-center justify-center py-20 text-gray-500"><i class="fa-solid fa-calendar-check text-4xl mb-3"></i><p class="text-sm font-bold text-white mb-1">기록 추가 기능</p><p class="text-xs">데이터 로드 완료 후 표시됩니다.</p></div>';
+            if (!c) return;
+            
+            let pastGames = scheduleData.filter(m => (m.team1 === t || m.team2 === t) && liveDataStore[m.id] && liveDataStore[m.id].gameStatus === '종료').sort((a, b) => b.date.localeCompare(a.date));
+            
+            if (pastGames.length === 0) {
+                c.innerHTML = '<div class="flex flex-col items-center justify-center py-20 text-gray-500"><i class="fa-solid fa-calendar-xmark text-4xl mb-3"></i><p class="text-sm font-bold text-white mb-1">완료된 경기가 없습니다.</p></div>';
+                return;
+            }
+
+            let html = '<div class="flex flex-col gap-3 pb-8">';
+            let currentMonth = '';
+            
+            pastGames.forEach(m => {
+                let d = new Date(m.date);
+                let monthStr = `${d.getFullYear()}년 ${d.getMonth() + 1}월`;
+                if (monthStr !== currentMonth) {
+                    if (currentMonth !== '') html += '</div>';
+                    html += `<div class="flex flex-col gap-2.5 mt-2"><h3 class="text-[13px] font-bold text-gray-400 px-2 sticky top-0 z-10 py-1.5 shadow-sm border-b border-white/5 tracking-tight" style="background-color: var(--app-bg);">${monthStr}</h3>`;
+                    currentMonth = monthStr;
+                }
+                
+                let l = liveDataStore[m.id];
+                let a = parseInt(l.awayScore || 0), h = parseInt(l.homeScore || 0);
+                let iW = (m.team1 === t && a > h) || (m.team2 === t && h > a);
+                let iL = (m.team1 === t && a < h) || (m.team2 === t && h < a);
+                let result = iW ? '<span class="text-[#f87171] font-black ml-1 border border-[#f87171]/50 px-1.5 py-0.5 rounded text-[10px]">승리</span>' : (iL ? '<span class="text-[#60a5fa] font-black ml-1 border border-[#60a5fa]/50 px-1.5 py-0.5 rounded text-[10px]">패배</span>' : '<span class="text-gray-400 font-black ml-1 border border-gray-400/50 px-1.5 py-0.5 rounded text-[10px]">무승부</span>');
+                
+                let opp = m.team1 === t ? m.team2 : m.team1;
+                let isHome = m.team2 === t;
+                
+                let isRecorded = watchRecords.some(r => String(r.matchId) === String(m.id) && r.team === t && r.type === ty);
+                let btnClass = isRecorded ? 'bg-point text-white shadow-md' : 'bg-[#1A1A1C]/80 text-gray-400 hover:text-white';
+                let btnText = isRecorded ? '<i class="fa-solid fa-check mr-1"></i>직관함' : '추가하기';
+                
+                html += `
+                <div class="flex justify-between items-center bg-[#1A1A1C]/40 border border-white/5 rounded-2xl p-3 shadow-sm active:scale-[0.98] transition-transform">
+                    <div class="flex flex-col gap-1 w-[60%]">
+                        <span class="text-[10px] text-gray-500 font-bold"><i class="fa-regular fa-calendar mr-1"></i>${m.date.split('-')[1]}.${m.date.split('-')[2]} ${isHome ? 'HOME' : 'AWAY'}</span>
+                        <div class="flex items-center gap-1.5 truncate">
+                            <img src="${teamLogos[opp]}" class="w-5 h-5 object-contain opacity-90 drop-shadow-sm">
+                            <span class="text-[15px] font-bold text-white tracking-tight truncate">vs ${opp}</span>
+                            <span class="text-[14px] font-black tracking-tighter text-gray-300 ml-1 bg-black/30 px-1.5 rounded">${a}:${h}</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end gap-1.5">
+                        ${result}
+                        <button onclick="toggleWatchRecord('${m.id}', '${t}', '${ty}', ${!isRecorded}, '${m.date}')" class="px-3.5 py-1.5 rounded-full text-[11px] font-bold transition-all border border-white/10 ${btnClass}">${btnText}</button>
+                    </div>
+                </div>`;
+            });
+            html += '</div></div>';
+            c.innerHTML = html;
+        }
+
+        async function toggleWatchRecord(matchId, team, type, isAdding, dateStr) {
+            let docId = `${team}_${type}_${matchId}`;
+            if (isAdding) { watchRecords.push({ matchId: String(matchId), team: team, type: type, date: dateStr }); } 
+            else { watchRecords = watchRecords.filter(r => !(String(r.matchId) === String(matchId) && r.team === team && r.type === type)); }
+            
+            renderRecordCalendar(team, type); renderWinRate();
+            if (navigator.vibrate) navigator.vibrate(5);
+            
+            try {
+                if (isAdding) await db.collection("watch_records").doc(docId).set({ matchId: String(matchId), team: team, type: type, date: dateStr, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+                else await db.collection("watch_records").doc(docId).delete();
+            } catch(e) { console.error(e); }
         }
 
         function closeRecordPopup() {
