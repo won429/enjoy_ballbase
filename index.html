@@ -1182,7 +1182,59 @@
                 const div = document.createElement('div');
                 let h1 = teamHex[m.team1] || '#888888', h2 = teamHex[m.team2] || '#888888';
                 
-                if (l.bannerLink) {
+                let isClassicBanner = (m.date === '2026-05-22' || m.date === '2026-05-23' || m.date === '2026-05-24') && (m.team1 === '삼성' || m.team2 === '삼성') && l.gameStatus === '경기전';
+
+                if (isClassicBanner) {
+                    div.className = 'min-w-full shrink-0 snap-center transition-transform duration-300 active:scale-[0.98] py-4 flex flex-col px-4'; 
+                    div.style.cssText = 'border-top: none !important; border-bottom: none !important;';
+                    div.innerHTML = `
+                        <!-- TV Banner Container -->
+                        <div class="relative w-full">
+                            <!-- TV Antenna -->
+                            <div class="absolute -top-3 left-1/2 -translate-x-1/2 flex gap-10 z-0">
+                                <div class="w-1.5 h-6 bg-[#2A2A2A] rotate-[45deg] rounded-t-full origin-bottom"></div>
+                                <div class="w-1.5 h-6 bg-[#2A2A2A] -rotate-[45deg] rounded-t-full origin-bottom"></div>
+                            </div>
+                            
+                            <!-- TV Body -->
+                            <div class="w-full relative overflow-hidden flex flex-col items-center justify-center border-[4px] border-[#2A2A2A] rounded-[24px] bg-[#EBE7DF] z-10 pt-4 pb-3" style="box-shadow: 6px 6px 0 rgba(0,0,0,0.15); background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 15px 15px;">
+                                
+                                <span class="text-[10px] font-black text-white tracking-widest border-[2px] border-black px-2 py-0.5 rounded-full whitespace-nowrap bg-black mb-3 shadow-sm" style="color: #ffffff !important; background-color: #000000 !important; border-color: #000000 !important;">클래식씨리즈</span>
+
+                                <div class="flex items-center justify-center w-full px-2 gap-1 mb-2">
+                                    <div class="flex flex-col items-center w-1/3">
+                                        <img src="${teamLogos['삼성']}" class="w-14 h-14 object-contain drop-shadow-md">
+                                    </div>
+                                    <div class="flex flex-col items-center justify-center w-1/3 shrink-0">
+                                        <div class="text-[14px] font-black text-[#2A2A2A] tracking-widest mb-1 font-serif opacity-90">2026</div>
+                                        <span class="text-[20px] font-black text-[#111] italic leading-tight tracking-tighter">VS</span>
+                                    </div>
+                                    <div class="flex flex-col items-center w-1/3">
+                                        <img src="${teamLogos['롯데']}" class="w-14 h-14 object-contain drop-shadow-md">
+                                    </div>
+                                </div>
+
+                                <!-- Ransom Note text -->
+                                <div class="flex justify-center items-center mt-1 mb-2 z-10 relative px-2 gap-0">
+                                    <span class="text-[20px] font-black text-[#111] bg-white px-1.5 py-0 -rotate-3 shadow-[1.5px_1.5px_0_#000] border border-black italic leading-tight">클</span>
+                                    <span class="text-[20px] font-black text-[#111] bg-[#D31145] px-1.5 py-0 rotate-2 shadow-[1.5px_1.5px_0_#000] border border-black italic leading-tight ml-[-2px] z-10">래</span>
+                                    <span class="text-[20px] font-black text-[#111] bg-white px-1.5 py-0 -rotate-2 shadow-[1.5px_1.5px_0_#000] border border-black italic leading-tight ml-[-2px] z-20">식</span>
+                                    <span class="text-[20px] font-black text-white bg-[#004A99] px-1.5 py-0 rotate-3 shadow-[1.5px_1.5px_0_#000] border border-black italic leading-tight ml-[3px] z-10">씨</span>
+                                    <span class="text-[20px] font-black text-[#111] bg-[#e5e5e5] px-1.5 py-0 -rotate-2 shadow-[1.5px_1.5px_0_#000] border border-black italic leading-tight ml-[-2px] z-20">리</span>
+                                    <span class="text-[20px] font-black text-white bg-[#D31145] px-1.5 py-0 rotate-2 shadow-[1.5px_1.5px_0_#000] border border-black italic leading-tight ml-[-2px] z-30">즈</span>
+                                </div>
+
+                                <!-- Date -->
+                                <div class="bg-[#D1BA98] px-3 py-1 mt-1 transform -rotate-1 shadow-[1.5px_1.5px_0_rgba(0,0,0,0.1)] relative border-b border-[#A6906A]" style="clip-path: polygon(1% 0%, 99% 1%, 100% 98%, 0% 100%);">
+                                    <span class="text-[12px] font-black text-[#2A2A2A] tracking-widest italic font-serif opacity-90">5.22(금)-24(일)</span>
+                                </div>
+                            </div>
+                            
+                            <!-- TV Legs -->
+                            <div class="absolute -bottom-3 left-10 w-1.5 h-6 bg-[#2A2A2A] rotate-[20deg] rounded-b-full z-0"></div>
+                            <div class="absolute -bottom-3 right-10 w-1.5 h-6 bg-[#2A2A2A] -rotate-[20deg] rounded-b-full z-0"></div>
+                        </div>`;
+                } else if (l.bannerLink) {
                     let isLiveOrEnded = (l.gameStatus === '경기중' || l.gameStatus === '종료'), bannerHeight = isLiveOrEnded ? '160px' : '100px', iframeTop = isLiveOrEnded ? '-60px' : '-50px', iframeScale = '1.0'; 
                     let statusColor = 'text-gray-400', dotColor = 'bg-gray-500', statusText = m.time;
                     let iC = l && ((l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))));
@@ -1368,32 +1420,51 @@
                     </button>
                 </div>`;
             } else if (isClassic) {
-                let classicSch = sch.replace(/text-white/g, 'text-gray-900 drop-shadow-none').replace(/text-point/g, 'text-[#EA0029] drop-shadow-none').replace(/text-gray-700/g, 'text-gray-800').replace(/text-gray-500/g, 'text-gray-600').replace(/text-gray-400/g, 'text-gray-600').replace(/bg-white\/5/g, 'bg-black/5 border-black/10 text-gray-900 shadow-none border');
+                let classicSch = sch.replace(/text-white/g, 'text-gray-900 drop-shadow-none').replace(/text-point/g, 'text-[#EA0029] drop-shadow-none').replace(/text-gray-700/g, 'text-gray-800').replace(/text-gray-500/g, 'text-gray-600').replace(/text-gray-400/g, 'text-gray-600').replace(/bg-white\/5/g, 'bg-black/5 border-black/10 text-gray-900 shadow-none border').replace(/text-\[#FFFFFF\]/g, 'text-[#111]').replace(/text-\[#93c5fd\]/g, 'text-gray-800');
                 
-                sbh = `<div class="relative overflow-hidden px-4 py-6 mb-3 border-[3px] border-[#2A2A2A] rounded-[20px] shadow-[6px_6px_0_rgba(0,0,0,0.15)] bg-[#EBE7DF]" style="background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 15px 15px;">
-                    <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-[#2A2A2A] px-6 py-1 rounded-b-[10px] flex items-center justify-center shadow-sm z-10 border-x-2 border-b-2 border-[#111]">
-                        <span class="text-[10px] font-black text-[#F4F1EA] tracking-[0.2em] ml-0.5">CLASSIC SERIES</span>
+                sbh = `
+                <style>
+                    /* 팝업 전체 테마 덮어쓰기 (클래식 모드) */
+                    #lineup-popup { background-color: #f0f2f5 !important; background-image: none !important; }
+                    #lineup-content { color: #111 !important; }
+                    #lineup-content span.text-white, #lineup-content div.text-white { color: #111 !important; text-shadow: none !important; }
+                    #lineup-content span.text-gray-200, #lineup-content span.text-gray-400, #lineup-content span.text-gray-500, #lineup-content div.text-gray-500 { color: #444 !important; }
+                    #lineup-content .text-gray-400\\/60 { color: #555 !important; }
+                    #lineup-content .bg-white\\/5 { background-color: transparent !important; border-color: rgba(0,0,0,0.05) !important; border-bottom: 1px solid rgba(0,0,0,0.05) !important;}
+                    #lineup-content .bg-\\[\\#222224\\] { background-color: #fff !important; border-color: #e5e7eb !important; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+                    #lineup-content .bg-white\\/10 { background-color: rgba(0,0,0,0.05) !important; }
+                    #lineup-content .fa-user, #lineup-content .fa-clipboard-question { color: #9ca3af !important; }
+                    #lineup-content .border-white\\/5, #lineup-content .border-white\\/10 { border-color: rgba(0,0,0,0.08) !important; }
+                    #lineup-content .text-\\[14px\\].font-bold.text-gray-200.truncate { color: #111 !important; font-weight: 900 !important; font-size: 16px !important; }
+                    #lineup-content span[style*="background-color"] { color: #fff !important; border: none !important; }
+                    #lineup-content .bg-blue-600 { background-color: #004A99 !important; color: white !important; }
+                    
+                    /* 헤더 네비게이션 테마 덮어쓰기 (팝업 내부에서만 적용됨) */
+                    #left-wrapper { background: transparent !important; box-shadow: none !important; border: none !important; }
+                    #header-popup-title { background: #fff !important; border-radius: 100px !important; border: 1px solid rgba(0,0,0,0.1) !important; box-shadow: 0 4px 10px rgba(0,0,0,0.05) !important; padding: 2px 16px !important; }
+                    #header-popup-text { color: #111 !important; font-weight: 900 !important; }
+                    #ctrl-back button { background: #004A99 !important; color: #fff !important; box-shadow: 0 4px 10px rgba(0,74,153,0.3) !important; }
+                    #ctrl-wrapper { background: transparent !important; box-shadow: none !important; border: none !important; }
+                </style>
+                <div class="relative overflow-hidden px-4 py-6 mb-2 mt-2 border-[3px] border-[#2A2A2A] rounded-[24px] shadow-[4px_4px_0_rgba(0,0,0,0.15)] bg-[#EBE7DF]" style="background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 15px 15px;">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-[#2A2A2A] px-6 py-1 rounded-b-[12px] flex items-center justify-center shadow-sm z-10 border-x-2 border-b-2 border-[#111]" style="background-color: #2A2A2A !important;">
+                        <span class="text-[10px] font-black text-[#F4F1EA] tracking-[0.2em] ml-0.5" style="color: #F4F1EA !important;">CLASSIC SERIES</span>
                     </div>
                     
                     <div class="flex justify-center items-center gap-[1.5px] mt-6 mb-2 z-10 relative opacity-95">
-                        <span class="text-[13px] font-black text-white bg-black px-1.5 py-0.5 -rotate-3 shadow-[1px_1px_0_#000] border border-black">클</span>
-                        <span class="text-[13px] font-black text-white bg-black px-1.5 py-0.5 rotate-2 shadow-[1px_1px_0_#000] border border-black">래</span>
-                        <span class="text-[13px] font-black text-white bg-[#D31145] px-1.5 py-0.5 -rotate-6 shadow-[1px_1px_0_#000] border border-black">식</span>
-                        <span class="text-[13px] font-black text-white bg-[#004A99] px-1.5 py-0.5 rotate-3 shadow-[1px_1px_0_#000] border border-black">씨</span>
-                        <span class="text-[13px] font-black text-gray-800 bg-[#D9D9D9] px-1.5 py-0.5 -rotate-2 shadow-[1px_1px_0_#000] border border-black">리</span>
-                        <span class="text-[13px] font-black text-white bg-[#D31145] px-1.5 py-0.5 rotate-6 shadow-[1px_1px_0_#000] border border-black">즈</span>
+                        <span class="text-[14px] font-black text-white bg-black px-1.5 py-0.5 -rotate-3 shadow-[1.5px_1.5px_0_#000] border border-black" style="color: #ffffff !important; background-color: #000000 !important;">클</span>
+                        <span class="text-[14px] font-black text-white bg-black px-1.5 py-0.5 rotate-2 shadow-[1.5px_1.5px_0_#000] border border-black" style="color: #ffffff !important; background-color: #000000 !important;">래</span>
+                        <span class="text-[14px] font-black text-white bg-[#D31145] px-1.5 py-0.5 -rotate-6 shadow-[1.5px_1.5px_0_#000] border border-black" style="color: #ffffff !important; background-color: #D31145 !important;">식</span>
+                        <span class="text-[14px] font-black text-white bg-[#004A99] px-1.5 py-0.5 rotate-3 shadow-[1.5px_1.5px_0_#000] border border-black" style="color: #ffffff !important; background-color: #004A99 !important;">씨</span>
+                        <span class="text-[14px] font-black text-gray-800 bg-[#D9D9D9] px-1.5 py-0.5 -rotate-2 shadow-[1.5px_1.5px_0_#000] border border-black" style="color: #111 !important; background-color: #D9D9D9 !important;">리</span>
+                        <span class="text-[14px] font-black text-white bg-[#D31145] px-1.5 py-0.5 rotate-6 shadow-[1.5px_1.5px_0_#000] border border-black" style="color: #ffffff !important; background-color: #D31145 !important;">즈</span>
                     </div>
 
-                    <div class="flex justify-between items-center relative z-10 mt-3">
-                        <div class="flex flex-col items-center w-[30%]">${l1Lg.replace('drop-shadow-lg', 'drop-shadow-md')}<span class="text-[16px] font-black text-gray-900 tracking-wider">${m.team1}</span><span class="text-[10px] font-bold text-gray-600 tracking-widest mt-0.5">AWAY</span></div>
+                    <div class="flex justify-between items-center relative z-10 mt-4">
+                        <div class="flex flex-col items-center w-[30%]">${l1Lg.replace('drop-shadow-lg', 'drop-shadow-md')}<span class="text-[16px] font-black text-gray-900 tracking-wider mt-1" style="color: #111 !important;">${m.team1}</span><span class="text-[12px] font-black text-gray-600 tracking-widest mt-0.5" style="color: #444 !important;">AWAY</span></div>
                         <div class="flex flex-col items-center justify-center w-[40%]">${classicSch}</div>
-                        <div class="flex flex-col items-center w-[30%]">${l2Lg.replace('drop-shadow-lg', 'drop-shadow-md')}<span class="text-[16px] font-black text-gray-900 tracking-wider">${m.team2}</span><span class="text-[10px] font-bold text-gray-600 tracking-widest mt-0.5">HOME</span></div>
+                        <div class="flex flex-col items-center w-[30%]">${l2Lg.replace('drop-shadow-lg', 'drop-shadow-md')}<span class="text-[16px] font-black text-gray-900 tracking-wider mt-1" style="color: #111 !important;">${m.team2}</span><span class="text-[12px] font-black text-gray-600 tracking-widest mt-0.5" style="color: #444 !important;">HOME</span></div>
                     </div>
-                </div>
-                <div class="w-full mb-5">
-                    <button onclick="openTicketPopup('${m.date}')" class="w-full bg-[#2A2A2A] border-2 border-black shadow-[3px_3px_0_rgba(0,0,0,0.8)] text-[#F4F1EA] text-[14px] font-black tracking-tight py-3.5 rounded-xl flex items-center justify-center gap-2 active:translate-y-[2px] active:shadow-[1px_1px_0_rgba(0,0,0,0.8)] transition-all">
-                        <i class="fa-solid fa-ticket text-[#ffcc00] text-lg rotate-[-15deg]"></i> CLASSIC SERIES 기념 티켓 발급
-                    </button>
                 </div>`;
             } else {
                 sbh = `<div class="flex justify-between items-center mb-5 px-1 mt-0 pb-5 border-b border-white/10"><div class="flex flex-col items-center w-[30%]">${l1Lg}<span class="text-[15px] font-black text-white tracking-wider">${m.team1}</span><span class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">AWAY</span></div><div class="flex flex-col items-center justify-center w-[40%]">${sch}</div><div class="flex flex-col items-center w-[30%]">${l2Lg}<span class="text-[15px] font-black text-white tracking-wider">${m.team2}</span><span class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">HOME</span></div></div>`;
