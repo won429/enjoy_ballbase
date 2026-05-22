@@ -1340,11 +1340,9 @@
             
             let isDal = (m.date === '2026-05-15' || m.date === '2026-05-16' || m.date === '2026-05-17') && ((m.team1 === 'KIA' && m.team2 === '삼성') || (m.team1 === '삼성' && m.team2 === 'KIA'));
             let isClassic = (m.date === '2026-05-22' || m.date === '2026-05-23' || m.date === '2026-05-24') && (m.team1 === '삼성' || m.team2 === '삼성');
-            let isSpecial = isDal || isClassic;
-            let specialName = isClassic ? 'CLASSIC SERIES' : 'MOONLIGHT';
-
+            
             let sbh = '';
-            if (isSpecial) {
+            if (isDal) {
                 let dalSch = sch.replace(/text-gray-700/g, 'text-[#93c5fd] opacity-80').replace(/text-gray-500/g, 'text-[#bfdbfe] opacity-80').replace(/bg-white\/5/g, 'bg-[#0B132B] border-[#1E3A8A]/50 shadow-[0_0_10px_rgba(37,99,235,0.3)] text-[#ffffff]').replace(/text-white/g, 'text-[#ffffff] drop-shadow-md').replace(/opacity-50/g, 'opacity-70').replace(/text-point/g, 'text-[#ffffff]');
                 sbh = `<div class="relative overflow-hidden px-4 py-6 mb-3 border border-indigo-900/40 rounded-[24px] shadow-[0_8px_32px_rgba(79,70,229,0.25)] bg-[#02040A]">
                     <div class="absolute inset-0 pointer-events-none z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1E3A8A] via-[#0A1128] to-[#02040A] opacity-90"></div>
@@ -1356,7 +1354,7 @@
                     <div class="absolute -top-[40%] -right-[20%] w-[150%] h-[150%] bg-[#3B82F6]/10 blur-[100px] rounded-full pointer-events-none z-0"></div>
                     <img src="https://github.com/won429/enjoy_ballbase/blob/main/dal.png?raw=true" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[220px] h-[220px] opacity-[0.35] object-contain pointer-events-none mix-blend-screen blur-[1px]">
                     <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-[#0B132B] px-6 py-1 rounded-b-[14px] border-x border-b border-[#1E3A8A]/50 flex items-center justify-center shadow-[0_5px_15px_rgba(0,0,0,0.5)] z-10">
-                        <span class="text-[10px] font-bold text-[#E2E8F0] tracking-[0.2em] ml-0.5 opacity-95" style="color: #E2E8F0 !important;">${specialName}</span>
+                        <span class="text-[10px] font-bold text-[#E2E8F0] tracking-[0.2em] ml-0.5 opacity-95" style="color: #E2E8F0 !important;">MOONLIGHT</span>
                     </div>
                     <div class="flex justify-between items-center relative z-10 mt-4">
                         <div class="flex flex-col items-center w-[30%]">${l1Lg.replace('drop-shadow-lg', 'drop-shadow-[0_0_12px_rgba(255,255,255,0.5)]')}<span class="text-[15px] font-black text-white tracking-wider drop-shadow-[0_0_8px_rgba(255,255,255,0.7)]" style="color: #ffffff !important;">${m.team1}</span><span class="text-[10px] font-bold text-blue-100/80 tracking-widest mt-0.5 drop-shadow-sm" style="color: rgba(219,234,254,0.8) !important;">AWAY</span></div>
@@ -1366,7 +1364,35 @@
                 </div>
                 <div class="w-full mb-5">
                     <button onclick="openTicketPopup('${m.date}')" class="w-full bg-gradient-to-r from-[#0B132B] to-[#1E3A8A]/40 border border-blue-500/30 shadow-[0_4px_12px_rgba(37,99,235,0.15)] text-blue-50 text-[14px] font-black tracking-tight py-3.5 rounded-2xl flex items-center justify-center gap-2 active:scale-[0.98] transition-all" style="color: #ffffff !important;">
-                        <i class="fa-solid fa-ticket text-blue-300 text-lg rotate-[-15deg]" style="color: #93c5fd !important;"></i> ${specialName} 기념 티켓 발급
+                        <i class="fa-solid fa-ticket text-blue-300 text-lg rotate-[-15deg]" style="color: #93c5fd !important;"></i> MOONLIGHT 기념 티켓 발급
+                    </button>
+                </div>`;
+            } else if (isClassic) {
+                let classicSch = sch.replace(/text-white/g, 'text-gray-900 drop-shadow-none').replace(/text-point/g, 'text-[#EA0029] drop-shadow-none').replace(/text-gray-700/g, 'text-gray-800').replace(/text-gray-500/g, 'text-gray-600').replace(/text-gray-400/g, 'text-gray-600').replace(/bg-white\/5/g, 'bg-black/5 border-black/10 text-gray-900 shadow-none border');
+                
+                sbh = `<div class="relative overflow-hidden px-4 py-6 mb-3 border-[3px] border-[#2A2A2A] rounded-[20px] shadow-[6px_6px_0_rgba(0,0,0,0.15)] bg-[#EBE7DF]" style="background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 15px 15px;">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-[#2A2A2A] px-6 py-1 rounded-b-[10px] flex items-center justify-center shadow-sm z-10 border-x-2 border-b-2 border-[#111]">
+                        <span class="text-[10px] font-black text-[#F4F1EA] tracking-[0.2em] ml-0.5">CLASSIC SERIES</span>
+                    </div>
+                    
+                    <div class="flex justify-center items-center gap-[1.5px] mt-6 mb-2 z-10 relative opacity-95">
+                        <span class="text-[13px] font-black text-white bg-black px-1.5 py-0.5 -rotate-3 shadow-[1px_1px_0_#000] border border-black">클</span>
+                        <span class="text-[13px] font-black text-white bg-black px-1.5 py-0.5 rotate-2 shadow-[1px_1px_0_#000] border border-black">래</span>
+                        <span class="text-[13px] font-black text-white bg-[#D31145] px-1.5 py-0.5 -rotate-6 shadow-[1px_1px_0_#000] border border-black">식</span>
+                        <span class="text-[13px] font-black text-white bg-[#004A99] px-1.5 py-0.5 rotate-3 shadow-[1px_1px_0_#000] border border-black">씨</span>
+                        <span class="text-[13px] font-black text-gray-800 bg-[#D9D9D9] px-1.5 py-0.5 -rotate-2 shadow-[1px_1px_0_#000] border border-black">리</span>
+                        <span class="text-[13px] font-black text-white bg-[#D31145] px-1.5 py-0.5 rotate-6 shadow-[1px_1px_0_#000] border border-black">즈</span>
+                    </div>
+
+                    <div class="flex justify-between items-center relative z-10 mt-3">
+                        <div class="flex flex-col items-center w-[30%]">${l1Lg.replace('drop-shadow-lg', 'drop-shadow-md')}<span class="text-[16px] font-black text-gray-900 tracking-wider">${m.team1}</span><span class="text-[10px] font-bold text-gray-600 tracking-widest mt-0.5">AWAY</span></div>
+                        <div class="flex flex-col items-center justify-center w-[40%]">${classicSch}</div>
+                        <div class="flex flex-col items-center w-[30%]">${l2Lg.replace('drop-shadow-lg', 'drop-shadow-md')}<span class="text-[16px] font-black text-gray-900 tracking-wider">${m.team2}</span><span class="text-[10px] font-bold text-gray-600 tracking-widest mt-0.5">HOME</span></div>
+                    </div>
+                </div>
+                <div class="w-full mb-5">
+                    <button onclick="openTicketPopup('${m.date}')" class="w-full bg-[#2A2A2A] border-2 border-black shadow-[3px_3px_0_rgba(0,0,0,0.8)] text-[#F4F1EA] text-[14px] font-black tracking-tight py-3.5 rounded-xl flex items-center justify-center gap-2 active:translate-y-[2px] active:shadow-[1px_1px_0_rgba(0,0,0,0.8)] transition-all">
+                        <i class="fa-solid fa-ticket text-[#ffcc00] text-lg rotate-[-15deg]"></i> CLASSIC SERIES 기념 티켓 발급
                     </button>
                 </div>`;
             } else {
