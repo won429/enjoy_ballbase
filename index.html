@@ -1425,8 +1425,10 @@
                 sbh = `
                 <style>
                     /* 팝업 전체 테마 덮어쓰기 (클래식 모드) */
-                    html body #mobile-wrapper div#lineup-popup.app-bg { background-color: #EBE7DF !important; background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px) !important; background-size: 15px 15px !important; }
-                    html.light-mode body #mobile-wrapper div#lineup-popup.app-bg { background-color: #EBE7DF !important; background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px) !important; background-size: 15px 15px !important; }
+                    html:has(#lineup-popup:not(.render-hidden) .classic-marker) #lineup-popup.app-bg,
+                    html.light-mode:has(#lineup-popup:not(.render-hidden) .classic-marker) #lineup-popup.app-bg { background-color: #EBE7DF !important; background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px) !important; background-size: 15px 15px !important; transition: none !important; }
+                    html:has(#lineup-popup:not(.render-hidden) .classic-marker) header.app-bg,
+                    html.light-mode:has(#lineup-popup:not(.render-hidden) .classic-marker) header.app-bg { background-color: transparent !important; background-image: none !important; transition: none !important; }
                     #lineup-content { color: #111 !important; }
                     #lineup-content span.text-white, #lineup-content div.text-white { color: #111 !important; text-shadow: none !important; }
                     #lineup-content span.text-gray-200, #lineup-content span.text-gray-400, #lineup-content span.text-gray-500, #lineup-content div.text-gray-500 { color: #444 !important; }
@@ -1441,12 +1443,13 @@
                     #lineup-content .bg-blue-600 { background-color: #004A99 !important; color: white !important; }
                     
                     /* 헤더 네비게이션 테마 덮어쓰기 (팝업 내부에서만 적용됨) */
-                    #left-wrapper { background: transparent !important; box-shadow: none !important; border: none !important; }
-                    #header-popup-title { background: #fff !important; border-radius: 100px !important; border: 1px solid rgba(0,0,0,0.1) !important; box-shadow: 0 4px 10px rgba(0,0,0,0.05) !important; padding: 2px 16px !important; }
-                    #header-popup-text { color: #111 !important; font-weight: 900 !important; }
-                    #ctrl-back button { background: #004A99 !important; color: #fff !important; box-shadow: 0 4px 10px rgba(0,74,153,0.3) !important; }
-                    #ctrl-wrapper { background: transparent !important; box-shadow: none !important; border: none !important; }
+                    html:has(#lineup-popup:not(.render-hidden) .classic-marker) #left-wrapper { background: transparent !important; box-shadow: none !important; border: none !important; }
+                    html:has(#lineup-popup:not(.render-hidden) .classic-marker) #header-popup-title { background: #fff !important; border-radius: 100px !important; border: 1px solid rgba(0,0,0,0.1) !important; box-shadow: 0 4px 10px rgba(0,0,0,0.05) !important; padding: 2px 16px !important; }
+                    html:has(#lineup-popup:not(.render-hidden) .classic-marker) #header-popup-text { color: #111 !important; font-weight: 900 !important; }
+                    html:has(#lineup-popup:not(.render-hidden) .classic-marker) #ctrl-back button { background: #004A99 !important; color: #fff !important; box-shadow: 0 4px 10px rgba(0,74,153,0.3) !important; }
+                    html:has(#lineup-popup:not(.render-hidden) .classic-marker) #ctrl-wrapper { background: transparent !important; box-shadow: none !important; border: none !important; }
                 </style>
+                <div class="classic-marker hidden"></div>
                 <div class="relative px-4 py-6 mb-2 mt-2">
                     <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-[#2A2A2A] px-6 py-1 rounded-b-[12px] flex items-center justify-center shadow-sm z-10 border-x-2 border-b-2 border-[#111]" style="background-color: #2A2A2A !important;">
                         <span class="text-[10px] font-black text-[#F4F1EA] tracking-[0.2em] ml-0.5" style="color: #F4F1EA !important;">CLASSIC SERIES</span>
