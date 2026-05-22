@@ -1887,17 +1887,17 @@
                 let a = parseInt(l.awayScore || 0), h = parseInt(l.homeScore || 0);
                 let iW = (m.team1 === t && a > h) || (m.team2 === t && h > a);
                 let iL = (m.team1 === t && a < h) || (m.team2 === t && h < a);
-                let result = iW ? '<span class="text-[#f87171] font-black ml-1 border border-[#f87171]/50 px-1.5 py-0.5 rounded text-[10px]">승리</span>' : (iL ? '<span class="text-[#60a5fa] font-black ml-1 border border-[#60a5fa]/50 px-1.5 py-0.5 rounded text-[10px]">패배</span>' : '<span class="text-gray-400 font-black ml-1 border border-gray-400/50 px-1.5 py-0.5 rounded text-[10px]">무승부</span>');
+                let result = iW ? '<span class="text-red-500 font-black ml-1 border border-red-500/50 px-1.5 py-0.5 rounded text-[10px]">승리</span>' : (iL ? '<span class="text-blue-500 font-black ml-1 border border-blue-500/50 px-1.5 py-0.5 rounded text-[10px]">패배</span>' : '<span class="text-gray-400 font-black ml-1 border border-gray-400/50 px-1.5 py-0.5 rounded text-[10px]">무승부</span>');
                 
                 let opp = m.team1 === t ? m.team2 : m.team1;
                 let isHome = m.team2 === t;
                 
                 let isRecorded = watchRecords.some(r => String(r.matchId) === String(m.id) && r.team === t && r.type === ty);
-                let btnClass = isRecorded ? 'bg-point text-white shadow-md' : 'bg-[#1A1A1C]/80 text-gray-400 hover:text-white';
+                let btnClass = isRecorded ? 'bg-point text-white shadow-md' : 'bg-white/10 text-gray-400 hover:text-white';
                 let btnText = isRecorded ? '<i class="fa-solid fa-check mr-1"></i>직관함' : '추가하기';
                 
                 html += `
-                <div class="flex justify-between items-center bg-[#1A1A1C]/40 border border-white/5 rounded-2xl p-3 shadow-sm active:scale-[0.98] transition-transform">
+                <div class="flex justify-between items-center bg-white/5 border border-white/5 rounded-2xl p-3 shadow-sm active:scale-[0.98] transition-transform">
                     <div class="flex flex-col gap-1 w-[60%]">
                         <span class="text-[10px] text-gray-500 font-bold"><i class="fa-regular fa-calendar mr-1"></i>${m.date.split('-')[1]}.${m.date.split('-')[2]} ${isHome ? 'HOME' : 'AWAY'}</span>
                         <div class="flex items-center gap-1.5 truncate">
