@@ -402,7 +402,7 @@
         
         function applyTimeBasedTheme() {
             const currentHour = new Date().getHours();
-            const isDayTime = currentHour >= 7 && currentHour < 18;
+            const isDayTime = currentHour >= 5 && currentHour < 20;
             if (isDayTime) {
                 document.documentElement.classList.add('light-mode');
             } else {
