@@ -1361,6 +1361,8 @@
             const c = document.getElementById('lineup-content'), m = scheduleData.find(x => x.id === parseInt(id) || x.id === id); if (!m) return;
             const l = liveDataStore[id] || {}; if (!l.gameStatus) l.gameStatus = '경기전';
             
+            let h1 = teamHex[m.team1] || '#888888', h2 = teamHex[m.team2] || '#888888';
+            
             let sch = `<span class="text-2xl font-black text-gray-700">VS</span>`;
             if (l.gameStatus !== '경기전') {
                 let iC = (l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취')));
@@ -1467,7 +1469,129 @@
                     </div>
                 </div>`;
             } else {
-                sbh = `<div class="flex justify-between items-center mb-5 px-1 mt-0 pb-5 border-b border-white/10"><div class="flex flex-col items-center w-[30%]">${l1Lg}<span class="text-[15px] font-black text-white tracking-wider">${m.team1}</span><span class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">AWAY</span></div><div class="flex flex-col items-center justify-center w-[40%]">${sch}</div><div class="flex flex-col items-center w-[30%]">${l2Lg}<span class="text-[15px] font-black text-white tracking-wider">${m.team2}</span><span class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">HOME</span></div></div>`;
+                let aScoreBanner = l.awayScore || '0', hScoreBanner = l.homeScore || '0';
+                let aHit = l.awayHit || '0', aErr = l.awayError || '0', aBase = l.awayBase || '0';
+                let hHit = l.homeHit || '0', hErr = l.homeError || '0', hBase = l.homeBase || '0';
+                
+                let innNum = (l.inning || '').replace(/[^0-9]/g, '') || '1';
+                let currentInnInt = parseInt(innNum) || 1;
+                let aInnings = l.awayInning || [];
+                let hInnings = l.homeInning || [];
+                
+                let maxInning = Math.max(9, aInnings.length, hInnings.length);
+                if (l.gameStatus === '경기중' && currentInnInt > 9) maxInning = Math.max(maxInning, currentInnInt);
+                
+                let isExtra = maxInning > 9;
+                
+                let inningHeaderHtml = '', aInningsHtml = '', hInningsHtml = '';
+                let isTop = (l.inning && l.inning.includes('초'));
+                
+                for (let i = 1; i <= maxInning; i++) {
+                    let aVal = aInnings[i-1] !== undefined ? aInnings[i-1] : '-';
+                    let hVal = hInnings[i-1] !== undefined ? hInnings[i-1] : '-';
+                    let isCurA = (i === currentInnInt && isTop && l.gameStatus === '경기중');
+                    let isCurH = (i === currentInnInt && !isTop && l.gameStatus === '경기중');
+                    
+                    let aFormatted = isCurA ? `<div class="relative inline-block"><span class="relative z-10 text-white font-bold">${aVal}</span><div class="absolute -bottom-[2px] left-1/2 -translate-x-1/2 w-[10px] h-[1.5px] bg-[#6ee7b7]"></div></div>` : aVal;
+                    let hFormatted = isCurH ? `<div class="relative inline-block"><span class="relative z-10 text-white font-bold">${hVal}</span><div class="absolute -bottom-[2px] left-1/2 -translate-x-1/2 w-[10px] h-[1.5px] bg-[#6ee7b7]"></div></div>` : hVal;
+
+                    if (isExtra) {
+                        inningHeaderHtml += `<div class="w-[20px] text-center shrink-0">${i}</div>`;
+                        aInningsHtml += `<div class="w-[20px] text-center shrink-0">${aFormatted}</div>`;
+                        hInningsHtml += `<div class="w-[20px] text-center shrink-0">${hFormatted}</div>`;
+                    } else {
+                        inningHeaderHtml += `<div>${i}</div>`;
+                        aInningsHtml += `<div>${aFormatted}</div>`;
+                        hInningsHtml += `<div>${hFormatted}</div>`;
+                    }
+                }
+                
+                let tableWrapperClass = isExtra ? 'flex-1 overflow-x-auto scrollbar-hide ml-1' : 'flex-1 ml-1';
+                let tableInnerClass = isExtra ? 'flex flex-col min-w-max gap-y-1.5 w-full pr-3' : 'flex flex-col gap-y-1.5 w-full pr-2';
+                let rowClass = isExtra ? 'flex gap-1.5 justify-start' : 'grid grid-cols-9 text-center';
+
+                let aPitcherArea = '', hPitcherArea = '', inningArea = '', centerArea = '';
+                let apRawBanner = l.awayPitcherDetail || l.awayPitcher || '-';
+                let hpRawBanner = l.homePitcherDetail || l.homePitcher || '-';
+                let aPitcher = typeof apRawBanner === 'object' && apRawBanner !== null ? apRawBanner.name : apRawBanner;
+                let hPitcher = typeof hpRawBanner === 'object' && hpRawBanner !== null ? hpRawBanner.name : hpRawBanner;
+                let aPCount = l.awayPitcherCount || '0', hPCount = l.homePitcherCount || '0';
+                
+                let oCount = parseInt(l.out || 0), bCount = parseInt(l.ball || 0), sCount = parseInt(l.strike || 0);
+                let outDotsHtml = ''; for(let i=1; i<=2; i++) outDotsHtml += `<div class="w-1.5 h-1.5 rounded-full ${i <= oCount ? 'bg-[#ef4444] shadow-[0_0_3px_#ef4444]' : 'bg-[#4b5563]'}"></div>`;
+                let base1 = l.base1 ? 'bg-[#6ee7b7] shadow-[0_0_5px_rgba(110,231,183,0.6)]' : 'bg-[#374151]', base2 = l.base2 ? 'bg-[#6ee7b7] shadow-[0_0_5px_rgba(110,231,183,0.6)]' : 'bg-[#374151]', base3 = l.base3 ? 'bg-[#6ee7b7] shadow-[0_0_5px_rgba(110,231,183,0.6)]' : 'bg-[#374151]';
+                let innIcon = isTop ? `<div class="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[6px] border-b-[#6ee7b7] mt-0.5"></div>` : `<div class="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[6px] border-t-[#6ee7b7] mt-0.5"></div>`;
+
+                if (l.gameStatus === '종료') {
+                    let aWin = parseInt(aScoreBanner) > parseInt(hScoreBanner), hWin = parseInt(hScoreBanner) > parseInt(aScoreBanner);
+                    let aText = aWin ? `<span class="text-[#f87171] font-black mr-1">승</span>${l.winPitcher||'-'}` : (hWin ? `<span class="text-[#60a5fa] font-black mr-1">패</span>${l.losePitcher||'-'}` : `<span class="text-gray-400">무승부</span>`);
+                    let hText = hWin ? `<span class="text-[#f87171] font-black mr-1">승</span>${l.winPitcher||'-'}` : (aWin ? `<span class="text-[#60a5fa] font-black mr-1">패</span>${l.losePitcher||'-'}` : `<span class="text-gray-400">무승부</span>`);
+                    aPitcherArea = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate">${aText}</span>`; 
+                    hPitcherArea = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate text-right">${hText}</span>`;
+                    inningArea = `<span class="text-[14px] font-black text-[#FFFFFF] drop-shadow-md tracking-widest mt-1">종료</span>`; 
+                    centerArea = `<span class="text-[12px] font-bold text-gray-400 tracking-widest mt-px">FINAL</span>`;
+                } else if (l.gameStatus === '경기전' || l.gameStatus === '취소' || (l.gameStatus && l.gameStatus.includes('취소'))) {
+                    aPitcherArea = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate">${aPitcher !== '-' ? '선발 ' + aPitcher : '-'}</span>`;
+                    hPitcherArea = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate text-right">${hPitcher !== '-' ? '선발 ' + hPitcher : '-'}</span>`;
+                    let centerTxt = l.gameStatus === '경기전' ? m.time : '취소';
+                    inningArea = `<span class="text-[14px] font-black text-[#FFFFFF] drop-shadow-md tracking-widest mt-1">${centerTxt}</span>`;
+                    centerArea = `<span class="text-[11px] font-bold text-gray-400 tracking-widest mt-px">${m.stadium}</span>`;
+                    aScoreBanner = '-'; hScoreBanner = '-';
+                } else {
+                    aPitcherArea = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate">P.${aPitcher}</span><div class="flex items-center gap-1 opacity-80 shrink-0"><i class="fa-solid fa-baseball text-[9px] text-[#d1d5db]"></i><span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md">${aPCount}</span></div>`;
+                    hPitcherArea = `<div class="flex items-center gap-1 opacity-80 shrink-0"><span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md">${hPCount}</span><i class="fa-solid fa-baseball text-[9px] text-[#d1d5db]"></i></div><span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate text-right">P.${hPitcher}</span>`;
+                    inningArea = `<div class="w-[28px] h-[24px] relative mb-0.5"><div class="absolute top-[1px] left-[10px] w-[8px] h-[8px] rotate-45 ${base2}"></div><div class="absolute top-[9px] left-[2px] w-[8px] h-[8px] rotate-45 ${base3}"></div><div class="absolute top-[9px] left-[18px] w-[8px] h-[8px] rotate-45 ${base1}"></div></div><div class="flex items-center gap-1.5">${innIcon}<span class="text-[13px] font-black text-[#FFFFFF] drop-shadow-md leading-none tracking-tighter">${innNum}</span></div>`;
+                    centerArea = `<div class="flex gap-[3px] mr-1.5">${outDotsHtml}</div><span class="text-[12px] font-black text-[#FFFFFF] tracking-widest mt-px">${bCount}-${sCount}</span>`;
+                }
+
+                sbh = `<div class="w-[calc(100%+48px)] -mx-6 rounded-none border-x-0 relative overflow-hidden mb-5 shadow-xl flex flex-col border-y border-white/15" style="background: linear-gradient(to right, ${h1}E6 0%, #18181b 45%, #18181b 55%, ${h2}E6 100%);">
+                    <img src="${teamLogos[m.team1]}" class="absolute -left-6 top-[35%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110">
+                    <img src="${teamLogos[m.team2]}" class="absolute -right-6 top-[35%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110">
+                    
+                    <div class="flex justify-between items-center px-5 py-2 relative z-10 h-[62px]">
+                        <div class="flex items-center gap-3 w-[36%]">
+                            <span class="text-[26px] font-black text-[#FFFFFF] tracking-tighter drop-shadow-md">${m.team1}</span>
+                            <span class="text-[34px] font-black text-[#FFFFFF] drop-shadow-md ml-auto leading-none">${aScoreBanner}</span>
+                        </div>
+                        <div class="flex flex-col items-center justify-center w-[28%] mt-0.5">${inningArea}</div>
+                        <div class="flex items-center gap-3 w-[36%]">
+                            <span class="text-[34px] font-black text-[#FFFFFF] drop-shadow-md mr-auto leading-none">${hScoreBanner}</span>
+                            <span class="text-[26px] font-black text-[#FFFFFF] tracking-tighter drop-shadow-md">${m.team2}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full h-px bg-[rgba(255,255,255,0.3)] relative z-10"></div>
+                    
+                    <div class="flex justify-between items-center bg-[rgba(0,0,0,0.4)] relative z-10 h-[28px]">
+                        <div class="flex items-center gap-2.5 w-[36%] pl-5">${aPitcherArea}</div>
+                        <div class="flex items-center justify-center bg-[#0d0d0e] h-full w-[28%]" style="border-left: 1px solid rgba(255,255,255,0.2); border-right: 1px solid rgba(255,255,255,0.2);">${centerArea}</div>
+                        <div class="flex items-center justify-end gap-2.5 w-[36%] pr-5">${hPitcherArea}</div>
+                    </div>
+                    
+                    <div class="w-full bg-[#111113]/90 flex flex-col pt-1.5 pb-2 px-3 relative z-10 border-t border-[rgba(255,255,255,0.15)] backdrop-blur-md">
+                        <div class="flex w-full text-[10px] font-bold items-center">
+                            <div class="flex flex-col w-[36px] shrink-0 text-left pl-1 gap-y-1.5 pt-0">
+                                <div class="text-gray-400">팀명</div>
+                                <div class="text-white truncate mt-0.5">${m.team1}</div>
+                                <div class="text-white truncate mt-0.5">${m.team2}</div>
+                            </div>
+                            
+                            <div class="${tableWrapperClass}">
+                                <div class="${tableInnerClass}">
+                                    <div class="${rowClass} text-gray-400">${inningHeaderHtml}</div>
+                                    <div class="${rowClass} text-gray-300 mt-0.5">${aInningsHtml}</div>
+                                    <div class="${rowClass} text-gray-300 mt-0.5">${hInningsHtml}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex flex-col w-[60px] shrink-0 gap-y-1.5 pl-1 text-center" style="border-left: 1px solid rgba(255,255,255,0.1);">
+                                <div class="flex gap-1 text-[#60A5FA] justify-center"><div class="font-black w-[12px]">R</div><div class="w-[12px]">H</div><div class="w-[12px]">E</div><div class="w-[12px]">B</div></div>
+                                <div class="flex gap-1 mt-0.5 justify-center"><div class="text-white font-black w-[12px]">${aScoreBanner !== '-' ? aScoreBanner : '0'}</div><div class="text-gray-400 w-[12px]">${aHit}</div><div class="text-gray-400 w-[12px]">${aErr}</div><div class="text-gray-400 w-[12px]">${aBase}</div></div>
+                                <div class="flex gap-1 mt-0.5 justify-center"><div class="text-white font-black w-[12px]">${hScoreBanner !== '-' ? hScoreBanner : '0'}</div><div class="text-gray-400 w-[12px]">${hHit}</div><div class="text-gray-400 w-[12px]">${hErr}</div><div class="text-gray-400 w-[12px]">${hBase}</div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
             }
             
             let apRaw = l.awayPitcherDetail || l.awayPitcher || '-';
@@ -1480,7 +1604,6 @@
                 return; 
             }
             
-            let h1 = teamHex[m.team1] || '#888888', h2 = teamHex[m.team2] || '#888888';
             let lg1 = uiTeamLogo(m.team1, 'w-6 h-6', 'w-6 h-6');
             let lg2 = uiTeamLogo(m.team2, 'w-6 h-6', 'w-6 h-6');
             
