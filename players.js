@@ -130,5 +130,6 @@ const playerImages = {
     '서건창':'https://sports-phinf.pstatic.net/player/kbo/default/78168.png?type=w150',
     '김건희':'https://sports-phinf.pstatic.net/player/kbo/default/53312.png?type=w150',
     '톨허스트':'https://sports-phinf.pstatic.net/player/kbo/default/55130.png?type=w150',
+    '박계범':'https://sports-phinf.pstatic.net/player/kbo/default/64468.png?type=w150',
     '최준호':'https://sports-phinf.pstatic.net/player/kbo/default/53259.png?type=w150'
 };
