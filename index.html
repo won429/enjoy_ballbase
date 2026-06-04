@@ -609,7 +609,7 @@
             if (!t) {
                 t = document.createElement('div'); t.id = 'toast-msg'; t.className = 'fixed top-12 left-1/2 -translate-x-1/2 bg-point text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-2xl z-[100] transition-all duration-300 opacity-0 transform -translate-y-4'; document.getElementById('mobile-wrapper').appendChild(t);
             }
-            t.innerText = msg; void t.offsetWidth; t.classList.remove('opacity-0', '-translate-y-4'); t.classList.add('opacity-100', 'translate-y-0');
+            t.innerText = msg; void t.offsetWidth; t.classList.remove('opacity-100', '-translate-y-4'); t.classList.add('opacity-100', 'translate-y-0');
             setTimeout(() => { t.classList.remove('opacity-100', 'translate-y-0'); t.classList.add('opacity-0', '-translate-y-4'); }, 2500);
         }
 
@@ -712,8 +712,6 @@
                     let wSnap = await db.collection("watch_records").get();
                     watchRecords = []; wSnap.forEach(d => watchRecords.push(d.data()));
 
-                    // [수정점] 사용자가 말씀하신 대로 초기 로딩 시 무식하게 모든 달을 가져오지 않고,
-                    // 무조건 '현재 선택된 달' 하나만 가져옵니다. 
                     await fetchMonthSchedule(currentDate.getFullYear(), currentDate.getMonth() + 1);
 
                     await pollLiveToday();
@@ -1263,12 +1261,26 @@
 
                         let outDotsHtml = ''; for(let i=1; i<=2; i++) outDotsHtml += `<div class="w-1.5 h-1.5 rounded-full ${i <= oCount ? 'bg-[#ef4444] shadow-[0_0_3px_#ef4444]' : 'bg-[#4b5563]'}"></div>`;
 
-                        let currentInnInt = parseInt(innNum) || 1, aInnings = l.awayInning || [], hInnings = l.homeInning || [], aInningsHtml = '', hInningsHtml = '';
-                        for (let i = 1; i <= 9; i++) {
-                            let aVal = aInnings[i-1] !== undefined ? aInnings[i-1] : '-', hVal = hInnings[i-1] !== undefined ? hInnings[i-1] : '-';
-                            let isCurA = (i === currentInnInt && isTop), isCurH = (i === currentInnInt && !isTop);
-                            aInningsHtml += isCurA ? `<div class="relative inline-block w-full"><span class="relative z-10 text-white font-bold">${aVal}</span><div class="absolute -bottom-[2px] left-1/2 -translate-x-1/2 w-[10px] h-[1.5px] bg-[#6ee7b7]"></div></div>` : `<div>${aVal}</div>`;
-                            hInningsHtml += isCurH ? `<div class="relative inline-block w-full"><span class="relative z-10 text-white font-bold">${hVal}</span><div class="absolute -bottom-[2px] left-1/2 -translate-x-1/2 w-[10px] h-[1.5px] bg-[#6ee7b7]"></div></div>` : `<div>${hVal}</div>`;
+                        let currentInnInt = parseInt(innNum) || 1, aInnings = l.awayInning || [], hInnings = l.homeInning || [];
+                        let maxInning = Math.max(9, aInnings.length, hInnings.length, currentInnInt);
+                        if (l.gameStatus === '종료' && (aInnings.length > 9 || hInnings.length > 9)) {
+                            maxInning = Math.max(aInnings.length, hInnings.length);
+                        } else if (l.gameStatus === '경기중' && currentInnInt > 9) {
+                             maxInning = currentInnInt;
+                        }
+
+                        let inningHeaderHtml = '';
+                        let aInningsHtml = '';
+                        let hInningsHtml = '';
+
+                        for (let i = 1; i <= maxInning; i++) {
+                            inningHeaderHtml += `<div class="w-[20px] text-center shrink-0">${i}</div>`;
+                            let aVal = aInnings[i-1] !== undefined ? aInnings[i-1] : '-';
+                            let hVal = hInnings[i-1] !== undefined ? hInnings[i-1] : '-';
+                            let isCurA = (i === currentInnInt && isTop && l.gameStatus === '경기중');
+                            let isCurH = (i === currentInnInt && !isTop && l.gameStatus === '경기중');
+                            aInningsHtml += isCurA ? `<div class="w-[20px] text-center relative inline-block shrink-0"><span class="relative z-10 text-white font-bold">${aVal}</span><div class="absolute -bottom-[2px] left-1/2 -translate-x-1/2 w-[10px] h-[1.5px] bg-[#6ee7b7]"></div></div>` : `<div class="w-[20px] text-center shrink-0">${aVal}</div>`;
+                            hInningsHtml += isCurH ? `<div class="w-[20px] text-center relative inline-block shrink-0"><span class="relative z-10 text-white font-bold">${hVal}</span><div class="absolute -bottom-[2px] left-1/2 -translate-x-1/2 w-[10px] h-[1.5px] bg-[#6ee7b7]"></div></div>` : `<div class="w-[20px] text-center shrink-0">${hVal}</div>`;
                         }
                         
                         let aHit = l.awayHit || '0', aErr = l.awayError || '0', aBase = l.awayBase || '0', hHit = l.homeHit || '0', hErr = l.homeError || '0', hBase = l.homeBase || '0';
@@ -1291,7 +1303,7 @@
                         let bottomInfoHtml = `<div class="w-full flex justify-end mt-2 px-1"><span class="text-white font-bold text-[11px] tracking-tight">${m.stadium}${bcNameTop ? ' <span class="text-gray-500 mx-1.5 font-normal">|</span> ' + bcNameTop : ''}</span></div>`;
 
                         div.className = 'min-w-full shrink-0 snap-center transition-transform duration-300 active:scale-[0.98] py-1 flex flex-col'; div.style.cssText = 'border-top: none !important; border-bottom: none !important;';
-                        div.innerHTML = `<div class="banner-card w-full relative overflow-hidden shadow-2xl flex flex-col border-y border-white/15" style="background: linear-gradient(to right, ${h1}E6 0%, #18181b 45%, #18181b 55%, ${h2}E6 100%);"><img src="${teamLogos[m.team1]}" class="absolute -left-6 top-[35%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><img src="${teamLogos[m.team2]}" class="absolute -right-6 top-[35%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><div class="flex justify-between items-center px-5 py-2 relative z-10 h-[62px]"><div class="flex items-center gap-3 w-[36%]"><span class="text-[26px] font-black text-[#FFFFFF] tracking-tighter drop-shadow-md">${m.team1}</span><span class="text-[34px] font-black text-[#FFFFFF] drop-shadow-md ml-auto leading-none">${aScore}</span></div><div class="flex flex-col items-center justify-center w-[28%] mt-0.5">${inningArea}</div><div class="flex items-center gap-3 w-[36%]"><span class="text-[34px] font-black text-[#FFFFFF] drop-shadow-md mr-auto leading-none">${hScore}</span><span class="text-[26px] font-black text-[#FFFFFF] tracking-tighter drop-shadow-md">${m.team2}</span></div></div><div class="w-full h-px bg-[rgba(255,255,255,0.3)] relative z-10"></div><div class="flex justify-between items-center bg-[rgba(0,0,0,0.4)] relative z-10 h-[28px]"><div class="flex items-center gap-2.5 w-[36%] pl-5">${aPitcherArea}</div><div class="flex items-center justify-center bg-[#0d0d0e] h-full w-[28%]" style="border-left: 1px solid rgba(255,255,255,0.2); border-right: 1px solid rgba(255,255,255,0.2);">${centerArea}</div><div class="flex items-center justify-end gap-2.5 w-[36%] pr-5">${hPitcherArea}</div></div><div class="w-full bg-[#111113]/90 flex flex-col pt-1.5 pb-2 px-3 relative z-10 border-t border-[rgba(255,255,255,0.15)] backdrop-blur-md"><div class="grid grid-cols-[42px_1fr_75px] gap-2 w-full text-[10px] font-bold text-center"><div class="text-gray-400 text-left pl-2">팀명</div><div class="grid grid-cols-9 text-gray-400"><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div></div><div class="grid grid-cols-4 text-[#60A5FA]"><div class="font-black">R</div><div>H</div><div>E</div><div>B</div></div><div class="text-white text-left pl-2 truncate mt-1">${m.team1}</div><div class="grid grid-cols-9 text-gray-300 mt-1">${aInningsHtml}</div><div class="grid grid-cols-4 mt-1"><div class="text-white font-black">${aScore}</div><div class="text-gray-400">${aHit}</div><div class="text-gray-400">${aErr}</div><div class="text-gray-400">${aBase}</div></div><div class="text-white text-left pl-2 truncate mt-0.5">${m.team2}</div><div class="grid grid-cols-9 text-gray-300 mt-0.5">${hInningsHtml}</div><div class="grid grid-cols-4 mt-0.5"><div class="text-white font-black">${hScore}</div><div class="text-gray-400">${hHit}</div><div class="text-gray-400">${hErr}</div><div class="text-gray-400">${hBase}</div></div></div></div></div>${bottomInfoHtml}`;
+                        div.innerHTML = `<div class="banner-card w-full relative overflow-hidden shadow-2xl flex flex-col border-y border-white/15" style="background: linear-gradient(to right, ${h1}E6 0%, #18181b 45%, #18181b 55%, ${h2}E6 100%);"><img src="${teamLogos[m.team1]}" class="absolute -left-6 top-[35%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><img src="${teamLogos[m.team2]}" class="absolute -right-6 top-[35%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><div class="flex justify-between items-center px-5 py-2 relative z-10 h-[62px]"><div class="flex items-center gap-3 w-[36%]"><span class="text-[26px] font-black text-[#FFFFFF] tracking-tighter drop-shadow-md">${m.team1}</span><span class="text-[34px] font-black text-[#FFFFFF] drop-shadow-md ml-auto leading-none">${aScore}</span></div><div class="flex flex-col items-center justify-center w-[28%] mt-0.5">${inningArea}</div><div class="flex items-center gap-3 w-[36%]"><span class="text-[34px] font-black text-[#FFFFFF] drop-shadow-md mr-auto leading-none">${hScore}</span><span class="text-[26px] font-black text-[#FFFFFF] tracking-tighter drop-shadow-md">${m.team2}</span></div></div><div class="w-full h-px bg-[rgba(255,255,255,0.3)] relative z-10"></div><div class="flex justify-between items-center bg-[rgba(0,0,0,0.4)] relative z-10 h-[28px]"><div class="flex items-center gap-2.5 w-[36%] pl-5">${aPitcherArea}</div><div class="flex items-center justify-center bg-[#0d0d0e] h-full w-[28%]" style="border-left: 1px solid rgba(255,255,255,0.2); border-right: 1px solid rgba(255,255,255,0.2);">${centerArea}</div><div class="flex items-center justify-end gap-2.5 w-[36%] pr-5">${hPitcherArea}</div></div><div class="w-full bg-[#111113]/90 flex flex-col pt-1.5 pb-2 px-3 relative z-10 border-t border-[rgba(255,255,255,0.15)] backdrop-blur-md"><div class="flex w-full text-[10px] font-bold text-center items-center"><div class="flex flex-col w-[42px] shrink-0 text-left pl-1 gap-y-1.5 pt-0"><div class="text-gray-400">팀명</div><div class="text-white truncate mt-0.5">${m.team1}</div><div class="text-white truncate mt-0.5">${m.team2}</div></div><div class="flex-1 overflow-x-auto scrollbar-hide ml-1"><div class="flex flex-col min-w-max gap-y-1.5 w-full pr-3"><div class="flex gap-1 text-gray-400 justify-between">${inningHeaderHtml}</div><div class="flex gap-1 text-gray-300 mt-0.5 justify-between">${aInningsHtml}</div><div class="flex gap-1 text-gray-300 mt-0.5 justify-between">${hInningsHtml}</div></div></div><div class="flex flex-col w-[60px] shrink-0 gap-y-1.5 pl-1" style="border-left: 1px solid rgba(255,255,255,0.1);"><div class="flex gap-1 text-[#60A5FA] justify-center"><div class="font-black w-[12px]">R</div><div class="w-[12px]">H</div><div class="w-[12px]">E</div><div class="w-[12px]">B</div></div><div class="flex gap-1 mt-0.5 justify-center"><div class="text-white font-black w-[12px]">${aScore}</div><div class="text-gray-400 w-[12px]">${aHit}</div><div class="text-gray-400 w-[12px]">${aErr}</div><div class="text-gray-400 w-[12px]">${aBase}</div></div><div class="flex gap-1 mt-0.5 justify-center"><div class="text-white font-black w-[12px]">${hScore}</div><div class="text-gray-400 w-[12px]">${hHit}</div><div class="text-gray-400 w-[12px]">${hErr}</div><div class="text-gray-400 w-[12px]">${hBase}</div></div></div></div></div></div>${bottomInfoHtml}`;
                     } else {
                         let apRaw = l.awayPitcherDetail || l.awayPitcher || '-';
                         let hpRaw = l.homePitcherDetail || l.homePitcher || '-';
@@ -1325,7 +1337,7 @@
 
                         div.className = 'min-w-full shrink-0 snap-center transition-transform duration-300 active:scale-[0.98] py-1 flex flex-col'; div.style.cssText = 'border-top: none !important; border-bottom: none !important;';
                         
-                        div.innerHTML = `<div class="banner-card w-full bg-[#161618] relative overflow-hidden px-5 py-4 shadow-xl flex flex-col justify-center gap-3.5"><div class="absolute inset-0 pointer-events-none z-0" style="background: ${bgGradient};"></div><div class="flex justify-between items-center z-10 w-full"><div class="flex items-center"><span class="${statusColor} font-black text-[13px] flex items-center gap-1.5 tracking-tight"><span class="w-1.5 h-1.5 rounded-full ${dotColor}"></span>${statusText}</span><span class="text-gray-600 text-[11px] mx-2.5 mb-px">|</span><span class="text-gray-400 font-bold text-[13px] tracking-tight">${m.stadium}</span></div>${bcHtml}</div><div class="flex justify-between items-center z-10 w-full ${iC ? 'opacity-50 grayscale' : ''}"><div class="flex flex-col w-[35%] gap-2"><div class="flex items-center gap-1.5"><div class="relative shrink-0 flex items-center justify-center"><img src="${teamLogos[m.team1]}" class="w-[34px] h-[34px] object-contain drop-shadow-md">${rank1Html}</div><span class="text-[18px] font-black text-white tracking-tight whitespace-nowrap">${m.team1}</span>${winMark1}</div>${!iC ? `<div class="flex items-center gap-1.5 pl-1 opacity-90">${apim}<span class="text-[11px] font-semibold text-gray-400 truncate w-full pt-0.5">${ap}</span></div>` : ''}</div><div class="flex justify-center flex-1"><div class="flex items-center justify-center pt-0.5">${scoreHtml}</div></div><div class="flex flex-col w-[35%] items-end gap-2 text-right"><div class="flex items-center justify-end gap-1.5">${winMark2}<span class="text-[18px] font-black text-white tracking-tight whitespace-nowrap">${m.team2}</span><div class="relative shrink-0 flex items-center justify-center"><img src="${teamLogos[m.team2]}" class="w-[34px] h-[34px] object-contain drop-shadow-md">${rank2Html}</div></div>${!iC ? `<div class="flex items-center justify-end gap-1.5 pr-1 opacity-90"><span class="text-[11px] font-semibold text-gray-400 truncate w-full text-right pt-0.5">${hp}</span>${hpim}</div>` : ''}</div></div></div>`;
+                        div.innerHTML = `<div class="banner-card w-full bg-[#161618] relative overflow-hidden px-5 py-4 shadow-xl flex flex-col justify-center gap-3.5 border-y border-white/10"><div class="absolute inset-0 pointer-events-none z-0" style="background: ${bgGradient};"></div><div class="flex justify-between items-center z-10 w-full"><div class="flex items-center"><span class="${statusColor} font-black text-[13px] flex items-center gap-1.5 tracking-tight"><span class="w-1.5 h-1.5 rounded-full ${dotColor}"></span>${statusText}</span><span class="text-gray-600 text-[11px] mx-2.5 mb-px">|</span><span class="text-gray-400 font-bold text-[13px] tracking-tight">${m.stadium}</span></div>${bcHtml}</div><div class="flex justify-between items-center z-10 w-full ${iC ? 'opacity-50 grayscale' : ''}"><div class="flex flex-col w-[35%] gap-2"><div class="flex items-center gap-1.5"><div class="relative shrink-0 flex items-center justify-center"><img src="${teamLogos[m.team1]}" class="w-[34px] h-[34px] object-contain drop-shadow-md">${rank1Html}</div><span class="text-[18px] font-black text-white tracking-tight whitespace-nowrap">${m.team1}</span>${winMark1}</div>${!iC ? `<div class="flex items-center gap-1.5 pl-1 opacity-90">${apim}<span class="text-[11px] font-semibold text-gray-400 truncate w-full pt-0.5">${ap}</span></div>` : ''}</div><div class="flex justify-center flex-1"><div class="flex items-center justify-center pt-0.5">${scoreHtml}</div></div><div class="flex flex-col w-[35%] items-end gap-2 text-right"><div class="flex items-center justify-end gap-1.5">${winMark2}<span class="text-[18px] font-black text-white tracking-tight whitespace-nowrap">${m.team2}</span><div class="relative shrink-0 flex items-center justify-center"><img src="${teamLogos[m.team2]}" class="w-[34px] h-[34px] object-contain drop-shadow-md">${rank2Html}</div></div>${!iC ? `<div class="flex items-center justify-end gap-1.5 pr-1 opacity-90"><span class="text-[11px] font-semibold text-gray-400 truncate w-full text-right pt-0.5">${hp}</span>${hpim}</div>` : ''}</div></div></div>`;
                     }
                 }
                 div.classList.add('cursor-pointer'); div.onclick = () => openLineupPopup(m.id); c.appendChild(div);
@@ -1393,10 +1405,12 @@
             let isDal = (m.date === '2026-05-15' || m.date === '2026-05-16' || m.date === '2026-05-17') && ((m.team1 === 'KIA' && m.team2 === '삼성') || (m.team1 === '삼성' && m.team2 === 'KIA'));
             let isClassic = (m.date === '2026-05-22' || m.date === '2026-05-23' || m.date === '2026-05-24') && (m.team1 === '삼성' || m.team2 === '삼성');
             
+            let h1 = teamHex[m.team1] || '#888888', h2 = teamHex[m.team2] || '#888888';
+
             let sbh = '';
             if (isDal) {
                 let dalSch = sch.replace(/text-gray-700/g, 'text-[#93c5fd] opacity-80').replace(/text-gray-500/g, 'text-[#bfdbfe] opacity-80').replace(/bg-white\/5/g, 'bg-[#0B132B] border-[#1E3A8A]/50 shadow-[0_0_10px_rgba(37,99,235,0.3)] text-[#ffffff]').replace(/text-white/g, 'text-[#ffffff] drop-shadow-md').replace(/opacity-50/g, 'opacity-70').replace(/text-point/g, 'text-[#ffffff]');
-                sbh = `<div class="relative overflow-hidden px-4 py-6 mb-3 border border-indigo-900/40 rounded-[24px] shadow-[0_8px_32px_rgba(79,70,229,0.25)] bg-[#02040A]">
+                sbh = `<div class="relative overflow-hidden px-4 py-6 mb-3 border border-indigo-900/40 rounded-[24px] shadow-[0_8px_32px_rgba(79,70,229,0.25)] bg-[#02040A] w-[calc(100%+48px)] -mx-6">
                     <div class="absolute inset-0 pointer-events-none z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1E3A8A] via-[#0A1128] to-[#02040A] opacity-90"></div>
                     <div class="absolute w-[1.5px] h-[1.5px] bg-white rounded-full shadow-[0_0_4px_#fff] opacity-90 top-[15%] left-[20%] pointer-events-none"></div>
                     <div class="absolute w-[2px] h-[2px] bg-white rounded-full shadow-[0_0_5px_#fff] opacity-80 top-[25%] left-[80%] pointer-events-none animate-pulse"></div>
@@ -1450,7 +1464,7 @@
                     html:has(#lineup-popup:not(.render-hidden) .classic-marker) #ctrl-wrapper { background: transparent !important; box-shadow: none !important; border: none !important; }
                 </style>
                 <div class="classic-marker hidden"></div>
-                <div class="relative px-4 pb-6 pt-1 mb-2 mt-0">
+                <div class="relative px-4 pb-6 pt-1 mb-2 mt-0 w-[calc(100%+48px)] -mx-6">
                     <div class="flex justify-center items-center gap-[1.5px] mt-1 mb-2 z-10 relative opacity-95">
                         <span class="text-[14px] font-black px-1.5 py-0.5 -rotate-3 shadow-[1.5px_1.5px_0_#000] border border-black" style="color: #ffffff !important; background-color: #111111 !important; font-family: 'Georgia', serif; font-style: italic;">클</span>
                         <span class="text-[14px] font-black px-1.5 py-0.5 rotate-2 shadow-[1.5px_1.5px_0_#000] border border-black" style="color: #ffffff !important; background-color: #0F3789 !important; font-style: italic;">래</span>
@@ -1467,7 +1481,92 @@
                     </div>
                 </div>`;
             } else {
-                sbh = `<div class="flex justify-between items-center mb-5 px-1 mt-0 pb-5 border-b border-white/10"><div class="flex flex-col items-center w-[30%]">${l1Lg}<span class="text-[15px] font-black text-white tracking-wider">${m.team1}</span><span class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">AWAY</span></div><div class="flex flex-col items-center justify-center w-[40%]">${sch}</div><div class="flex flex-col items-center w-[30%]">${l2Lg}<span class="text-[15px] font-black text-white tracking-wider">${m.team2}</span><span class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">HOME</span></div></div>`;
+                let iC = (l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취')));
+                let isLiveOrEnded = l && (l.gameStatus === '경기중' || l.gameStatus === '종료');
+
+                if (isLiveOrEnded && !iC) {
+                    let aScore = l.awayScore || '0', hScore = l.homeScore || '0', innText = l.inning || '', innNum = innText.replace(/[^0-9]/g, '') || '1';
+                    let isTop = innText.includes('초'), innIcon = isTop ? `<div class="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[6px] border-b-[#6ee7b7] mt-0.5"></div>` : `<div class="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[6px] border-t-[#6ee7b7] mt-0.5"></div>`;
+                    
+                    let apRaw = l.awayPitcherDetail || l.awayPitcher || '-';
+                    let hpRaw = l.homePitcherDetail || l.homePitcher || '-';
+                    let aPitcher = typeof apRaw === 'object' && apRaw !== null ? apRaw.name : apRaw;
+                    let hPitcher = typeof hpRaw === 'object' && hpRaw !== null ? hpRaw.name : hpRaw;
+                    let aPCount = l.awayPitcherCount || '0', hPCount = l.homePitcherCount || '0';
+                    let base1 = l.base1 ? 'bg-[#6ee7b7] shadow-[0_0_5px_rgba(110,231,183,0.6)]' : 'bg-[#374151]', base2 = l.base2 ? 'bg-[#6ee7b7] shadow-[0_0_5px_rgba(110,231,183,0.6)]' : 'bg-[#374151]', base3 = l.base3 ? 'bg-[#6ee7b7] shadow-[0_0_5px_rgba(110,231,183,0.6)]' : 'bg-[#374151]';
+                    let bCount = parseInt(l.ball || 0), sCount = parseInt(l.strike || 0), oCount = parseInt(l.out || 0);
+
+                    let outDotsHtml = ''; for(let i=1; i<=2; i++) outDotsHtml += `<div class="w-1.5 h-1.5 rounded-full ${i <= oCount ? 'bg-[#ef4444] shadow-[0_0_3px_#ef4444]' : 'bg-[#4b5563]'}"></div>`;
+
+                    let currentInnInt = parseInt(innNum) || 1, aInnings = l.awayInning || [], hInnings = l.homeInning || [];
+                    let maxInning = Math.max(9, aInnings.length, hInnings.length, currentInnInt);
+                    if (l.gameStatus === '종료' && (aInnings.length > 9 || hInnings.length > 9)) {
+                        maxInning = Math.max(aInnings.length, hInnings.length);
+                    } else if (l.gameStatus === '경기중' && currentInnInt > 9) {
+                         maxInning = currentInnInt;
+                    }
+
+                    let inningHeaderHtml = '';
+                    let aInningsHtml = '';
+                    let hInningsHtml = '';
+
+                    for (let i = 1; i <= maxInning; i++) {
+                        inningHeaderHtml += `<div class="w-[20px] text-center shrink-0">${i}</div>`;
+                        let aVal = aInnings[i-1] !== undefined ? aInnings[i-1] : '-';
+                        let hVal = hInnings[i-1] !== undefined ? hInnings[i-1] : '-';
+                        let isCurA = (i === currentInnInt && isTop && l.gameStatus === '경기중');
+                        let isCurH = (i === currentInnInt && !isTop && l.gameStatus === '경기중');
+                        aInningsHtml += isCurA ? `<div class="w-[20px] text-center relative inline-block shrink-0"><span class="relative z-10 text-white font-bold">${aVal}</span><div class="absolute -bottom-[2px] left-1/2 -translate-x-1/2 w-[10px] h-[1.5px] bg-[#6ee7b7]"></div></div>` : `<div class="w-[20px] text-center shrink-0">${aVal}</div>`;
+                        hInningsHtml += isCurH ? `<div class="w-[20px] text-center relative inline-block shrink-0"><span class="relative z-10 text-white font-bold">${hVal}</span><div class="absolute -bottom-[2px] left-1/2 -translate-x-1/2 w-[10px] h-[1.5px] bg-[#6ee7b7]"></div></div>` : `<div class="w-[20px] text-center shrink-0">${hVal}</div>`;
+                    }
+                    
+                    let aHit = l.awayHit || '0', aErr = l.awayError || '0', aBase = l.awayBase || '0', hHit = l.homeHit || '0', hErr = l.homeError || '0', hBase = l.homeBase || '0';
+                    let aPitcherArea = '', hPitcherArea = '', inningArea = '', centerArea = '';
+
+                    if (l.gameStatus === '종료') {
+                        let a = parseInt(l.awayScore || 0), h = parseInt(l.homeScore || 0), aWin = a > h, hWin = h > a;
+                        let aText = aWin ? `<span class="text-[#f87171] font-black mr-1">승</span>${l.winPitcher||'-'}` : (hWin ? `<span class="text-[#60a5fa] font-black mr-1">패</span>${l.losePitcher||'-'}` : `<span class="text-gray-400">무승부</span>`);
+                        let hText = hWin ? `<span class="text-[#f87171] font-black mr-1">승</span>${l.winPitcher||'-'}` : (aWin ? `<span class="text-[#60a5fa] font-black mr-1">패</span>${l.losePitcher||'-'}` : `<span class="text-gray-400">무승부</span>`);
+                        aPitcherArea = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate">${aText}</span>`; hPitcherArea = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate text-right">${hText}</span>`;
+                        inningArea = `<span class="text-[14px] font-black text-[#FFFFFF] drop-shadow-md tracking-widest mt-1">종료</span>`; centerArea = `<span class="text-[12px] font-bold text-gray-400 tracking-widest mt-px">FINAL</span>`;
+                    } else {
+                        aPitcherArea = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate">P.${aPitcher}</span><div class="flex items-center gap-1 opacity-80 shrink-0"><i class="fa-solid fa-baseball text-[9px] text-[#d1d5db]"></i><span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md">${aPCount}</span></div>`;
+                        hPitcherArea = `<div class="flex items-center gap-1 opacity-80 shrink-0"><span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md">${hPCount}</span><i class="fa-solid fa-baseball text-[9px] text-[#d1d5db]"></i></div><span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate text-right">P.${hPitcher}</span>`;
+                        inningArea = `<div class="w-[28px] h-[24px] relative mb-0.5"><div class="absolute top-[1px] left-[10px] w-[8px] h-[8px] rotate-45 ${base2}"></div><div class="absolute top-[9px] left-[2px] w-[8px] h-[8px] rotate-45 ${base3}"></div><div class="absolute top-[9px] left-[18px] w-[8px] h-[8px] rotate-45 ${base1}"></div></div><div class="flex items-center gap-1.5">${innIcon}<span class="text-[13px] font-black text-[#FFFFFF] drop-shadow-md leading-none tracking-tighter">${innNum}</span></div>`;
+                        centerArea = `<div class="flex gap-[3px] mr-1.5">${outDotsHtml}</div><span class="text-[12px] font-black text-[#FFFFFF] tracking-widest mt-px">${bCount}-${sCount}</span>`;
+                    }
+
+                    sbh = `<div class="banner-card w-full relative overflow-hidden mb-5 shadow-xl flex flex-col border-y border-white/15 w-[calc(100%+48px)] -mx-6 rounded-none border-x-0" style="background: linear-gradient(to right, ${h1}E6 0%, #18181b 45%, #18181b 55%, ${h2}E6 100%);"><img src="${teamLogos[m.team1]}" class="absolute -left-6 top-[35%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><img src="${teamLogos[m.team2]}" class="absolute -right-6 top-[35%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><div class="flex justify-between items-center px-5 py-2 relative z-10 h-[62px]"><div class="flex items-center gap-3 w-[36%]"><span class="text-[26px] font-black text-[#FFFFFF] tracking-tighter drop-shadow-md">${m.team1}</span><span class="text-[34px] font-black text-[#FFFFFF] drop-shadow-md ml-auto leading-none">${aScore}</span></div><div class="flex flex-col items-center justify-center w-[28%] mt-0.5">${inningArea}</div><div class="flex items-center gap-3 w-[36%]"><span class="text-[34px] font-black text-[#FFFFFF] drop-shadow-md mr-auto leading-none">${hScore}</span><span class="text-[26px] font-black text-[#FFFFFF] tracking-tighter drop-shadow-md">${m.team2}</span></div></div><div class="w-full h-px bg-[rgba(255,255,255,0.3)] relative z-10"></div><div class="flex justify-between items-center bg-[rgba(0,0,0,0.4)] relative z-10 h-[28px]"><div class="flex items-center gap-2.5 w-[36%] pl-5">${aPitcherArea}</div><div class="flex items-center justify-center bg-[#0d0d0e] h-full w-[28%]" style="border-left: 1px solid rgba(255,255,255,0.2); border-right: 1px solid rgba(255,255,255,0.2);">${centerArea}</div><div class="flex items-center justify-end gap-2.5 w-[36%] pr-5">${hPitcherArea}</div></div><div class="w-full bg-[#111113]/90 flex flex-col pt-1.5 pb-2 px-3 relative z-10 border-t border-[rgba(255,255,255,0.15)] backdrop-blur-md"><div class="flex w-full text-[10px] font-bold text-center items-center"><div class="flex flex-col w-[42px] shrink-0 text-left pl-1 gap-y-1.5 pt-0"><div class="text-gray-400">팀명</div><div class="text-white truncate mt-0.5">${m.team1}</div><div class="text-white truncate mt-0.5">${m.team2}</div></div><div class="flex-1 overflow-x-auto scrollbar-hide ml-1"><div class="flex flex-col min-w-max gap-y-1.5 w-full pr-3"><div class="flex gap-1 text-gray-400 justify-between">${inningHeaderHtml}</div><div class="flex gap-1 text-gray-300 mt-0.5 justify-between">${aInningsHtml}</div><div class="flex gap-1 text-gray-300 mt-0.5 justify-between">${hInningsHtml}</div></div></div><div class="flex flex-col w-[60px] shrink-0 gap-y-1.5 pl-1" style="border-left: 1px solid rgba(255,255,255,0.1);"><div class="flex gap-1 text-[#60A5FA] justify-center"><div class="font-black w-[12px]">R</div><div class="w-[12px]">H</div><div class="w-[12px]">E</div><div class="w-[12px]">B</div></div><div class="flex gap-1 mt-0.5 justify-center"><div class="text-white font-black w-[12px]">${aScore}</div><div class="text-gray-400 w-[12px]">${aHit}</div><div class="text-gray-400 w-[12px]">${aErr}</div><div class="text-gray-400 w-[12px]">${aBase}</div></div><div class="flex gap-1 mt-0.5 justify-center"><div class="text-white font-black w-[12px]">${hScore}</div><div class="text-gray-400 w-[12px]">${hHit}</div><div class="text-gray-400 w-[12px]">${hErr}</div><div class="text-gray-400 w-[12px]">${hBase}</div></div></div></div></div></div>`;
+                } else {
+                    let apRaw = l.awayPitcherDetail || l.awayPitcher || '-';
+                    let hpRaw = l.homePitcherDetail || l.homePitcher || '-';
+                    let ap = typeof apRaw === 'object' && apRaw !== null ? apRaw.name : apRaw;
+                    let hp = typeof hpRaw === 'object' && hpRaw !== null ? hpRaw.name : hpRaw;
+                    let api = playerImages[ap], hpi = playerImages[hp];
+                    let apim = api ? `<img src="${api}" class="w-5 h-5 rounded-full object-cover object-top border border-white/10 bg-black/20 shrink-0 drop-shadow-sm">` : `<div class="w-5 h-5 rounded-full bg-black/20 border border-white/5 flex items-center justify-center shrink-0"><span class="text-[9px] font-black text-gray-400">P</span></div>`;
+                    let hpim = hpi ? `<img src="${hpi}" class="w-5 h-5 rounded-full object-cover object-top border border-white/10 bg-black/20 shrink-0 drop-shadow-sm">` : `<div class="w-5 h-5 rounded-full bg-black/20 border border-white/5 flex items-center justify-center shrink-0"><span class="text-[9px] font-black text-gray-400">P</span></div>`;
+                    let statusColor = 'text-gray-400', dotColor = 'bg-gray-500', statusText = m.time, scoreHtml = `<span class="text-2xl font-black text-gray-600 tracking-wider">VS</span>`, bgGradient = `linear-gradient(to right, ${h1}60 0%, ${h1}60 20%, ${h2}60 80%, ${h2}60 100%)`, winMark1 = '', winMark2 = '';
+                    
+                    if (iC) {
+                        bgGradient = `linear-gradient(135deg, ${h1}40 0%, ${h2}40 100%)`; statusColor = 'text-[#EA0029]'; dotColor = 'bg-[#EA0029]';
+                        let ct = (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))) ? l.inning : (l.gameStatus || '우천취소'); if (ct === '취소') ct = '우취'; ct = ct.replace('우천취소', '우취').replace('경기취소', '취소');
+                        statusText = ct;
+                        scoreHtml = `<span class="text-[32px] font-black text-gray-500 tracking-widest drop-shadow-md">취소</span>`;
+                    } else if (l && l.gameStatus !== '경기전') {
+                        let dis = (l.gameStatus === '경기중' && l.inning) ? l.inning : l.gameStatus, a = parseInt(l.awayScore || 0), h = parseInt(l.homeScore || 0);
+                        if (l.gameStatus === '종료') {
+                            statusColor = 'text-gray-400'; dotColor = 'bg-gray-500'; statusText = '종료';
+                            if (a > h) { bgGradient = `linear-gradient(to right, ${h1}70 0%, ${h1}10 100%)`; winMark1 = `<span class="text-[9px] font-black bg-white/20 text-white px-1.5 py-0.5 rounded-full shadow-sm border border-white/10">WIN</span>`; } 
+                            else if (h > a) { bgGradient = `linear-gradient(to left, ${h2}70 0%, ${h2}10 100%)`; winMark2 = `<span class="text-[9px] font-black bg-white/20 text-white px-1.5 py-0.5 rounded-full shadow-sm border border-white/10">WIN</span>`; } 
+                            else { bgGradient = `linear-gradient(135deg, ${h1}30 0%, ${h2}30 100%)`; }
+                        } else { statusColor = 'text-[#EA0029]'; dotColor = 'bg-[#EA0029] animate-pulse'; statusText = dis; }
+                        let ac = a > h ? (l.gameStatus === '종료' ? 'text-white drop-shadow-lg' : 'text-point drop-shadow-md') : (l.gameStatus === '종료' && a < h ? 'text-white/40' : 'text-white');
+                        let hc = h > a ? (l.gameStatus === '종료' ? 'text-white drop-shadow-lg' : 'text-point drop-shadow-md') : (l.gameStatus === '종료' && h < a ? 'text-white/40' : 'text-white');
+                        scoreHtml = `<span class="text-[36px] font-black ${ac} leading-none tracking-tighter">${a}</span><span class="text-base text-gray-500 mx-2 pb-1.5">:</span><span class="text-[36px] font-black ${hc} leading-none tracking-tighter">${h}</span>`;
+                    }
+
+                    sbh = `<div class="banner-card w-full bg-[#161618] relative overflow-hidden mb-5 px-5 py-4 shadow-xl flex flex-col justify-center gap-3.5 border-y border-white/10 w-[calc(100%+48px)] -mx-6 rounded-none border-x-0"><div class="absolute inset-0 pointer-events-none z-0" style="background: ${bgGradient};"></div><div class="flex justify-between items-center z-10 w-full"><div class="flex items-center"><span class="${statusColor} font-black text-[13px] flex items-center gap-1.5 tracking-tight"><span class="w-1.5 h-1.5 rounded-full ${dotColor}"></span>${statusText}</span></div></div><div class="flex justify-between items-center z-10 w-full ${iC ? 'opacity-50 grayscale' : ''}"><div class="flex flex-col w-[35%] gap-2"><div class="flex items-center gap-1.5"><div class="relative shrink-0 flex items-center justify-center"><img src="${teamLogos[m.team1]}" class="w-[34px] h-[34px] object-contain drop-shadow-md">${rank1Html}</div><span class="text-[18px] font-black text-white tracking-tight whitespace-nowrap">${m.team1}</span>${winMark1}</div>${!iC ? `<div class="flex items-center gap-1.5 pl-1 opacity-90">${apim}<span class="text-[11px] font-semibold text-gray-400 truncate w-full pt-0.5">${ap}</span></div>` : ''}</div><div class="flex justify-center flex-1"><div class="flex items-center justify-center pt-0.5">${scoreHtml}</div></div><div class="flex flex-col w-[35%] items-end gap-2 text-right"><div class="flex items-center justify-end gap-1.5">${winMark2}<span class="text-[18px] font-black text-white tracking-tight whitespace-nowrap">${m.team2}</span><div class="relative shrink-0 flex items-center justify-center"><img src="${teamLogos[m.team2]}" class="w-[34px] h-[34px] object-contain drop-shadow-md"></div></div>${!iC ? `<div class="flex items-center justify-end gap-1.5 pr-1 opacity-90"><span class="text-[11px] font-semibold text-gray-400 truncate w-full text-right pt-0.5">${hp}</span>${hpim}</div>` : ''}</div></div></div>`;
+                }
             }
             
             let apRaw = l.awayPitcherDetail || l.awayPitcher || '-';
@@ -1480,7 +1579,6 @@
                 return; 
             }
             
-            let h1 = teamHex[m.team1] || '#888888', h2 = teamHex[m.team2] || '#888888';
             let lg1 = uiTeamLogo(m.team1, 'w-6 h-6', 'w-6 h-6');
             let lg2 = uiTeamLogo(m.team2, 'w-6 h-6', 'w-6 h-6');
             
@@ -1582,387 +1680,146 @@
             if (!u) return;
             if (!audioPlayer) initAudioPlayer();
             audioPlayer.src = u;
+            currentSongTitle = t;
+            
+            let coverImg = teamLogos[selectedTeam === 'all' ? 'KIA' : selectedTeam] || teamLogos['KIA'];
+            if (t.includes('KIA')) coverImg = teamLogos['KIA'];
+            else if (t.includes('삼성')) coverImg = teamLogos['삼성'];
+
+            for (let p in playerImages) { if (t.includes(p)) { coverImg = playerImages[p]; break; } }
+            
+            currentSongCover = coverImg;
+            document.getElementById('mini-player-title').innerText = t;
+            document.getElementById('full-player-title').innerText = t;
+            document.getElementById('mini-player-cover').src = coverImg;
+            document.getElementById('full-player-cover').src = coverImg;
+            
             audioPlayer.play().then(() => {
                 isPlaying = true;
-                const mpb = document.getElementById('mini-player-btn'); if(mpb) mpb.className = 'fa-solid fa-pause text-[22px]';
-                const fpb = document.getElementById('full-player-btn'); if(fpb) fpb.className = 'fa-solid fa-pause text-[48px]';
-            }).catch(e => console.error(e));
-            
-            currentSongTitle = t;
-            const mt = document.getElementById('mini-player-title'); if(mt) mt.innerText = t;
-            const ft = document.getElementById('full-player-title'); if(ft) ft.innerText = t;
-            
-            let coverImg = 'logo.png';
-            let isPlayer = false;
-            for (let p in playerImages) { if (t.includes(p)) { coverImg = playerImages[p]; isPlayer = true; break; } }
-            if (!isPlayer) {
-                if (t.includes('KIA') || t.includes('호랑이')) coverImg = teamLogos['KIA'];
-                else if (t.includes('삼성') || t.includes('엘도라도') || t.includes('라이온즈') || t.includes('지중해')) coverImg = teamLogos['삼성'];
-            }
-            currentSongCover = coverImg;
-            
-            const mc = document.getElementById('mini-player-cover'); 
-            if(mc) { mc.src = coverImg; mc.className = isPlayer ? "w-full h-full object-cover object-top pt-0.5 scale-110 drop-shadow-md" : "w-full h-full object-contain opacity-95"; }
-            const fc = document.getElementById('full-player-cover'); 
-            if(fc) { fc.src = coverImg; fc.className = isPlayer ? "w-full h-full object-cover object-top pt-2 scale-110" : "w-full h-full object-contain p-8"; }
-            
-            let an = '팀 응원가'; if (isPlayer || t.includes('김도영') || t.includes('구자욱') || t.includes('최형우')) an = '선수 응원가'; 
-            const fpa = document.getElementById('full-player-artist'); if(fpa) fpa.innerText = t.includes('KIA') ? 'KIA 타이거즈 응원가' : (t.includes('삼성') ? '삼성 라이온즈 응원가' : an);
-            
-            const mp = document.getElementById('mini-player'); if(mp) mp.classList.remove('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
-            const pb = document.getElementById('mini-player-progress'); if (pb) pb.style.width = '0%'; 
-            const rs = document.getElementById('full-player-range'); if (rs) { rs.value = 0; rs.style.background = `var(--range-bg)`; }
-
-            updateMediaSession();
-        }
-
-        function updateMediaSession() {
-            if ('mediaSession' in navigator && currentSongTitle) {
-                let a = '팀 응원가';
-                if (currentSongTitle.includes('김도영') || currentSongTitle.includes('구자욱') || currentSongTitle.includes('최형우') || currentSongTitle.includes('선수')) {
-                    a = '선수 응원가';
-                }
-                const artworkUrl = currentSongCover.startsWith('http') ? currentSongCover : new URL(currentSongCover, window.location.href).href;
-
-                navigator.mediaSession.metadata = new MediaMetadata({
-                    title: currentSongTitle,
-                    artist: a,
-                    artwork: [
-                        { src: artworkUrl, sizes: '512x512', type: 'image/png' },
-                        { src: artworkUrl, sizes: '192x192', type: 'image/png' }
-                    ]
-                });
-                navigator.mediaSession.setActionHandler('play', () => { if(audioPlayer) audioPlayer.play(); });
-                navigator.mediaSession.setActionHandler('pause', () => { if(audioPlayer) audioPlayer.pause(); });
-                navigator.mediaSession.setActionHandler('previoustrack', () => appPrevMusic());
-                navigator.mediaSession.setActionHandler('nexttrack', () => appNextMusic());
-            }
-        }
-        
-        function toggleMiniPlayerPlay() { 
-            if(!audioPlayer) return; 
-            if(audioPlayer.paused) { 
-                audioPlayer.play(); 
-                const mpb = document.getElementById('mini-player-btn'); if(mpb) mpb.className = 'fa-solid fa-pause text-[22px]'; 
-                const fpb = document.getElementById('full-player-btn'); if(fpb) fpb.className = 'fa-solid fa-pause text-[48px]'; 
-            } else { 
-                audioPlayer.pause(); 
-                const mpb = document.getElementById('mini-player-btn'); if(mpb) mpb.className = 'fa-solid fa-play text-[22px] ml-0.5'; 
-                const fpb = document.getElementById('full-player-btn'); if(fpb) fpb.className = 'fa-solid fa-play text-[48px] ml-1'; 
-            } 
-        }
-        
-        window.appNextMusic = function() { 
-            if(currentPlaylist.length > 0 && currentSongIndex !== -1) { 
-                currentSongIndex = (currentSongIndex + 1) % currentPlaylist.length; 
-                executePlay(currentPlaylist[currentSongIndex].url, currentPlaylist[currentSongIndex].title); 
-            } 
-        };
-        
-        window.appPrevMusic = function() { 
-            if(currentPlaylist.length > 0 && currentSongIndex !== -1) { 
-                currentSongIndex = (currentSongIndex - 1 + currentPlaylist.length) % currentPlaylist.length; 
-                executePlay(currentPlaylist[currentSongIndex].url, currentPlaylist[currentSongIndex].title); 
-            } 
-        };
-        
-        function closeMiniPlayer() { 
-            if(audioPlayer) { 
-                audioPlayer.pause(); 
-                const mpb = document.getElementById('mini-player-btn'); if(mpb) mpb.className = 'fa-solid fa-play text-[22px] ml-0.5'; 
-                const fpb = document.getElementById('full-player-btn'); if(fpb) fpb.className = 'fa-solid fa-play text-[48px] ml-1'; 
-            } 
-            const mp = document.getElementById('mini-player'); if(mp) mp.classList.add('translate-y-[150%]', 'opacity-0', 'pointer-events-none'); 
-        }
-        
-        function openFullPlayer() { 
-            const fp = document.getElementById('full-player'); if(fp) { fp.classList.remove('translate-y-full', 'pointer-events-none'); fp.classList.add('translate-y-0', 'pointer-events-auto'); }
-        }
-        
-        function closeFullPlayer() { 
-            const fp = document.getElementById('full-player'); if(fp) { fp.classList.add('translate-y-full', 'pointer-events-none'); fp.classList.remove('translate-y-0', 'pointer-events-auto'); }
-        }
-        
-        function fpTouchStart(e) { fpStartY = e.touches[0].clientY; fpIsDragging = true; }
-        function fpTouchMove(e) { 
-            if(!fpIsDragging) return; 
-            fpCurrentY = e.touches[0].clientY; 
-            const diff = fpCurrentY - fpStartY; 
-            if(diff > 0) { const fp = document.getElementById('full-player'); if(fp) fp.style.transform = `translateY(${diff}px)`; }
-        }
-        function fpTouchEnd(e) { 
-            if(!fpIsDragging) return; 
-            fpIsDragging = false; 
-            const diff = fpCurrentY - fpStartY; 
-            const fp = document.getElementById('full-player'); if(fp) fp.style.transform = ''; 
-            if(diff > 100) closeFullPlayer(); 
-        }
-        
-        function playActiveTabSongs(tId) { 
-            let aType = 'team'; 
-            const types = ['team', 'player', 'lineup', 'hitout', 'entrance']; 
-            for(let ty of types) { 
-                if(!document.getElementById(`content-cheer-${tId}-${ty}`).classList.contains('hidden')) { aType = ty; break; } 
-            } 
-            if(aType === 'lineup') { 
-                const b = document.querySelector(`#content-cheer-${tId}-lineup .cursor-pointer`); 
-                if(b) b.click(); 
-            } else { 
-                const pl = cheerData[tId][aType]; 
-                if(pl && pl.length > 0) playCheerSong(pl[0].url, pl[0].title); 
-            } 
-        }
-
-        window.appPlayMusic = function() { 
-            if (audioPlayer && audioPlayer.src) { 
-                audioPlayer.play(); 
-                const mpb = document.getElementById('mini-player-btn'); if(mpb) mpb.className = 'fa-solid fa-pause text-[22px]'; 
-                const fpb = document.getElementById('full-player-btn'); if(fpb) fpb.className = 'fa-solid fa-pause text-[48px]'; 
-            } 
-        };
-        
-        window.appPauseMusic = function() { 
-            if (audioPlayer) { 
-                audioPlayer.pause(); 
-                const mpb = document.getElementById('mini-player-btn'); if(mpb) mpb.className = 'fa-solid fa-play text-[22px] ml-0.5'; 
-                const fpb = document.getElementById('full-player-btn'); if(fpb) fpb.className = 'fa-solid fa-play text-[48px] ml-1'; 
-            } 
-        };
-        
-        function sendStateToAndroid(s, t) { 
-            if (window.AndroidBridge && window.AndroidBridge.updateMusicState) { 
-                window.AndroidBridge.updateMusicState(s, t); 
-            } 
+                updatePlayerUI();
+                const mp = document.getElementById('mini-player');
+                mp.classList.remove('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
+            }).catch(e => console.log('Auto-play prevented:', e));
         }
 
         function initAudioPlayer() {
-            audioPlayer = document.getElementById('audio-player'); 
-            const pb = document.getElementById('mini-player-progress'), rb = document.getElementById('full-player-range'), ct = document.getElementById('full-player-current'), dt = document.getElementById('full-player-duration'); 
-            if(audioPlayer) { 
-                audioPlayer.addEventListener('play', () => { sendStateToAndroid("PLAYING", currentSongTitle); });
-                audioPlayer.addEventListener('pause', () => { sendStateToAndroid("PAUSED", currentSongTitle); });
-                audioPlayer.addEventListener('timeupdate', () => { 
-                    if(!isSeeking && audioPlayer.duration) { 
-                        const p = (audioPlayer.currentTime / audioPlayer.duration) * 100; 
-                        if(pb) pb.style.width = `${p}%`; 
-                        if(rb) rb.value = p; 
-                        if(ct) ct.innerText = formatTime(audioPlayer.currentTime); 
-                    } 
-                }); 
-                audioPlayer.addEventListener('loadedmetadata', () => { 
-                    if(dt) dt.innerText = formatTime(audioPlayer.duration); 
-                }); 
-                audioPlayer.addEventListener('ended', appNextMusic); 
-                if(rb) { 
-                    rb.addEventListener('input', (e) => { 
-                        isSeeking = true; const t = (e.target.value / 100) * audioPlayer.duration; 
-                        if(ct) ct.innerText = formatTime(t); 
-                    }); 
-                    rb.addEventListener('change', (e) => { 
-                        isSeeking = false; audioPlayer.currentTime = (e.target.value / 100) * audioPlayer.duration; 
-                    }); 
-                } 
-            } 
+            audioPlayer = document.getElementById('audio-player');
+            audioPlayer.addEventListener('timeupdate', updateProgress);
+            audioPlayer.addEventListener('ended', appNextMusic);
         }
-        
-        function formatTime(s) { 
-            if(isNaN(s)) return "0:00"; 
-            const m = Math.floor(s / 60), sec = Math.floor(s % 60); 
-            return `${m}:${sec.toString().padStart(2, '0')}`; 
-        }
-        
-        function closeNoticePopup() { 
-            const np = document.getElementById('notice-popup'); 
-            if (np) { 
-                np.classList.add('hidden'); 
-                np.classList.remove('flex'); 
-                sessionStorage.setItem('kbo_notice_seen', 'true'); 
-            } 
-        }
-        
-        function renderWinRate() {
-            const c = document.getElementById('winrate-container'); if (!c) return;
-            let s = { 'KIA': { '직관': { w: 0, l: 0, d: 0 } }, '삼성': { '직관': { w: 0, l: 0, d: 0 } } };
-            watchRecords.forEach(r => {
-                if (!s[r.team] || !s[r.team][r.type]) return; let m = scheduleData.find(x => String(x.id) === String(r.matchId)), l = liveDataStore[r.matchId];
-                if (m && l && l.gameStatus === '종료') {
-                    if (m.team1 !== r.team && m.team2 !== r.team) return; // [수정점] 해당 팀의 경기가 아니면 제외하는 방어 로직 추가
-                    
-                    let a = parseInt(l.awayScore || 0), h = parseInt(l.homeScore || 0), iW = (m.team1 === r.team && a > h) || (m.team2 === r.team && h > a), iL = (m.team1 === r.team && a < h) || (m.team2 === r.team && h < a);
-                    if (iW) s[r.team][r.type].w++; else if (iL) s[r.team][r.type].l++; else s[r.team][r.type].d++;
-                }
-            });
+
+        function updateProgress() {
+            if (!audioPlayer.duration) return;
+            const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            document.getElementById('mini-player-progress').style.width = `${progress}%`;
+            if (!isSeeking) document.getElementById('full-player-range').value = progress;
             
-            let t = selectedTeam; if (t !== 'KIA' && t !== '삼성') t = 'KIA';
-            let jk = s[t]['직관'], jkt = jk.w + jk.d + jk.l, jkp = jkt === 0 ? 0 : Math.round((jk.w / (jk.w + jk.l)) * 100); if (isNaN(jkp)) jkp = 0;
-            let fn = t === 'KIA' ? 'KIA 타이거즈' : '삼성 라이온즈', tc = t === 'KIA' ? 'text-[#EA0029]' : 'text-[#074CA1]';
-
-            function cc(ty, p, r, iR, iW) {
-                let fy = 145 - (110 * p / 100), u = t === 'KIA' ? 'kia' : 'sam', ut = 'jik', ci = `clip-${u}-${ut}`;
-                let w1 = t === 'KIA' ? '#FF4D6D' : '#3B82F6', w2 = teamHex[t];
-                let gc = iW ? 'winning-glow' : '', gs = iW ? `style="--glow-color: ${teamHex[t]}; --glow-color-half: ${teamHex[t]}80;"` : '', fh = '';
-                
-                let ch = '';
-                if (t === '삼성') {
-                    let outlineImg = 'https://github.com/won429/enjoy_ballbase/blob/main/slslsl.png?raw=true';
-                    let colorImg = 'https://github.com/won429/enjoy_ballbase/blob/main/sl.png?raw=true';
-                    let mY = 190 - (150 * p / 100);
-                    
-                    ch = `<svg width="100%" height="100%" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-2xl absolute inset-0 m-auto pointer-events-none select-none max-h-[100%] max-w-[100%] scale-[1.15]">
-                        <ellipse cx="80" cy="168" rx="45" ry="6" fill="rgba(0,0,0,0.15)"/>
-                        <defs>
-                            <mask id="mask-${ci}">
-                                <path fill="rgba(255,255,255,0.4)" d="M -200 ${mY} Q -150 ${mY+8} -100 ${mY} T 0 ${mY} T 100 ${mY} T 200 ${mY} T 300 ${mY} T 400 ${mY} V 250 H -200 Z">
-                                    <animateTransform attributeName="transform" type="translate" from="0,0" to="-200,0" dur="3s" repeatCount="indefinite" />
-                                </path>
-                                <path fill="white" d="M -200 ${mY} Q -150 ${mY-8} -100 ${mY} T 0 ${mY} T 100 ${mY} T 200 ${mY} T 300 ${mY} T 400 ${mY} V 250 H -200 Z">
-                                    <animateTransform attributeName="transform" type="translate" from="0,0" to="200,0" dur="2.5s" repeatCount="indefinite" />
-                                </path>
-                            </mask>
-                        </defs>
-                        <image href="${outlineImg}" x="-5" y="0" width="170" height="195" preserveAspectRatio="xMidYMid meet" opacity="0.25" />
-                        <image href="${colorImg}" x="-5" y="0" width="170" height="195" preserveAspectRatio="xMidYMid meet" mask="url(#mask-${ci})" />
-                    </svg>`;
-                } else if (t === 'KIA') {
-                    let outlineImg = 'https://github.com/won429/enjoy_ballbase/blob/main/khkhkhkh.png?raw=true';
-                    let colorImg = 'https://github.com/won429/enjoy_ballbase/blob/main/hghgh.png?raw=true';
-                    let mY = 190 - (150 * p / 100);
-                    
-                    ch = `<svg width="100%" height="100%" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-2xl absolute inset-0 m-auto pointer-events-none select-none max-h-[100%] max-w-[100%] scale-[1.15]">
-                        <ellipse cx="80" cy="168" rx="45" ry="6" fill="rgba(0,0,0,0.15)"/>
-                        <defs>
-                            <mask id="mask-${ci}">
-                                <path fill="rgba(255,255,255,0.4)" d="M -200 ${mY} Q -150 ${mY+8} -100 ${mY} T 0 ${mY} T 100 ${mY} T 200 ${mY} T 300 ${mY} T 400 ${mY} V 250 H -200 Z">
-                                    <animateTransform attributeName="transform" type="translate" from="0,0" to="-200,0" dur="3s" repeatCount="indefinite" />
-                                </path>
-                                <path fill="white" d="M -200 ${mY} Q -150 ${mY-8} -100 ${mY} T 0 ${mY} T 100 ${mY} T 200 ${mY} T 300 ${mY} T 400 ${mY} V 250 H -200 Z">
-                                    <animateTransform attributeName="transform" type="translate" from="0,0" to="200,0" dur="2.5s" repeatCount="indefinite" />
-                                </path>
-                            </mask>
-                        </defs>
-                        <image href="${outlineImg}" x="-5" y="0" width="170" height="195" preserveAspectRatio="xMidYMid meet" opacity="0.25" />
-                        <image href="${colorImg}" x="-5" y="0" width="170" height="195" preserveAspectRatio="xMidYMid meet" mask="url(#mask-${ci})" />
-                    </svg>`;
-                } else {
-                    if (p >= 60) fh = `<circle cx="62" cy="55" r="4.5" fill="#111"/><circle cx="98" cy="55" r="4.5" fill="#111"/><path d="M 72 64 Q 80 74 88 64" stroke="#111" stroke-width="3.5" stroke-linecap="round" fill="none"/><ellipse cx="50" cy="62" rx="7" ry="4" fill="#FFB6C1" opacity="0.8"/><ellipse cx="110" cy="62" rx="7" ry="4" fill="#FFB6C1" opacity="0.8"/>`;
-                    else if (p >= 40) fh = `<circle cx="62" cy="58" r="4.5" fill="#111"/><circle cx="98" cy="58" r="4.5" fill="#111"/><line x1="75" y1="67" x2="85" y2="67" stroke="#111" stroke-width="3.5" stroke-linecap="round"/>`;
-                    else fh = `<circle cx="62" cy="60" r="4.5" fill="#111"/><circle cx="98" cy="60" r="4.5" fill="#111"/><path d="M 74 72 Q 80 65 86 72" stroke="#111" stroke-width="3.5" stroke-linecap="round" fill="none"/><path d="M 108 65 Q 110 70 108 75 Q 106 70 108 65" fill="#60A5FA" opacity="0.9"/>`;
-                    
-                    ch = `<svg width="100%" height="100%" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-2xl absolute inset-0 m-auto pointer-events-none select-none max-h-[100%] max-w-[100%] scale-110"><ellipse cx="80" cy="165" rx="30" ry="5" fill="rgba(0,0,0,0.15)"/><path d="M 55 130 L 55 150 A 10 10 0 0 0 75 150 L 75 130 Z" fill="#F8FAFC"/><path d="M 85 130 L 85 150 A 10 10 0 0 0 105 150 L 105 130 Z" fill="#F8FAFC"/><path d="M 40 85 Q 25 90 25 100 Q 25 110 40 115 Z" fill="#F8FAFC"/><path d="M 120 85 Q 135 90 135 100 Q 135 110 120 115 Z" fill="#F8FAFC"/><rect x="35" y="25" width="90" height="120" rx="45" fill="#FFFFFF"/><defs><clipPath id="${ci}"><rect x="35" y="25" width="90" height="120" rx="45"/></clipPath></defs><g clip-path="url(#${ci})"><path fill="${w1}" d="M -200 ${fy} Q -150 ${fy+8} -100 ${fy} T 0 ${fy} T 100 ${fy} T 200 ${fy} T 300 ${fy} T 400 ${fy} V 200 H -200 Z"><animateTransform attributeName="transform" type="translate" from="0,0" to="-200,0" dur="3s" repeatCount="indefinite" /></path><path fill="${w2}" d="M -200 ${fy} Q -150 ${fy-8} -100 ${fy} T 0 ${fy} T 100 ${fy} T 200 ${fy} T 300 ${fy} T 400 ${fy} V 200 H -200 Z"><animateTransform attributeName="transform" type="translate" from="0,0" to="200,0" dur="2.5s" repeatCount="indefinite" /></path></g>${fh}<image href="${teamLogos[t]}" x="50" y="85" width="60" height="60" opacity="0.95" /></svg>`;
-                }
-                
-                let ac = iR ? 'items-end' : 'items-start', rc = iR ? 'flex-row-reverse' : 'flex-row';
-                
-                return `<div class="flex flex-col items-center w-full relative h-[520px] pt-8"><div class="flex flex-col items-center w-full z-20 relative"><div class="flex items-start justify-center w-full"><span class="text-[120px] font-black text-pattern-${t} leading-normal tracking-tighter pointer-events-none select-none drop-shadow-xl">${p}</span><span class="text-[36px] font-black ${tc} mt-8 ml-1 drop-shadow-md">%</span></div><div class="flex justify-between items-center w-full px-8 mt-2"><div class="flex items-center gap-3"><span class="text-[28px] font-extrabold text-white tracking-tight drop-shadow-md">${ty}</span><button onclick="openRecordPopup('${t}', '${ty}')" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/90 hover:bg-white/20 transition-all shadow-md border border-white/10 active:scale-95 z-30 pointer-events-auto"><i class="fa-solid fa-plus text-[16px]"></i></button></div><div class="text-[14px] font-bold text-gray-200 bg-black/50 px-4 py-2 rounded-xl border border-white/10 shadow-inner whitespace-nowrap tracking-tight drop-shadow-md flex flex-col items-end"><span>${r.w}승 ${r.d}무 ${r.l}패</span><span class="opacity-60 text-[11px] font-medium mt-0.5">총 ${r.w + r.d + r.l}전</span></div></div></div><div class="absolute -bottom-[40px] left-0 w-full h-[230px] flex items-end justify-center pointer-events-none z-10 scale-[1.35] origin-bottom">${ch}</div></div>`;
-            }
-            c.innerHTML = `<div class="flex flex-col w-full pb-8 pt-4">${cc('직관', jkp, jk, false, jkp >= 50)}</div>`;
+            document.getElementById('full-player-current').innerText = formatTime(audioPlayer.currentTime);
+            document.getElementById('full-player-duration').innerText = formatTime(audioPlayer.duration);
         }
 
-        function openRecordPopup(t, ty) { currentRecordTeam = t; currentRecordType = ty; recordPopupDate = new Date(); const p = document.getElementById('record-popup'); renderRecordCalendar(t, ty); p.classList.remove('hidden'); p.classList.add('flex'); updateHeaderCtrlForPopup(true, `${t} ${ty} 기록 추가`); }
-
-        function renderRecordCalendar(t, ty) {
-            const c = document.getElementById('record-content');
-            if (!c) return;
-            
-            let pastGames = scheduleData.filter(m => (m.team1 === t || m.team2 === t) && liveDataStore[m.id] && liveDataStore[m.id].gameStatus === '종료').sort((a, b) => b.date.localeCompare(a.date));
-            
-            if (pastGames.length === 0) {
-                c.innerHTML = '<div class="flex flex-col items-center justify-center py-20 text-gray-500"><i class="fa-solid fa-calendar-xmark text-4xl mb-3"></i><p class="text-sm font-bold text-white mb-1">완료된 경기가 없습니다.</p></div>';
-                return;
-            }
-
-            let html = '<div class="flex flex-col gap-3 pb-8">';
-            let currentMonth = '';
-            
-            pastGames.forEach(m => {
-                let d = new Date(m.date);
-                let monthStr = `${d.getFullYear()}년 ${d.getMonth() + 1}월`;
-                if (monthStr !== currentMonth) {
-                    if (currentMonth !== '') html += '</div>';
-                    html += `<div class="flex flex-col gap-2.5 mt-2"><h3 class="text-[13px] font-bold text-gray-400 px-2 sticky top-0 z-10 py-1.5 shadow-sm border-b border-white/5 tracking-tight" style="background-color: var(--app-bg);">${monthStr}</h3>`;
-                    currentMonth = monthStr;
-                }
-                
-                let l = liveDataStore[m.id];
-                let a = parseInt(l.awayScore || 0), h = parseInt(l.homeScore || 0);
-                let iW = (m.team1 === t && a > h) || (m.team2 === t && h > a);
-                let iL = (m.team1 === t && a < h) || (m.team2 === t && h < a);
-                let result = iW ? '<span class="text-red-500 font-black ml-1 border border-red-500/50 px-1.5 py-0.5 rounded text-[10px]">승리</span>' : (iL ? '<span class="text-blue-500 font-black ml-1 border border-blue-500/50 px-1.5 py-0.5 rounded text-[10px]">패배</span>' : '<span class="text-gray-400 font-black ml-1 border border-gray-400/50 px-1.5 py-0.5 rounded text-[10px]">무승부</span>');
-                
-                let opp = m.team1 === t ? m.team2 : m.team1;
-                let isHome = m.team2 === t;
-                
-                let isRecorded = watchRecords.some(r => String(r.matchId) === String(m.id) && r.team === t && r.type === ty);
-                let btnClass = isRecorded ? 'bg-point text-white shadow-md' : 'bg-white/10 text-gray-400 hover:text-white';
-                let btnText = isRecorded ? '<i class="fa-solid fa-check mr-1"></i>직관함' : '추가하기';
-                
-                html += `
-                <div class="flex justify-between items-center bg-white/5 border border-white/5 rounded-2xl p-3 shadow-sm active:scale-[0.98] transition-transform">
-                    <div class="flex flex-col gap-1 w-[60%]">
-                        <span class="text-[10px] text-gray-500 font-bold"><i class="fa-regular fa-calendar mr-1"></i>${m.date.split('-')[1]}.${m.date.split('-')[2]} ${isHome ? 'HOME' : 'AWAY'}</span>
-                        <div class="flex items-center gap-1.5 truncate">
-                            <img src="${teamLogos[opp]}" class="w-5 h-5 object-contain opacity-90 drop-shadow-sm">
-                            <span class="text-[15px] font-bold text-white tracking-tight truncate">vs ${opp}</span>
-                            <span class="text-[14px] font-black tracking-tighter text-gray-300 ml-1 bg-black/30 px-1.5 rounded">${a}:${h}</span>
-                        </div>
-                    </div>
-                    <div class="flex flex-col items-end gap-1.5">
-                        ${result}
-                        <button onclick="toggleWatchRecord('${m.id}', '${t}', '${ty}', ${!isRecorded}, '${m.date}')" class="px-3.5 py-1.5 rounded-full text-[11px] font-bold transition-all border border-white/10 ${btnClass}">${btnText}</button>
-                    </div>
-                </div>`;
-            });
-            html += '</div></div>';
-            c.innerHTML = html;
+        function formatTime(s) {
+            if (isNaN(s)) return '0:00';
+            const m = Math.floor(s / 60);
+            const sec = Math.floor(s % 60);
+            return `${m}:${sec < 10 ? '0' : ''}${sec}`;
         }
 
-        async function toggleWatchRecord(matchId, team, type, isAdding, dateStr) {
-            let docId = `${team}_${type}_${matchId}`;
-            if (isAdding) { watchRecords.push({ matchId: String(matchId), team: team, type: type, date: dateStr }); } 
-            else { watchRecords = watchRecords.filter(r => !(String(r.matchId) === String(matchId) && r.team === team && r.type === type)); }
-            
-            renderRecordCalendar(team, type); renderWinRate();
-            if (navigator.vibrate) navigator.vibrate(5);
-            
-            try {
-                if (isAdding) await db.collection("watch_records").doc(docId).set({ matchId: String(matchId), team: team, type: type, date: dateStr, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-                else await db.collection("watch_records").doc(docId).delete();
-            } catch(e) { console.error(e); }
-        }
-
-        function closeRecordPopup() {
-            const p = document.getElementById('record-popup');
-            if (p) { 
-                p.classList.add('hidden'); 
-                p.classList.remove('flex'); 
-            }
-            updateHeaderCtrlForPopup(false);
-        }
-
-        // [수정점] 데이터 동기화 및 앱 최초 실행 동기화 보강
-        window.addEventListener('DOMContentLoaded', () => {
-            if (window.KBO_HISTORY_2026 && window.KBO_HISTORY_2026.gamesByDate) {
-                Object.values(window.KBO_HISTORY_2026.gamesByDate).forEach(dayGames => {
-                    dayGames.forEach(g => {
-                        g.team1 = g.awayTeam || g.team1; 
-                        g.team2 = g.homeTeam || g.team2; 
-                        g.time = g.gameTime || g.time;
-                        if (!liveDataStore[g.id]) liveDataStore[g.id] = g;
-                        if (!scheduleData.find(x => x.id === g.id)) scheduleData.push(g);
-                    });
-                });
-                scheduleData.sort((a, b) => { if (a.date === b.date) return (a.time || "00:00").localeCompare(b.time || "00:00"); return a.date.localeCompare(b.date); });
-            }
-
-            setTimeout(() => {
-                switchTab(0);
-                setTeamFilter(selectedTeam);
-            }, 10);
-
-            syncWithFirestore();
-            renderCheerSongs();
+        document.getElementById('full-player-range').addEventListener('input', (e) => {
+            isSeeking = true;
+            const t = (e.target.value / 100) * audioPlayer.duration;
+            document.getElementById('full-player-current').innerText = formatTime(t);
         });
 
+        document.getElementById('full-player-range').addEventListener('change', (e) => {
+            audioPlayer.currentTime = (e.target.value / 100) * audioPlayer.duration;
+            isSeeking = false;
+        });
+
+        function toggleMiniPlayerPlay() {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+                isPlaying = true;
+            } else {
+                audioPlayer.pause();
+                isPlaying = false;
+            }
+            updatePlayerUI();
+        }
+
+        function updatePlayerUI() {
+            const i1 = document.getElementById('mini-player-btn');
+            const i2 = document.getElementById('full-player-btn');
+            if (audioPlayer.paused) {
+                i1.className = 'fa-solid fa-play text-[22px]';
+                i2.className = 'fa-solid fa-play text-[48px]';
+            } else {
+                i1.className = 'fa-solid fa-pause text-[22px]';
+                i2.className = 'fa-solid fa-pause text-[48px]';
+            }
+        }
+
+        function closeMiniPlayer() {
+            audioPlayer.pause();
+            const mp = document.getElementById('mini-player');
+            mp.classList.add('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
+        }
+
+        function openFullPlayer() {
+            const fp = document.getElementById('full-player');
+            fp.classList.remove('translate-y-full', 'pointer-events-none');
+        }
+
+        function closeFullPlayer() {
+            const fp = document.getElementById('full-player');
+            fp.classList.add('translate-y-full', 'pointer-events-none');
+            fp.style.transform = '';
+        }
+
+        function appNextMusic() {
+            if (currentPlaylist.length === 0) return;
+            currentSongIndex = (currentSongIndex + 1) % currentPlaylist.length;
+            executePlay(currentPlaylist[currentSongIndex].url, currentPlaylist[currentSongIndex].title);
+        }
+
+        function appPrevMusic() {
+            if (currentPlaylist.length === 0) return;
+            if (audioPlayer.currentTime > 3) {
+                audioPlayer.currentTime = 0;
+                return;
+            }
+            currentSongIndex = (currentSongIndex - 1 + currentPlaylist.length) % currentPlaylist.length;
+            executePlay(currentPlaylist[currentSongIndex].url, currentPlaylist[currentSongIndex].title);
+        }
+
+        function fpTouchStart(e) {
+            fpStartY = e.touches[0].clientY;
+            fpIsDragging = true;
+        }
+
+        function fpTouchMove(e) {
+            if (!fpIsDragging) return;
+            fpCurrentY = e.touches[0].clientY;
+            const diff = fpCurrentY - fpStartY;
+            if (diff > 0) {
+                document.getElementById('full-player').style.transform = `translateY(${diff}px)`;
+            }
+        }
+
+        function fpTouchEnd(e) {
+            fpIsDragging = false;
+            const diff = fpCurrentY - fpStartY;
+            const fp = document.getElementById('full-player');
+            if (diff > 100) {
+                closeFullPlayer();
+            } else {
+                fp.style.transform = '';
+            }
+        }
+
+        window.onload = () => {
+            syncWithFirestore();
+        };
     </script>
 </body>
 </html>
