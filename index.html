@@ -43,16 +43,16 @@
         body[data-theme="all"] #bottom-nav button .text-white { color: #000000 !important; }
         body[data-theme="all"] #bottom-nav button i.text-white { color: #000000 !important; }
         
-        /* 상단바: 글래스/알약 제거 → 평평하고 심플한 텍스트 기반 디자인 */
+        /* 상단바: 군더더기 없는 깔끔한 텍스트 탭 (박스/세그먼트/글래스 전부 제거) */
         #left-wrapper, #ctrl-wrapper { background: transparent !important; border: none !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; padding: 0 !important; position: relative; z-index: 40; pointer-events: auto !important; }
-        #ctrl-team { gap: 3px !important; }
-        #ctrl-team button { background: transparent !important; background-color: transparent !important; background-image: none !important; box-shadow: none !important; border: none !important; border-radius: 0 !important; padding: 4px 7px !important; color: #6b7280 !important; font-weight: 700 !important; position: relative; transition: color 0.25s ease, transform 0.15s ease; }
-        #ctrl-team button.bg-point { color: var(--point-color) !important; font-weight: 800 !important; }
-        #ctrl-team button.bg-point::after { content: ''; position: absolute; left: 50%; transform: translateX(-50%); bottom: -3px; width: 15px; height: 3px; border-radius: 3px; background: var(--point-color); box-shadow: 0 0 8px var(--point-bg); }
-        html.light-mode #ctrl-team button { color: #94a3b8 !important; }
+        #ctrl-team { background: transparent !important; gap: 4px !important; }
+        #ctrl-team button { background: transparent !important; background-color: transparent !important; background-image: none !important; box-shadow: none !important; border: none !important; border-radius: 0 !important; padding: 5px 7px 7px !important; color: #9aa3af !important; font-weight: 600 !important; position: relative; transition: color 0.2s ease, transform 0.12s ease; }
+        #ctrl-team button.bg-point { background: transparent !important; color: var(--point-color) !important; font-weight: 800 !important; }
+        #ctrl-team button.bg-point::after { content: ''; position: absolute; left: 7px; right: 7px; bottom: 0; height: 2.5px; border-radius: 99px; background: var(--point-color); }
+        html.light-mode #ctrl-team button { color: #8b95a1 !important; }
         #header-calendar-nav button.bg-point { background: transparent !important; background-color: transparent !important; background-image: none !important; box-shadow: none !important; color: var(--point-color) !important; width: 30px !important; height: 30px !important; }
-        #header-calendar-nav button.bg-point:active { transform: scale(0.82); }
-        #ctrl-back button { background: transparent !important; background-color: transparent !important; background-image: none !important; box-shadow: none !important; color: var(--point-color) !important; border-radius: 0 !important; padding: 4px 4px !important; font-weight: 800 !important; }
+        #header-calendar-nav button.bg-point:active { transform: scale(0.85); }
+        #ctrl-back button { background: transparent !important; background-color: transparent !important; background-image: none !important; box-shadow: none !important; color: var(--point-color) !important; border-radius: 0 !important; padding: 4px 4px !important; font-weight: 700 !important; }
         .pt-safe { padding-top: max(20px, env(safe-area-inset-top)) !important; }
         .pt-main { padding-top: calc(max(20px, env(safe-area-inset-top)) + 70px) !important; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
@@ -99,10 +99,15 @@
         #mini-player:has(#mini-player-btn.fa-pause) .mp-eq i { animation-play-state: running; }
         @keyframes mp-eq { 0%, 100% { height: 30%; } 50% { height: 100%; } }
         /* 미니플레이어: 글래스(블러) 제거 → 솔리드 카드 */
-        #mini-player { background: #1c1c1e !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
-        html.light-mode #mini-player { background: #ffffff !important; }
+        /* 미니플레이어: Toss 솔리드 카드 (블러/글래스 없음) */
+        #mini-player { background: #1a1d23 !important; border: 1px solid #292c32 !important; box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+        html.light-mode #mini-player { background: #ffffff !important; border: 1px solid #e5e8eb !important; box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important; }
+        .mp-cover-bg { background: #22242a; }
+        html.light-mode .mp-cover-bg { background: #f2f4f6; }
 
-        #full-player { background: #0c0a0e !important; backdrop-filter: blur(30px); }
+        /* 풀플레이어: Toss 디자인 토큰 (라이트/다크 적응, 플랫) */
+        #full-player { --fp-card: #1a1d23; --fp-heading: #fafafa; --fp-body: #b0b8c1; --fp-cap: #8b95a1; --fp-track: #2a2d34; --fp-icon: #e5e8eb; --fp-btn: #22242a; background: #0f1115 !important; backdrop-filter: none !important; }
+        html.light-mode #full-player { --fp-card: #f9fafb; --fp-heading: #191f28; --fp-body: #6b7684; --fp-cap: #8b95a1; --fp-track: #e5e8eb; --fp-icon: #333d4b; --fp-btn: #f2f4f6; background: #ffffff !important; }
         #toast-msg { background: rgba(20, 20, 22, 0.85) !important; backdrop-filter: blur(20px); color: #fff !important; font-weight: 700 !important; border: 1px solid rgba(255,255,255,0.1) !important; box-shadow: 0 20px 40px rgba(0,0,0,0.6) !important; border-radius: 100px !important; padding: 12px 24px !important; }
         
         .text-pattern-KIA { background-color: #EA0029; background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,0.4) 4px, rgba(255,255,255,0.4) 5px), repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(255,255,255,0.4) 4px, rgba(255,255,255,0.4) 5px); -webkit-background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
@@ -112,18 +117,12 @@
         .winning-glow { animation: border-glow 2.5s ease-in-out infinite; border-width: 2px !important; z-index: 20; }
         .render-hidden { position: absolute !important; transform: translateX(-9999px) !important; opacity: 0 !important; pointer-events: none !important; width: 100% !important; height: 100% !important; z-index: -1 !important; }
 
-        /* 승리 확률 게이지: 양쪽에서 차오르고 빛이 흐르는 모션 */
-        @keyframes wp-grow-l { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-        @keyframes wp-grow-r { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-        @keyframes wp-flow { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        @keyframes wp-num { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes wp-fade { from { opacity: 0; } to { opacity: 1; } }
-        .wp-fill { position: absolute; top: 0; bottom: 0; overflow: hidden; }
-        .wp-fill-l { left: 0; transform-origin: left center; animation: wp-grow-l 0.85s cubic-bezier(0.22, 1, 0.36, 1) both; }
-        .wp-fill-r { right: 0; transform-origin: right center; animation: wp-grow-r 0.85s cubic-bezier(0.22, 1, 0.36, 1) both; }
-        .wp-fill::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); background-size: 200% 100%; animation: wp-flow 2.6s linear infinite; }
-        .wp-divider { animation: wp-fade 0.5s 0.35s both; }
-        .wp-num { display: inline-block; animation: wp-num 0.6s 0.25s ease both; }
+        /* 승리 확률 게이지: 베이스(홈 컬러) 위에 단일 막대(원정 컬러)만 채움 → 경계 1개, 정렬 완벽 */
+        @keyframes wp-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+        .wp-bar { position: absolute; left: 0; top: 0; bottom: 0; transform-origin: left center; animation: wp-grow 0.5s cubic-bezier(0.4, 0, 0.2, 1) both; }
+        .wp-num { font-variant-numeric: tabular-nums; }
+        .wp-name { color: #6b7684; }
+        html:not(.light-mode) .wp-name { color: #b0b8c1; }
 
         html { background-color: #030303; }
         html.light-mode { background-color: #f3f4f6; }
@@ -164,9 +163,6 @@
         html.light-mode body[data-theme="all"] .bg-point .text-white, html.light-mode body[data-theme="all"] .bg-point i { color: #ffffff !important; }
         html.light-mode .bg-\[\#43724F\] .text-white { color: #ffffff !important; } html.light-mode .bg-\[\#43724F\] .text-white\/80 { color: rgba(255,255,255,0.8) !important; }
         html.light-mode .bg-\[\#43724F\] .text-white\/60 { color: rgba(255,255,255,0.6) !important; } html.light-mode .bg-\[\#43724F\] .border-white\/10 { border-color: rgba(255,255,255,0.1) !important; }
-        html.light-mode #full-player { background: #0c0a0e !important; }
-        html.light-mode #full-player .text-white\/55, html.light-mode #full-player .text-white\/45 { color: rgba(255,255,255,0.55) !important; }
-        html.light-mode #full-player .text-white { color: #ffffff !important; }
         html.light-mode #lineup-popup { background-color: var(--app-bg) !important; background-image: none !important; }
         html.light-mode:has(#lineup-popup:not(.render-hidden)) .app-bg { background-color: var(--app-bg) !important; background-image: none !important; }
         html.light-mode #lineup-content .bg-white { background-color: var(--app-bg) !important; }
@@ -334,14 +330,14 @@
             <div id="lineup-content" class="flex-1 overflow-y-auto scrollbar-hide px-6 pt-main relative pb-[260px]"></div>
         </div>
 
-        <div id="mini-player" onclick="openFullPlayer()" class="absolute bottom-[104px] left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-[380px] bg-[#1C1C1E] rounded-[24px] p-2 pl-2.5 pr-2.5 flex items-center justify-between transition-all duration-300 translate-y-[150%] opacity-0 pointer-events-none overflow-hidden cursor-pointer shadow-2xl border border-white/10">
+        <div id="mini-player" onclick="openFullPlayer()" class="absolute bottom-[104px] left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-[380px] bg-[#1C1C1E] rounded-2xl p-2 pl-2.5 pr-2.5 flex items-center justify-between transition-all duration-300 translate-y-[150%] opacity-0 pointer-events-none overflow-hidden cursor-pointer">
             <div class="flex items-center gap-3 overflow-hidden flex-1 min-w-0">
-                <div class="w-[44px] h-[44px] rounded-[14px] flex items-center justify-center shrink-0 overflow-hidden p-1.5 border border-white/10" style="background: radial-gradient(circle at 30% 25%, rgba(255,255,255,0.12), rgba(0,0,0,0.35));">
-                    <img id="mini-player-cover" src="" class="w-full h-full object-contain opacity-95 drop-shadow">
+                <div class="mp-cover-bg w-[44px] h-[44px] rounded-xl flex items-center justify-center shrink-0 overflow-hidden p-1.5">
+                    <img id="mini-player-cover" src="" class="w-full h-full object-contain opacity-95">
                 </div>
                 <div class="flex flex-col truncate pointer-events-none min-w-0">
-                    <span id="mini-player-title" class="text-[14.5px] font-extrabold text-white mb-0.5 truncate tracking-tight">곡 제목</span>
-                    <span class="text-[11px] text-point font-bold truncate tracking-tight flex items-center gap-1.5"><span class="mp-eq inline-flex items-end gap-[2px] h-[9px]"><i></i><i></i><i></i></span>KBO 응원가</span>
+                    <span id="mini-player-title" class="text-[14.5px] font-bold text-white mb-0.5 truncate tracking-tight">곡 제목</span>
+                    <span class="text-[11px] text-gray-500 font-medium truncate tracking-tight flex items-center gap-1.5"><span class="mp-eq inline-flex items-end gap-[2px] h-[9px]"><i></i><i></i><i></i></span>KBO 응원가</span>
                 </div>
             </div>
             <div class="flex items-center gap-1 shrink-0">
@@ -356,51 +352,32 @@
         </div>
 
         <div id="full-player" class="fixed inset-0 z-[100] flex flex-col justify-start transition-transform duration-300 translate-y-full pointer-events-none px-7 pt-6 pb-10 sm:w-[430px] sm:mx-auto" ontouchstart="fpTouchStart(event)" ontouchmove="fpTouchMove(event)" ontouchend="fpTouchEnd(event)">
-            <div class="absolute inset-0 pointer-events-none z-0" style="background: linear-gradient(180deg, var(--player-accent, #4a2d52) 0%, transparent 58%); opacity: 0.34;"></div>
             <div class="relative z-10 flex flex-col h-full w-full">
-                <div class="w-full flex justify-center pt-1 pb-3 relative z-[150]">
-                    <button onclick="closeFullPlayer()" ontouchstart="event.stopPropagation()" ontouchend="closeFullPlayer(); event.stopPropagation(); event.preventDefault();" class="w-12 h-1.5 rounded-full bg-white/35 active:bg-white/60 transition-colors cursor-pointer"></button>
+                <div class="w-full flex justify-center pt-1 pb-2 relative z-[150]">
+                    <button onclick="closeFullPlayer()" ontouchstart="event.stopPropagation()" ontouchend="closeFullPlayer(); event.stopPropagation(); event.preventDefault();" class="w-9 h-1 rounded-full active:opacity-60 transition-opacity cursor-pointer" style="background: var(--fp-track)"></button>
                 </div>
-                <div class="w-[76%] max-w-[300px] mx-auto aspect-square rounded-[18px] overflow-hidden flex items-center justify-center shrink-0 mt-3 mb-8" style="box-shadow: 0 25px 50px -12px rgba(0,0,0,0.75); background: radial-gradient(circle at 30% 22%, rgba(255,255,255,0.12), rgba(0,0,0,0.4));">
-                    <img id="full-player-cover" src="" class="w-full h-full object-contain p-8">
-                </div>
-                <div class="flex items-center justify-between w-full gap-3 mb-5 px-1">
-                    <div class="flex flex-col min-w-0 flex-1">
-                        <h2 id="full-player-title" class="text-[25px] font-black text-white tracking-tight truncate leading-tight">곡 제목</h2>
-                        <span id="full-player-artist" class="text-[18px] font-bold text-white/55 tracking-tight truncate mt-0.5">KBO 리그 응원가</span>
+                <div class="flex-1 flex flex-col justify-center items-center w-full min-h-0">
+                    <div class="w-[80%] max-w-[320px] aspect-square rounded-3xl overflow-hidden flex items-center justify-center mb-10" style="background: var(--fp-card); box-shadow: 0 16px 44px rgba(0,0,0,0.2);">
+                        <img id="full-player-cover" src="" class="w-full h-full object-contain p-10">
                     </div>
-                    <button onclick="showToast('추가 메뉴는 준비 중입니다.')" ontouchstart="event.stopPropagation()" class="w-9 h-9 shrink-0 flex items-center justify-center rounded-full bg-white/15 text-white/90 active:scale-90 transition-transform"><i class="fa-solid fa-ellipsis text-[15px]"></i></button>
-                </div>
-                <div class="w-full px-1 mb-1">
-                    <div class="relative w-full h-1.5 flex items-center">
-                        <div class="absolute inset-0 rounded-full" style="background: rgba(255,255,255,0.18)"></div>
-                        <div id="fp-seek-fill" class="absolute left-0 top-0 h-full rounded-full" style="width:0%; background: rgba(255,255,255,0.85)"></div>
-                        <input type="range" id="full-player-range" min="0" max="100" value="0" class="absolute left-0 -inset-y-3 w-full opacity-0 cursor-pointer" ontouchstart="event.stopPropagation()">
+                    <h2 id="full-player-title" class="text-[24px] font-bold text-center tracking-tight w-full px-2 truncate" style="color: var(--fp-heading)">곡 제목</h2>
+                    <span id="full-player-artist" class="text-[15px] font-normal text-center tracking-tight mt-1.5 mb-9 truncate w-full px-2" style="color: var(--fp-body)">KBO 리그 응원가</span>
+                    <div class="w-full px-1">
+                        <div class="relative w-full h-1.5 flex items-center">
+                            <div class="absolute inset-0 rounded-full" style="background: var(--fp-track)"></div>
+                            <div id="fp-seek-fill" class="absolute left-0 top-0 h-full rounded-full" style="width:0%; background: var(--point-color)"></div>
+                            <input type="range" id="full-player-range" min="0" max="100" value="0" class="absolute left-0 -inset-y-3 w-full opacity-0 cursor-pointer" ontouchstart="event.stopPropagation()">
+                        </div>
+                        <div class="flex justify-between text-[12px] font-medium tracking-wide mt-2 px-0.5 wp-num" style="color: var(--fp-cap)">
+                            <span id="full-player-current">0:00</span>
+                            <span id="full-player-duration">0:00</span>
+                        </div>
                     </div>
-                    <div class="flex justify-between text-[12px] font-semibold text-white/45 font-mono tracking-wide mt-2 px-0.5">
-                        <span id="full-player-current">0:00</span>
-                        <span id="full-player-duration">0:00</span>
+                    <div class="flex justify-center items-center gap-16 mt-10">
+                        <button onclick="appPrevMusic()" ontouchstart="event.stopPropagation()" class="active:scale-90 transition-transform" style="color: var(--fp-icon)"><i class="fa-solid fa-backward text-[32px]"></i></button>
+                        <button onclick="toggleMiniPlayerPlay()" ontouchstart="event.stopPropagation()" class="w-[72px] h-[72px] flex items-center justify-center rounded-full text-white active:scale-90 transition-transform" style="background: var(--point-color)"><i id="full-player-btn" class="fa-solid fa-pause text-[46px]"></i></button>
+                        <button onclick="appNextMusic()" ontouchstart="event.stopPropagation()" class="active:scale-90 transition-transform" style="color: var(--fp-icon)"><i class="fa-solid fa-forward text-[32px]"></i></button>
                     </div>
-                </div>
-                <div class="flex justify-center items-center gap-16 my-5">
-                    <button onclick="appPrevMusic()" ontouchstart="event.stopPropagation()" class="text-white active:scale-90 transition-transform"><i class="fa-solid fa-backward text-[34px]"></i></button>
-                    <button onclick="toggleMiniPlayerPlay()" ontouchstart="event.stopPropagation()" class="w-[72px] h-[72px] flex items-center justify-center rounded-full bg-white/[0.13] text-white active:scale-90 transition-transform"><i id="full-player-btn" class="fa-solid fa-pause text-[48px]"></i></button>
-                    <button onclick="appNextMusic()" ontouchstart="event.stopPropagation()" class="text-white active:scale-90 transition-transform"><i class="fa-solid fa-forward text-[34px]"></i></button>
-                </div>
-                <div class="w-full flex items-center gap-3 px-2 mb-1 mt-1">
-                    <i class="fa-solid fa-volume-low text-white/45 text-[13px] shrink-0"></i>
-                    <div class="relative flex-1 h-1 flex items-center">
-                        <div class="absolute inset-0 rounded-full" style="background: rgba(255,255,255,0.18)"></div>
-                        <div id="fp-vol-fill" class="absolute left-0 top-0 h-full rounded-full" style="width:100%; background: rgba(255,255,255,0.8)"></div>
-                        <div id="fp-vol-thumb" class="absolute w-3 h-3 rounded-full bg-white shadow -translate-x-1/2 -translate-y-1/2 top-1/2 pointer-events-none" style="left:100%"></div>
-                        <input type="range" id="fp-volume" min="0" max="100" value="100" class="absolute left-0 -inset-y-3 w-full opacity-0 cursor-pointer" ontouchstart="event.stopPropagation()">
-                    </div>
-                    <i class="fa-solid fa-volume-high text-white/45 text-[15px] shrink-0"></i>
-                </div>
-                <div class="w-full flex justify-between items-center px-7 pt-3 pb-1 mt-auto">
-                    <button onclick="showToast('가사 기능은 준비 중입니다.')" ontouchstart="event.stopPropagation()" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white/80 active:scale-90 transition-transform"><i class="fa-solid fa-quote-right text-[14px]"></i></button>
-                    <button onclick="showToast('무선 재생은 준비 중입니다.')" ontouchstart="event.stopPropagation()" class="text-white/70 active:scale-90 transition-transform p-2"><i class="fa-solid fa-tower-broadcast text-[18px]"></i></button>
-                    <button onclick="showToast('재생목록은 준비 중입니다.')" ontouchstart="event.stopPropagation()" class="text-white/70 active:scale-90 transition-transform p-2"><i class="fa-solid fa-list-ul text-[18px]"></i></button>
                 </div>
             </div>
         </div>
@@ -779,21 +756,21 @@
             if (iC) return '';
             let p = winProbability(m, l);
             let c1 = teamWinHex[m.team1] || '#9AA0A6', c2 = teamWinHex[m.team2] || '#9AA0A6';
-            let leadAway = p.away >= p.home;
             let note = st === '경기중' ? '실시간 승리 확률' : '예상 승리 확률';
-            return `<div class="w-full mb-5 px-1">
-                <div class="flex items-center justify-between mb-2 px-0.5">
-                    <span class="text-[11px] font-bold text-gray-400 flex items-center gap-1.5"><i class="fa-solid fa-wand-magic-sparkles text-point text-[10px]"></i>${note}</span>
-                    <span class="text-[10px] font-medium text-gray-500">전적·흐름 기반 예측</span>
+            return `<div class="w-full mb-6">
+                <div class="text-[12px] font-medium mb-3 wp-name">${note}</div>
+                <div class="flex items-baseline justify-between mb-2.5">
+                    <div class="flex items-baseline gap-1.5">
+                        <span class="text-[26px] font-bold leading-none wp-num" style="color:${c1}">${p.away}%</span>
+                        <span class="text-[13px] font-semibold wp-name">${m.team1}</span>
+                    </div>
+                    <div class="flex items-baseline gap-1.5">
+                        <span class="text-[13px] font-semibold wp-name">${m.team2}</span>
+                        <span class="text-[26px] font-bold leading-none wp-num" style="color:${c2}">${p.home}%</span>
+                    </div>
                 </div>
-                <div class="flex items-center justify-between mb-1.5 px-0.5">
-                    <div class="flex items-baseline gap-1.5"><span class="text-[13px] font-black" style="color:${c1}">${m.team1}</span><span class="text-[20px] font-black ${leadAway ? '' : 'opacity-40'}" style="color:${c1}"><span class="wp-num">${p.away}</span><span class="text-[12px]">%</span></span></div>
-                    <div class="flex items-baseline gap-1.5"><span class="text-[20px] font-black ${leadAway ? 'opacity-40' : ''}" style="color:${c2}"><span class="wp-num">${p.home}</span><span class="text-[12px]">%</span></span><span class="text-[13px] font-black" style="color:${c2}">${m.team2}</span></div>
-                </div>
-                <div class="relative w-full h-3 rounded-full overflow-hidden shadow-inner" style="background:rgba(127,127,127,0.18)">
-                    <div class="wp-fill wp-fill-l" style="width:${p.away}%;background:${c1}"></div>
-                    <div class="wp-fill wp-fill-r" style="width:${p.home}%;background:${c2}"></div>
-                    <div class="wp-divider absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 rounded-full" style="left:${p.away}%;width:4px;height:calc(100% + 4px);background:#fff;box-shadow:0 0 0 1.5px rgba(0,0,0,0.2), 0 0 8px rgba(255,255,255,0.5);"></div>
+                <div class="relative w-full h-2.5 rounded-full overflow-hidden" style="background:${c2}">
+                    <div class="wp-bar" style="width:${p.away}%;background:${c1}"></div>
                 </div>
             </div>`;
         }
@@ -806,14 +783,12 @@
             if (iC) return '';
             let p = winProbability(m, l);
             let c1 = teamWinHex[m.team1] || '#9AA0A6', c2 = teamWinHex[m.team2] || '#9AA0A6';
-            return `<div class="relative z-10 w-full flex items-center gap-2 px-1 mt-2">
-                <span class="text-[10px] font-black w-9 text-left tracking-tight" style="color:${c1}">${p.away}%</span>
-                <div class="relative flex-1 h-1.5 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.14)">
-                    <div class="wp-fill wp-fill-l" style="width:${p.away}%;background:${c1}"></div>
-                    <div class="wp-fill wp-fill-r" style="width:${p.home}%;background:${c2}"></div>
-                    <div class="wp-divider absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 rounded-full" style="left:${p.away}%;width:3px;height:calc(100% + 3px);background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,0.25);"></div>
+            return `<div class="relative z-10 w-full flex items-center gap-2.5 px-1 mt-2">
+                <span class="text-[11px] font-bold w-8 text-left wp-num" style="color:${c1}">${p.away}%</span>
+                <div class="relative flex-1 h-1.5 rounded-full overflow-hidden" style="background:${c2}">
+                    <div class="wp-bar" style="width:${p.away}%;background:${c1}"></div>
                 </div>
-                <span class="text-[10px] font-black w-9 text-right tracking-tight" style="color:${c2}">${p.home}%</span>
+                <span class="text-[11px] font-bold w-8 text-right wp-num" style="color:${c2}">${p.home}%</span>
             </div>`;
         }
 
@@ -2113,15 +2088,6 @@
             const fc = document.getElementById('full-player-cover');
             if(fc) { fc.src = coverImg; fc.className = isPlayer ? "w-full h-full object-cover object-top pt-2 scale-110" : "w-full h-full object-contain p-8"; }
 
-            // [추가] 풀플레이어 배경 색감을 곡(팀)에 맞춰 변경 — 사진처럼 아트 컬러 톤
-            const fpEl = document.getElementById('full-player');
-            if (fpEl) {
-                let acc = selectedTeam === '삼성' ? '#15335f' : '#5e1622';
-                if (t.includes('삼성') || t.includes('라이온즈') || t.includes('엘도라도') || t.includes('지중해')) acc = '#15335f';
-                else if (t.includes('KIA') || t.includes('타이거즈') || t.includes('호랑이')) acc = '#5e1622';
-                fpEl.style.setProperty('--player-accent', acc);
-            }
-
             let an = '팀 응원가'; if (isPlayer || t.includes('김도영') || t.includes('구자욱') || t.includes('최형우')) an = '선수 응원가';
             const fpa = document.getElementById('full-player-artist'); if(fpa) fpa.innerText = t.includes('KIA') ? 'KIA 타이거즈 응원가' : (t.includes('삼성') ? '삼성 라이온즈 응원가' : an);
 
@@ -2283,13 +2249,6 @@
                     rb.addEventListener('change', (e) => {
                         isSeeking = false; audioPlayer.currentTime = (e.target.value / 100) * audioPlayer.duration;
                     });
-                }
-                // [추가] 볼륨 슬라이더
-                const vol = document.getElementById('fp-volume'), vf = document.getElementById('fp-vol-fill'), vth = document.getElementById('fp-vol-thumb');
-                if(vol) {
-                    const setVol = (v) => { if(vf) vf.style.width = `${v}%`; if(vth) vth.style.left = `${v}%`; };
-                    setVol(Math.round((audioPlayer.volume ?? 1) * 100));
-                    vol.addEventListener('input', (e) => { let v = parseInt(e.target.value); try { audioPlayer.volume = v / 100; } catch(_) {} setVol(v); });
                 }
             }
         }
