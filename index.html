@@ -53,6 +53,13 @@
         #header-calendar-nav button.bg-point { background: transparent !important; background-color: transparent !important; background-image: none !important; box-shadow: none !important; color: var(--point-color) !important; width: 30px !important; height: 30px !important; }
         #header-calendar-nav button.bg-point:active { transform: scale(0.85); }
         #ctrl-back button { background: transparent !important; background-color: transparent !important; background-image: none !important; box-shadow: none !important; color: var(--point-color) !important; border-radius: 0 !important; padding: 4px 4px !important; font-weight: 700 !important; }
+        /* [수정] 라이트모드에서 .bg-point 내부 아이콘이 흰색으로 강제돼 안 보이던 문제 — 네비/뒤로가기 아이콘을 포인트 컬러로 */
+        html.light-mode #header-calendar-nav button.bg-point i, html.light-mode #ctrl-back button i { color: var(--point-color) !important; }
+        /* [수정] 어두운 스코어보드 패널(이닝표) 안의 텍스트는 라이트모드에서도 밝게 유지 (팀명 안 보이던 문제) */
+        html.light-mode .sb-dark .text-white { color: #ffffff !important; }
+        html.light-mode .sb-dark .text-gray-200 { color: #e5e7eb !important; }
+        html.light-mode .sb-dark .text-gray-300 { color: #d1d5db !important; }
+        html.light-mode .sb-dark .text-gray-400 { color: #9ca3af !important; }
         .pt-safe { padding-top: max(20px, env(safe-area-inset-top)) !important; }
         .pt-main { padding-top: calc(max(20px, env(safe-area-inset-top)) + 70px) !important; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
@@ -758,7 +765,7 @@
             let c1 = teamWinHex[m.team1] || '#9AA0A6', c2 = teamWinHex[m.team2] || '#9AA0A6';
             let note = st === '경기중' ? '실시간 승리 확률' : '예상 승리 확률';
             return `<div class="w-full mb-6">
-                <div class="text-[12px] font-medium mb-3 wp-name">${note}</div>
+                <div class="text-[12px] font-medium mb-3 wp-name">${note} <span class="opacity-60">with 엔조이 비서실장</span></div>
                 <div class="flex items-baseline justify-between mb-2.5">
                     <div class="flex items-baseline gap-1.5">
                         <span class="text-[26px] font-bold leading-none wp-num" style="color:${c1}">${p.away}%</span>
@@ -789,6 +796,58 @@
                     <div class="wp-bar" style="width:${p.away}%;background:${c1}"></div>
                 </div>
                 <span class="text-[11px] font-bold w-8 text-right wp-num" style="color:${c2}">${p.home}%</span>
+            </div>`;
+        }
+
+        // [추가] 선발 투수의 상대 팀 맞대결 전적 + 시즌 전적 (과거 데이터 파일 기반)
+        function _pitcherName(raw) { return (raw && typeof raw === 'object') ? (raw.name || '') : (raw || ''); }
+        function pitcherRecords(pitcher, team, opp) {
+            let vsW = 0, vsL = 0, seasonW = 0, seasonL = 0;
+            if (!pitcher || pitcher === '-') return { vsW, vsL, seasonW, seasonL };
+            for (let g of scheduleData) {
+                let ld = liveDataStore[g.id];
+                if (!ld || ld.gameStatus !== '종료') continue;
+                let isWin = ld.winPitcher && ld.winPitcher === pitcher;
+                let isLose = ld.losePitcher && ld.losePitcher === pitcher;
+                if (!isWin && !isLose) continue;
+                // 이 투수의 팀이 이 경기에 참가했는지 확인
+                if (g.team1 !== team && g.team2 !== team) continue;
+                if (isWin) seasonW++; else seasonL++;
+                // 상대 팀과의 맞대결인지
+                if (g.team1 === opp || g.team2 === opp) { if (isWin) vsW++; else vsL++; }
+            }
+            return { vsW, vsL, seasonW, seasonL };
+        }
+        function pitcherMatchupHtml(m, l) {
+            l = l || {};
+            let aName = _pitcherName(m.awayPitcher || m.awayStarter || l.awayStarter) || _pitcherName(l.awayPitcherDetail || l.awayPitcher);
+            let hName = _pitcherName(m.homePitcher || m.homeStarter || l.homeStarter) || _pitcherName(l.homePitcherDetail || l.homePitcher);
+            if ((!aName || aName === '-') && (!hName || hName === '-')) return '';
+
+            const row = (name, team, opp) => {
+                if (!name || name === '-') return '';
+                let r = pitcherRecords(name, team, opp);
+                let hx = teamWinHex[team] || '#9AA0A6';
+                let vsTxt = (r.vsW + r.vsL) > 0
+                    ? `<span class="text-[15px] font-black wp-num" style="color:${hx}">${r.vsW}<span class="text-[11px] font-bold">승</span> ${r.vsL}<span class="text-[11px] font-bold">패</span></span>`
+                    : `<span class="text-[12px] font-bold text-gray-400">맞대결 기록 없음</span>`;
+                let lg = teamLogos[team] ? `<img src="${teamLogos[team]}" class="w-5 h-5 object-contain shrink-0">` : '';
+                return `<div class="flex items-center justify-between bg-white/5 border border-white/5 rounded-xl px-3.5 py-2.5">
+                    <div class="flex items-center gap-2 min-w-0">
+                        ${lg}
+                        <div class="flex flex-col min-w-0">
+                            <span class="text-[13px] font-bold text-white truncate">${name}</span>
+                            <span class="text-[10px] text-gray-400 truncate">vs ${opp} · 시즌 ${r.seasonW}승 ${r.seasonL}패</span>
+                        </div>
+                    </div>
+                    <div class="text-right shrink-0 pl-2">${vsTxt}</div>
+                </div>`;
+            };
+            let rows = row(aName, m.team1, m.team2) + row(hName, m.team2, m.team1);
+            if (!rows) return '';
+            return `<div class="w-full mb-5">
+                <div class="text-[12px] font-medium mb-3 wp-name">선발 맞대결 전적</div>
+                <div class="flex flex-col gap-2">${rows}</div>
             </div>`;
         }
 
@@ -1715,7 +1774,7 @@
                 let dalBadge = `<div class="absolute top-0 left-1/2 -translate-x-1/2 bg-[#0B132B] px-4 py-0.5 rounded-b-md border-x border-b border-[#1E3A8A]/50 flex items-center justify-center shadow-md z-20"><span class="text-[8px] font-bold text-blue-200 tracking-widest">MOONLIGHT</span></div>`;
                 let centerDalLogo1 = `<img src="${dalImg}" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 opacity-[0.12] pointer-events-none object-contain z-10 mix-blend-screen">`;
 
-                sbh = `<div class="w-[calc(100%+48px)] -mx-6 rounded-none border-x-0 relative overflow-hidden mb-5 shadow-xl flex flex-col border-y border-white/15" style="${bgStyle}">
+                sbh = `<div class="sb-dark w-[calc(100%+48px)] -mx-6 rounded-none border-x-0 relative overflow-hidden mb-5 shadow-xl flex flex-col border-y border-white/15" style="${bgStyle}">
                     ${dalBadge}${centerDalLogo1}
                     <img src="${teamLogos[m.team1]}" class="absolute -left-6 top-[35%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110">
                     <img src="${teamLogos[m.team2]}" class="absolute -right-6 top-[35%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110">
@@ -1895,7 +1954,7 @@
                     centerArea = `<div class="flex gap-[3px] mr-1.5">${outDotsHtml}</div><span class="text-[12px] font-black text-[#FFFFFF] tracking-widest mt-px">${bCount}-${sCount}</span>`;
                 }
 
-                sbh = `<div class="w-[calc(100%+48px)] -mx-6 rounded-none border-x-0 relative overflow-hidden mb-5 shadow-xl flex flex-col border-y border-white/15" style="background: linear-gradient(to right, ${h1}E6 0%, #18181b 45%, #18181b 55%, ${h2}E6 100%);">
+                sbh = `<div class="sb-dark w-[calc(100%+48px)] -mx-6 rounded-none border-x-0 relative overflow-hidden mb-5 shadow-xl flex flex-col border-y border-white/15" style="background: linear-gradient(to right, ${h1}E6 0%, #18181b 45%, #18181b 55%, ${h2}E6 100%);">
                     <img src="${teamLogos[m.team1]}" class="absolute -left-6 top-[35%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110">
                     <img src="${teamLogos[m.team2]}" class="absolute -right-6 top-[35%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110">
                     
@@ -1947,6 +2006,8 @@
             
             // [추가] 스코어보드 밑 승리 확률 막대 (클래식 테마는 레트로 디자인 유지 위해 제외)
             let wpb = isClassic ? '' : winProbBarHtml(m, l);
+            // [추가] 확률과 선발 사이: 선발 투수 맞대결/시즌 전적
+            let pm = isClassic ? '' : pitcherMatchupHtml(m, l);
 
             let apRaw = l.awayPitcherDetail || l.awayPitcher || '-';
             let hpRaw = l.homePitcherDetail || l.homePitcher || '-';
@@ -1954,7 +2015,7 @@
             let hLineupSrc = (l.homeLineupDetail && l.homeLineupDetail.length > 0) ? l.homeLineupDetail : (l.homeLineup || []);
 
             if (apRaw === '-' && aLineupSrc.length === 0) {
-                c.innerHTML = sbh + wpb + `<div class="flex flex-col items-center justify-center h-48 text-gray-400 mt-2 gap-3 bg-white/5 rounded-2xl border border-white/5"><i class="fa-solid fa-clipboard-question text-4xl text-gray-500 mb-2"></i><span class="text-lg font-bold text-white tracking-wide">라인업 미발표</span><span class="text-[12px] text-gray-500 text-center">선발 라인업은<br>경기 시작 1~2시간 전에 공개됩니다.</span></div>`;
+                c.innerHTML = sbh + wpb + pm + `<div class="flex flex-col items-center justify-center h-48 text-gray-400 mt-2 gap-3 bg-white/5 rounded-2xl border border-white/5"><i class="fa-solid fa-clipboard-question text-4xl text-gray-500 mb-2"></i><span class="text-lg font-bold text-white tracking-wide">라인업 미발표</span><span class="text-[12px] text-gray-500 text-center">선발 라인업은<br>경기 시작 1~2시간 전에 공개됩니다.</span></div>`;
                 return;
             }
             
@@ -1997,7 +2058,7 @@
                 return `<div class="flex items-center gap-2 mb-3.5"><span class="w-[22px] text-center text-[15px] font-black shrink-0" style="color: ${h2}">${i + 1}</span><div class="${pf}">${pim}</div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center gap-x-1"><span class="text-[clamp(11px,3vw,14px)] font-bold text-white whitespace-nowrap tracking-tight shrink">${p}</span>${bat}</div><span class="text-[10px] text-gray-400 whitespace-nowrap mt-0.5">${pos}</span></div></div>`; 
             }).join('') : '<div class="text-center text-xs text-gray-500 py-4">라인업 정보 없음</div>';
             
-            c.innerHTML = sbh + wpb + `<div class="flex w-full pt-1 px-1"><div class="flex-1 flex flex-col pr-2 min-w-0"><div class="flex items-center gap-1.5 mb-3"><div class="w-6 h-6 flex items-center justify-center shrink-0">${lg1}</div><span class="text-[14px] font-bold text-gray-200 truncate">${m.team1}선발</span></div>${aph}<div class="w-full h-px bg-white/5 mb-3.5"></div>${abh}</div><div class="w-px bg-white/10 shrink-0 mx-2 mb-4"></div><div class="flex-1 flex flex-col pl-2 min-w-0"><div class="flex items-center gap-1.5 mb-3"><div class="w-6 h-6 flex items-center justify-center shrink-0">${lg2}</div><span class="text-[14px] font-bold text-gray-200 truncate">${m.team2}선발</span></div>${hph}<div class="w-full h-px bg-white/5 mb-3.5"></div>${hbh}</div></div>`;
+            c.innerHTML = sbh + wpb + pm + `<div class="flex w-full pt-1 px-1"><div class="flex-1 flex flex-col pr-2 min-w-0"><div class="flex items-center gap-1.5 mb-3"><div class="w-6 h-6 flex items-center justify-center shrink-0">${lg1}</div><span class="text-[14px] font-bold text-gray-200 truncate">${m.team1}선발</span></div>${aph}<div class="w-full h-px bg-white/5 mb-3.5"></div>${abh}</div><div class="w-px bg-white/10 shrink-0 mx-2 mb-4"></div><div class="flex-1 flex flex-col pl-2 min-w-0"><div class="flex items-center gap-1.5 mb-3"><div class="w-6 h-6 flex items-center justify-center shrink-0">${lg2}</div><span class="text-[14px] font-bold text-gray-200 truncate">${m.team2}선발</span></div>${hph}<div class="w-full h-px bg-white/5 mb-3.5"></div>${hbh}</div></div>`;
         }
 
         function switchCheerTab(team, type) { const tn = { 'team': '구단', 'player': '선수', 'lineup': '라인업', 'hitout': '안타/아웃', 'entrance': '등장곡' }, pc = team === 'kia' ? 'text-[#EA0029]' : 'text-[#074CA1]'; Object.keys(tn).forEach(t => { const b = document.getElementById(`btn-cheer-${team}-${t}`), c = document.getElementById(`content-cheer-${team}-${t}`); if (!b || !c) return; if (t === type) { b.className = `text-[22px] font-black text-white transition-all whitespace-nowrap`; b.innerHTML = `${tn[t]}<span class="${pc} ml-0.5">.</span>`; c.classList.remove('hidden'); c.classList.add('flex'); } else { b.className = `text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap`; b.innerHTML = tn[t]; c.classList.add('hidden'); c.classList.remove('flex'); } }); }
