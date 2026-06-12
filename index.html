@@ -43,8 +43,14 @@
         body[data-theme="all"] #bottom-nav button .text-white { color: #000000 !important; }
         body[data-theme="all"] #bottom-nav button i.text-white { color: #000000 !important; }
         
-        #left-wrapper, #ctrl-wrapper { border: 1px solid rgba(255,255,255,0.08) !important; background: #151515 !important; padding: 2px !important; box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important; position: relative; z-index: 40; pointer-events: auto !important; }
-        #ctrl-team button.text-gray-400 { color: #94a3b8 !important; font-weight: 600 !important; }
+        #left-wrapper, #ctrl-wrapper { border: 1px solid rgba(255,255,255,0.12) !important; background: linear-gradient(180deg, rgba(40,40,46,0.92), rgba(16,16,19,0.94)) !important; backdrop-filter: blur(22px) saturate(170%); -webkit-backdrop-filter: blur(22px) saturate(170%); padding: 3px !important; box-shadow: 0 8px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.3) !important; position: relative; z-index: 40; pointer-events: auto !important; }
+        #ctrl-team button.text-gray-400 { color: #9aa3af !important; font-weight: 700 !important; }
+        /* 상단 알약: 활성 버튼/네비 버튼에 입체 광택 + 글로우 */
+        #ctrl-team button.bg-point, #header-calendar-nav button.bg-point, #ctrl-back button.bg-point, #ctrl-back button[class*="bg-point"] { background-image: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.02)) !important; box-shadow: 0 3px 10px var(--point-bg), 0 0 0 1px rgba(255,255,255,0.06) inset, 0 1px 0 rgba(255,255,255,0.25) inset !important; }
+        #header-calendar-nav button.bg-point { width: 30px !important; height: 30px !important; }
+        #header-calendar-nav button.bg-point:active { transform: scale(0.9); }
+        #ctrl-team button { letter-spacing: -0.2px; transition: color 0.25s ease, background-color 0.4s ease, transform 0.15s ease; }
+        html.light-mode #ctrl-team button.text-gray-400 { color: #64748b !important; }
         .pt-safe { padding-top: max(20px, env(safe-area-inset-top)) !important; }
         .pt-main { padding-top: calc(max(20px, env(safe-area-inset-top)) + 70px) !important; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
@@ -57,10 +63,13 @@
         .w-collapse { max-width: 0px !important; padding-left: 0px !important; padding-right: 0px !important; border-width: 0px !important; opacity: 0 !important; margin-left: 0px !important; pointer-events: none !important; }
         .w-expand { max-width: 250px; }
         
-        .calendar-day { font-weight: 600 !important; border-radius: 12px !important; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); aspect-ratio: 1 / 1.2; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 14px; }
-        .calendar-day.today { background: rgba(255,255,255,0.06) !important; border: 1px solid var(--point-color) !important; box-shadow: inset 0 0 20px var(--point-bg), 0 0 10px var(--point-bg) !important; transform: scale(1.02); }
+        .calendar-day { font-weight: 600 !important; border-radius: 14px !important; transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.3s, box-shadow 0.3s; aspect-ratio: 1 / 1.2; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 14px; }
+        .calendar-day.today { background: rgba(255,255,255,0.07) !important; border: 1.5px solid var(--point-color) !important; box-shadow: inset 0 0 22px var(--point-bg), 0 0 16px var(--point-bg) !important; transform: scale(1.03); }
         .calendar-day.today span { color: var(--point-color) !important; text-shadow: 0 0 8px var(--point-bg) !important; font-weight: 900 !important; }
-        .has-match { background: rgba(255,255,255,0.02) !important; border: 1px solid rgba(255,255,255,0.05) !important; box-shadow: none !important; }
+        .has-match { background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.025)) !important; border: 1px solid rgba(255,255,255,0.08) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05) !important; }
+        .has-match:active { transform: scale(0.94); }
+        html.light-mode .has-match { background: linear-gradient(180deg, rgba(0,0,0,0.055), rgba(0,0,0,0.015)) !important; border-color: rgba(0,0,0,0.09) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,0.55) !important; }
+        html.light-mode .calendar-day.today { background: rgba(0,0,0,0.04) !important; }
         
         #banner-carousel > div { border-radius: 0 !important; margin: 0 !important; border-left: none !important; border-right: none !important; border-top: none !important; border-bottom: none !important; box-shadow: none !important; }
         .banner-dot { background-color: rgba(255,255,255,0.2) !important; transition: all 0.3s; }
@@ -78,7 +87,16 @@
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; background: var(--range-fill) !important; width: 18px !important; height: 18px !important; margin-top: -6px !important; border-radius: 50%; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; transition: transform 0.1s; cursor: pointer; }
         input[type=range]::-webkit-slider-thumb:active { transform: scale(1.2); }
         input[type=range]:focus { outline: none; }
-        
+        /* 풀플레이어 시크바: 포인트 컬러 + 글로우 */
+        #full-player-range::-webkit-slider-runnable-track { height: 5px !important; }
+        #full-player-range::-webkit-slider-thumb { background: var(--point-color) !important; width: 15px !important; height: 15px !important; margin-top: -5px !important; box-shadow: 0 0 0 4px var(--point-bg), 0 2px 8px rgba(0,0,0,0.5) !important; }
+        /* 미니플레이어 이퀄라이저(재생 중에만 흐름) */
+        .mp-eq i { display: block; width: 2px; height: 100%; background: var(--point-color); border-radius: 1px; animation: mp-eq 0.9s ease-in-out infinite; animation-play-state: paused; }
+        .mp-eq i:nth-child(2) { animation-delay: 0.3s; }
+        .mp-eq i:nth-child(3) { animation-delay: 0.6s; }
+        #mini-player:has(#mini-player-btn.fa-pause) .mp-eq i { animation-play-state: running; }
+        @keyframes mp-eq { 0%, 100% { height: 30%; } 50% { height: 100%; } }
+
         #full-player { background: rgba(5,5,5,0.9) !important; backdrop-filter: blur(30px); }
         #toast-msg { background: rgba(20, 20, 22, 0.85) !important; backdrop-filter: blur(20px); color: #fff !important; font-weight: 700 !important; border: 1px solid rgba(255,255,255,0.1) !important; box-shadow: 0 20px 40px rgba(0,0,0,0.6) !important; border-radius: 100px !important; padding: 12px 24px !important; }
         
@@ -88,6 +106,17 @@
         @keyframes border-glow { 0%, 100% { box-shadow: 0 0 5px var(--glow-color), inset 0 0 5px var(--glow-color); border-color: var(--glow-color-half); } 50% { box-shadow: 0 0 25px var(--glow-color), inset 0 0 12px var(--glow-color); border-color: var(--glow-color); } }
         .winning-glow { animation: border-glow 2.5s ease-in-out infinite; border-width: 2px !important; z-index: 20; }
         .render-hidden { position: absolute !important; transform: translateX(-9999px) !important; opacity: 0 !important; pointer-events: none !important; width: 100% !important; height: 100% !important; z-index: -1 !important; }
+
+        /* 승리 확률 게이지: 양쪽에서 차오르고 빛이 흐르는 모션 */
+        @keyframes wp-grow-l { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+        @keyframes wp-grow-r { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+        @keyframes wp-flow { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        @keyframes wp-num { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+        .wp-seg { position: relative; height: 100%; overflow: hidden; }
+        .wp-seg-l { transform-origin: left center; animation: wp-grow-l 0.95s cubic-bezier(0.22, 1, 0.36, 1) both; }
+        .wp-seg-r { transform-origin: right center; animation: wp-grow-r 0.95s cubic-bezier(0.22, 1, 0.36, 1) both; }
+        .wp-seg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 20%, rgba(255,255,255,0.55) 50%, transparent 80%); background-size: 200% 100%; animation: wp-flow 2.6s linear infinite; }
+        .wp-num { display: inline-block; animation: wp-num 0.6s 0.25s ease both; }
 
         html { background-color: #030303; }
         html.light-mode { background-color: #f3f4f6; }
@@ -296,57 +325,67 @@
             <div id="lineup-content" class="flex-1 overflow-y-auto scrollbar-hide px-6 pt-main relative pb-[260px]"></div>
         </div>
 
-        <div id="mini-player" onclick="openFullPlayer()" class="absolute bottom-[104px] left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-[380px] bg-[#1C1C1E] rounded-[32px] p-2 pr-4 flex items-center justify-between transition-all duration-300 translate-y-[150%] opacity-0 pointer-events-none overflow-hidden cursor-pointer">
-            <div class="flex items-center gap-3.5 overflow-hidden flex-1">
-                <div class="w-[46px] h-[46px] bg-black/30 rounded-full flex items-center justify-center shrink-0 overflow-hidden shadow-inner p-1 border border-white/5">
-                    <img id="mini-player-cover" src="" class="w-full h-full object-contain opacity-95">
+        <div id="mini-player" onclick="openFullPlayer()" class="absolute bottom-[104px] left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-[380px] bg-[#1C1C1E] rounded-[24px] p-2 pl-2.5 pr-2.5 flex items-center justify-between transition-all duration-300 translate-y-[150%] opacity-0 pointer-events-none overflow-hidden cursor-pointer shadow-2xl border border-white/10">
+            <div class="flex items-center gap-3 overflow-hidden flex-1 min-w-0">
+                <div class="w-[44px] h-[44px] rounded-[14px] flex items-center justify-center shrink-0 overflow-hidden p-1.5 border border-white/10" style="background: radial-gradient(circle at 30% 25%, rgba(255,255,255,0.12), rgba(0,0,0,0.35));">
+                    <img id="mini-player-cover" src="" class="w-full h-full object-contain opacity-95 drop-shadow">
                 </div>
-                <div class="flex flex-col truncate pointer-events-none">
-                    <span id="mini-player-title" class="text-[15px] font-extrabold text-white mb-0.5 truncate tracking-tight">곡 제목</span>
-                    <span class="text-[12px] text-gray-400 font-medium truncate tracking-tight">KBO 리그 응원가</span>
+                <div class="flex flex-col truncate pointer-events-none min-w-0">
+                    <span id="mini-player-title" class="text-[14.5px] font-extrabold text-white mb-0.5 truncate tracking-tight">곡 제목</span>
+                    <span class="text-[11px] text-point font-bold truncate tracking-tight flex items-center gap-1.5"><span class="mp-eq inline-flex items-end gap-[2px] h-[9px]"><i></i><i></i><i></i></span>KBO 응원가</span>
                 </div>
             </div>
-            <div class="flex items-center gap-2 shrink-0">
-                <button onclick="event.stopPropagation(); appPrevMusic()" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white active:scale-95 transition-transform"><i class="fa-solid fa-backward-step text-[14px]"></i></button>
-                <button onclick="event.stopPropagation(); toggleMiniPlayerPlay()" class="w-10 h-10 flex items-center justify-center text-white active:scale-95 transition-transform drop-shadow-md"><i id="mini-player-btn" class="fa-solid fa-pause text-[22px]"></i></button>
-                <button onclick="event.stopPropagation(); appNextMusic()" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white active:scale-95 transition-transform"><i class="fa-solid fa-forward-step text-[14px]"></i></button>
-                <button onclick="event.stopPropagation(); closeMiniPlayer()" class="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-white active:scale-95 transition-transform ml-1"><i class="fa-solid fa-xmark text-sm"></i></button>
+            <div class="flex items-center gap-1 shrink-0">
+                <button onclick="event.stopPropagation(); appPrevMusic()" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white active:scale-90 transition-transform"><i class="fa-solid fa-backward-step text-[14px]"></i></button>
+                <button onclick="event.stopPropagation(); toggleMiniPlayerPlay()" class="w-9 h-9 flex items-center justify-center text-white active:scale-90 transition-transform drop-shadow-md"><i id="mini-player-btn" class="fa-solid fa-pause text-[22px]"></i></button>
+                <button onclick="event.stopPropagation(); appNextMusic()" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white active:scale-90 transition-transform"><i class="fa-solid fa-forward-step text-[14px]"></i></button>
+                <button onclick="event.stopPropagation(); closeMiniPlayer()" class="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-white active:scale-90 transition-transform"><i class="fa-solid fa-xmark text-sm"></i></button>
             </div>
-            <div class="absolute bottom-0 left-0 w-full h-[3px] bg-transparent pointer-events-none">
-                <div id="mini-player-progress" class="h-full bg-point w-0" style="transition: width 0.25s linear;"></div>
+            <div class="absolute bottom-0 left-2.5 right-2.5 h-[3px] rounded-full bg-white/10 pointer-events-none overflow-hidden">
+                <div id="mini-player-progress" class="h-full bg-point w-0 rounded-full" style="transition: width 0.25s linear; box-shadow: 0 0 8px var(--point-color);"></div>
             </div>
         </div>
 
         <div id="full-player" class="fixed inset-0 z-[100] flex flex-col justify-start transition-transform duration-300 translate-y-full pointer-events-none px-7 pt-6 pb-10 sm:w-[430px] sm:mx-auto" ontouchstart="fpTouchStart(event)" ontouchmove="fpTouchMove(event)" ontouchend="fpTouchEnd(event)">
-            <div class="w-full flex justify-center mb-2 relative z-[150]">
-                <button onclick="closeFullPlayer()" ontouchstart="event.stopPropagation()" ontouchend="closeFullPlayer(); event.stopPropagation(); event.preventDefault();" class="text-gray-400 hover:text-white active:scale-95 transition-all p-4 cursor-pointer">
-                    <i class="fa-solid fa-chevron-down text-[32px] pointer-events-none"></i>
-                </button>
-            </div>
-            <div class="w-[76%] max-w-[300px] mx-auto aspect-square bg-white/5 rounded-[40px] shrink-0 flex items-center justify-center overflow-hidden border border-white/10 mt-2 mb-6">
-                <img id="full-player-cover" src="" class="w-full h-full object-contain p-8">
-            </div>
-            <div class="flex-1 flex flex-col justify-center w-full pb-6">
-                <div class="flex flex-col items-start w-full mb-6 text-left px-2">
-                    <h2 id="full-player-title" class="text-[24px] font-black text-white mb-1.5 tracking-tight">곡 제목</h2>
-                    <span id="full-player-artist" class="text-[15px] text-point font-bold tracking-tight">KBO 리그 응원가</span>
+            <div class="absolute inset-0 pointer-events-none z-0" style="background: radial-gradient(125% 55% at 50% -5%, var(--point-bg), transparent 65%);"></div>
+            <div class="relative z-10 flex flex-col h-full w-full">
+                <div class="w-full flex flex-col items-center mb-1 relative z-[150]">
+                    <div class="w-10 h-1 rounded-full bg-white/25 mt-0.5 mb-0.5"></div>
+                    <button onclick="closeFullPlayer()" ontouchstart="event.stopPropagation()" ontouchend="closeFullPlayer(); event.stopPropagation(); event.preventDefault();" class="text-gray-400 hover:text-white active:scale-90 transition-all p-3 cursor-pointer">
+                        <i class="fa-solid fa-chevron-down text-[24px] pointer-events-none"></i>
+                    </button>
                 </div>
-                <div class="flex flex-col w-full mb-12 px-2">
-                    <input type="range" id="full-player-range" min="0" max="100" value="0" class="w-full mb-5">
-                    <div class="flex justify-between text-[12px] font-bold text-gray-400 font-mono tracking-widest px-1">
-                        <span id="full-player-current">0:00</span>
-                        <span id="full-player-duration">0:00</span>
+                <div class="relative w-[74%] max-w-[290px] mx-auto aspect-square shrink-0 mt-2 mb-7">
+                    <div class="absolute inset-5 rounded-[44px] blur-2xl opacity-50" style="background: var(--point-color);"></div>
+                    <div class="relative w-full h-full rounded-[36px] flex items-center justify-center overflow-hidden border border-white/10 shadow-2xl" style="background: radial-gradient(circle at 30% 22%, rgba(255,255,255,0.14), rgba(0,0,0,0.4));">
+                        <img id="full-player-cover" src="" class="w-full h-full object-contain p-9 drop-shadow-2xl">
                     </div>
                 </div>
-                <div class="flex justify-center items-center gap-14">
-                    <button onclick="appPrevMusic()" ontouchstart="event.stopPropagation()" class="text-white hover:text-gray-300 active:scale-95 transition-transform"><i class="fa-solid fa-backward text-[36px]"></i></button>
-                    <button onclick="toggleMiniPlayerPlay()" ontouchstart="event.stopPropagation()" class="text-white active:scale-95 transition-transform"><i id="full-player-btn" class="fa-solid fa-pause text-[48px]"></i></button>
-                    <button onclick="appNextMusic()" ontouchstart="event.stopPropagation()" class="text-white hover:text-gray-300 active:scale-95 transition-transform"><i class="fa-solid fa-forward text-[36px]"></i></button>
+                <div class="flex-1 flex flex-col justify-center w-full pb-2">
+                    <div class="flex items-center justify-between w-full mb-7 px-1 gap-3">
+                        <div class="flex flex-col items-start text-left min-w-0 flex-1">
+                            <h2 id="full-player-title" class="text-[23px] font-black text-white mb-1 tracking-tight truncate w-full">곡 제목</h2>
+                            <span id="full-player-artist" class="text-[14px] text-point font-bold tracking-tight truncate w-full">KBO 리그 응원가</span>
+                        </div>
+                        <button onclick="showToast('좋아요 기능은 준비 중입니다.')" ontouchstart="event.stopPropagation()" class="w-10 h-10 shrink-0 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-point active:scale-90 transition-all"><i class="fa-regular fa-heart text-[16px]"></i></button>
+                    </div>
+                    <div class="flex flex-col w-full mb-9 px-1">
+                        <input type="range" id="full-player-range" min="0" max="100" value="0" class="w-full mb-3">
+                        <div class="flex justify-between text-[11px] font-bold text-gray-500 font-mono tracking-widest px-0.5">
+                            <span id="full-player-current">0:00</span>
+                            <span id="full-player-duration">0:00</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-center items-center gap-10">
+                        <button onclick="appPrevMusic()" ontouchstart="event.stopPropagation()" class="text-white hover:text-gray-300 active:scale-90 transition-transform"><i class="fa-solid fa-backward-step text-[30px]"></i></button>
+                        <button onclick="toggleMiniPlayerPlay()" ontouchstart="event.stopPropagation()" class="w-[74px] h-[74px] flex items-center justify-center rounded-full bg-point text-white active:scale-90 transition-transform" style="box-shadow: 0 10px 34px var(--point-bg);"><i id="full-player-btn" class="fa-solid fa-pause text-[48px]"></i></button>
+                        <button onclick="appNextMusic()" ontouchstart="event.stopPropagation()" class="text-white hover:text-gray-300 active:scale-90 transition-transform"><i class="fa-solid fa-forward-step text-[30px]"></i></button>
+                    </div>
                 </div>
-            </div>
-            <div class="absolute bottom-8 left-8 right-8 flex justify-between items-center text-gray-500 z-10">
-                <button onclick="showToast('가사 기능은 준비 중입니다.')" ontouchstart="event.stopPropagation()" class="hover:text-white transition-colors active:scale-95 p-2"><i class="fa-solid fa-quote-left text-[22px]"></i></button>
-                <button onclick="showToast('재생목록 기능은 준비 중입니다.')" ontouchstart="event.stopPropagation()" class="hover:text-white transition-colors active:scale-95 p-2"><i class="fa-solid fa-list-ul text-[22px]"></i></button>
+                <div class="w-full flex justify-between items-center text-gray-500 px-3 pb-1 mt-3">
+                    <button onclick="showToast('가사 기능은 준비 중입니다.')" ontouchstart="event.stopPropagation()" class="flex items-center gap-2 hover:text-white transition-colors active:scale-95 py-2 pr-2"><i class="fa-solid fa-quote-left text-[15px]"></i><span class="text-[12px] font-bold">가사</span></button>
+                    <button onclick="showToast('재생목록 기능은 준비 중입니다.')" ontouchstart="event.stopPropagation()" class="flex items-center gap-2 hover:text-white transition-colors active:scale-95 py-2 pl-2"><span class="text-[12px] font-bold">재생목록</span><i class="fa-solid fa-list-ul text-[15px]"></i></button>
+                </div>
             </div>
         </div>
 
@@ -399,6 +438,9 @@
         const db = firebase.firestore();
         
         db.settings({ experimentalForceLongPolling: true, useFetchStreams: false });
+        // [추가] 오프라인 캐시(IndexedDB) 활성화 — 재실행 시 직전 데이터가 즉시 표시되고 네트워크는 백그라운드로 갱신.
+        // 미지원 환경(웹뷰/시크릿모드 등)에서는 조용히 무시되어 기존 동작에 영향 없음.
+        try { db.enablePersistence({ synchronizeTabs: true }).catch(() => {}); } catch (e) {}
 
         let scheduleData = [], rankingData = [], liveDataStore = {}, currentPopupMatchId = null, currentTabIndex = 0, watchRecords = [], recordPopupDate = new Date(), currentRecordTeam = null, currentRecordType = null;
         let audioPlayer, currentSongTitle = '', currentSongCover = '', currentPlaylist = [], currentSongIndex = -1, isSeeking = false;
@@ -729,12 +771,12 @@
                     <span class="text-[10px] font-medium text-gray-500">전적·흐름 기반 예측</span>
                 </div>
                 <div class="flex items-center justify-between mb-1.5 px-0.5">
-                    <div class="flex items-baseline gap-1.5"><span class="text-[13px] font-black" style="color:${c1}">${m.team1}</span><span class="text-[20px] font-black ${leadAway ? '' : 'opacity-40'}" style="color:${c1}">${p.away}<span class="text-[12px]">%</span></span></div>
-                    <div class="flex items-baseline gap-1.5"><span class="text-[20px] font-black ${leadAway ? 'opacity-40' : ''}" style="color:${c2}">${p.home}<span class="text-[12px]">%</span></span><span class="text-[13px] font-black" style="color:${c2}">${m.team2}</span></div>
+                    <div class="flex items-baseline gap-1.5"><span class="text-[13px] font-black" style="color:${c1}">${m.team1}</span><span class="text-[20px] font-black ${leadAway ? '' : 'opacity-40'}" style="color:${c1}"><span class="wp-num">${p.away}</span><span class="text-[12px]">%</span></span></div>
+                    <div class="flex items-baseline gap-1.5"><span class="text-[20px] font-black ${leadAway ? 'opacity-40' : ''}" style="color:${c2}"><span class="wp-num">${p.home}</span><span class="text-[12px]">%</span></span><span class="text-[13px] font-black" style="color:${c2}">${m.team2}</span></div>
                 </div>
                 <div class="w-full h-2.5 rounded-full overflow-hidden flex shadow-inner" style="background:rgba(127,127,127,0.18)">
-                    <div style="width:${p.away}%;background:${c1};transition:width .6s cubic-bezier(.2,.8,.2,1)"></div>
-                    <div style="width:${p.home}%;background:${c2};transition:width .6s cubic-bezier(.2,.8,.2,1)"></div>
+                    <div class="wp-seg wp-seg-l" style="width:${p.away}%;background:${c1}"></div>
+                    <div class="wp-seg wp-seg-r" style="width:${p.home}%;background:${c2}"></div>
                 </div>
             </div>`;
         }
@@ -750,8 +792,8 @@
             return `<div class="relative z-10 w-full flex items-center gap-2 px-1 mt-2">
                 <span class="text-[10px] font-black w-9 text-left tracking-tight" style="color:${c1}">${p.away}%</span>
                 <div class="flex-1 h-1.5 rounded-full overflow-hidden flex" style="background:rgba(255,255,255,0.14)">
-                    <div style="width:${p.away}%;background:${c1};transition:width .5s ease"></div>
-                    <div style="width:${p.home}%;background:${c2};transition:width .5s ease"></div>
+                    <div class="wp-seg wp-seg-l" style="width:${p.away}%;background:${c1}"></div>
+                    <div class="wp-seg wp-seg-r" style="width:${p.home}%;background:${c2}"></div>
                 </div>
                 <span class="text-[10px] font-black w-9 text-right tracking-tight" style="color:${c2}">${p.home}%</span>
             </div>`;
@@ -880,20 +922,16 @@
         function syncWithFirestore() {
             (async () => {
                 try {
-                    let rSnap = await db.collection("rankings").doc("current").get();
-                    if (rSnap.exists) {
-                        rankingData = rSnap.data().data || rSnap.data().rankings || [];
-                        rankingData.sort((a, b) => { if (a.rank === '-') return 1; if (b.rank === '-') return -1; return parseInt(a.rank) - parseInt(b.rank); });
-                    }
-
-                    let wSnap = await db.collection("watch_records").get();
-                    watchRecords = []; wSnap.forEach(d => watchRecords.push(d.data()));
-
-                    // [수정점] 사용자가 말씀하신 대로 초기 로딩 시 무식하게 모든 달을 가져오지 않고,
-                    // 무조건 '현재 선택된 달' 하나만 가져옵니다. 
-                    await fetchMonthSchedule(currentDate.getFullYear(), currentDate.getMonth() + 1);
-
-                    await pollLiveToday();
+                    // [수정점] 데이터 로딩 속도 개선:
+                    //  · 순위는 과거 데이터(js 파일)로 계산하므로 firestore 순위 조회 round-trip 제거
+                    //  · 관전기록 / 이번 달 일정 / 오늘 라이브를 순차가 아닌 '동시(병렬)'로 가져옴
+                    await Promise.all([
+                        db.collection("watch_records").get()
+                            .then(wSnap => { watchRecords = []; wSnap.forEach(d => watchRecords.push(d.data())); })
+                            .catch(e => console.error(e)),
+                        fetchMonthSchedule(currentDate.getFullYear(), currentDate.getMonth() + 1),
+                        pollLiveToday()
+                    ]);
 
                     livePollingInterval = setInterval(pollLiveToday, 30000);
 
@@ -1079,6 +1117,17 @@
             if (s && !s.classList.contains('hidden')) { s.classList.add('hidden'); s.classList.remove('flex'); updateHeaderCtrlForPopup(false); } 
         }
 
+        // [추가] 달력 승/패/무/취소 도장 — 잉크 스탬프 느낌(반투명 채움 + 컬러 링 + 그림자)
+        function mkStamp(label, hex, big) {
+            let shape = big
+                ? 'text-[25px] px-4 py-1 border-[2.5px] rounded-tl-[26px] rounded-br-[26px] rounded-tr-md rounded-bl-md tracking-[0.12em]'
+                : 'text-[10px] px-1.5 py-[3px] border-2 rounded-tl-[11px] rounded-br-[11px] rounded-tr-[3px] rounded-bl-[3px] tracking-[0.14em]';
+            let yShift = big ? '-translate-y-1/2' : '-translate-y-[30%]';
+            let z = big ? 'z-0' : 'z-20';
+            return `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 ${yShift} -rotate-[13deg] font-black pointer-events-none whitespace-nowrap ${shape} ${z}" style="color:${hex};border-color:${hex};background:${hex}1f;box-shadow:0 2px 8px ${hex}40, inset 0 0 0 1px ${hex}30;text-shadow:0 1px 1px rgba(0,0,0,0.12);">${label}</div>`;
+        }
+        const STAMP_HEX = { WIN: '#EA0029', LOSE: '#64748B', DRAW: '#10B981', CANCEL: '#3B82F6' };
+
         function renderCalendar() {
             const grid = document.getElementById('calendar-grid'); if (!grid) return; 
             const year = currentDate.getFullYear(), month = currentDate.getMonth(), date = currentDate.getDate();
@@ -1167,14 +1216,13 @@
                             if (l.gameStatus !== '경기전') {
                                 let isC = (l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취')));
                                 if (isC) {
-                                    let t = (l.inning && (l.inning.includes('취소') || l.inning.includes('우취'))) ? l.inning : (l.gameStatus || '취소'); if (t === '취소') t = '우천취소'; t = t.replace('우취', '우천취소');
-                                    stmp = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 -rotate-[15deg] text-[10px] font-black text-blue-400 border-[1.5px] border-blue-400 rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm px-2 py-0.5 tracking-tighter pointer-events-none z-20 bg-transparent whitespace-nowrap">${t}</div>`;
+                                    stmp = mkStamp('우취', STAMP_HEX.CANCEL, false);
                                 } else if (l.gameStatus === '종료') {
                                     let a = parseInt(l.awayScore || 0), h = parseInt(l.homeScore || 0);
                                     let iW = (mt[0].team1 === selectedTeam && a > h) || (mt[0].team2 === selectedTeam && h > a); let iL = (mt[0].team1 === selectedTeam && a < h) || (mt[0].team2 === selectedTeam && h < a); let iD = a === h;
-                                    if (iW) stmp = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 -rotate-[15deg] text-[11px] font-black text-red-500 border-[1.5px] border-red-500 rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm px-2 py-0.5 tracking-widest pointer-events-none z-20 bg-transparent whitespace-nowrap">WIN</div>`;
-                                    else if (iL) stmp = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 -rotate-[15deg] text-[11px] font-black text-gray-400 border-[1.5px] border-gray-400 rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm px-2 py-0.5 tracking-widest pointer-events-none z-20 bg-transparent whitespace-nowrap">LOSE</div>`;
-                                    else if (iD) stmp = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 -rotate-[15deg] text-[11px] font-black text-green-500 border-[1.5px] border-green-500 rounded-tl-xl rounded-br-xl rounded-tr-sm rounded-bl-sm px-2 py-0.5 tracking-widest pointer-events-none z-20 bg-transparent whitespace-nowrap">DRAW</div>`;
+                                    if (iW) stmp = mkStamp('WIN', STAMP_HEX.WIN, false);
+                                    else if (iL) stmp = mkStamp('LOSE', STAMP_HEX.LOSE, false);
+                                    else if (iD) stmp = mkStamp('DRAW', STAMP_HEX.DRAW, false);
                                 }
                             }
                             let dt = mt.map(m => { let dtm = m.team1 === selectedTeam ? m.team2 : m.team1; let iH = m.team2 === selectedTeam; if (iH) tic = `<i class="fa-solid fa-house text-point text-[10px] absolute top-1.5 left-1/2 -translate-x-1/2 ${isP ? 'grayscale opacity-50' : ''}"></i>`; let isDal = (m.date === '2026-05-15' || m.date === '2026-05-16' || m.date === '2026-05-17' || m.date === '2026-06-05' || m.date === '2026-06-06' || m.date === '2026-06-07') && ((m.team1 === 'KIA' && m.team2 === '삼성') || (m.team1 === '삼성' && m.team2 === 'KIA')); return isDal ? `<img src="https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/dal.png" class="w-[24px] h-[24px] object-contain ${isP ? 'grayscale opacity-50' : ''}">` : uiTeamLogo(dtm, 'w-[22px] h-[22px]', 'w-[7px] h-[7px]', isP ? 'grayscale opacity-50' : ''); }).join('');
@@ -1223,13 +1271,13 @@
                                 
                                 if (selectedTeam !== 'all') {
                                     if (isC) {
-                                        stmp = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-blue-500 border-[3px] border-blue-500 rounded-tl-3xl rounded-br-3xl rounded-tr-md rounded-bl-md px-4 py-1 tracking-widest pointer-events-none z-0 bg-transparent whitespace-nowrap opacity-90">취소</div>`;
+                                        stmp = mkStamp('취소', STAMP_HEX.CANCEL, true);
                                     } else if (l.gameStatus === '종료') {
                                         let a = parseInt(l.awayScore || 0), h = parseInt(l.homeScore || 0);
                                         let iW = (m.team1 === selectedTeam && a > h) || (m.team2 === selectedTeam && h > a); let iL = (m.team1 === selectedTeam && a < h) || (m.team2 === selectedTeam && h < a); let iD = a === h;
-                                        if (iW) stmp = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-red-500 border-[3px] border-red-500 rounded-tl-3xl rounded-br-3xl rounded-tr-md rounded-bl-md px-4 py-1 tracking-widest pointer-events-none z-0 bg-transparent whitespace-nowrap opacity-90">WIN</div>`;
-                                        else if (iL) stmp = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-gray-500 border-[3px] border-gray-500 rounded-tl-3xl rounded-br-3xl rounded-tr-md rounded-bl-md px-4 py-1 tracking-widest pointer-events-none z-0 bg-transparent whitespace-nowrap opacity-90">LOSE</div>`;
-                                        else if (iD) stmp = `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] text-[28px] font-black text-green-500 border-[3px] border-green-500 rounded-tl-3xl rounded-br-3xl rounded-tr-md rounded-bl-md px-4 py-1 tracking-widest pointer-events-none z-0 bg-transparent whitespace-nowrap opacity-90">DRAW</div>`;
+                                        if (iW) stmp = mkStamp('WIN', STAMP_HEX.WIN, true);
+                                        else if (iL) stmp = mkStamp('LOSE', STAMP_HEX.LOSE, true);
+                                        else if (iD) stmp = mkStamp('DRAW', STAMP_HEX.DRAW, true);
                                     }
                                 }
                             }
