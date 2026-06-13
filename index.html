@@ -425,9 +425,9 @@
             <div class="flex items-center justify-between bg-[#1C1C1E] relative">
                 <div id="nav-indicator" class="absolute bg-point z-0 nav-transition" style="left: 4px; width: 66px;"></div>
                 <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(0)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-house text-base text-white"></i><span class="text-[10px] font-bold text-white">홈</span></div></button>
-                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(1)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-wand-magic-sparkles text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">요정</span></div></button>
+                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(1)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-ticket text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">요정</span></div></button>
                 <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(2)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-ranking-star text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">순위</span></div></button>
-                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(3)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-music text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">응원가</span></div></button>
+                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(3)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-headphones text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">응원가</span></div></button>
             </div>
         </nav>
     </div>
@@ -799,6 +799,36 @@
             </div>`;
         }
 
+        // [추가] 투수 투구 손(우투/좌투) — 라이브 데이터에 투수 좌우 정보가 없을 때의 보조 표시용.
+        //        투구 손은 변하지 않는 정보라 이름만으로 안전하게 매칭 가능. 새 선수/외국인 선수는 여기에 추가하면 배지가 표시됨.
+        const pitcherThrows = {
+            // KIA
+            '양현종': '좌투', '이의리': '좌투', '윤영철': '좌투', '정해영': '우투', '전상현': '우투',
+            '최지민': '좌투', '곽도규': '좌투', '이준영': '좌투', '임기영': '우투', '김기훈': '좌투', '김도현': '우투',
+            // 삼성
+            '원태인': '우투', '최원태': '우투', '양창섭': '우투', '백정현': '좌투', '김재윤': '우투', '임창민': '우투', '이호성': '우투',
+            // 한화
+            '류현진': '좌투', '문동주': '우투', '황준서': '좌투', '엄상백': '우투',
+            // SSG
+            '김광현': '좌투', '문승원': '우투', '박종훈': '우투', '송영진': '우투',
+            // LG
+            '임찬규': '우투', '손주영': '좌투', '함덕주': '좌투', '김윤식': '좌투',
+            // 두산
+            '곽빈': '우투', '최승용': '좌투', '김택연': '우투', '이영하': '우투',
+            // 롯데
+            '박세웅': '우투', '김원중': '우투', '나균안': '우투',
+            // KT
+            '고영표': '우투', '소형준': '우투', '엄상백 ': '우투',
+            // NC
+            '구창모': '좌투', '신민혁': '우투', '이용찬': '우투',
+            // 키움
+            '안우진': '우투', '하영민': '우투'
+        };
+        function _throwsOf(raw, name) {
+            if (raw && typeof raw === 'object' && raw.batsThrows) return raw.batsThrows;
+            return pitcherThrows[name] || '';
+        }
+
         // [추가] 선발 투수의 상대 팀 맞대결 전적 + 시즌 전적 (과거 데이터 파일 기반)
         function _pitcherName(raw) { return (raw && typeof raw === 'object') ? (raw.name || '') : (raw || ''); }
         function pitcherRecords(pitcher, team, opp) {
@@ -1053,7 +1083,7 @@
             
             nb.forEach((b, i) => {
                 const ic = b.querySelector('i'), l = b.querySelector('span');
-                if (ic && l) { ic.className = `fa-solid ${['fa-house', 'fa-wand-magic-sparkles', 'fa-ranking-star', 'fa-music'][i]} text-base ${i === index ? 'text-white' : 'text-gray-400 transition-colors'}`; l.className = `text-[10px] whitespace-nowrap transition-colors ${i === index ? 'text-white font-bold' : 'text-gray-400 font-medium'}`; }
+                if (ic && l) { ic.className = `fa-solid ${['fa-house', 'fa-ticket', 'fa-ranking-star', 'fa-headphones'][i]} text-base ${i === index ? 'text-white' : 'text-gray-400 transition-colors'}`; l.className = `text-[10px] whitespace-nowrap transition-colors ${i === index ? 'text-white font-bold' : 'text-gray-400 font-medium'}`; }
             });
             
             const mt = document.getElementById('di-main-text');
@@ -1590,7 +1620,18 @@
 
                         div.className = 'min-w-full shrink-0 snap-center transition-transform duration-300 active:scale-[0.98] py-1 flex flex-col'; div.style.cssText = 'border-top: none !important; border-bottom: none !important;';
                         
-                        div.innerHTML = `<div class="banner-card w-full bg-[#161618] relative overflow-hidden px-5 py-4 shadow-xl flex flex-col justify-center gap-3.5"><div class="absolute inset-0 pointer-events-none z-0" style="background: ${bgGradient};"></div>${dalBadge}${centerDalLogo2}<div class="flex justify-between items-center z-10 w-full"><div class="flex items-center"><span class="${statusColor} font-black text-[13px] flex items-center gap-1.5 tracking-tight"><span class="w-1.5 h-1.5 rounded-full ${dotColor}"></span>${statusText}</span><span class="text-gray-600 text-[11px] mx-2.5 mb-px">|</span><span class="text-gray-400 font-bold text-[13px] tracking-tight">${m.stadium}</span></div>${bcHtml}</div><div class="flex justify-between items-center z-10 w-full ${iC ? 'opacity-50 grayscale' : ''}"><div class="flex flex-col w-[35%] gap-2"><div class="flex items-center gap-1.5"><div class="relative shrink-0 flex items-center justify-center"><img src="${smImg1}" class="w-[34px] h-[34px] object-contain drop-shadow-md">${rank1Html}</div><span class="text-[18px] font-black text-white tracking-tight whitespace-nowrap">${m.team1}</span>${winMark1}</div>${!iC ? `<div class="flex items-center gap-1.5 pl-1 opacity-90">${apim}<span class="text-[11px] font-semibold text-gray-400 truncate w-full pt-0.5">${ap}</span></div>` : ''}</div><div class="flex justify-center flex-1"><div class="flex items-center justify-center pt-0.5">${scoreHtml}</div></div><div class="flex flex-col w-[35%] items-end gap-2 text-right"><div class="flex items-center justify-end gap-1.5">${winMark2}<span class="text-[18px] font-black text-white tracking-tight whitespace-nowrap">${m.team2}</span><div class="relative shrink-0 flex items-center justify-center"><img src="${smImg2}" class="w-[34px] h-[34px] object-contain drop-shadow-md">${rank2Html}</div></div>${!iC ? `<div class="flex items-center justify-end gap-1.5 pr-1 opacity-90"><span class="text-[11px] font-semibold text-gray-400 truncate w-full text-right pt-0.5">${hp}</span>${hpim}</div>` : ''}</div></div>${winProbBarMini(m, l)}</div>`;
+                        if (l.gameStatus === '경기전' && !iC) {
+                            // [재디자인] 경기전 배너 — 양 팀 선발 투수 사진 강조형
+                            let apThrowB = _throwsOf(apRaw, ap), hpThrowB = _throwsOf(hpRaw, hp);
+                            let bigFace = (img) => img ? `<img src="${img}" class="w-full h-full object-cover object-top scale-110">` : `<i class="fa-solid fa-user text-gray-500 text-2xl mb-1.5"></i>`;
+                            let faceRing = (hx) => `width:66px;height:66px;border-color:${hx};box-shadow:0 5px 16px ${hx}55`;
+                            let rankBadge = (num, side) => num ? `<div class="absolute -top-1 ${side} w-[18px] h-[18px] rounded-full border flex items-center justify-center shadow-lg z-20 ${getRankStyle(num)}"><span class="text-[9px] font-black leading-none">${num}</span></div>` : '';
+                            let throwBadge = (t) => t ? `<span class="text-[8px] font-bold text-gray-300 border border-white/25 rounded-sm px-1 leading-none inline-flex items-center justify-center h-[13px] shrink-0">${t}</span>` : '';
+                            let pitcherCol = (face, hx, logo, team, num, name, thr, side) => `<div class="flex flex-col items-center gap-1.5 w-[37%] min-w-0"><div class="relative"><div class="rounded-full overflow-hidden border-2 flex items-end justify-center bg-black/30" style="${faceRing(hx)}">${bigFace(face)}</div>${rankBadge(num, side)}</div><div class="flex items-center gap-1 mt-0.5"><img src="${logo}" class="w-4 h-4 object-contain drop-shadow"><span class="text-[15px] font-black text-white tracking-tight whitespace-nowrap">${team}</span></div><div class="flex items-center justify-center gap-1 max-w-full w-full px-1"><span class="text-[12px] font-bold text-gray-200 truncate min-w-0">${name}</span>${throwBadge(thr)}</div></div>`;
+                            div.innerHTML = `<div class="banner-card w-full bg-[#161618] relative overflow-hidden px-5 pt-3 pb-4 shadow-xl flex flex-col gap-3.5"><div class="absolute inset-0 pointer-events-none z-0" style="background: ${bgGradient};"></div>${dalBadge}${centerDalLogo2}<div class="flex justify-between items-center z-10 w-full"><div class="flex items-center"><span class="${statusColor} font-black text-[13px] flex items-center gap-1.5 tracking-tight"><span class="w-1.5 h-1.5 rounded-full ${dotColor}"></span>${statusText}</span><span class="text-gray-600 text-[11px] mx-2.5 mb-px">|</span><span class="text-gray-400 font-bold text-[13px] tracking-tight">${m.stadium}</span></div>${bcHtml}</div><div class="flex items-start justify-between z-10 w-full">${pitcherCol(api, h1, smImg1, m.team1, r1Num, ap, apThrowB, '-left-1')}<div class="flex flex-col items-center justify-center gap-1 shrink-0 px-1 pt-3"><span class="text-[26px] font-black text-white/90 italic leading-none tracking-tighter drop-shadow-md">VS</span><span class="text-[8px] font-bold text-gray-400 tracking-[0.15em] whitespace-nowrap">선발 매치업</span></div>${pitcherCol(hpi, h2, smImg2, m.team2, r2Num, hp, hpThrowB, '-right-1')}</div>${winProbBarMini(m, l)}</div>`;
+                        } else {
+                            div.innerHTML = `<div class="banner-card w-full bg-[#161618] relative overflow-hidden px-5 py-4 shadow-xl flex flex-col justify-center gap-3.5"><div class="absolute inset-0 pointer-events-none z-0" style="background: ${bgGradient};"></div>${dalBadge}${centerDalLogo2}<div class="flex justify-between items-center z-10 w-full"><div class="flex items-center"><span class="${statusColor} font-black text-[13px] flex items-center gap-1.5 tracking-tight"><span class="w-1.5 h-1.5 rounded-full ${dotColor}"></span>${statusText}</span><span class="text-gray-600 text-[11px] mx-2.5 mb-px">|</span><span class="text-gray-400 font-bold text-[13px] tracking-tight">${m.stadium}</span></div>${bcHtml}</div><div class="flex justify-between items-center z-10 w-full ${iC ? 'opacity-50 grayscale' : ''}"><div class="flex flex-col w-[35%] gap-2"><div class="flex items-center gap-1.5"><div class="relative shrink-0 flex items-center justify-center"><img src="${smImg1}" class="w-[34px] h-[34px] object-contain drop-shadow-md">${rank1Html}</div><span class="text-[18px] font-black text-white tracking-tight whitespace-nowrap">${m.team1}</span>${winMark1}</div>${!iC ? `<div class="flex items-center gap-1.5 pl-1 opacity-90">${apim}<span class="text-[11px] font-semibold text-gray-400 truncate w-full pt-0.5">${ap}</span></div>` : ''}</div><div class="flex justify-center flex-1"><div class="flex items-center justify-center pt-0.5">${scoreHtml}</div></div><div class="flex flex-col w-[35%] items-end gap-2 text-right"><div class="flex items-center justify-end gap-1.5">${winMark2}<span class="text-[18px] font-black text-white tracking-tight whitespace-nowrap">${m.team2}</span><div class="relative shrink-0 flex items-center justify-center"><img src="${smImg2}" class="w-[34px] h-[34px] object-contain drop-shadow-md">${rank2Html}</div></div>${!iC ? `<div class="flex items-center justify-end gap-1.5 pr-1 opacity-90"><span class="text-[11px] font-semibold text-gray-400 truncate w-full text-right pt-0.5">${hp}</span>${hpim}</div>` : ''}</div></div>${winProbBarMini(m, l)}</div>`;
+                        }
                     }
                 }
                 div.classList.add('cursor-pointer'); div.onclick = () => openLineupPopup(m.id); c.appendChild(div);
@@ -1992,8 +2033,9 @@
             let hp = typeof hpRaw === 'object' && hpRaw !== null ? hpRaw.name : hpRaw;
             let apPos = typeof apRaw === 'object' && apRaw !== null && apRaw.position ? apRaw.position : '투수';
             let hpPos = typeof hpRaw === 'object' && hpRaw !== null && hpRaw.position ? hpRaw.position : '투수';
-            let apBat = typeof apRaw === 'object' && apRaw !== null && apRaw.batsThrows ? `<span class="text-[9px] font-bold text-gray-500 border border-gray-600/50 rounded-sm px-1 ml-1 leading-none inline-flex items-center justify-center h-[14px] opacity-80 shrink-0">${apRaw.batsThrows}</span>` : '';
-            let hpBat = typeof hpRaw === 'object' && hpRaw !== null && hpRaw.batsThrows ? `<span class="text-[9px] font-bold text-gray-500 border border-gray-600/50 rounded-sm px-1 ml-1 leading-none inline-flex items-center justify-center h-[14px] opacity-80 shrink-0">${hpRaw.batsThrows}</span>` : '';
+            let apThrow = _throwsOf(apRaw, ap), hpThrow = _throwsOf(hpRaw, hp);
+            let apBat = apThrow ? `<span class="text-[9px] font-bold text-gray-500 border border-gray-600/50 rounded-sm px-1 ml-1 leading-none inline-flex items-center justify-center h-[14px] opacity-80 shrink-0">${apThrow}</span>` : '';
+            let hpBat = hpThrow ? `<span class="text-[9px] font-bold text-gray-500 border border-gray-600/50 rounded-sm px-1 ml-1 leading-none inline-flex items-center justify-center h-[14px] opacity-80 shrink-0">${hpThrow}</span>` : '';
             let api = playerImages[ap], hpi = playerImages[hp];
             let apim = api ? `<img src="${api}" class="w-full h-full object-contain object-bottom scale-[1.3] drop-shadow-md origin-bottom">` : `<i class="fa-solid fa-user text-gray-500 text-[16px] mt-1.5"></i>`, hpim = hpi ? `<img src="${hpi}" class="w-full h-full object-contain object-bottom scale-[1.3] drop-shadow-md origin-bottom">` : `<i class="fa-solid fa-user text-gray-500 text-[16px] mt-1.5"></i>`;
             let apf = api ? "w-9 h-9 flex items-end justify-center shrink-0" : "w-9 h-9 bg-[#222224] rounded-full flex items-center justify-center overflow-hidden shrink-0 border border-white/10", hpf = hpi ? "w-9 h-9 flex items-end justify-center shrink-0" : "w-9 h-9 bg-[#222224] rounded-full flex items-center justify-center overflow-hidden shrink-0 border border-white/10";
@@ -2003,21 +2045,21 @@
             let aBadge = '선발'; if (l.gameStatus === '경기중' && aStarterName && ap !== '-' && ap !== aStarterName) aBadge = '불펜';
             let hBadge = '선발'; if (l.gameStatus === '경기중' && hStarterName && hp !== '-' && hp !== hStarterName) hBadge = '불펜';
 
-            // [추가] 선발 투수 전적을 얼굴 라인업 자리에 표시 (시즌 / 상대 맞대결)
+            // [추가] 선발 투수 전적 — 얼굴/이름 아래 전체 너비로 표시(글자 잘림 방지)
             const starterRecHtml = (name, team, opp, hx) => {
                 if (!name || name === '-') return '';
                 let r = pitcherRecords(name, team, opp);
                 let parts = [];
-                if (r.seasonW + r.seasonL > 0) parts.push(`시즌 ${r.seasonW}승 ${r.seasonL}패`);
-                if (r.vsW + r.vsL > 0) parts.push(`${opp}전 ${r.vsW}승 ${r.vsL}패`);
+                if (r.seasonW + r.seasonL > 0) parts.push(`<span style="color:${hx}">시즌 ${r.seasonW}승 ${r.seasonL}패</span>`);
+                if (r.vsW + r.vsL > 0) parts.push(`<span class="text-gray-400">${opp}전 ${r.vsW}승 ${r.vsL}패</span>`);
                 if (!parts.length) return '';
-                return `<span class="text-[9px] font-bold whitespace-nowrap mt-0.5" style="color:${hx}">${parts.join(' · ')}</span>`;
+                return `<div class="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 mt-2 text-[10px] font-bold leading-tight">${parts.join('<span class="text-gray-600">·</span>')}</div>`;
             };
             let apRecHtml = isClassic ? '' : starterRecHtml(ap, m.team1, m.team2, h1);
             let hpRecHtml = isClassic ? '' : starterRecHtml(hp, m.team2, m.team1, h2);
 
-            let aph = `<div class="flex items-center gap-2 mb-3.5"><div class="w-[22px] flex justify-center shrink-0"><span style="background-color: ${h1}; border: 1px solid ${h1}; color: #ffffff !important;" class="text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">${aBadge}</span></div><div class="${apf}">${apim}</div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center gap-x-1"><span class="text-[clamp(11px,3vw,14px)] font-bold text-white whitespace-nowrap tracking-tight shrink">${ap}</span>${apBat}</div><span class="text-[10px] text-gray-400 whitespace-nowrap mt-0.5">${apPos}</span>${apRecHtml}</div></div>`;
-            let hph = `<div class="flex items-center gap-2 mb-3.5"><div class="w-[22px] flex justify-center shrink-0"><span style="background-color: ${h2}; border: 1px solid ${h2}; color: #ffffff !important;" class="text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">${hBadge}</span></div><div class="${hpf}">${hpim}</div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center gap-x-1"><span class="text-[clamp(11px,3vw,14px)] font-bold text-white whitespace-nowrap tracking-tight shrink">${hp}</span>${hpBat}</div><span class="text-[10px] text-gray-400 whitespace-nowrap mt-0.5">${hpPos}</span>${hpRecHtml}</div></div>`;
+            let aph = `<div class="mb-3.5"><div class="flex items-center gap-2"><div class="w-[22px] flex justify-center shrink-0"><span style="background-color: ${h1}; border: 1px solid ${h1}; color: #ffffff !important;" class="text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">${aBadge}</span></div><div class="${apf}">${apim}</div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center gap-x-1"><span class="text-[clamp(11px,3vw,14px)] font-bold text-white whitespace-nowrap tracking-tight shrink">${ap}</span>${apBat}</div><span class="text-[10px] text-gray-400 whitespace-nowrap mt-0.5">${apPos}</span></div></div>${apRecHtml}</div>`;
+            let hph = `<div class="mb-3.5"><div class="flex items-center gap-2"><div class="w-[22px] flex justify-center shrink-0"><span style="background-color: ${h2}; border: 1px solid ${h2}; color: #ffffff !important;" class="text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">${hBadge}</span></div><div class="${hpf}">${hpim}</div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center gap-x-1"><span class="text-[clamp(11px,3vw,14px)] font-bold text-white whitespace-nowrap tracking-tight shrink">${hp}</span>${hpBat}</div><span class="text-[10px] text-gray-400 whitespace-nowrap mt-0.5">${hpPos}</span></div></div>${hpRecHtml}</div>`;
             
             let abh = (aLineupSrc && aLineupSrc.length > 0) ? aLineupSrc.map((pObj, i) => { 
                 let p = typeof pObj === 'object' && pObj !== null ? pObj.name : pObj;
