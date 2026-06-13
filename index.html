@@ -799,34 +799,9 @@
             </div>`;
         }
 
-        // [추가] 투수 투구 손(우투/좌투) — 라이브 데이터에 투수 좌우 정보가 없을 때의 보조 표시용.
-        //        투구 손은 변하지 않는 정보라 이름만으로 안전하게 매칭 가능. 새 선수/외국인 선수는 여기에 추가하면 배지가 표시됨.
-        const pitcherThrows = {
-            // KIA
-            '양현종': '좌투', '이의리': '좌투', '윤영철': '좌투', '정해영': '우투', '전상현': '우투',
-            '최지민': '좌투', '곽도규': '좌투', '이준영': '좌투', '임기영': '우투', '김기훈': '좌투', '김도현': '우투',
-            // 삼성
-            '원태인': '우투', '최원태': '우투', '양창섭': '우투', '백정현': '좌투', '김재윤': '우투', '임창민': '우투', '이호성': '우투',
-            // 한화
-            '류현진': '좌투', '문동주': '우투', '황준서': '좌투', '엄상백': '우투',
-            // SSG
-            '김광현': '좌투', '문승원': '우투', '박종훈': '우투', '송영진': '우투',
-            // LG
-            '임찬규': '우투', '손주영': '좌투', '함덕주': '좌투', '김윤식': '좌투',
-            // 두산
-            '곽빈': '우투', '최승용': '좌투', '김택연': '우투', '이영하': '우투',
-            // 롯데
-            '박세웅': '우투', '김원중': '우투', '나균안': '우투',
-            // KT
-            '고영표': '우투', '소형준': '우투', '엄상백 ': '우투',
-            // NC
-            '구창모': '좌투', '신민혁': '우투', '이용찬': '우투',
-            // 키움
-            '안우진': '우투', '하영민': '우투'
-        };
-        function _throwsOf(raw, name) {
-            if (raw && typeof raw === 'object' && raw.batsThrows) return raw.batsThrows;
-            return pitcherThrows[name] || '';
+        // [추가] 투수 투구 손(우투/좌투) — 파이어베이스 투수 데이터에 입력된 값(batsThrows)이 있으면 표시.
+        function _throwsOf(raw) {
+            return (raw && typeof raw === 'object' && raw.batsThrows) ? raw.batsThrows : '';
         }
 
         // [추가] 선발 투수의 상대 팀 맞대결 전적 + 시즌 전적 (과거 데이터 파일 기반)
@@ -1622,7 +1597,7 @@
                         
                         if (l.gameStatus === '경기전' && !iC) {
                             // [재디자인] 경기전 배너 — 양 팀 선발 투수 사진 강조형
-                            let apThrowB = _throwsOf(apRaw, ap), hpThrowB = _throwsOf(hpRaw, hp);
+                            let apThrowB = _throwsOf(apRaw), hpThrowB = _throwsOf(hpRaw);
                             let bigFace = (img) => img ? `<img src="${img}" class="w-full h-full object-cover object-top scale-110">` : `<i class="fa-solid fa-user text-gray-500 text-2xl mb-1.5"></i>`;
                             let faceRing = (hx) => `width:66px;height:66px;border-color:${hx};box-shadow:0 5px 16px ${hx}55`;
                             let rankBadge = (num, side) => num ? `<div class="absolute -top-1 ${side} w-[18px] h-[18px] rounded-full border flex items-center justify-center shadow-lg z-20 ${getRankStyle(num)}"><span class="text-[9px] font-black leading-none">${num}</span></div>` : '';
@@ -2033,7 +2008,7 @@
             let hp = typeof hpRaw === 'object' && hpRaw !== null ? hpRaw.name : hpRaw;
             let apPos = typeof apRaw === 'object' && apRaw !== null && apRaw.position ? apRaw.position : '투수';
             let hpPos = typeof hpRaw === 'object' && hpRaw !== null && hpRaw.position ? hpRaw.position : '투수';
-            let apThrow = _throwsOf(apRaw, ap), hpThrow = _throwsOf(hpRaw, hp);
+            let apThrow = _throwsOf(apRaw), hpThrow = _throwsOf(hpRaw);
             let apBat = apThrow ? `<span class="text-[9px] font-bold text-gray-500 border border-gray-600/50 rounded-sm px-1 ml-1 leading-none inline-flex items-center justify-center h-[14px] opacity-80 shrink-0">${apThrow}</span>` : '';
             let hpBat = hpThrow ? `<span class="text-[9px] font-bold text-gray-500 border border-gray-600/50 rounded-sm px-1 ml-1 leading-none inline-flex items-center justify-center h-[14px] opacity-80 shrink-0">${hpThrow}</span>` : '';
             let api = playerImages[ap], hpi = playerImages[hp];
