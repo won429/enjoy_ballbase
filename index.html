@@ -146,6 +146,9 @@
         .home-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 18px; box-shadow: var(--glass-shadow); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
         .home-chip { background: rgba(128,128,128,0.10); border: 1px solid var(--glass-border); }
         html.light-mode .home-chip { background: rgba(0,0,0,0.04); }
+        /* 직관 히트맵 빈 칸 — 라이트/다크 모두에서 격자가 보이도록 */
+        .heat-cell { background: rgba(255,255,255,0.07); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06); }
+        html.light-mode .heat-cell { background: rgba(0,0,0,0.06); box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05); }
 
         html { background-color: #030303; }
         html.light-mode { background-color: #f3f4f6; }
@@ -265,6 +268,8 @@
 
         <main id="calendar-screen" class="flex flex-1 min-h-0 relative w-full flex-col overflow-y-auto scrollbar-hide">
             <div class="relative z-20 px-5 pt-main pb-2 w-full app-bg">
+                <!-- [이동] Now Brief 헤더 — 배너 위로 -->
+                <div id="brief-header" class="pb-3.5"></div>
                 <div class="relative mb-6 mt-1 shrink-0 -mx-5">
                     <div id="banner-carousel" class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-1" style="touch-action: pan-x pan-y;"></div>
                     <div class="absolute -bottom-6 left-0 w-full flex justify-center items-center z-10 pointer-events-none">
@@ -1205,8 +1210,10 @@
         // 갤럭시 Now Brief 스타일 홈 브리핑 피드 (이모티콘 미사용 · FontAwesome 아이콘/색상/도형만 사용)
         function renderHomeFeed() {
             const c = document.getElementById('home-feed'); if (!c) return;
+            // 브리핑 헤더는 배너 위(#brief-header)에 렌더
+            const bh = document.getElementById('brief-header'); if (bh) bh.innerHTML = briefHeaderCard();
             const isAll = !(selectedTeam === 'KIA' || selectedTeam === '삼성');
-            let cards = [briefHeaderCard()];
+            let cards = [];
             if (!isAll) { cards.push(homeCardHeatmap()); cards.push(homeCardFortune()); }
             cards.push(homeCardRivalBoard());
             cards.push(homeCardMoodWeather());
@@ -1222,7 +1229,7 @@
             const greet = h < 6 ? '아직 새벽이에요' : h < 12 ? '좋은 아침이에요' : h < 18 ? '좋은 오후예요' : '좋은 저녁이에요';
             const gToday = scheduleData.filter(m => m.date === todayStr).length;
             const sub = gToday ? `오늘 KBO ${gToday}경기가 열려요` : '오늘은 KBO 경기가 없어요';
-            return `<div class="px-1 pt-1 pb-0.5"><div class="flex items-center gap-1.5 mb-1.5"><i class="fa-solid fa-newspaper text-point text-[11px]"></i><span class="text-[11px] font-bold text-gray-500 tracking-wide">오늘의 브리핑</span></div><div class="text-[21px] font-black text-white leading-tight tracking-tight">${greet}</div><div class="flex items-center gap-2 mt-1"><span class="text-[12px] font-bold text-gray-400">${dateTxt}</span><span class="w-1 h-1 rounded-full bg-gray-600"></span><span class="text-[12px] text-gray-400">${sub}</span></div></div>`;
+            return `<div class="px-0.5"><div class="flex items-center gap-1.5 mb-1.5"><i class="fa-solid fa-newspaper text-point text-[11px]"></i><span class="text-[11px] font-bold text-gray-500 tracking-wide">오늘의 브리핑</span></div><div class="text-[21px] font-black text-white leading-tight tracking-tight">${greet}</div><div class="flex items-center gap-2 mt-1"><span class="text-[12px] font-bold text-gray-400">${dateTxt}</span><span class="w-1 h-1 rounded-full bg-gray-600"></span><span class="text-[12px] text-gray-400">${sub}</span></div></div>`;
         }
         // 내 직관 기록을 날짜별 결과로 집계
         function _myAttendMap(t) {
@@ -1257,12 +1264,12 @@
                 for (let dow = 0; dow < 7; dow++) {
                     let dt = new Date(start); dt.setDate(start.getDate() + wk * 7 + dow);
                     let ds = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
-                    let style = '', cls = 'bg-white/[0.05]';
+                    let style = '', cls = 'heat-cell';
                     if (ds > todayStr) { cls = 'bg-transparent'; }
                     else if (attend[ds] === 'W') { cls = ''; style = 'background:#22c55e'; }
                     else if (attend[ds] === 'L') { cls = ''; style = 'background:#ef4444'; }
                     else if (attend[ds] === 'D') { cls = 'bg-gray-500'; }
-                    else if (attend[ds] === 'P') { cls = 'bg-white/15 ring-1 ring-white/40'; }
+                    else if (attend[ds] === 'P') { cls = ''; style = 'background:#94a3b8'; }
                     cells += `<div class="w-[11px] h-[11px] rounded-[2px] ${cls}" style="${style}" title="${ds}"></div>`;
                 }
                 cols += `<div class="flex flex-col gap-[3px]">${cells}</div>`;
@@ -1274,7 +1281,7 @@
                 ? `<span class="text-[12px] text-gray-500">아직 직관 기록이 없어요. 탭해서 기록을 남겨보세요</span>`
                 : `<span class="text-[12px] font-bold text-gray-300">직관 ${total}경기 · ${w}승 ${l}패${d ? ' ' + d + '무' : ''}</span><span class="text-[12px] font-black" style="color:${hx}">승률 ${pct}%</span>`;
             let legend = `<div class="flex items-center gap-2.5 text-[9px] text-gray-500"><span class="flex items-center gap-1"><span class="w-[9px] h-[9px] rounded-[2px]" style="background:#22c55e"></span>승</span><span class="flex items-center gap-1"><span class="w-[9px] h-[9px] rounded-[2px]" style="background:#ef4444"></span>패</span><span class="flex items-center gap-1"><span class="w-[9px] h-[9px] rounded-[2px] bg-gray-500"></span>무</span></div>`;
-            return `<div class="home-card p-4 cursor-pointer" onclick="switchTab(1)"><div class="flex items-center justify-between mb-3"><div class="flex items-center gap-1.5"><i class="fa-solid fa-table-cells text-point text-[12px]"></i><span class="text-[13px] font-extrabold text-white tracking-tight">직관 히트맵 · ${t}</span></div>${legend}</div><div class="flex gap-[3px] overflow-x-auto scrollbar-hide pb-1">${cols}</div><div class="flex items-center justify-between mt-3 flex-wrap gap-1">${summary}</div></div>`;
+            return `<div class="home-card p-4 cursor-pointer" onclick="switchTab(1)"><div class="flex items-center justify-between mb-1"><div class="flex items-center gap-1.5"><i class="fa-solid fa-table-cells text-point text-[12px]"></i><span class="text-[13px] font-extrabold text-white tracking-tight">직관 히트맵 · ${t}</span></div>${legend}</div><div class="text-[10px] text-gray-500 mb-3">최근 13주, 직관 간 날의 승패를 색으로 기록해요</div><div class="flex gap-[3px] overflow-x-auto scrollbar-hide pb-1">${cols}</div><div class="flex items-center justify-between mt-3 flex-wrap gap-1">${summary}</div></div>`;
         }
         // 2) 오늘의 직관 운세
         function homeCardFortune() {
@@ -1339,7 +1346,13 @@
         }
         // 4) 우리 팀 기분 날씨
         function homeCardMoodWeather() {
-            let teams = (selectedTeam === 'KIA' || selectedTeam === '삼성') ? [selectedTeam] : ['KIA', '삼성'];
+            let teams;
+            if (selectedTeam === 'KIA' || selectedTeam === '삼성') { teams = [selectedTeam]; }
+            else {
+                // 전체 모드: 전 구단을 현재 순위 순서로 표시
+                let rk = (rankingData && rankingData.length) ? rankingData : (computeRankingFromHistory() || []);
+                teams = rk.length ? rk.map(r => r.team) : KBO_TEAMS.slice();
+            }
             let rows = teams.map(t => {
                 let st = teamStats[t] || { results: [] };
                 let last5 = (st.results || []).slice(-5);
@@ -1807,15 +1820,23 @@
                         div.className = 'min-w-full shrink-0 snap-center transition-transform duration-300 active:scale-[0.98] py-1 flex flex-col'; div.style.cssText = 'border-top: none !important; border-bottom: none !important;';
                         
                         if (l.gameStatus === '경기전' && !iC) {
-                            // [재디자인] 경기전 배너 — 티켓/매치업 카드형 (탭하면 상세·라인업)
+                            // 경기전 배너 — 매치업 카드형 (탭하면 상세·라인업)
                             let apThrowB = _throwsOf(apRaw), hpThrowB = _throwsOf(hpRaw);
                             let dateStr = `${d.getMonth() + 1}월 ${d.getDate()}일 (${dy[d.getDay()]})`;
                             let rankBadge = (num, side) => num ? `<div class="absolute -top-1 ${side} w-[18px] h-[18px] rounded-full border flex items-center justify-center shadow-lg z-20 ${getRankStyle(num)}"><span class="text-[9px] font-black leading-none">${num}</span></div>` : '';
-                            let throwBadge = (t) => t ? `<span class="text-[8px] font-bold text-gray-200 border border-white/30 rounded-sm px-1 leading-none inline-flex items-center justify-center h-[13px] shrink-0">${t}</span>` : '';
+                            let throwBadge = (t) => t ? `<span class="text-[8px] font-bold text-gray-400 border border-gray-400/40 rounded-sm px-1 leading-none inline-flex items-center justify-center h-[13px] shrink-0">${t}</span>` : '';
                             let teamCol = (logo, team, num, name, thr, side) => `<div class="flex flex-col items-center gap-1.5 w-[38%] min-w-0"><div class="relative"><img src="${logo}" class="w-12 h-12 object-contain drop-shadow-md">${rankBadge(num, side)}</div><span class="text-[17px] font-black text-white tracking-tight whitespace-nowrap">${team}</span><div class="flex items-center justify-center gap-1 max-w-full w-full px-1"><span class="text-[9px] font-bold text-gray-400 shrink-0">선발</span><span class="text-[11px] font-bold text-gray-100 truncate min-w-0">${name}</span>${throwBadge(thr)}</div></div>`;
                             let metaLine = `<div class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[11px] font-bold text-gray-200"><span class="flex items-center gap-1"><i class="fa-solid fa-calendar-day text-[9px] text-gray-400"></i>${dateStr}</span><span class="text-gray-500">·</span><span class="flex items-center gap-1"><i class="fa-solid fa-clock text-[9px] text-gray-400"></i>${m.time}</span><span class="text-gray-500">·</span><span class="flex items-center gap-1"><i class="fa-solid fa-location-dot text-[9px] text-gray-400"></i>${m.stadium}</span>${bcName ? `<span class="text-gray-500">·</span><span class="flex items-center gap-1"><i class="fa-solid fa-tv text-[9px] text-gray-400"></i>${bcName}</span>` : ''}</div>`;
-                            let cardBg = isDalBanner ? bgGradient : 'linear-gradient(160deg, #202127 0%, #15161a 100%)';
-                            div.innerHTML = `<div class="banner-card relative overflow-hidden shadow-xl flex flex-col mx-4 rounded-[22px] border border-white/10" style="background:${cardBg}"><div class="absolute inset-x-0 top-0 h-px bg-white/10 z-10"></div>${dalBadge}${centerDalLogo2}<div class="relative z-10 px-5 pt-5 pb-4 flex flex-col gap-4"><div class="flex items-center justify-between gap-1">${teamCol(smImg1, m.team1, r1Num, ap, apThrowB, '-left-1')}<div class="flex flex-col items-center justify-center shrink-0 px-1 gap-1"><span class="text-[18px] font-black text-white/75 italic leading-none tracking-tighter">VS</span><div class="w-8 h-px bg-white/15"></div></div>${teamCol(smImg2, m.team2, r2Num, hp, hpThrowB, '-right-1')}</div>${metaLine}</div><div class="relative h-0 z-10"><div class="absolute left-4 right-4 top-1/2 border-t border-dashed border-white/15"></div><div class="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full" style="background:var(--app-bg)"></div><div class="absolute -right-2 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full" style="background:var(--app-bg)"></div></div><div class="relative z-10 bg-black/20 py-2.5 flex items-center justify-center gap-1.5"><i class="fa-solid fa-list-ul text-[10px] text-gray-400"></i><span class="text-[11px] font-bold text-gray-200 tracking-tight">자세한 정보 및 라인업 보러가기</span><i class="fa-solid fa-chevron-right text-[9px] text-gray-400"></i></div></div><div class="px-5 pt-3.5 pb-1"><div class="text-[10px] font-bold mb-1.5 px-0.5 wp-name">예상 승리 확률 <span class="opacity-60">with 엔조이 비서실장</span></div>${winProbBarMini(m, l)}</div>`;
+                            let matchupInner = `<div class="px-5 pt-5 pb-4 flex flex-col gap-4"><div class="flex items-center justify-between gap-1">${teamCol(smImg1, m.team1, r1Num, ap, apThrowB, '-left-1')}<div class="flex flex-col items-center justify-center shrink-0 px-1 gap-1"><span class="text-[17px] font-black text-gray-400 italic leading-none tracking-tighter">VS</span><div class="w-7 h-px bg-white/10"></div></div>${teamCol(smImg2, m.team2, r2Num, hp, hpThrowB, '-right-1')}</div>${metaLine}</div>`;
+                            let ctaRow = `<div class="border-t border-white/5 py-2.5 flex items-center justify-center gap-1.5"><i class="fa-solid fa-list-ul text-[10px] text-gray-500"></i><span class="text-[11px] font-bold text-gray-300 tracking-tight">자세한 정보 및 라인업 보러가기</span><i class="fa-solid fa-chevron-right text-[9px] text-gray-500"></i></div>`;
+                            let wpRow = `<div class="border-t border-white/5 px-5 pt-3 pb-3.5"><div class="text-[10px] font-bold mb-1.5 px-0.5 wp-name">예상 승리 확률 <span class="opacity-60">with 엔조이 비서실장</span></div>${winProbBarMini(m, l)}</div>`;
+                            if (isDalBanner) {
+                                // 문라이트 특별 매치업은 기존 다크 티켓 디자인 유지
+                                div.innerHTML = `<div class="banner-card relative overflow-hidden shadow-xl flex flex-col mx-4 rounded-[22px] border border-white/10" style="background:${bgGradient}"><div class="absolute inset-x-0 top-0 h-px bg-white/10 z-10"></div>${dalBadge}${centerDalLogo2}<div class="relative z-10">${matchupInner}</div><div class="relative h-0 z-10"><div class="absolute left-4 right-4 top-1/2 border-t border-dashed border-white/15"></div><div class="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full" style="background:var(--app-bg)"></div><div class="absolute -right-2 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full" style="background:var(--app-bg)"></div></div><div class="relative z-10 bg-black/20 py-2.5 flex items-center justify-center gap-1.5"><i class="fa-solid fa-list-ul text-[10px] text-gray-400"></i><span class="text-[11px] font-bold text-gray-200 tracking-tight">자세한 정보 및 라인업 보러가기</span><i class="fa-solid fa-chevron-right text-[9px] text-gray-400"></i></div></div><div class="px-5 pt-3.5 pb-1"><div class="text-[10px] font-bold mb-1.5 px-0.5 wp-name">예상 승리 확률 <span class="opacity-60">with 엔조이 비서실장</span></div>${winProbBarMini(m, l)}</div>`;
+                            } else {
+                                // [재디자인] 브리핑 카드와 통일된 home-card 스타일
+                                div.innerHTML = `<div class="home-card relative overflow-hidden mx-5 flex flex-col">${matchupInner}${ctaRow}${wpRow}</div>`;
+                            }
                         } else {
                             div.innerHTML = `<div class="banner-card w-full bg-[#161618] relative overflow-hidden px-5 py-4 shadow-xl flex flex-col justify-center gap-3.5"><div class="absolute inset-0 pointer-events-none z-0" style="background: ${bgGradient};"></div>${dalBadge}${centerDalLogo2}<div class="flex justify-between items-center z-10 w-full"><div class="flex items-center"><span class="${statusColor} font-black text-[13px] flex items-center gap-1.5 tracking-tight"><span class="w-1.5 h-1.5 rounded-full ${dotColor}"></span>${statusText}</span><span class="text-gray-600 text-[11px] mx-2.5 mb-px">|</span><span class="text-gray-400 font-bold text-[13px] tracking-tight">${m.stadium}</span></div>${bcHtml}</div><div class="flex justify-between items-center z-10 w-full ${iC ? 'opacity-50 grayscale' : ''}"><div class="flex flex-col w-[35%] gap-2"><div class="flex items-center gap-1.5"><div class="relative shrink-0 flex items-center justify-center"><img src="${smImg1}" class="w-[34px] h-[34px] object-contain drop-shadow-md">${rank1Html}</div><span class="text-[18px] font-black text-white tracking-tight whitespace-nowrap">${m.team1}</span>${winMark1}</div>${!iC ? `<div class="flex items-center gap-1.5 pl-1 opacity-90">${apim}<span class="text-[11px] font-semibold text-gray-400 truncate w-full pt-0.5">${ap}</span></div>` : ''}</div><div class="flex justify-center flex-1"><div class="flex items-center justify-center pt-0.5">${scoreHtml}</div></div><div class="flex flex-col w-[35%] items-end gap-2 text-right"><div class="flex items-center justify-end gap-1.5">${winMark2}<span class="text-[18px] font-black text-white tracking-tight whitespace-nowrap">${m.team2}</span><div class="relative shrink-0 flex items-center justify-center"><img src="${smImg2}" class="w-[34px] h-[34px] object-contain drop-shadow-md">${rank2Html}</div></div>${!iC ? `<div class="flex items-center justify-end gap-1.5 pr-1 opacity-90"><span class="text-[11px] font-semibold text-gray-400 truncate w-full text-right pt-0.5">${hp}</span>${hpim}</div>` : ''}</div></div>${winProbBarMini(m, l)}</div>`;
                         }
