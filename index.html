@@ -61,7 +61,7 @@
         html.light-mode .sb-dark .text-gray-300 { color: #d1d5db !important; }
         html.light-mode .sb-dark .text-gray-400 { color: #9ca3af !important; }
         .pt-safe { padding-top: max(20px, env(safe-area-inset-top)) !important; }
-        .pt-main { padding-top: calc(max(20px, env(safe-area-inset-top)) + 70px) !important; }
+        .pt-main { padding-top: calc(max(20px, env(safe-area-inset-top)) + 54px) !important; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         .ctrl-item { transition: max-width 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), padding 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.7s ease, visibility 0.7s; overflow: hidden; white-space: nowrap; width: max-content; justify-self: end; }
@@ -134,12 +134,18 @@
         /* 승리 확률 게이지 — 라이브(경기중) 개표방송식 모션 */
         .wp-bar { transition: width 0.9s cubic-bezier(0.34, 1.1, 0.64, 1); }
         .wp-live .wp-bar { animation: none; }
-        .wp-live .wp-bar::after { content: ''; position: absolute; inset: 0; background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.20) 0 7px, transparent 7px 14px); background-size: 28px 100%; animation: wp-stripes 0.7s linear infinite; }
+        /* 공격 중인 팀 쪽 막대에만 스트라이프가 흐른다 (초=원정 왼쪽, 말=홈 오른쪽) */
+        .wp-home { position: absolute; top: 0; bottom: 0; right: 0; }
+        .wp-atk-away .wp-bar::after, .wp-atk-home .wp-home::after { content: ''; position: absolute; inset: 0; background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.22) 0 7px, transparent 7px 14px); background-size: 28px 100%; animation: wp-stripes 0.7s linear infinite; }
         @keyframes wp-stripes { from { background-position: 0 0; } to { background-position: 28px 0; } }
         .wp-front { position: absolute; top: -1px; bottom: -1px; width: 2.5px; margin-left: -1.25px; border-radius: 2px; background: #fff; z-index: 6; box-shadow: 0 0 6px rgba(255,255,255,0.9), 0 0 12px rgba(255,255,255,0.5); animation: wp-front-pulse 1.05s ease-in-out infinite; }
         @keyframes wp-front-pulse { 0%, 100% { opacity: 0.5; transform: translateX(-1.5px) scaleY(0.8); } 50% { opacity: 1; transform: translateX(1.5px) scaleY(1); } }
         /* 요정/응원가 탭에서 '전체' 버튼 완전히 접기 (살짝 보이던 문제 수정) */
         #ctrl-team button.btn-collapse { padding-left: 0 !important; padding-right: 0 !important; }
+        /* [추가] 홈 Now Brief 피드 카드 (라이트/다크 모두 대응) */
+        .home-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 18px; box-shadow: var(--glass-shadow); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+        .home-chip { background: rgba(128,128,128,0.10); border: 1px solid var(--glass-border); }
+        html.light-mode .home-chip { background: rgba(0,0,0,0.04); }
 
         html { background-color: #030303; }
         html.light-mode { background-color: #f3f4f6; }
@@ -221,7 +227,7 @@
         </div>
         
         <header class="absolute top-0 left-0 right-0 pt-safe px-4 pb-2 z-[100] app-bg">
-            <div class="mt-2 flex items-center justify-between gap-2 w-full pb-1">
+            <div class="mt-1 flex items-center justify-between gap-2 w-full pb-1">
                 <div id="left-wrapper" class="flex items-center flex-1 min-w-0 rounded-full transition-all duration-700 h-[36px]">
                     <div id="header-title-container" class="flex items-center gap-1.5 px-3 h-[32px] min-w-0">
                         <h1 id="di-main-text" class="text-[13px] font-extrabold text-white flex items-center tracking-tight shrink-0">KBO 리그<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span></h1>
@@ -258,7 +264,7 @@
         </main>
 
         <main id="calendar-screen" class="flex flex-1 min-h-0 relative w-full flex-col overflow-y-auto scrollbar-hide">
-            <div class="sticky top-0 z-20 px-5 pt-main pb-2 w-full app-bg">
+            <div class="relative z-20 px-5 pt-main pb-2 w-full app-bg">
                 <div class="relative mb-6 mt-1 shrink-0 -mx-5">
                     <div id="banner-carousel" class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-1" style="touch-action: pan-x pan-y;"></div>
                     <div class="absolute -bottom-6 left-0 w-full flex justify-center items-center z-10 pointer-events-none">
@@ -268,7 +274,13 @@
                         </div>
                     </div>
                 </div>
-                <div id="week-days-header" class="grid grid-cols-7 gap-2 text-center mb-1 mt-3">
+            </div>
+            <!-- [추가] Now Brief 콘텐츠 피드 -->
+            <div id="home-feed" class="px-5 flex flex-col gap-3.5 pt-1 pb-1"></div>
+            <!-- 경기 일정(달력) — 맨 아래로 이동 -->
+            <div class="px-5 flex flex-col pt-4 pb-[140px] relative z-0">
+                <div class="flex items-center gap-1.5 mb-3 px-0.5"><i class="fa-solid fa-calendar-days text-point text-[13px]"></i><span class="text-[14px] font-extrabold text-white tracking-tight">경기 일정</span></div>
+                <div id="week-days-header" class="grid grid-cols-7 gap-2 text-center mb-1">
                     <div class="text-xs font-bold text-[#EA0029]">일</div>
                     <div class="text-xs font-bold text-gray-400">월</div>
                     <div class="text-xs font-bold text-gray-400">화</div>
@@ -277,9 +289,7 @@
                     <div class="text-xs font-bold text-gray-400">금</div>
                     <div class="text-xs font-bold text-[#074CA1]">토</div>
                 </div>
-            </div>
-            <div class="px-5 flex-1 flex flex-col pt-3 pb-[140px] relative z-0">
-                <div id="calendar-grid" class="grid grid-cols-7 gap-2"></div>
+                <div id="calendar-grid" class="grid grid-cols-7 gap-2 mt-1"></div>
             </div>
         </main>
 
@@ -661,7 +671,7 @@
         // 완료된 경기들로부터 팀별 전적/최근 흐름/상대전적을 집계한다. (과거 데이터 파일 기반)
         function buildTeamStats() {
             const s = {};
-            KBO_TEAMS.forEach(t => s[t] = { w: 0, l: 0, d: 0, results: [], h2h: {} });
+            KBO_TEAMS.forEach(t => s[t] = { w: 0, l: 0, d: 0, results: [], dates: [], h2h: {} });
             let finished = scheduleData.filter(m => {
                 let l = liveDataStore[m.id];
                 if (!l || l.gameStatus !== '종료') return false;
@@ -678,6 +688,7 @@
                 if (hWin) { s[home].w++; s[away].l++; } else if (aWin) { s[away].w++; s[home].l++; } else { s[home].d++; s[away].d++; }
                 s[home].results.push(hWin ? 'W' : aWin ? 'L' : 'D');
                 s[away].results.push(aWin ? 'W' : hWin ? 'L' : 'D');
+                s[home].dates.push(m.date); s[away].dates.push(m.date);
                 s[home].h2h[away] = s[home].h2h[away] || { w: 0, l: 0 };
                 s[away].h2h[home] = s[away].h2h[home] || { w: 0, l: 0 };
                 if (hWin) { s[home].h2h[away].w++; s[away].h2h[home].l++; }
@@ -728,6 +739,15 @@
         // ── 승리 확률 모델 ─────────────────────────────────────────────────────────
         function _teamWr(t) { let s = teamStats[t]; return (s && (s.w + s.l) > 0) ? s.w / (s.w + s.l) : 0.5; }
         function _teamForm(t) { let s = teamStats[t]; if (!s || !s.results.length) return 0.5; let r = s.results.slice(-10); let w = r.filter(x => x === 'W').length, l = r.filter(x => x === 'L').length; return (w + l) === 0 ? 0.5 : w / (w + l); }
+        // 최근 7일(약 1주일) 승패 흐름 — 날짜 기준으로 집계
+        function _teamFormWeek(t) {
+            let s = teamStats[t]; if (!s || !s.results.length || !s.dates) return 0.5;
+            let cutoff = new Date(todayStr); cutoff.setDate(cutoff.getDate() - 7);
+            let cs = `${cutoff.getFullYear()}-${String(cutoff.getMonth() + 1).padStart(2, '0')}-${String(cutoff.getDate()).padStart(2, '0')}`;
+            let w = 0, l = 0;
+            for (let i = 0; i < s.results.length; i++) { if (s.dates[i] && s.dates[i] >= cs) { if (s.results[i] === 'W') w++; else if (s.results[i] === 'L') l++; } }
+            return (w + l) === 0 ? 0.5 : w / (w + l);
+        }
         function _teamH2H(home, away) { let s = teamStats[home]; if (s && s.h2h && s.h2h[away]) { let x = s.h2h[away]; return { hw: x.w, aw: x.l, n: x.w + x.l }; } return { hw: 0, aw: 0, n: 0 }; }
         function _normCdf(z) { let t = 1 / (1 + 0.2316419 * Math.abs(z)); let d = 0.3989423 * Math.exp(-z * z / 2); let p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274)))); return z > 0 ? 1 - p : p; }
 
@@ -739,7 +759,8 @@
             let logit = (hWr - aWr) * 2.4 + 0.16; // 팀 전력차 + 홈 이점
             let h = _teamH2H(home, away);
             if (h.n > 0) logit += ((h.hw / h.n) - 0.5) * 0.7 * Math.min(1, h.n / 6); // 시즌 상대전적
-            logit += (_teamForm(home) - _teamForm(away)) * 0.7; // 최근 10경기 흐름
+            logit += (_teamForm(home) - _teamForm(away)) * 0.55; // 최근 10경기 흐름
+            logit += (_teamFormWeek(home) - _teamFormWeek(away)) * 0.5; // 최근 1주일(7일) 흐름
             let pre = Math.max(0.1, Math.min(0.9, sig(logit)));
 
             let status = l.gameStatus;
@@ -778,7 +799,8 @@
             let p = winProbability(m, l);
             let c1 = teamWinHex[m.team1] || '#9AA0A6', c2 = teamWinHex[m.team2] || '#9AA0A6';
             let note = st === '경기중' ? '실시간 승리 확률' : '예상 승리 확률';
-            let lc = st === '경기중' ? ' wp-live' : '', front = st === '경기중' ? `<div class="wp-front" style="left:${p.away}%"></div>` : '';
+            let live = st === '경기중', atk = live ? ((l.inning || '').includes('말') ? 'home' : 'away') : '';
+            let lc = live ? ` wp-live wp-atk-${atk}` : '', front = live ? `<div class="wp-home" style="left:${p.away}%"></div><div class="wp-front" style="left:${p.away}%"></div>` : '';
             return `<div class="w-full mb-6">
                 <div class="text-[12px] font-medium mb-3 wp-name">${note} <span class="opacity-60">with 엔조이 비서실장</span></div>
                 <div class="flex items-baseline justify-between mb-2.5">
@@ -806,12 +828,13 @@
             if (iC) return '';
             let p = winProbability(m, l);
             let c1 = teamWinHex[m.team1] || '#9AA0A6', c2 = teamWinHex[m.team2] || '#9AA0A6';
-            let lc = st === '경기중' ? ' wp-live' : '', front = st === '경기중' ? `<div class="wp-front" style="left:${p.away}%"></div>` : '';
+            let live = st === '경기중', atk = live ? ((l.inning || '').includes('말') ? 'home' : 'away') : '';
+            let lc = live ? ` wp-live wp-atk-${atk}` : '', extra = live ? `<div class="wp-home" style="left:${p.away}%"></div><div class="wp-front" style="left:${p.away}%"></div>` : '';
             return `<div class="relative z-10 w-full flex items-center gap-2.5 px-1 mt-2">
                 <span class="text-[11px] font-bold w-8 text-left wp-num" style="color:${c1}">${p.away}%</span>
                 <div class="relative flex-1 h-1.5 rounded-full overflow-hidden${lc}" style="background:${c2}">
                     <div class="wp-bar" style="width:${p.away}%;background:${c1}"></div>
-                    ${front}
+                    ${extra}
                 </div>
                 <span class="text-[11px] font-bold w-8 text-right wp-num" style="color:${c2}">${p.home}%</span>
             </div>`;
@@ -1171,8 +1194,103 @@
         }
         const STAMP_HEX = { WIN: '#EA0029', LOSE: '#64748B', DRAW: '#10B981', CANCEL: '#3B82F6' };
 
+        // [추가] 홈 Now Brief 피드 — 배너 아래 카드형 콘텐츠
+        function renderHomeFeed() {
+            const c = document.getElementById('home-feed'); if (!c) return;
+            let isAll = !(selectedTeam === 'KIA' || selectedTeam === '삼성');
+            let html = homeCardTeamSnapshot();
+            // 전체 모드: 배너가 이미 오늘 5경기를 보여주므로 중복 대신 'KBO 순위' 미니표를 노출
+            html += isAll ? homeCardStandings() : homeCardTodayGames();
+            // 직관 승률은 팀별 데이터 → 전체 모드에서는 숨김
+            if (!isAll) html += homeCardFairy();
+            html += homeCardTodaySong();
+            c.innerHTML = html;
+        }
+        function homeCardStandings() {
+            let rows = (rankingData && rankingData.length) ? rankingData : (computeRankingFromHistory() || []);
+            let header = `<div class="flex items-center justify-between mb-2.5"><div class="flex items-center gap-1.5"><i class="fa-solid fa-ranking-star text-point text-[12px]"></i><span class="text-[13px] font-extrabold text-white tracking-tight">KBO 순위</span></div><span class="text-[10px] text-gray-500">팀 · 승-패 · 게임차</span></div>`;
+            if (!rows.length) return `<div class="home-card p-4">${header}<div class="text-[12px] text-gray-500 py-3 text-center">순위 정보가 없습니다.</div></div>`;
+            let body = rows.map(r => {
+                let lg = teamLogos[r.team] ? `<img src="${teamLogos[r.team]}" class="w-5 h-5 object-contain shrink-0">` : '';
+                let hl = (r.team === 'KIA' || r.team === '삼성') ? 'text-white font-bold' : 'text-gray-300';
+                return `<div class="flex items-center gap-2 py-1"><span class="w-4 text-center text-[11px] font-black text-gray-400 shrink-0">${r.rank}</span>${lg}<span class="flex-1 text-[12px] ${hl} truncate">${r.team}</span><span class="text-[11px] text-gray-400 tabular-nums">${r.w}-${r.l}${r.d ? '-' + r.d : ''}</span><span class="w-9 text-right text-[11px] text-gray-500 tabular-nums">${r.gb}</span></div>`;
+            }).join('');
+            return `<div class="home-card p-4">${header}${body}</div>`;
+        }
+        function _feedTeam() { return (selectedTeam === 'KIA' || selectedTeam === '삼성') ? selectedTeam : 'KIA'; }
+        function homeCardTeamSnapshot() {
+            let teams = (selectedTeam === 'KIA' || selectedTeam === '삼성') ? [selectedTeam] : ['KIA', '삼성'];
+            let rows = teams.map(t => {
+                let st = teamStats[t] || { w: 0, l: 0, d: 0, results: [] };
+                let rk = (rankingData || []).find(r => r.team === t) || {};
+                let rank = rk.rank || '-', gb = rk.gb || '-';
+                let form = (st.results || []).slice(-5);
+                let formHtml = form.length ? form.map(x => {
+                    let col = x === 'W' ? 'bg-[#22c55e]' : (x === 'L' ? 'bg-[#ef4444]' : 'bg-gray-500');
+                    return `<span class="w-[18px] h-[18px] rounded-full ${col} text-white text-[9px] font-black flex items-center justify-center">${x === 'W' ? '승' : (x === 'L' ? '패' : '무')}</span>`;
+                }).join('') : '<span class="text-[11px] text-gray-500">최근 기록 없음</span>';
+                let ng = scheduleData.filter(m => (m.team1 === t || m.team2 === t) && m.date >= todayStr).sort((a, b) => a.date.localeCompare(b.date) || (a.time || '').localeCompare(b.time || ''))[0];
+                let ngHtml = '';
+                if (ng) {
+                    let opp = ng.team1 === t ? ng.team2 : ng.team1;
+                    let dd = Math.round((new Date(ng.date) - new Date(todayStr)) / 86400000);
+                    let ddTxt = dd <= 0 ? '오늘' : `D-${dd}`;
+                    ngHtml = `<div class="flex items-center justify-end gap-1 text-[11px] font-bold text-gray-400"><span class="text-point">${ddTxt}</span><span>vs ${opp}</span></div>`;
+                }
+                let logo = teamLogos[t] ? `<img src="${teamLogos[t]}" class="w-9 h-9 object-contain shrink-0">` : '';
+                return `<div class="flex items-center gap-3 py-1">${logo}<div class="flex flex-col min-w-0 flex-1"><div class="flex items-baseline gap-1.5"><span class="text-[15px] font-black text-white">${t}</span><span class="text-[11px] font-bold text-gray-400">${rank !== '-' ? rank + '위 · ' : ''}${st.w}승 ${st.l}패${st.d ? ' ' + st.d + '무' : ''}</span></div><div class="flex items-center gap-1 mt-1.5">${formHtml}</div></div><div class="flex flex-col items-end shrink-0 gap-0.5">${ngHtml}<span class="text-[10px] text-gray-500">${gb !== '-' ? 'GB ' + gb : '리그 선두'}</span></div></div>`;
+            }).join('<div class="h-px bg-white/5 my-1"></div>');
+            return `<div class="home-card p-4"><div class="flex items-center gap-1.5 mb-2.5"><i class="fa-solid fa-shield-halved text-point text-[12px]"></i><span class="text-[13px] font-extrabold text-white tracking-tight">우리 팀 스냅샷</span></div>${rows}</div>`;
+        }
+        function homeCardTodayGames() {
+            let games = scheduleData.filter(m => m.date === todayStr).sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+            let inner;
+            if (!games.length) inner = `<div class="text-[12px] text-gray-500 py-3 text-center">오늘 경기가 없습니다.</div>`;
+            else inner = `<div class="flex gap-2 overflow-x-auto scrollbar-hide -mx-1 px-1">` + games.map(m => {
+                let l = liveDataStore[m.id] || {}, stt = l.gameStatus || '경기전';
+                let iC = (l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취')));
+                let a = l.awayScore != null ? l.awayScore : 0, h = l.homeScore != null ? l.homeScore : 0;
+                let statusTxt, scoreTxt, sc;
+                if (iC) { statusTxt = '취소'; scoreTxt = '-'; sc = 'text-gray-400'; }
+                else if (stt === '경기전') { statusTxt = m.time || '경기전'; scoreTxt = 'VS'; sc = 'text-gray-400'; }
+                else if (stt === '종료') { statusTxt = '종료'; scoreTxt = `${a} : ${h}`; sc = 'text-white'; }
+                else { statusTxt = l.inning || '경기중'; scoreTxt = `${a} : ${h}`; sc = 'text-[#EA0029]'; }
+                let lg1 = teamLogos[m.team1], lg2 = teamLogos[m.team2];
+                return `<div onclick="openLineupPopup('${m.id}')" class="home-chip shrink-0 w-[116px] rounded-xl p-2.5 cursor-pointer active:scale-95 transition-transform"><div class="text-[9px] font-bold ${sc} text-center mb-1.5 truncate">${statusTxt}</div><div class="flex items-center justify-between"><img src="${lg1}" class="w-6 h-6 object-contain"><span class="text-[12px] font-black text-white px-1">${scoreTxt}</span><img src="${lg2}" class="w-6 h-6 object-contain"></div><div class="flex items-center justify-between mt-1 text-[9px] font-bold text-gray-400"><span class="truncate">${m.team1}</span><span class="truncate">${m.team2}</span></div></div>`;
+            }).join('') + `</div>`;
+            return `<div class="home-card p-4"><div class="flex items-center gap-1.5 mb-3"><i class="fa-solid fa-baseball text-point text-[12px]"></i><span class="text-[13px] font-extrabold text-white tracking-tight">오늘의 KBO</span></div>${inner}</div>`;
+        }
+        function homeCardFairy() {
+            let t = _feedTeam(), w = 0, l = 0, d = 0;
+            watchRecords.forEach(r => {
+                if (r.team !== t || r.type !== '직관') return;
+                let m = scheduleData.find(x => String(x.id) === String(r.matchId)), lv = liveDataStore[r.matchId];
+                if (!m || !lv || lv.gameStatus !== '종료') return;
+                if (m.team1 !== t && m.team2 !== t) return;
+                let a = parseInt(lv.awayScore || 0), h = parseInt(lv.homeScore || 0);
+                let iW = (m.team1 === t && a > h) || (m.team2 === t && h > a), iL = (m.team1 === t && a < h) || (m.team2 === t && h < a);
+                if (iW) w++; else if (iL) l++; else d++;
+            });
+            let tot = w + l, pct = tot ? Math.round(w / tot * 100) : 0;
+            let label = (w + l + d) === 0 ? '아직 직관 기록이 없어요' : (pct >= 50 ? '당신은 승리요정! 🧚' : '패배요정... 😢');
+            let hx = teamHex[t];
+            return `<div class="home-card p-4 cursor-pointer" onclick="switchTab(1)"><div class="flex items-center gap-1.5 mb-2.5"><i class="fa-solid fa-ticket text-point text-[12px]"></i><span class="text-[13px] font-extrabold text-white tracking-tight">직관 요정 · ${t}</span></div><div class="flex items-center justify-between"><div class="flex items-baseline gap-2"><span class="text-[28px] font-black leading-none" style="color:${hx}">${pct}%</span><span class="text-[11px] font-bold text-gray-400">${w}승 ${l}패${d ? ' ' + d + '무' : ''}</span></div><span class="text-[12px] font-bold text-gray-300">${label}</span></div></div>`;
+        }
+        function homeCardTodaySong() {
+            let t = _feedTeam(), id = t === 'KIA' ? 'kia' : 'samsung';
+            let players = (cheerData[id] && cheerData[id].player) || [];
+            if (!players.length) return '';
+            let song = players[(new Date().getDate()) % players.length];
+            let hasImg = !!playerImages[song.label];
+            let img = hasImg ? playerImages[song.label] : teamLogos[t];
+            let imgCls = hasImg ? 'w-full h-full object-cover object-top scale-110' : 'w-full h-full object-contain p-1.5 opacity-90';
+            let safeTitle = (song.title || '').replace(/'/g, "\\'"), safeUrl = (song.url || '').replace(/'/g, "\\'");
+            return `<div class="home-card p-4 cursor-pointer" onclick="playCheerSong('${safeUrl}','${safeTitle}')"><div class="flex items-center gap-1.5 mb-3"><i class="fa-solid fa-headphones text-point text-[12px]"></i><span class="text-[13px] font-extrabold text-white tracking-tight">오늘의 응원가</span></div><div class="flex items-center gap-3"><div class="w-12 h-12 rounded-xl overflow-hidden bg-[#1A1A1C] border border-white/10 flex items-center justify-center shrink-0"><img src="${img}" class="${imgCls}"></div><div class="flex flex-col min-w-0 flex-1"><span class="text-[14px] font-bold text-white truncate">${song.label}</span><span class="text-[11px] text-gray-400">${t} 응원가</span></div><div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0 shadow-md" style="background:${teamHex[t]}"><i class="fa-solid fa-play text-white text-[12px] ml-0.5"></i></div></div></div>`;
+        }
+
         function renderCalendar() {
-            const grid = document.getElementById('calendar-grid'); if (!grid) return; 
+            const grid = document.getElementById('calendar-grid'); if (!grid) return;
+            renderHomeFeed();
             const year = currentDate.getFullYear(), month = currentDate.getMonth(), date = currentDate.getDate();
             const ym = `${year}-${String(month + 1).padStart(2, '0')}`;
             if (!fetchedMonths.has(ym) && !fetchingMonths.has(ym)) { fetchMonthSchedule(year, month + 1).then(() => { renderCalendar(); }); }
@@ -1572,7 +1690,7 @@
                         let centerDalLogo1 = isDalBanner ? `<img src="${dalImg}" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 opacity-[0.12] pointer-events-none object-contain z-10">` : '';
 
                         div.className = 'min-w-full shrink-0 snap-center transition-transform duration-300 active:scale-[0.98] py-1 flex flex-col'; div.style.cssText = 'border-top: none !important; border-bottom: none !important;';
-                        div.innerHTML = `<div class="banner-card w-full relative overflow-hidden shadow-2xl flex flex-col border-y border-white/15" style="${bgStyle}">${dalBadge}${centerDalLogo1}<img src="${bgImg1}" class="absolute -left-6 top-[35%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><img src="${bgImg2}" class="absolute -right-6 top-[35%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><div class="flex justify-between items-center px-5 py-2 relative z-10 h-[62px]"><div class="flex items-center gap-3 w-[36%]"><span class="text-[26px] font-black text-[#FFFFFF] tracking-tighter drop-shadow-md">${m.team1}</span><span class="text-[34px] font-black text-[#FFFFFF] drop-shadow-md ml-auto leading-none">${aScore}</span></div><div class="flex flex-col items-center justify-center w-[28%] mt-0.5">${inningArea}</div><div class="flex items-center gap-3 w-[36%]"><span class="text-[34px] font-black text-[#FFFFFF] drop-shadow-md mr-auto leading-none">${hScore}</span><span class="text-[26px] font-black text-[#FFFFFF] tracking-tighter drop-shadow-md">${m.team2}</span></div></div><div class="w-full h-px bg-[rgba(255,255,255,0.3)] relative z-10"></div><div class="flex justify-between items-center bg-[rgba(0,0,0,0.4)] relative z-10 h-[28px]"><div class="flex items-center gap-2.5 w-[36%] pl-5">${aPitcherArea}</div><div class="flex items-center justify-center bg-[#0d0d0e] h-full w-[28%]" style="border-left: 1px solid rgba(255,255,255,0.2); border-right: 1px solid rgba(255,255,255,0.2);">${centerArea}</div><div class="flex items-center justify-end gap-2.5 w-[36%] pr-5">${hPitcherArea}</div></div><div class="w-full bg-[#111113]/90 flex flex-col pt-1.5 pb-2 px-3 relative z-10 border-t border-[rgba(255,255,255,0.15)] backdrop-blur-md"><div class="grid grid-cols-[42px_1fr_75px] gap-2 w-full text-[10px] font-bold text-center"><div class="text-gray-400 text-left pl-2">팀명</div><div class="grid grid-cols-9 text-gray-400"><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div></div><div class="grid grid-cols-4 text-[#60A5FA]"><div class="font-black">R</div><div>H</div><div>E</div><div>B</div></div><div class="text-white text-left pl-2 truncate mt-1">${m.team1}</div><div class="grid grid-cols-9 text-gray-300 mt-1">${aInningsHtml}</div><div class="grid grid-cols-4 mt-1"><div class="text-white font-black">${aScore}</div><div class="text-gray-400">${aHit}</div><div class="text-gray-400">${aErr}</div><div class="text-gray-400">${aBase}</div></div><div class="text-white text-left pl-2 truncate mt-0.5">${m.team2}</div><div class="grid grid-cols-9 text-gray-300 mt-0.5">${hInningsHtml}</div><div class="grid grid-cols-4 mt-0.5"><div class="text-white font-black">${hScore}</div><div class="text-gray-400">${hHit}</div><div class="text-gray-400">${hErr}</div><div class="text-gray-400">${hBase}</div></div></div></div>${(() => { let b = winProbBarMini(m, l); return b ? `<div class="relative z-10 w-full bg-[#111113]/90 backdrop-blur-md px-3 pt-1 pb-2.5"><div class="text-[9px] font-bold text-white/70 mb-1 px-0.5">실시간 승리 확률 <span class="text-white/50">with 엔조이 비서실장</span></div>${b}</div>` : ''; })()}</div>${bottomInfoHtml}`;
+                        div.innerHTML = `<div class="banner-card w-full relative overflow-hidden shadow-2xl flex flex-col border-y border-white/15" style="${bgStyle}">${dalBadge}${centerDalLogo1}<img src="${bgImg1}" class="absolute -left-6 top-[24%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><img src="${bgImg2}" class="absolute -right-6 top-[24%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><div class="flex justify-between items-center px-5 py-2 relative z-10 h-[62px]"><div class="flex items-center gap-3 w-[36%]"><span class="text-[26px] font-black text-[#FFFFFF] tracking-tighter drop-shadow-md">${m.team1}</span><span class="text-[34px] font-black text-[#FFFFFF] drop-shadow-md ml-auto leading-none">${aScore}</span></div><div class="flex flex-col items-center justify-center w-[28%] mt-0.5">${inningArea}</div><div class="flex items-center gap-3 w-[36%]"><span class="text-[34px] font-black text-[#FFFFFF] drop-shadow-md mr-auto leading-none">${hScore}</span><span class="text-[26px] font-black text-[#FFFFFF] tracking-tighter drop-shadow-md">${m.team2}</span></div></div><div class="w-full h-px bg-[rgba(255,255,255,0.3)] relative z-10"></div><div class="flex justify-between items-center bg-[rgba(0,0,0,0.4)] relative z-10 h-[28px]"><div class="flex items-center gap-2.5 w-[36%] pl-5">${aPitcherArea}</div><div class="flex items-center justify-center bg-[#0d0d0e] h-full w-[28%]" style="border-left: 1px solid rgba(255,255,255,0.2); border-right: 1px solid rgba(255,255,255,0.2);">${centerArea}</div><div class="flex items-center justify-end gap-2.5 w-[36%] pr-5">${hPitcherArea}</div></div><div class="w-full bg-[#111113]/90 flex flex-col pt-1.5 pb-2 px-3 relative z-10 border-t border-[rgba(255,255,255,0.15)] backdrop-blur-md"><div class="grid grid-cols-[42px_1fr_75px] gap-2 w-full text-[10px] font-bold text-center"><div class="text-gray-400 text-left pl-2">팀명</div><div class="grid grid-cols-9 text-gray-400"><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div></div><div class="grid grid-cols-4 text-[#60A5FA]"><div class="font-black">R</div><div>H</div><div>E</div><div>B</div></div><div class="text-white text-left pl-2 truncate mt-1">${m.team1}</div><div class="grid grid-cols-9 text-gray-300 mt-1">${aInningsHtml}</div><div class="grid grid-cols-4 mt-1"><div class="text-white font-black">${aScore}</div><div class="text-gray-400">${aHit}</div><div class="text-gray-400">${aErr}</div><div class="text-gray-400">${aBase}</div></div><div class="text-white text-left pl-2 truncate mt-0.5">${m.team2}</div><div class="grid grid-cols-9 text-gray-300 mt-0.5">${hInningsHtml}</div><div class="grid grid-cols-4 mt-0.5"><div class="text-white font-black">${hScore}</div><div class="text-gray-400">${hHit}</div><div class="text-gray-400">${hErr}</div><div class="text-gray-400">${hBase}</div></div></div></div>${(() => { let b = winProbBarMini(m, l); return b ? `<div class="relative z-10 w-full bg-[#111113]/90 backdrop-blur-md px-3 pt-1 pb-2.5"><div class="text-[9px] font-bold text-white/70 mb-1 px-0.5">실시간 승리 확률 <span class="text-white/50">with 엔조이 비서실장</span></div>${b}</div>` : ''; })()}</div>${bottomInfoHtml}`;
                     } else {
                         let apRaw = l.awayPitcherDetail || l.awayPitcher || '-';
                         let hpRaw = l.homePitcherDetail || l.homePitcher || '-';
@@ -2023,21 +2141,30 @@
             let lg1 = uiTeamLogo(m.team1, 'w-6 h-6', 'w-6 h-6');
             let lg2 = uiTeamLogo(m.team2, 'w-6 h-6', 'w-6 h-6');
             
-            let ap = typeof apRaw === 'object' && apRaw !== null ? apRaw.name : apRaw;
-            let hp = typeof hpRaw === 'object' && hpRaw !== null ? hpRaw.name : hpRaw;
-            let apPos = typeof apRaw === 'object' && apRaw !== null && apRaw.position ? apRaw.position : '투수';
-            let hpPos = typeof hpRaw === 'object' && hpRaw !== null && hpRaw.position ? hpRaw.position : '투수';
-            let apThrow = _throwsOf(apRaw), hpThrow = _throwsOf(hpRaw);
-            let apBat = apThrow ? `<span class="text-[9px] font-bold text-gray-500 border border-gray-600/50 rounded-sm px-1 ml-1 leading-none inline-flex items-center justify-center h-[14px] opacity-80 shrink-0">${apThrow}</span>` : '';
-            let hpBat = hpThrow ? `<span class="text-[9px] font-bold text-gray-500 border border-gray-600/50 rounded-sm px-1 ml-1 leading-none inline-flex items-center justify-center h-[14px] opacity-80 shrink-0">${hpThrow}</span>` : '';
-            let api = playerImages[ap], hpi = playerImages[hp];
-            let apim = api ? `<img src="${api}" class="w-full h-full object-contain object-bottom scale-[1.3] drop-shadow-md origin-bottom">` : `<i class="fa-solid fa-user text-gray-500 text-[16px] mt-1.5"></i>`, hpim = hpi ? `<img src="${hpi}" class="w-full h-full object-contain object-bottom scale-[1.3] drop-shadow-md origin-bottom">` : `<i class="fa-solid fa-user text-gray-500 text-[16px] mt-1.5"></i>`;
-            let apf = api ? "w-9 h-9 flex items-end justify-center shrink-0" : "w-9 h-9 bg-[#222224] rounded-full flex items-center justify-center overflow-hidden shrink-0 border border-white/10", hpf = hpi ? "w-9 h-9 flex items-end justify-center shrink-0" : "w-9 h-9 bg-[#222224] rounded-full flex items-center justify-center overflow-hidden shrink-0 border border-white/10";
-            
+            // 투수 행 렌더 헬퍼 (선발/불펜 공통)
+            const _pf_img = (nm) => playerImages[nm] ? `<img src="${playerImages[nm]}" class="w-full h-full object-contain object-bottom scale-[1.3] drop-shadow-md origin-bottom">` : `<i class="fa-solid fa-user text-gray-500 text-[16px] mt-1.5"></i>`;
+            const _pf_box = (nm) => playerImages[nm] ? "w-9 h-9 flex items-end justify-center shrink-0" : "w-9 h-9 bg-[#222224] rounded-full flex items-center justify-center overflow-hidden shrink-0 border border-white/10";
+            const pitcherRow = (raw, hx, label, recHtml, filled) => {
+                let nm = (typeof raw === 'object' && raw !== null) ? raw.name : raw;
+                if (!nm || nm === '-') return '';
+                let pos = (typeof raw === 'object' && raw !== null && raw.position) ? raw.position : '투수';
+                let thr = _throwsOf(raw);
+                let bat = thr ? `<span class="text-[9px] font-bold text-gray-500 border border-gray-600/50 rounded-sm px-1 ml-1 leading-none inline-flex items-center justify-center h-[14px] opacity-80 shrink-0">${thr}</span>` : '';
+                let bs = filled ? `background-color:${hx};border:1px solid ${hx};color:#ffffff !important;` : `background:transparent;border:1px solid ${hx};color:${hx};`;
+                return `<div class="mb-3.5"><div class="flex items-center gap-2"><div class="w-[22px] flex justify-center shrink-0"><span style="${bs}" class="text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">${label}</span></div><div class="${_pf_box(nm)}">${_pf_img(nm)}</div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center gap-x-1"><span class="text-[clamp(11px,3vw,14px)] font-bold text-white whitespace-nowrap tracking-tight shrink">${nm}</span>${bat}</div><span class="text-[10px] text-gray-400 whitespace-nowrap mt-0.5">${pos}</span></div></div>${recHtml || ''}</div>`;
+            };
             let aStarterName = m.awayPitcher || m.awayStarter || l.awayStarter || null;
             let hStarterName = m.homePitcher || m.homeStarter || l.homeStarter || null;
-            let aBadge = '선발'; if (l.gameStatus === '경기중' && aStarterName && ap !== '-' && ap !== aStarterName) aBadge = '불펜';
-            let hBadge = '선발'; if (l.gameStatus === '경기중' && hStarterName && hp !== '-' && hp !== hStarterName) hBadge = '불펜';
+            let aCurName = (typeof apRaw === 'object' && apRaw !== null) ? apRaw.name : apRaw;
+            let hCurName = (typeof hpRaw === 'object' && hpRaw !== null) ? hpRaw.name : hpRaw;
+            let _liveOrEnd = (l.gameStatus === '경기중' || l.gameStatus === '종료');
+            let aBullpenOn = _liveOrEnd && aStarterName && aCurName !== '-' && aCurName !== aStarterName;
+            let hBullpenOn = _liveOrEnd && hStarterName && hCurName !== '-' && hCurName !== hStarterName;
+            // 선발 상세: 파이어베이스 awayStarterDetail 우선 → 없으면 현재투수가 선발일 때 그 상세 → 아니면 선발 이름만
+            let aStarterRaw = l.awayStarterDetail || ((!aStarterName || aCurName === aStarterName) ? apRaw : aStarterName);
+            let hStarterRaw = l.homeStarterDetail || ((!hStarterName || hCurName === hStarterName) ? hpRaw : hStarterName);
+            let aStarterDisp = (typeof aStarterRaw === 'object' && aStarterRaw !== null) ? aStarterRaw.name : aStarterRaw;
+            let hStarterDisp = (typeof hStarterRaw === 'object' && hStarterRaw !== null) ? hStarterRaw.name : hStarterRaw;
 
             // [추가] 선발 투수 전적 — 얼굴/이름 아래 전체 너비로 표시(글자 잘림 방지)
             const starterRecHtml = (name, team, opp, hx) => {
@@ -2049,11 +2176,11 @@
                 ];
                 return `<div class="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 mt-2 text-[10px] font-bold leading-tight">${parts.join('<span class="text-gray-600">·</span>')}</div>`;
             };
-            let apRecHtml = isClassic ? '' : starterRecHtml(ap, m.team1, m.team2, h1);
-            let hpRecHtml = isClassic ? '' : starterRecHtml(hp, m.team2, m.team1, h2);
+            let apRecHtml = isClassic ? '' : starterRecHtml(aStarterDisp, m.team1, m.team2, h1);
+            let hpRecHtml = isClassic ? '' : starterRecHtml(hStarterDisp, m.team2, m.team1, h2);
 
-            let aph = `<div class="mb-3.5"><div class="flex items-center gap-2"><div class="w-[22px] flex justify-center shrink-0"><span style="background-color: ${h1}; border: 1px solid ${h1}; color: #ffffff !important;" class="text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">${aBadge}</span></div><div class="${apf}">${apim}</div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center gap-x-1"><span class="text-[clamp(11px,3vw,14px)] font-bold text-white whitespace-nowrap tracking-tight shrink">${ap}</span>${apBat}</div><span class="text-[10px] text-gray-400 whitespace-nowrap mt-0.5">${apPos}</span></div></div>${apRecHtml}</div>`;
-            let hph = `<div class="mb-3.5"><div class="flex items-center gap-2"><div class="w-[22px] flex justify-center shrink-0"><span style="background-color: ${h2}; border: 1px solid ${h2}; color: #ffffff !important;" class="text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">${hBadge}</span></div><div class="${hpf}">${hpim}</div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center gap-x-1"><span class="text-[clamp(11px,3vw,14px)] font-bold text-white whitespace-nowrap tracking-tight shrink">${hp}</span>${hpBat}</div><span class="text-[10px] text-gray-400 whitespace-nowrap mt-0.5">${hpPos}</span></div></div>${hpRecHtml}</div>`;
+            let aph = pitcherRow(aStarterRaw, h1, '선발', apRecHtml, true) + (aBullpenOn ? pitcherRow(apRaw, h1, '불펜', '', false) : '');
+            let hph = pitcherRow(hStarterRaw, h2, '선발', hpRecHtml, true) + (hBullpenOn ? pitcherRow(hpRaw, h2, '불펜', '', false) : '');
             
             let abh = (aLineupSrc && aLineupSrc.length > 0) ? aLineupSrc.map((pObj, i) => { 
                 let p = typeof pObj === 'object' && pObj !== null ? pObj.name : pObj;
