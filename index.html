@@ -844,6 +844,13 @@
         function _throwsOf(raw) {
             return (raw && typeof raw === 'object' && raw.batsThrows) ? raw.batsThrows : '';
         }
+        // [추가] 현재(마운드 위) 투수 이름 — 라이브에서 갱신되는 awayPitcher 문자열을 우선(불펜 교체 반영). 없으면 상세 객체 이름.
+        function _curPitcherName(l, side) {
+            let s = l[side + 'Pitcher'];
+            if (typeof s === 'string' && s && s !== '-') return s;
+            let d = l[side + 'PitcherDetail'];
+            return (d && d.name) || (typeof s === 'string' && s ? s : '-');
+        }
 
         // [추가] 선발 투수의 상대 팀 맞대결 전적 + 시즌 전적 (과거 데이터 파일 기반)
         function _pitcherName(raw) { return (raw && typeof raw === 'object') ? (raw.name || '') : (raw || ''); }
@@ -1647,8 +1654,8 @@
                         
                         let apRaw = l.awayPitcherDetail || l.awayPitcher || '-';
                         let hpRaw = l.homePitcherDetail || l.homePitcher || '-';
-                        let aPitcher = typeof apRaw === 'object' && apRaw !== null ? apRaw.name : apRaw;
-                        let hPitcher = typeof hpRaw === 'object' && hpRaw !== null ? hpRaw.name : hpRaw;
+                        let aPitcher = _curPitcherName(l, 'away');
+                        let hPitcher = _curPitcherName(l, 'home');
                         let aPCount = l.awayPitcherCount || '0', hPCount = l.homePitcherCount || '0';
                         let base1 = l.base1 ? 'bg-[#6ee7b7] shadow-[0_0_5px_rgba(110,231,183,0.6)]' : 'bg-[#374151]', base2 = l.base2 ? 'bg-[#6ee7b7] shadow-[0_0_5px_rgba(110,231,183,0.6)]' : 'bg-[#374151]', base3 = l.base3 ? 'bg-[#6ee7b7] shadow-[0_0_5px_rgba(110,231,183,0.6)]' : 'bg-[#374151]';
                         let bCount = parseInt(l.ball || 0), sCount = parseInt(l.strike || 0), oCount = parseInt(l.out || 0);
@@ -1859,8 +1866,8 @@
                 let aPitcherArea = '', hPitcherArea = '', inningArea = '', centerArea = '';
                 let apRawBanner = l.awayPitcherDetail || l.awayPitcher || '-';
                 let hpRawBanner = l.homePitcherDetail || l.homePitcher || '-';
-                let aPitcher = typeof apRawBanner === 'object' && apRawBanner !== null ? apRawBanner.name : apRawBanner;
-                let hPitcher = typeof hpRawBanner === 'object' && hpRawBanner !== null ? hpRawBanner.name : hpRawBanner;
+                let aPitcher = _curPitcherName(l, 'away');
+                let hPitcher = _curPitcherName(l, 'home');
                 let aPCount = l.awayPitcherCount || '0', hPCount = l.homePitcherCount || '0';
                 
                 let oCount = parseInt(l.out || 0), bCount = parseInt(l.ball || 0), sCount = parseInt(l.strike || 0);
@@ -2044,8 +2051,8 @@
                 let aPitcherArea = '', hPitcherArea = '', inningArea = '', centerArea = '';
                 let apRawBanner = l.awayPitcherDetail || l.awayPitcher || '-';
                 let hpRawBanner = l.homePitcherDetail || l.homePitcher || '-';
-                let aPitcher = typeof apRawBanner === 'object' && apRawBanner !== null ? apRawBanner.name : apRawBanner;
-                let hPitcher = typeof hpRawBanner === 'object' && hpRawBanner !== null ? hpRawBanner.name : hpRawBanner;
+                let aPitcher = _curPitcherName(l, 'away');
+                let hPitcher = _curPitcherName(l, 'home');
                 let aPCount = l.awayPitcherCount || '0', hPCount = l.homePitcherCount || '0';
                 
                 let oCount = parseInt(l.out || 0), bCount = parseInt(l.ball || 0), sCount = parseInt(l.strike || 0);
@@ -2153,18 +2160,16 @@
                 let bs = filled ? `background-color:${hx};border:1px solid ${hx};color:#ffffff !important;` : `background:transparent;border:1px solid ${hx};color:${hx};`;
                 return `<div class="mb-3.5"><div class="flex items-center gap-2"><div class="w-[22px] flex justify-center shrink-0"><span style="${bs}" class="text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">${label}</span></div><div class="${_pf_box(nm)}">${_pf_img(nm)}</div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center gap-x-1"><span class="text-[clamp(11px,3vw,14px)] font-bold text-white whitespace-nowrap tracking-tight shrink">${nm}</span>${bat}</div><span class="text-[10px] text-gray-400 whitespace-nowrap mt-0.5">${pos}</span></div></div>${recHtml || ''}</div>`;
             };
-            let aStarterName = m.awayPitcher || m.awayStarter || l.awayStarter || null;
-            let hStarterName = m.homePitcher || m.homeStarter || l.homeStarter || null;
-            let aCurName = (typeof apRaw === 'object' && apRaw !== null) ? apRaw.name : apRaw;
-            let hCurName = (typeof hpRaw === 'object' && hpRaw !== null) ? hpRaw.name : hpRaw;
-            let _liveOrEnd = (l.gameStatus === '경기중' || l.gameStatus === '종료');
-            let aBullpenOn = _liveOrEnd && aStarterName && aCurName !== '-' && aCurName !== aStarterName;
-            let hBullpenOn = _liveOrEnd && hStarterName && hCurName !== '-' && hCurName !== hStarterName;
-            // 선발 상세: 파이어베이스 awayStarterDetail 우선 → 없으면 현재투수가 선발일 때 그 상세 → 아니면 선발 이름만
-            let aStarterRaw = l.awayStarterDetail || ((!aStarterName || aCurName === aStarterName) ? apRaw : aStarterName);
-            let hStarterRaw = l.homeStarterDetail || ((!hStarterName || hCurName === hStarterName) ? hpRaw : hStarterName);
+            // 선발 = 상세 객체(awayStarterDetail/awayPitcherDetail, 사진·좌우 포함), 현재(마운드) 투수 = 라이브에서 갱신되는 문자열(awayPitcher)
+            let aStarterRaw = l.awayStarterDetail || l.awayPitcherDetail || l.awayStarter || l.awayPitcher || '-';
+            let hStarterRaw = l.homeStarterDetail || l.homePitcherDetail || l.homeStarter || l.homePitcher || '-';
             let aStarterDisp = (typeof aStarterRaw === 'object' && aStarterRaw !== null) ? aStarterRaw.name : aStarterRaw;
             let hStarterDisp = (typeof hStarterRaw === 'object' && hStarterRaw !== null) ? hStarterRaw.name : hStarterRaw;
+            let aCurName = (typeof l.awayPitcher === 'string' && l.awayPitcher) ? l.awayPitcher : ((l.awayPitcherDetail && l.awayPitcherDetail.name) || aStarterDisp);
+            let hCurName = (typeof l.homePitcher === 'string' && l.homePitcher) ? l.homePitcher : ((l.homePitcherDetail && l.homePitcherDetail.name) || hStarterDisp);
+            let _liveOrEnd = (l.gameStatus === '경기중' || l.gameStatus === '종료');
+            let aBullpenOn = _liveOrEnd && aCurName && aCurName !== '-' && aCurName !== aStarterDisp;
+            let hBullpenOn = _liveOrEnd && hCurName && hCurName !== '-' && hCurName !== hStarterDisp;
 
             // [추가] 선발 투수 전적 — 얼굴/이름 아래 전체 너비로 표시(글자 잘림 방지)
             const starterRecHtml = (name, team, opp, hx) => {
@@ -2179,8 +2184,8 @@
             let apRecHtml = isClassic ? '' : starterRecHtml(aStarterDisp, m.team1, m.team2, h1);
             let hpRecHtml = isClassic ? '' : starterRecHtml(hStarterDisp, m.team2, m.team1, h2);
 
-            let aph = pitcherRow(aStarterRaw, h1, '선발', apRecHtml, true) + (aBullpenOn ? pitcherRow(apRaw, h1, '불펜', '', false) : '');
-            let hph = pitcherRow(hStarterRaw, h2, '선발', hpRecHtml, true) + (hBullpenOn ? pitcherRow(hpRaw, h2, '불펜', '', false) : '');
+            let aph = pitcherRow(aStarterRaw, h1, '선발', apRecHtml, true) + (aBullpenOn ? pitcherRow(aCurName, h1, '불펜', '', false) : '');
+            let hph = pitcherRow(hStarterRaw, h2, '선발', hpRecHtml, true) + (hBullpenOn ? pitcherRow(hCurName, h2, '불펜', '', false) : '');
             
             let abh = (aLineupSrc && aLineupSrc.length > 0) ? aLineupSrc.map((pObj, i) => { 
                 let p = typeof pObj === 'object' && pObj !== null ? pObj.name : pObj;
