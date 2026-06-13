@@ -1202,97 +1202,165 @@
         const STAMP_HEX = { WIN: '#EA0029', LOSE: '#64748B', DRAW: '#10B981', CANCEL: '#3B82F6' };
 
         // [추가] 홈 Now Brief 피드 — 배너 아래 카드형 콘텐츠
+        // 갤럭시 Now Brief 스타일 홈 브리핑 피드 (이모티콘 미사용 · FontAwesome 아이콘/색상/도형만 사용)
         function renderHomeFeed() {
             const c = document.getElementById('home-feed'); if (!c) return;
-            let isAll = !(selectedTeam === 'KIA' || selectedTeam === '삼성');
-            let html = homeCardTeamSnapshot();
-            // 전체 모드: 배너가 이미 오늘 5경기를 보여주므로 중복 대신 'KBO 순위' 미니표를 노출
-            html += isAll ? homeCardStandings() : homeCardTodayGames();
-            // 직관 승률은 팀별 데이터 → 전체 모드에서는 숨김
-            if (!isAll) html += homeCardFairy();
-            html += homeCardTodaySong();
-            c.innerHTML = html;
+            const isAll = !(selectedTeam === 'KIA' || selectedTeam === '삼성');
+            let cards = [briefHeaderCard()];
+            if (!isAll) { cards.push(homeCardHeatmap()); cards.push(homeCardFortune()); }
+            cards.push(homeCardRivalBoard());
+            cards.push(homeCardMoodWeather());
+            c.innerHTML = `<div class="flex flex-col gap-3">${cards.filter(Boolean).join('')}</div>`;
         }
-        function homeCardStandings() {
-            let rows = (rankingData && rankingData.length) ? rankingData : (computeRankingFromHistory() || []);
-            let header = `<div class="flex items-center justify-between mb-2.5"><div class="flex items-center gap-1.5"><i class="fa-solid fa-ranking-star text-point text-[12px]"></i><span class="text-[13px] font-extrabold text-white tracking-tight">KBO 순위</span></div><span class="text-[10px] text-gray-500">팀 · 승-패 · 게임차</span></div>`;
-            if (!rows.length) return `<div class="home-card p-4">${header}<div class="text-[12px] text-gray-500 py-3 text-center">순위 정보가 없습니다.</div></div>`;
-            let body = rows.map(r => {
-                let lg = teamLogos[r.team] ? `<img src="${teamLogos[r.team]}" class="w-5 h-5 object-contain shrink-0">` : '';
-                let hl = (r.team === 'KIA' || r.team === '삼성') ? 'text-white font-bold' : 'text-gray-300';
-                return `<div class="flex items-center gap-2 py-1"><span class="w-4 text-center text-[11px] font-black text-gray-400 shrink-0">${r.rank}</span>${lg}<span class="flex-1 text-[12px] ${hl} truncate">${r.team}</span><span class="text-[11px] text-gray-400 tabular-nums">${r.w}-${r.l}${r.d ? '-' + r.d : ''}</span><span class="w-9 text-right text-[11px] text-gray-500 tabular-nums">${r.gb}</span></div>`;
-            }).join('');
-            return `<div class="home-card p-4">${header}${body}</div>`;
+        // 브리핑 헤더 (인사 + 날짜 + 오늘의 경기 수)
+        function briefHeaderCard() {
+            const days = ['일', '월', '화', '수', '목', '금', '토'];
+            const [yy, mm, dd] = todayStr.split('-').map(Number);
+            const base = new Date(yy, mm - 1, dd);
+            const dateTxt = `${mm}월 ${dd}일 ${days[base.getDay()]}요일`;
+            const h = new Date().getHours();
+            const greet = h < 6 ? '아직 새벽이에요' : h < 12 ? '좋은 아침이에요' : h < 18 ? '좋은 오후예요' : '좋은 저녁이에요';
+            const gToday = scheduleData.filter(m => m.date === todayStr).length;
+            const sub = gToday ? `오늘 KBO ${gToday}경기가 열려요` : '오늘은 KBO 경기가 없어요';
+            return `<div class="px-1 pt-1 pb-0.5"><div class="flex items-center gap-1.5 mb-1.5"><i class="fa-solid fa-newspaper text-point text-[11px]"></i><span class="text-[11px] font-bold text-gray-500 tracking-wide">오늘의 브리핑</span></div><div class="text-[21px] font-black text-white leading-tight tracking-tight">${greet}</div><div class="flex items-center gap-2 mt-1"><span class="text-[12px] font-bold text-gray-400">${dateTxt}</span><span class="w-1 h-1 rounded-full bg-gray-600"></span><span class="text-[12px] text-gray-400">${sub}</span></div></div>`;
         }
-        function _feedTeam() { return (selectedTeam === 'KIA' || selectedTeam === '삼성') ? selectedTeam : 'KIA'; }
-        function homeCardTeamSnapshot() {
-            let teams = (selectedTeam === 'KIA' || selectedTeam === '삼성') ? [selectedTeam] : ['KIA', '삼성'];
-            let rows = teams.map(t => {
-                let st = teamStats[t] || { w: 0, l: 0, d: 0, results: [] };
-                let rk = (rankingData || []).find(r => r.team === t) || {};
-                let rank = rk.rank || '-', gb = rk.gb || '-';
-                let form = (st.results || []).slice(-5);
-                let formHtml = form.length ? form.map(x => {
-                    let col = x === 'W' ? 'bg-[#22c55e]' : (x === 'L' ? 'bg-[#ef4444]' : 'bg-gray-500');
-                    return `<span class="w-[18px] h-[18px] rounded-full ${col} text-white text-[9px] font-black flex items-center justify-center">${x === 'W' ? '승' : (x === 'L' ? '패' : '무')}</span>`;
-                }).join('') : '<span class="text-[11px] text-gray-500">최근 기록 없음</span>';
-                let ng = scheduleData.filter(m => (m.team1 === t || m.team2 === t) && m.date >= todayStr).sort((a, b) => a.date.localeCompare(b.date) || (a.time || '').localeCompare(b.time || ''))[0];
-                let ngHtml = '';
-                if (ng) {
-                    let opp = ng.team1 === t ? ng.team2 : ng.team1;
-                    let dd = Math.round((new Date(ng.date) - new Date(todayStr)) / 86400000);
-                    let ddTxt = dd <= 0 ? '오늘' : `D-${dd}`;
-                    ngHtml = `<div class="flex items-center justify-end gap-1 text-[11px] font-bold text-gray-400"><span class="text-point">${ddTxt}</span><span>vs ${opp}</span></div>`;
-                }
-                let logo = teamLogos[t] ? `<img src="${teamLogos[t]}" class="w-9 h-9 object-contain shrink-0">` : '';
-                return `<div class="flex items-center gap-3 py-1">${logo}<div class="flex flex-col min-w-0 flex-1"><div class="flex items-baseline gap-1.5"><span class="text-[15px] font-black text-white">${t}</span><span class="text-[11px] font-bold text-gray-400">${rank !== '-' ? rank + '위 · ' : ''}${st.w}승 ${st.l}패${st.d ? ' ' + st.d + '무' : ''}</span></div><div class="flex items-center gap-1 mt-1.5">${formHtml}</div></div><div class="flex flex-col items-end shrink-0 gap-0.5">${ngHtml}<span class="text-[10px] text-gray-500">${gb !== '-' ? 'GB ' + gb : '리그 선두'}</span></div></div>`;
-            }).join('<div class="h-px bg-white/5 my-1"></div>');
-            return `<div class="home-card p-4"><div class="flex items-center gap-1.5 mb-2.5"><i class="fa-solid fa-shield-halved text-point text-[12px]"></i><span class="text-[13px] font-extrabold text-white tracking-tight">우리 팀 스냅샷</span></div>${rows}</div>`;
-        }
-        function homeCardTodayGames() {
-            let games = scheduleData.filter(m => m.date === todayStr).sort((a, b) => (a.time || '').localeCompare(b.time || ''));
-            let inner;
-            if (!games.length) inner = `<div class="text-[12px] text-gray-500 py-3 text-center">오늘 경기가 없습니다.</div>`;
-            else inner = `<div class="flex gap-2 overflow-x-auto scrollbar-hide -mx-1 px-1">` + games.map(m => {
-                let l = liveDataStore[m.id] || {}, stt = l.gameStatus || '경기전';
-                let iC = (l.gameStatus && (l.gameStatus.includes('취소') || l.gameStatus.includes('우취'))) || (l.inning && (l.inning.includes('취소') || l.inning.includes('우취')));
-                let a = l.awayScore != null ? l.awayScore : 0, h = l.homeScore != null ? l.homeScore : 0;
-                let statusTxt, scoreTxt, sc;
-                if (iC) { statusTxt = '취소'; scoreTxt = '-'; sc = 'text-gray-400'; }
-                else if (stt === '경기전') { statusTxt = m.time || '경기전'; scoreTxt = 'VS'; sc = 'text-gray-400'; }
-                else if (stt === '종료') { statusTxt = '종료'; scoreTxt = `${a} : ${h}`; sc = 'text-white'; }
-                else { statusTxt = l.inning || '경기중'; scoreTxt = `${a} : ${h}`; sc = 'text-[#EA0029]'; }
-                let lg1 = teamLogos[m.team1], lg2 = teamLogos[m.team2];
-                return `<div onclick="openLineupPopup('${m.id}')" class="home-chip shrink-0 w-[116px] rounded-xl p-2.5 cursor-pointer active:scale-95 transition-transform"><div class="text-[9px] font-bold ${sc} text-center mb-1.5 truncate">${statusTxt}</div><div class="flex items-center justify-between"><img src="${lg1}" class="w-6 h-6 object-contain"><span class="text-[12px] font-black text-white px-1">${scoreTxt}</span><img src="${lg2}" class="w-6 h-6 object-contain"></div><div class="flex items-center justify-between mt-1 text-[9px] font-bold text-gray-400"><span class="truncate">${m.team1}</span><span class="truncate">${m.team2}</span></div></div>`;
-            }).join('') + `</div>`;
-            return `<div class="home-card p-4"><div class="flex items-center gap-1.5 mb-3"><i class="fa-solid fa-baseball text-point text-[12px]"></i><span class="text-[13px] font-extrabold text-white tracking-tight">오늘의 KBO</span></div>${inner}</div>`;
-        }
-        function homeCardFairy() {
-            let t = _feedTeam(), w = 0, l = 0, d = 0;
+        // 내 직관 기록을 날짜별 결과로 집계
+        function _myAttendMap(t) {
+            let map = {};
             watchRecords.forEach(r => {
                 if (r.team !== t || r.type !== '직관') return;
-                let m = scheduleData.find(x => String(x.id) === String(r.matchId)), lv = liveDataStore[r.matchId];
-                if (!m || !lv || lv.gameStatus !== '종료') return;
-                if (m.team1 !== t && m.team2 !== t) return;
-                let a = parseInt(lv.awayScore || 0), h = parseInt(lv.homeScore || 0);
-                let iW = (m.team1 === t && a > h) || (m.team2 === t && h > a), iL = (m.team1 === t && a < h) || (m.team2 === t && h < a);
-                if (iW) w++; else if (iL) l++; else d++;
+                let m = scheduleData.find(x => String(x.id) === String(r.matchId));
+                if (!m || (m.team1 !== t && m.team2 !== t)) return;
+                let lv = liveDataStore[r.matchId];
+                let res = 'P';
+                if (lv && lv.gameStatus === '종료') {
+                    let a = parseInt(lv.awayScore || 0), hh = parseInt(lv.homeScore || 0);
+                    let iW = (m.team1 === t && a > hh) || (m.team2 === t && hh > a);
+                    let iL = (m.team1 === t && a < hh) || (m.team2 === t && hh < a);
+                    res = iW ? 'W' : (iL ? 'L' : 'D');
+                }
+                map[m.date] = res;
             });
-            let tot = w + l, pct = tot ? Math.round(w / tot * 100) : 0;
-            let label = (w + l + d) === 0 ? '아직 직관 기록이 없어요' : (pct >= 50 ? '당신은 승리요정! 🧚' : '패배요정... 😢');
-            let hx = teamHex[t];
-            return `<div class="home-card p-4 cursor-pointer" onclick="switchTab(1)"><div class="flex items-center gap-1.5 mb-2.5"><i class="fa-solid fa-ticket text-point text-[12px]"></i><span class="text-[13px] font-extrabold text-white tracking-tight">직관 요정 · ${t}</span></div><div class="flex items-center justify-between"><div class="flex items-baseline gap-2"><span class="text-[28px] font-black leading-none" style="color:${hx}">${pct}%</span><span class="text-[11px] font-bold text-gray-400">${w}승 ${l}패${d ? ' ' + d + '무' : ''}</span></div><span class="text-[12px] font-bold text-gray-300">${label}</span></div></div>`;
+            return map;
         }
-        function homeCardTodaySong() {
-            let t = _feedTeam(), id = t === 'KIA' ? 'kia' : 'samsung';
+        // 1) 직관 히트맵 (잔디형 그리드)
+        function homeCardHeatmap() {
+            let t = selectedTeam, hx = teamHex[t];
+            let attend = _myAttendMap(t);
+            const weeks = 13;
+            const [yy, mm, dd] = todayStr.split('-').map(Number);
+            const end = new Date(yy, mm - 1, dd);
+            const start = new Date(end); start.setDate(end.getDate() - (weeks - 1) * 7 - end.getDay());
+            let cols = '';
+            for (let wk = 0; wk < weeks; wk++) {
+                let cells = '';
+                for (let dow = 0; dow < 7; dow++) {
+                    let dt = new Date(start); dt.setDate(start.getDate() + wk * 7 + dow);
+                    let ds = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+                    let style = '', cls = 'bg-white/[0.05]';
+                    if (ds > todayStr) { cls = 'bg-transparent'; }
+                    else if (attend[ds] === 'W') { cls = ''; style = 'background:#22c55e'; }
+                    else if (attend[ds] === 'L') { cls = ''; style = 'background:#ef4444'; }
+                    else if (attend[ds] === 'D') { cls = 'bg-gray-500'; }
+                    else if (attend[ds] === 'P') { cls = 'bg-white/15 ring-1 ring-white/40'; }
+                    cells += `<div class="w-[11px] h-[11px] rounded-[2px] ${cls}" style="${style}" title="${ds}"></div>`;
+                }
+                cols += `<div class="flex flex-col gap-[3px]">${cells}</div>`;
+            }
+            let vals = Object.values(attend);
+            let w = vals.filter(x => x === 'W').length, l = vals.filter(x => x === 'L').length, d = vals.filter(x => x === 'D').length;
+            let tot = w + l, pct = tot ? Math.round(w / tot * 100) : 0, total = w + l + d;
+            let summary = total === 0
+                ? `<span class="text-[12px] text-gray-500">아직 직관 기록이 없어요. 탭해서 기록을 남겨보세요</span>`
+                : `<span class="text-[12px] font-bold text-gray-300">직관 ${total}경기 · ${w}승 ${l}패${d ? ' ' + d + '무' : ''}</span><span class="text-[12px] font-black" style="color:${hx}">승률 ${pct}%</span>`;
+            let legend = `<div class="flex items-center gap-2.5 text-[9px] text-gray-500"><span class="flex items-center gap-1"><span class="w-[9px] h-[9px] rounded-[2px]" style="background:#22c55e"></span>승</span><span class="flex items-center gap-1"><span class="w-[9px] h-[9px] rounded-[2px]" style="background:#ef4444"></span>패</span><span class="flex items-center gap-1"><span class="w-[9px] h-[9px] rounded-[2px] bg-gray-500"></span>무</span></div>`;
+            return `<div class="home-card p-4 cursor-pointer" onclick="switchTab(1)"><div class="flex items-center justify-between mb-3"><div class="flex items-center gap-1.5"><i class="fa-solid fa-table-cells text-point text-[12px]"></i><span class="text-[13px] font-extrabold text-white tracking-tight">직관 히트맵 · ${t}</span></div>${legend}</div><div class="flex gap-[3px] overflow-x-auto scrollbar-hide pb-1">${cols}</div><div class="flex items-center justify-between mt-3 flex-wrap gap-1">${summary}</div></div>`;
+        }
+        // 2) 오늘의 직관 운세
+        function homeCardFortune() {
+            let t = selectedTeam, hx = teamHex[t];
+            let g = scheduleData.filter(m => (m.team1 === t || m.team2 === t) && m.date === todayStr)
+                .sort((a, b) => (a.time || '').localeCompare(b.time || ''))[0];
+            let future = false;
+            if (!g) { g = scheduleData.filter(m => (m.team1 === t || m.team2 === t) && m.date > todayStr).sort((a, b) => a.date.localeCompare(b.date) || (a.time || '').localeCompare(b.time || ''))[0]; future = true; }
+            if (!g) return '';
+            let lv = liveDataStore[g.id] || {};
+            let wp = winProbability(g, lv);
+            let prob = (g.team2 === t) ? wp.home : wp.away;
+            let opp = g.team1 === t ? g.team2 : g.team1;
+            let dd = Math.round((new Date(g.date) - new Date(todayStr)) / 86400000);
+            let when = !future ? (g.time || '오늘') : (dd <= 1 ? '내일' : `D-${dd}`);
+            let phrase, pc;
+            if (prob >= 70) { phrase = '승리의 기운이 가득해요. 직관 가기 딱 좋은 날'; pc = '#22c55e'; }
+            else if (prob >= 55) { phrase = '흐름은 우리 편. 직관 한번 가볼 만해요'; pc = '#4ade80'; }
+            else if (prob >= 45) { phrase = '팽팽한 승부. 당신의 응원이 결정적이에요'; pc = '#fbbf24'; }
+            else if (prob >= 30) { phrase = '쉽지 않은 경기. 그래도 끝까지 함께해요'; pc = '#fb923c'; }
+            else { phrase = '전력은 열세. 이변을 만드는 직관에 도전'; pc = '#f87171'; }
+            let id = t === 'KIA' ? 'kia' : 'samsung';
             let players = (cheerData[id] && cheerData[id].player) || [];
-            if (!players.length) return '';
-            let song = players[(new Date().getDate()) % players.length];
-            let hasImg = !!playerImages[song.label];
-            let img = hasImg ? playerImages[song.label] : teamLogos[t];
-            let imgCls = hasImg ? 'w-full h-full object-cover object-top scale-110' : 'w-full h-full object-contain p-1.5 opacity-90';
-            let safeTitle = (song.title || '').replace(/'/g, "\\'"), safeUrl = (song.url || '').replace(/'/g, "\\'");
-            return `<div class="home-card p-4 cursor-pointer" onclick="playCheerSong('${safeUrl}','${safeTitle}')"><div class="flex items-center gap-1.5 mb-3"><i class="fa-solid fa-headphones text-point text-[12px]"></i><span class="text-[13px] font-extrabold text-white tracking-tight">오늘의 응원가</span></div><div class="flex items-center gap-3"><div class="w-12 h-12 rounded-xl overflow-hidden bg-[#1A1A1C] border border-white/10 flex items-center justify-center shrink-0"><img src="${img}" class="${imgCls}"></div><div class="flex flex-col min-w-0 flex-1"><span class="text-[14px] font-bold text-white truncate">${song.label}</span><span class="text-[11px] text-gray-400">${t} 응원가</span></div><div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0 shadow-md" style="background:${teamHex[t]}"><i class="fa-solid fa-play text-white text-[12px] ml-0.5"></i></div></div></div>`;
+            let songRow = '';
+            if (players.length) {
+                let song = players[(new Date().getDate() + (t === 'KIA' ? 0 : 3)) % players.length];
+                let st = (song.title || '').replace(/'/g, "\\'"), su = (song.url || '').replace(/'/g, "\\'");
+                songRow = `<div class="flex items-center gap-2 mt-3 pt-3 border-t border-white/5" onclick="event.stopPropagation(); playCheerSong('${su}','${st}')"><div class="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style="background:${hx}"><i class="fa-solid fa-play text-white text-[10px] ml-0.5"></i></div><span class="text-[11px] text-gray-400">행운의 응원가</span><span class="text-[12px] font-bold text-white truncate flex-1">${song.label}</span></div>`;
+            }
+            return `<div class="home-card p-4 cursor-pointer" onclick="openLineupPopup('${g.id}')"><div class="flex items-center gap-1.5 mb-3"><i class="fa-solid fa-clover text-point text-[12px]"></i><span class="text-[13px] font-extrabold text-white tracking-tight">오늘의 직관 운세</span></div><div class="flex items-end justify-between"><div class="flex items-baseline gap-2"><span class="text-[34px] font-black leading-none" style="color:${pc}">${prob}</span><span class="text-[14px] font-black" style="color:${pc}">%</span><span class="text-[11px] font-bold text-gray-500 ml-0.5">행운 지수</span></div><div class="flex flex-col items-end"><div class="flex items-center gap-1.5 text-[12px] font-bold text-gray-300"><span class="text-point">${when}</span><span>vs ${opp}</span></div></div></div><div class="text-[12px] font-bold text-gray-300 mt-2.5 leading-snug">${phrase}</div>${songRow}</div>`;
+        }
+        // 3) 라이벌 전광판 (KIA vs 삼성)
+        function homeCardRivalBoard() {
+            const A = 'KIA', B = '삼성';
+            let h = _teamH2H(A, B); // {hw: KIA승, aw: 삼성승, n}
+            let rk = (rankingData && rankingData.length) ? rankingData : (computeRankingFromHistory() || []);
+            let rA = (rk.find(r => r.team === A) || {}).rank, rB = (rk.find(r => r.team === B) || {}).rank;
+            let next = scheduleData.filter(m => ((m.team1 === A && m.team2 === B) || (m.team1 === B && m.team2 === A)) && m.date >= todayStr)
+                .sort((a, b) => a.date.localeCompare(b.date) || (a.time || '').localeCompare(b.time || ''))[0];
+            let nextHtml;
+            if (next) {
+                let dd = Math.round((new Date(next.date) - new Date(todayStr)) / 86400000);
+                let ddTxt = dd <= 0 ? '오늘' : (dd === 1 ? '내일' : `D-${dd}`);
+                let mo = next.date.slice(5).replace('-', '.');
+                nextHtml = `<span class="text-point font-black">${ddTxt}</span><span class="text-gray-400">다음 맞대결 · ${mo} ${next.time || ''}</span>`;
+            } else {
+                nextHtml = `<span class="text-gray-500">예정된 맞대결이 없어요</span>`;
+            }
+            let provoke;
+            if (h.n > 0) {
+                if (h.hw > h.aw) provoke = `시즌 상대전적 ${h.hw}-${h.aw}, KIA가 앞서가는 중`;
+                else if (h.aw > h.hw) provoke = `시즌 상대전적 ${h.aw}-${h.hw}, 삼성이 앞서가는 중`;
+                else provoke = `시즌 상대전적 ${h.hw}-${h.aw}, 한 치 양보 없는 균형`;
+            } else if (rA && rB) {
+                provoke = rA < rB ? `현재 순위는 KIA ${rA}위 · 삼성 ${rB}위` : (rB < rA ? `현재 순위는 삼성 ${rB}위 · KIA ${rA}위` : '나란히 같은 순위, 진검승부');
+            } else {
+                provoke = '올 시즌 라이벌전 데이터를 기다리는 중';
+            }
+            let col = (team, rank) => `<div class="flex flex-col items-center gap-1 w-[34%]"><img src="${teamLogos[team]}" class="w-11 h-11 object-contain"><span class="text-[13px] font-black text-white">${team}</span>${rank ? `<span class="text-[10px] font-bold text-gray-500">${rank}위</span>` : ''}</div>`;
+            let center = `<div class="flex flex-col items-center gap-0.5 flex-1"><div class="flex items-baseline gap-1.5"><span class="text-[26px] font-black leading-none" style="color:${teamHex[A]}">${h.hw}</span><span class="text-[15px] font-black text-gray-600">:</span><span class="text-[26px] font-black leading-none" style="color:${teamHex[B]}">${h.aw}</span></div><span class="text-[9px] font-bold text-gray-500 tracking-wide">시즌 상대전적</span></div>`;
+            return `<div class="home-card p-4"><div class="flex items-center gap-1.5 mb-3"><i class="fa-solid fa-bolt text-point text-[12px]"></i><span class="text-[13px] font-extrabold text-white tracking-tight">라이벌 전광판</span><span class="text-[10px] text-gray-500 ml-auto">KIA vs 삼성</span></div><div class="flex items-center justify-between mb-3">${col(A, rA)}${center}${col(B, rB)}</div><div class="flex items-center gap-1.5 text-[11px] font-bold pt-2.5 border-t border-white/5 mb-1.5"><i class="fa-regular fa-calendar text-gray-500 text-[10px]"></i>${nextHtml}</div><div class="flex items-center gap-1.5 text-[11px]"><i class="fa-regular fa-comment-dots text-gray-500 text-[10px]"></i><span class="text-gray-300 font-bold">${provoke}</span></div></div>`;
+        }
+        // 4) 우리 팀 기분 날씨
+        function homeCardMoodWeather() {
+            let teams = (selectedTeam === 'KIA' || selectedTeam === '삼성') ? [selectedTeam] : ['KIA', '삼성'];
+            let rows = teams.map(t => {
+                let st = teamStats[t] || { results: [] };
+                let last5 = (st.results || []).slice(-5);
+                let wins = last5.filter(x => x === 'W').length;
+                let sType = last5.length ? last5[last5.length - 1] : null, streak = 0;
+                for (let i = last5.length - 1; i >= 0; i--) { if (last5[i] === sType) streak++; else break; }
+                let icon, label, col, msg;
+                if (last5.length === 0) { icon = 'fa-cloud'; label = '정보 없음'; col = '#9ca3af'; msg = '최근 경기 기록이 부족해요'; }
+                else if (wins >= 4 || (sType === 'W' && streak >= 3)) { icon = 'fa-sun'; col = '#f59e0b'; label = '쾌청'; msg = (sType === 'W' && streak >= 3) ? `${streak}연승, 기세가 뜨거워요` : '분위기 최고, 직관 가기 좋은 날'; }
+                else if (wins === 3) { icon = 'fa-cloud-sun'; col = '#fbbf24'; label = '맑음'; msg = '흐름이 살아나고 있어요'; }
+                else if (wins === 2) { icon = 'fa-cloud'; col = '#9ca3af'; label = '흐림'; msg = '반등의 한 방이 필요한 시점'; }
+                else if (wins === 1) { icon = 'fa-cloud-rain'; col = '#60a5fa'; label = '비'; msg = '침체기, 우리의 응원이 필요해요'; }
+                else { icon = 'fa-cloud-bolt'; col = '#a78bfa'; label = '폭풍우'; msg = (sType === 'L' && streak >= 3) ? `${streak}연패, 곧 갠다고 믿어요` : '먹구름이 잔뜩, 그래도 우리 팀'; }
+                let dots = last5.map(x => {
+                    let cc = x === 'W' ? 'background:#22c55e' : (x === 'L' ? 'background:#ef4444' : 'background:#6b7280');
+                    let tx = x === 'W' ? '승' : (x === 'L' ? '패' : '무');
+                    return `<span class="w-[16px] h-[16px] rounded-full text-white text-[8px] font-black flex items-center justify-center" style="${cc}">${tx}</span>`;
+                }).join('') || '<span class="text-[10px] text-gray-500">기록 없음</span>';
+                return `<div class="flex items-center gap-3 py-1"><div class="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0" style="background:${col}1f"><i class="fa-solid ${icon} text-[18px]" style="color:${col}"></i></div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-baseline gap-1.5"><span class="text-[14px] font-black text-white">${t}</span><span class="text-[12px] font-black" style="color:${col}">${label}</span></div><span class="text-[11px] text-gray-400 truncate">${msg}</span></div><div class="flex items-center gap-1 shrink-0">${dots}</div></div>`;
+            }).join('<div class="h-px bg-white/5 my-1"></div>');
+            return `<div class="home-card p-4"><div class="flex items-center gap-1.5 mb-2.5"><i class="fa-solid fa-cloud-sun text-point text-[12px]"></i><span class="text-[13px] font-extrabold text-white tracking-tight">팀 기분 날씨</span></div>${rows}</div>`;
         }
 
         function renderCalendar() {
