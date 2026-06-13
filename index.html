@@ -425,9 +425,9 @@
             <div class="flex items-center justify-between bg-[#1C1C1E] relative">
                 <div id="nav-indicator" class="absolute bg-point z-0 nav-transition" style="left: 4px; width: 66px;"></div>
                 <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(0)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-house text-base text-white"></i><span class="text-[10px] font-bold text-white">홈</span></div></button>
-                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(1)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-clover text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">요정</span></div></button>
-                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(2)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-trophy text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">순위</span></div></button>
-                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(3)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-headphones text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">응원가</span></div></button>
+                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(1)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-wand-magic-sparkles text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">요정</span></div></button>
+                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(2)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-ranking-star text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">순위</span></div></button>
+                <button class="relative py-1.5 flex-1 rounded-full group z-10 active:scale-95 transition-transform" onclick="switchTab(3)"><div class="flex flex-col items-center gap-0.5 pointer-events-none"><i class="fa-solid fa-music text-base text-gray-400"></i><span class="text-[10px] font-medium text-gray-400">응원가</span></div></button>
             </div>
         </nav>
     </div>
@@ -818,38 +818,6 @@
             }
             return { vsW, vsL, seasonW, seasonL };
         }
-        function pitcherMatchupHtml(m, l) {
-            l = l || {};
-            let aName = _pitcherName(m.awayPitcher || m.awayStarter || l.awayStarter) || _pitcherName(l.awayPitcherDetail || l.awayPitcher);
-            let hName = _pitcherName(m.homePitcher || m.homeStarter || l.homeStarter) || _pitcherName(l.homePitcherDetail || l.homePitcher);
-            if ((!aName || aName === '-') && (!hName || hName === '-')) return '';
-
-            const row = (name, team, opp) => {
-                if (!name || name === '-') return '';
-                let r = pitcherRecords(name, team, opp);
-                let hx = teamWinHex[team] || '#9AA0A6';
-                let vsTxt = (r.vsW + r.vsL) > 0
-                    ? `<span class="text-[15px] font-black wp-num" style="color:${hx}">${r.vsW}<span class="text-[11px] font-bold">승</span> ${r.vsL}<span class="text-[11px] font-bold">패</span></span>`
-                    : `<span class="text-[12px] font-bold text-gray-400">맞대결 기록 없음</span>`;
-                let lg = teamLogos[team] ? `<img src="${teamLogos[team]}" class="w-5 h-5 object-contain shrink-0">` : '';
-                return `<div class="flex items-center justify-between bg-white/5 border border-white/5 rounded-xl px-3.5 py-2.5">
-                    <div class="flex items-center gap-2 min-w-0">
-                        ${lg}
-                        <div class="flex flex-col min-w-0">
-                            <span class="text-[13px] font-bold text-white truncate">${name}</span>
-                            <span class="text-[10px] text-gray-400 truncate">vs ${opp} · 시즌 ${r.seasonW}승 ${r.seasonL}패</span>
-                        </div>
-                    </div>
-                    <div class="text-right shrink-0 pl-2">${vsTxt}</div>
-                </div>`;
-            };
-            let rows = row(aName, m.team1, m.team2) + row(hName, m.team2, m.team1);
-            if (!rows) return '';
-            return `<div class="w-full mb-5">
-                <div class="text-[12px] font-medium mb-3 wp-name">선발 맞대결 전적</div>
-                <div class="flex flex-col gap-2">${rows}</div>
-            </div>`;
-        }
 
         // 요정 화면 캐릭터 이미지를 미리 받아둬 탭 전환 시 즉시 표시되게 한다.
         let _fairyWarmed = false;
@@ -1085,7 +1053,7 @@
             
             nb.forEach((b, i) => {
                 const ic = b.querySelector('i'), l = b.querySelector('span');
-                if (ic && l) { ic.className = `fa-solid ${['fa-house', 'fa-clover', 'fa-trophy', 'fa-headphones'][i]} text-base ${i === index ? 'text-white' : 'text-gray-400 transition-colors'}`; l.className = `text-[10px] whitespace-nowrap transition-colors ${i === index ? 'text-white font-bold' : 'text-gray-400 font-medium'}`; }
+                if (ic && l) { ic.className = `fa-solid ${['fa-house', 'fa-wand-magic-sparkles', 'fa-ranking-star', 'fa-music'][i]} text-base ${i === index ? 'text-white' : 'text-gray-400 transition-colors'}`; l.className = `text-[10px] whitespace-nowrap transition-colors ${i === index ? 'text-white font-bold' : 'text-gray-400 font-medium'}`; }
             });
             
             const mt = document.getElementById('di-main-text');
@@ -2006,8 +1974,6 @@
             
             // [추가] 스코어보드 밑 승리 확률 막대 (클래식 테마는 레트로 디자인 유지 위해 제외)
             let wpb = isClassic ? '' : winProbBarHtml(m, l);
-            // [추가] 확률과 선발 사이: 선발 투수 맞대결/시즌 전적
-            let pm = isClassic ? '' : pitcherMatchupHtml(m, l);
 
             let apRaw = l.awayPitcherDetail || l.awayPitcher || '-';
             let hpRaw = l.homePitcherDetail || l.homePitcher || '-';
@@ -2015,7 +1981,7 @@
             let hLineupSrc = (l.homeLineupDetail && l.homeLineupDetail.length > 0) ? l.homeLineupDetail : (l.homeLineup || []);
 
             if (apRaw === '-' && aLineupSrc.length === 0) {
-                c.innerHTML = sbh + wpb + pm + `<div class="flex flex-col items-center justify-center h-48 text-gray-400 mt-2 gap-3 bg-white/5 rounded-2xl border border-white/5"><i class="fa-solid fa-clipboard-question text-4xl text-gray-500 mb-2"></i><span class="text-lg font-bold text-white tracking-wide">라인업 미발표</span><span class="text-[12px] text-gray-500 text-center">선발 라인업은<br>경기 시작 1~2시간 전에 공개됩니다.</span></div>`;
+                c.innerHTML = sbh + wpb + `<div class="flex flex-col items-center justify-center h-48 text-gray-400 mt-2 gap-3 bg-white/5 rounded-2xl border border-white/5"><i class="fa-solid fa-clipboard-question text-4xl text-gray-500 mb-2"></i><span class="text-lg font-bold text-white tracking-wide">라인업 미발표</span><span class="text-[12px] text-gray-500 text-center">선발 라인업은<br>경기 시작 1~2시간 전에 공개됩니다.</span></div>`;
                 return;
             }
             
@@ -2036,9 +2002,22 @@
             let hStarterName = m.homePitcher || m.homeStarter || l.homeStarter || null;
             let aBadge = '선발'; if (l.gameStatus === '경기중' && aStarterName && ap !== '-' && ap !== aStarterName) aBadge = '불펜';
             let hBadge = '선발'; if (l.gameStatus === '경기중' && hStarterName && hp !== '-' && hp !== hStarterName) hBadge = '불펜';
-            
-            let aph = `<div class="flex items-center gap-2 mb-3.5"><div class="w-[22px] flex justify-center shrink-0"><span style="background-color: ${h1}; border: 1px solid ${h1}; color: #ffffff !important;" class="text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">${aBadge}</span></div><div class="${apf}">${apim}</div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center gap-x-1"><span class="text-[clamp(11px,3vw,14px)] font-bold text-white whitespace-nowrap tracking-tight shrink">${ap}</span>${apBat}</div><span class="text-[10px] text-gray-400 whitespace-nowrap mt-0.5">${apPos}</span></div></div>`;
-            let hph = `<div class="flex items-center gap-2 mb-3.5"><div class="w-[22px] flex justify-center shrink-0"><span style="background-color: ${h2}; border: 1px solid ${h2}; color: #ffffff !important;" class="text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">${hBadge}</span></div><div class="${hpf}">${hpim}</div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center gap-x-1"><span class="text-[clamp(11px,3vw,14px)] font-bold text-white whitespace-nowrap tracking-tight shrink">${hp}</span>${hpBat}</div><span class="text-[10px] text-gray-400 whitespace-nowrap mt-0.5">${hpPos}</span></div></div>`;
+
+            // [추가] 선발 투수 전적을 얼굴 라인업 자리에 표시 (시즌 / 상대 맞대결)
+            const starterRecHtml = (name, team, opp, hx) => {
+                if (!name || name === '-') return '';
+                let r = pitcherRecords(name, team, opp);
+                let parts = [];
+                if (r.seasonW + r.seasonL > 0) parts.push(`시즌 ${r.seasonW}승 ${r.seasonL}패`);
+                if (r.vsW + r.vsL > 0) parts.push(`${opp}전 ${r.vsW}승 ${r.vsL}패`);
+                if (!parts.length) return '';
+                return `<span class="text-[9px] font-bold whitespace-nowrap mt-0.5" style="color:${hx}">${parts.join(' · ')}</span>`;
+            };
+            let apRecHtml = isClassic ? '' : starterRecHtml(ap, m.team1, m.team2, h1);
+            let hpRecHtml = isClassic ? '' : starterRecHtml(hp, m.team2, m.team1, h2);
+
+            let aph = `<div class="flex items-center gap-2 mb-3.5"><div class="w-[22px] flex justify-center shrink-0"><span style="background-color: ${h1}; border: 1px solid ${h1}; color: #ffffff !important;" class="text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">${aBadge}</span></div><div class="${apf}">${apim}</div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center gap-x-1"><span class="text-[clamp(11px,3vw,14px)] font-bold text-white whitespace-nowrap tracking-tight shrink">${ap}</span>${apBat}</div><span class="text-[10px] text-gray-400 whitespace-nowrap mt-0.5">${apPos}</span>${apRecHtml}</div></div>`;
+            let hph = `<div class="flex items-center gap-2 mb-3.5"><div class="w-[22px] flex justify-center shrink-0"><span style="background-color: ${h2}; border: 1px solid ${h2}; color: #ffffff !important;" class="text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">${hBadge}</span></div><div class="${hpf}">${hpim}</div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center gap-x-1"><span class="text-[clamp(11px,3vw,14px)] font-bold text-white whitespace-nowrap tracking-tight shrink">${hp}</span>${hpBat}</div><span class="text-[10px] text-gray-400 whitespace-nowrap mt-0.5">${hpPos}</span>${hpRecHtml}</div></div>`;
             
             let abh = (aLineupSrc && aLineupSrc.length > 0) ? aLineupSrc.map((pObj, i) => { 
                 let p = typeof pObj === 'object' && pObj !== null ? pObj.name : pObj;
@@ -2058,7 +2037,7 @@
                 return `<div class="flex items-center gap-2 mb-3.5"><span class="w-[22px] text-center text-[15px] font-black shrink-0" style="color: ${h2}">${i + 1}</span><div class="${pf}">${pim}</div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center gap-x-1"><span class="text-[clamp(11px,3vw,14px)] font-bold text-white whitespace-nowrap tracking-tight shrink">${p}</span>${bat}</div><span class="text-[10px] text-gray-400 whitespace-nowrap mt-0.5">${pos}</span></div></div>`; 
             }).join('') : '<div class="text-center text-xs text-gray-500 py-4">라인업 정보 없음</div>';
             
-            c.innerHTML = sbh + wpb + pm + `<div class="flex w-full pt-1 px-1"><div class="flex-1 flex flex-col pr-2 min-w-0"><div class="flex items-center gap-1.5 mb-3"><div class="w-6 h-6 flex items-center justify-center shrink-0">${lg1}</div><span class="text-[14px] font-bold text-gray-200 truncate">${m.team1}선발</span></div>${aph}<div class="w-full h-px bg-white/5 mb-3.5"></div>${abh}</div><div class="w-px bg-white/10 shrink-0 mx-2 mb-4"></div><div class="flex-1 flex flex-col pl-2 min-w-0"><div class="flex items-center gap-1.5 mb-3"><div class="w-6 h-6 flex items-center justify-center shrink-0">${lg2}</div><span class="text-[14px] font-bold text-gray-200 truncate">${m.team2}선발</span></div>${hph}<div class="w-full h-px bg-white/5 mb-3.5"></div>${hbh}</div></div>`;
+            c.innerHTML = sbh + wpb + `<div class="flex w-full pt-1 px-1"><div class="flex-1 flex flex-col pr-2 min-w-0"><div class="flex items-center gap-1.5 mb-3"><div class="w-6 h-6 flex items-center justify-center shrink-0">${lg1}</div><span class="text-[14px] font-bold text-gray-200 truncate">${m.team1}선발</span></div>${aph}<div class="w-full h-px bg-white/5 mb-3.5"></div>${abh}</div><div class="w-px bg-white/10 shrink-0 mx-2 mb-4"></div><div class="flex-1 flex flex-col pl-2 min-w-0"><div class="flex items-center gap-1.5 mb-3"><div class="w-6 h-6 flex items-center justify-center shrink-0">${lg2}</div><span class="text-[14px] font-bold text-gray-200 truncate">${m.team2}선발</span></div>${hph}<div class="w-full h-px bg-white/5 mb-3.5"></div>${hbh}</div></div>`;
         }
 
         function switchCheerTab(team, type) { const tn = { 'team': '구단', 'player': '선수', 'lineup': '라인업', 'hitout': '안타/아웃', 'entrance': '등장곡' }, pc = team === 'kia' ? 'text-[#EA0029]' : 'text-[#074CA1]'; Object.keys(tn).forEach(t => { const b = document.getElementById(`btn-cheer-${team}-${t}`), c = document.getElementById(`content-cheer-${team}-${t}`); if (!b || !c) return; if (t === type) { b.className = `text-[22px] font-black text-white transition-all whitespace-nowrap`; b.innerHTML = `${tn[t]}<span class="${pc} ml-0.5">.</span>`; c.classList.remove('hidden'); c.classList.add('flex'); } else { b.className = `text-[18px] font-bold text-gray-500 hover:text-gray-300 transition-all whitespace-nowrap`; b.innerHTML = tn[t]; c.classList.add('hidden'); c.classList.remove('flex'); } }); }
