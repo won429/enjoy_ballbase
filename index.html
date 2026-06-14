@@ -163,6 +163,9 @@
         html.light-mode .bn-card .border-white\/5 { border-color: rgba(255,255,255,0.08) !important; }
         html.light-mode .bn-card .border-white\/10 { border-color: rgba(255,255,255,0.12) !important; }
         html.light-mode .bn-card .heat-cell { background: rgba(255,255,255,0.08) !important; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06) !important; }
+        /* 우천취소 도장 — 쾅 찍히는 모션 */
+        @keyframes stamp-pop { 0% { opacity:0; transform: translate(-50%,-50%) rotate(-13deg) scale(2.8); } 55% { opacity:1; } 72% { transform: translate(-50%,-50%) rotate(-13deg) scale(0.88); } 100% { opacity:1; transform: translate(-50%,-50%) rotate(-13deg) scale(1); } }
+        .stamp-pop { animation: stamp-pop 0.5s cubic-bezier(.2,.85,.3,1.2) both; }
 
         html { background-color: #030303; }
         html.light-mode { background-color: #f3f4f6; }
@@ -220,19 +223,28 @@
         html.light-mode .text-\[\#60a5fa\] { color: #2563eb !important; }
         html.light-mode .banner-card .text-\[\#f87171\] { color: #f87171 !important; }
         html.light-mode .banner-card .text-\[\#60a5fa\] { color: #60a5fa !important; }
-        html.light-mode .banner-card .text-white { color: #ffffff !important; }
-        html.light-mode .banner-card .text-white\/40 { color: rgba(255,255,255,0.4) !important; }
-        html.light-mode .banner-card .text-gray-100 { color: #f3f4f6 !important; }
-        html.light-mode .banner-card .text-gray-200 { color: #e5e7eb !important; }
-        html.light-mode .banner-card .text-gray-300 { color: #d1d5db !important; }
-        html.light-mode .banner-card .text-gray-400 { color: #c4cad2 !important; }
-        html.light-mode .banner-card .text-gray-500 { color: #aeb4bd !important; }
-        html.light-mode .banner-card .text-gray-600 { color: #9aa0a8 !important; }
-        html.light-mode .banner-card .text-white\/75, html.light-mode .banner-card .text-white\/70 { color: rgba(255,255,255,0.78) !important; }
-        html.light-mode .banner-card .bg-white\/20 { background-color: rgba(255,255,255,0.2) !important; }
-        html.light-mode .banner-card .border-white\/10 { border-color: rgba(255,255,255,0.1) !important; }
-        html.light-mode .banner-card .border-white\/5 { border-color: rgba(255,255,255,0.05) !important; }
-        html.light-mode body[data-theme="all"] .banner-card .text-point { color: #ffffff !important; text-shadow: 0 0 12px rgba(255,255,255,0.3); }
+        /* 라이트 모드: 홈 배너(스코어보드)를 라이트하게 — 어두운 글자 + 밝은 표면 (다크 모드는 그대로 다크) */
+        html.light-mode .banner-card { background: linear-gradient(180deg, #ffffff 0%, #f4f6f9 100%) !important; }
+        html.light-mode .banner-card .text-white, html.light-mode .banner-card .text-\[\#FFFFFF\] { color: #111827 !important; }
+        html.light-mode .banner-card .text-white\/40 { color: rgba(0,0,0,0.4) !important; }
+        html.light-mode .banner-card .text-white\/50 { color: rgba(0,0,0,0.52) !important; }
+        html.light-mode .banner-card .text-white\/75, html.light-mode .banner-card .text-white\/70 { color: rgba(0,0,0,0.7) !important; }
+        html.light-mode .banner-card .text-gray-100 { color: #1f2937 !important; }
+        html.light-mode .banner-card .text-gray-200 { color: #374151 !important; }
+        html.light-mode .banner-card .text-gray-300 { color: #4b5563 !important; }
+        html.light-mode .banner-card .text-gray-400 { color: #6b7280 !important; }
+        html.light-mode .banner-card .text-gray-500 { color: #9ca3af !important; }
+        html.light-mode .banner-card .text-gray-600 { color: #b0b6bf !important; }
+        html.light-mode .banner-card .bg-\[\#111113\]\/90 { background-color: #f1f3f6 !important; }
+        html.light-mode .banner-card .bg-\[\#0d0d0e\] { background-color: #e6e9ee !important; }
+        html.light-mode .banner-card .bg-\[rgba\(0\2c 0\2c 0\2c 0\.4\)\] { background-color: rgba(0,0,0,0.05) !important; }
+        html.light-mode .banner-card .bg-\[rgba\(255\2c 255\2c 255\2c 0\.3\)\] { background-color: rgba(0,0,0,0.12) !important; }
+        html.light-mode .banner-card .bg-white\/20 { background-color: rgba(0,0,0,0.08) !important; }
+        html.light-mode .banner-card .border-white\/10 { border-color: rgba(0,0,0,0.1) !important; }
+        html.light-mode .banner-card .border-white\/5 { border-color: rgba(0,0,0,0.06) !important; }
+        html.light-mode .banner-card .border-white\/15 { border-color: rgba(0,0,0,0.08) !important; }
+        html.light-mode .banner-card .border-\[rgba\(255\2c 255\2c 255\2c 0\.15\)\] { border-color: rgba(0,0,0,0.08) !important; }
+        html.light-mode body[data-theme="all"] .banner-card .text-point { color: #111827 !important; text-shadow: none; }
     </style>
 </head>
 <body class="w-full h-[100dvh] flex justify-center items-center overflow-hidden app-bg" data-theme="all">
@@ -1262,6 +1274,8 @@
             return `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 ${yShift} -rotate-[13deg] font-black pointer-events-none whitespace-nowrap ${shape} ${z}" style="color:${hex};border-color:${hex};background:${hex}1f;box-shadow:0 2px 8px ${hex}40, inset 0 0 0 1px ${hex}30;text-shadow:0 1px 1px rgba(0,0,0,0.12);">${label}</div>`;
         }
         const STAMP_HEX = { WIN: '#EA0029', LOSE: '#64748B', DRAW: '#10B981', CANCEL: '#3B82F6' };
+        // 스코어보드 위에 쾅 찍히는 큰 도장 (모션 포함)
+        function bigStamp(label, hex) { return `<div class="stamp-pop absolute top-1/2 left-1/2 z-30 font-black pointer-events-none whitespace-nowrap text-[26px] px-5 py-1.5 border-[3px] rounded-tl-[26px] rounded-br-[26px] rounded-tr-md rounded-bl-md tracking-[0.12em]" style="color:${hex};border-color:${hex};background:${hex}26;box-shadow:0 6px 18px ${hex}55, inset 0 0 0 1px ${hex}33;text-shadow:0 1px 2px rgba(0,0,0,0.18);">${label}</div>`; }
 
         // [추가] 홈 Now Brief 피드 — 배너 아래 카드형 콘텐츠
         // 갤럭시 Now Brief 스타일 홈 브리핑 피드 (이모티콘 미사용 · FontAwesome 아이콘/색상/도형만 사용)
@@ -1274,7 +1288,7 @@
             if (!isAll) { cards.push(homeCardHeatmap()); cards.push(homeCardFortune()); }
             cards.push(homeCardRivalBoard());
             cards.push(homeCardMoodWeather());
-            c.innerHTML = `<div class="flex flex-col gap-3">${cards.filter(Boolean).join('')}</div>`;
+            c.innerHTML = `<div class="flex flex-col gap-5">${cards.filter(Boolean).join('')}</div>`;
         }
         // 브리핑 헤더 (인사 + 날짜 + 오늘의 경기 수)
         function briefHeaderCard() {
@@ -1342,7 +1356,7 @@
                 ? `<span class="text-[12px] text-gray-500">아직 직관 기록이 없어요. 탭해서 기록을 남겨보세요</span>`
                 : `<span class="text-[12px] font-bold text-gray-300">직관 ${total}경기 · ${w}승 ${l}패${d ? ' ' + d + '무' : ''}</span><span class="text-[12px] font-black text-white">승률 ${pct}%</span>`;
             let legend = `<div class="flex items-center gap-2.5 text-[9px] text-gray-500"><span class="flex items-center gap-1"><span class="w-[9px] h-[9px] rounded-[2px]" style="background:#22c55e"></span>승</span><span class="flex items-center gap-1"><span class="w-[9px] h-[9px] rounded-[2px]" style="background:#ef4444"></span>패</span><span class="flex items-center gap-1"><span class="w-[9px] h-[9px] rounded-[2px] bg-gray-500"></span>무</span></div>`;
-            return `<div class="bn-card p-4 cursor-pointer" style="${_bnBg(hx)}" onclick="switchTab(1)"><div class="relative z-10">${_cardHead(hx, '직관 히트맵 · ' + t, legend)}<div class="text-[10px] text-gray-500 -mt-1.5 mb-3">최근 13주, 직관 간 날의 승패를 색으로 기록해요</div><div class="flex gap-[3px] overflow-x-auto scrollbar-hide pb-1">${cols}</div><div class="flex items-center justify-between mt-3 flex-wrap gap-1">${summary}</div></div></div>`;
+            return `<div class="px-0.5 cursor-pointer" onclick="switchTab(1)"><div>${_cardHead(hx, '직관 히트맵 · ' + t, legend)}<div class="text-[10px] text-gray-500 -mt-1.5 mb-3">최근 13주, 직관 간 날의 승패를 색으로 기록해요</div><div class="flex gap-[3px] overflow-x-auto scrollbar-hide pb-1">${cols}</div><div class="flex items-center justify-between mt-3 flex-wrap gap-1">${summary}</div></div></div>`;
         }
         // 2) 오늘의 직관 운세
         function homeCardFortune() {
@@ -1374,7 +1388,7 @@
             }
             let bar = `<div class="mt-3 h-2 rounded-full overflow-hidden" style="background:rgba(128,128,128,0.18)"><div class="h-full rounded-full" style="width:${prob}%;background:${pc}"></div></div>`;
             let rightMeta = `<div class="flex items-center gap-1.5 text-[12px] font-bold text-gray-300"><span class="text-point">${when}</span><span>vs ${opp}</span></div>`;
-            return `<div class="bn-card p-4 cursor-pointer" style="${_bnBg(hx)}" onclick="openLineupPopup('${g.id}')"><div class="relative z-10">${_cardHead(pc, '오늘의 직관 운세', rightMeta)}<div class="flex items-baseline gap-2"><span class="text-[34px] font-black leading-none" style="color:${pc}">${prob}</span><span class="text-[14px] font-black" style="color:${pc}">%</span><span class="text-[11px] font-bold text-gray-500 ml-0.5">행운 지수</span></div>${bar}<div class="text-[12px] font-bold text-gray-300 mt-2.5 leading-snug">${phrase}</div>${songRow}</div></div>`;
+            return `<div class="px-0.5 cursor-pointer" onclick="openLineupPopup('${g.id}')"><div>${_cardHead(pc, '오늘의 직관 운세', rightMeta)}<div class="flex items-baseline gap-2"><span class="text-[34px] font-black leading-none" style="color:${pc}">${prob}</span><span class="text-[14px] font-black" style="color:${pc}">%</span><span class="text-[11px] font-bold text-gray-500 ml-0.5">행운 지수</span></div>${bar}<div class="text-[12px] font-bold text-gray-300 mt-2.5 leading-snug">${phrase}</div>${songRow}</div></div>`;
         }
         // 3) 라이벌 전광판 (KIA vs 삼성)
         function homeCardRivalBoard() {
@@ -1405,7 +1419,7 @@
             }
             let col = (team, rank) => `<div class="flex flex-col items-center gap-1 w-[34%]"><img src="${teamLogos[team]}" class="w-11 h-11 object-contain"><span class="text-[13px] font-black text-white">${team}</span>${rank ? `<span class="text-[10px] font-bold text-gray-500">${rank}위</span>` : ''}</div>`;
             let center = `<div class="flex flex-col items-center gap-0.5 flex-1"><div class="flex items-baseline gap-1.5"><span class="text-[26px] font-black leading-none text-white">${h.hw}</span><span class="text-[15px] font-black text-gray-500">:</span><span class="text-[26px] font-black leading-none text-white">${h.aw}</span></div><span class="text-[9px] font-bold text-gray-400 tracking-wide">시즌 상대전적</span></div>`;
-            return `<div class="bn-card p-4" style="${_bnBg2(teamHex[A], teamHex[B])}"><div class="relative z-10">${_cardHead('#cbd5e1', '라이벌 전광판', `<span class="text-[10px] text-gray-400">KIA vs 삼성</span>`)}<div class="flex items-center justify-between mb-3">${col(A, rA)}${center}${col(B, rB)}</div><div class="flex items-center gap-1.5 text-[11px] font-bold pt-2.5 border-t border-white/5 mb-1.5"><i class="fa-regular fa-calendar text-gray-500 text-[10px]"></i>${nextHtml}</div><div class="flex items-center gap-1.5 text-[11px]"><i class="fa-regular fa-comment-dots text-gray-500 text-[10px]"></i><span class="text-gray-300 font-bold">${provoke}</span></div></div></div>`;
+            return `<div class="px-0.5"><div>${_cardHead(null, '라이벌 전광판', `<span class="text-[10px] text-gray-500">KIA vs 삼성</span>`, 'bg-point')}<div class="flex items-center justify-between mb-3">${col(A, rA)}${center}${col(B, rB)}</div><div class="flex items-center gap-1.5 text-[11px] font-bold pt-2.5 border-t border-white/5 mb-1.5"><i class="fa-regular fa-calendar text-gray-500 text-[10px]"></i>${nextHtml}</div><div class="flex items-center gap-1.5 text-[11px]"><i class="fa-regular fa-comment-dots text-gray-500 text-[10px]"></i><span class="text-gray-300 font-bold">${provoke}</span></div></div></div>`;
         }
         // 4) 우리 팀 기분 날씨
         function homeCardMoodWeather() {
@@ -1437,9 +1451,8 @@
                 return `<div class="flex items-center gap-3 py-1"><div class="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0" style="background:${col}1f"><i class="fa-solid ${icon} text-[18px]" style="color:${col}"></i></div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-baseline gap-1.5"><span class="text-[14px] font-black text-white">${t}</span><span class="text-[12px] font-black" style="color:${col}">${label}</span></div><span class="text-[11px] text-gray-400 truncate">${msg}</span></div><div class="flex items-center gap-1 shrink-0">${dots}</div></div>`;
             }).join('<div class="h-px bg-white/5 my-1"></div>');
             let isTeam = (selectedTeam === 'KIA' || selectedTeam === '삼성');
-            let bg = isTeam ? _bnBg(teamHex[selectedTeam]) : `background:#161618;`;
-            let head = isTeam ? _cardHead(teamHex[selectedTeam], '팀 기분 날씨', '') : _cardHead('#cbd5e1', '팀 기분 날씨', `<span class="text-[10px] text-gray-400">전 구단</span>`);
-            return `<div class="bn-card p-4" style="${bg}"><div class="relative z-10">${head}${rows}</div></div>`;
+            let head = isTeam ? _cardHead(teamHex[selectedTeam], '팀 기분 날씨', '') : _cardHead(null, '팀 기분 날씨', `<span class="text-[10px] text-gray-500">전 구단</span>`, 'bg-point');
+            return `<div class="px-0.5"><div>${head}${rows}</div></div>`;
         }
 
         function renderCalendar() {
@@ -1885,19 +1898,20 @@
 
                         div.className = 'min-w-full shrink-0 snap-center transition-transform duration-300 active:scale-[0.98] py-1 flex flex-col'; div.style.cssText = 'border-top: none !important; border-bottom: none !important;';
                         
-                        // [재디자인] 경기전 = 경기중 전광판과 동일한 프레임 / 취소 등은 컴팩트 유지
-                        if (l.gameStatus === '경기전' && !iC) {
+                        // 경기전·취소 모두 경기중 전광판과 동일한 프레임 (취소 시 우천취소 도장 쾅)
+                        {
                             let bgStylePre = isDalBanner ? `background: radial-gradient(ellipse at top, #1E3A8A, #0A1128, #02040A);` : `background: linear-gradient(to right, ${h1}E6 0%, #18181b 45%, #18181b 55%, ${h2}E6 100%);`;
                             let dash9 = '<div>-</div>'.repeat(9);
-                            let preCenter = `<div class="flex flex-col items-center justify-center leading-none"><span class="text-[19px] font-black text-white drop-shadow-md tracking-tighter">${m.time}</span><span class="text-[9px] font-bold text-gray-300 tracking-[0.2em] mt-1">경기예정</span></div>`;
+                            let preCenter = iC
+                                ? `<div class="flex flex-col items-center justify-center leading-none"><span class="text-[15px] font-black text-white drop-shadow-md tracking-widest">${m.time || ''}</span><span class="text-[9px] font-bold text-gray-300 tracking-[0.2em] mt-1">경기취소</span></div>`
+                                : `<div class="flex flex-col items-center justify-center leading-none"><span class="text-[19px] font-black text-white drop-shadow-md tracking-tighter">${m.time}</span><span class="text-[9px] font-bold text-gray-300 tracking-[0.2em] mt-1">경기예정</span></div>`;
                             let aPit = `<span class="text-[10px] font-bold text-gray-300 shrink-0">선발</span><span class="text-[11px] font-bold text-white drop-shadow-md tracking-tight truncate">${ap}</span>`;
                             let hPit = `<span class="text-[11px] font-bold text-white drop-shadow-md tracking-tight truncate text-right">${hp}</span><span class="text-[10px] font-bold text-gray-300 shrink-0">선발</span>`;
                             let wpb = winProbBarMini(m, l);
-                            let wpBand = wpb ? `<div class="relative z-10 w-full bg-[#111113]/90 backdrop-blur-md px-3 pt-1.5 pb-2.5 border-t border-[rgba(255,255,255,0.15)]"><div class="text-[9px] font-bold text-white/70 mb-1.5 px-0.5">예상 승리 확률 <span class="text-white/50">with 엔조이 비서실장</span></div>${wpb}</div>` : '';
+                            let wpBand = (wpb && !iC) ? `<div class="relative z-10 w-full bg-[#111113]/90 backdrop-blur-md px-3 pt-1.5 pb-2.5 border-t border-[rgba(255,255,255,0.15)]"><div class="text-[9px] font-bold text-white/70 mb-1.5 px-0.5">예상 승리 확률 <span class="text-white/50">with 엔조이 비서실장</span></div>${wpb}</div>` : '';
+                            let cancelOverlay = iC ? `<div class="absolute inset-0 z-20 pointer-events-none" style="background:rgba(110,110,120,0.18)"></div>${bigStamp('우천취소', STAMP_HEX.CANCEL)}` : '';
                             let bottomInfoHtml = `<div class="w-full flex justify-end mt-2 px-1"><span class="text-white font-bold text-[11px] tracking-tight">${m.stadium}${bcName ? ' <span class="text-gray-500 mx-1.5 font-normal">|</span> ' + bcName : ''}</span></div>`;
-                            div.innerHTML = `<div class="banner-card w-full relative overflow-hidden shadow-2xl flex flex-col border-y border-white/15" style="${bgStylePre}">${dalBadge}${centerDalLogo2}<img src="${smImg1}" class="absolute -left-6 top-[24%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><img src="${smImg2}" class="absolute -right-6 top-[24%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><div class="flex justify-between items-center px-5 py-2 relative z-10 h-[62px]"><div class="flex items-center gap-2 w-[36%]"><span class="text-[24px] font-black text-white tracking-tighter drop-shadow-md">${m.team1}</span>${r1Num ? `<span class="text-[12px] font-bold text-gray-200 ml-auto">${r1Num}위</span>` : ''}</div><div class="flex flex-col items-center justify-center w-[28%]">${preCenter}</div><div class="flex items-center gap-2 w-[36%] justify-end">${r2Num ? `<span class="text-[12px] font-bold text-gray-200 mr-auto">${r2Num}위</span>` : ''}<span class="text-[24px] font-black text-white tracking-tighter drop-shadow-md">${m.team2}</span></div></div><div class="w-full h-px bg-[rgba(255,255,255,0.3)] relative z-10"></div><div class="flex justify-between items-center bg-[rgba(0,0,0,0.4)] relative z-10 h-[28px]"><div class="flex items-center gap-2 w-[36%] pl-5">${aPit}</div><div class="flex items-center justify-center bg-[#0d0d0e] h-full w-[28%]" style="border-left: 1px solid rgba(255,255,255,0.2); border-right: 1px solid rgba(255,255,255,0.2);"><span class="text-[11px] font-black text-gray-400 italic tracking-tighter">VS</span></div><div class="flex items-center justify-end gap-2 w-[36%] pr-5">${hPit}</div></div><div class="w-full bg-[#111113]/90 flex flex-col pt-1.5 pb-2 px-3 relative z-10 border-t border-[rgba(255,255,255,0.15)] backdrop-blur-md"><div class="grid grid-cols-[42px_1fr_75px] gap-2 w-full text-[10px] font-bold text-center"><div class="text-gray-400 text-left pl-2">팀명</div><div class="grid grid-cols-9 text-gray-400"><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div></div><div class="grid grid-cols-4 text-[#60A5FA]"><div class="font-black">R</div><div>H</div><div>E</div><div>B</div></div><div class="text-white text-left pl-2 truncate mt-1">${m.team1}</div><div class="grid grid-cols-9 text-gray-500 mt-1">${dash9}</div><div class="grid grid-cols-4 text-gray-500 mt-1"><div>-</div><div>-</div><div>-</div><div>-</div></div><div class="text-white text-left pl-2 truncate mt-0.5">${m.team2}</div><div class="grid grid-cols-9 text-gray-500 mt-0.5">${dash9}</div><div class="grid grid-cols-4 text-gray-500 mt-0.5"><div>-</div><div>-</div><div>-</div><div>-</div></div></div></div>${wpBand}</div>${bottomInfoHtml}`;
-                        } else {
-                            div.innerHTML = `<div class="banner-card w-full bg-[#161618] relative overflow-hidden px-5 py-4 shadow-xl flex flex-col justify-center gap-3.5"><div class="absolute inset-0 pointer-events-none z-0" style="background: ${bgGradient};"></div>${dalBadge}${centerDalLogo2}<div class="flex justify-between items-center z-10 w-full"><div class="flex items-center"><span class="${statusColor} font-black text-[13px] flex items-center gap-1.5 tracking-tight"><span class="w-1.5 h-1.5 rounded-full ${dotColor}"></span>${statusText}</span><span class="text-gray-600 text-[11px] mx-2.5 mb-px">|</span><span class="text-gray-400 font-bold text-[13px] tracking-tight">${m.stadium}</span></div>${bcHtml}</div><div class="flex justify-between items-center z-10 w-full ${iC ? 'opacity-50 grayscale' : ''}"><div class="flex flex-col w-[35%] gap-2"><div class="flex items-center gap-1.5"><div class="relative shrink-0 flex items-center justify-center"><img src="${smImg1}" class="w-[34px] h-[34px] object-contain drop-shadow-md">${rank1Html}</div><span class="text-[18px] font-black text-white tracking-tight whitespace-nowrap">${m.team1}</span>${winMark1}</div>${!iC ? `<div class="flex items-center gap-1.5 pl-1 opacity-90">${apim}<span class="text-[11px] font-semibold text-gray-400 truncate w-full pt-0.5">${ap}</span></div>` : ''}</div><div class="flex justify-center flex-1"><div class="flex items-center justify-center pt-0.5">${scoreHtml}</div></div><div class="flex flex-col w-[35%] items-end gap-2 text-right"><div class="flex items-center justify-end gap-1.5">${winMark2}<span class="text-[18px] font-black text-white tracking-tight whitespace-nowrap">${m.team2}</span><div class="relative shrink-0 flex items-center justify-center"><img src="${smImg2}" class="w-[34px] h-[34px] object-contain drop-shadow-md">${rank2Html}</div></div>${!iC ? `<div class="flex items-center justify-end gap-1.5 pr-1 opacity-90"><span class="text-[11px] font-semibold text-gray-400 truncate w-full text-right pt-0.5">${hp}</span>${hpim}</div>` : ''}</div></div>${winProbBarMini(m, l)}</div>`;
+                            div.innerHTML = `<div class="banner-card w-full relative overflow-hidden shadow-2xl flex flex-col border-y border-white/15" style="${bgStylePre}">${dalBadge}${centerDalLogo2}<img src="${smImg1}" class="absolute -left-6 top-[24%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><img src="${smImg2}" class="absolute -right-6 top-[24%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><div class="flex justify-between items-center px-5 py-2 relative z-10 h-[62px]"><div class="flex items-center gap-2 w-[36%]"><span class="text-[24px] font-black text-white tracking-tighter drop-shadow-md">${m.team1}</span>${r1Num ? `<span class="text-[12px] font-bold text-gray-200 ml-auto">${r1Num}위</span>` : ''}</div><div class="flex flex-col items-center justify-center w-[28%]">${preCenter}</div><div class="flex items-center gap-2 w-[36%] justify-end">${r2Num ? `<span class="text-[12px] font-bold text-gray-200 mr-auto">${r2Num}위</span>` : ''}<span class="text-[24px] font-black text-white tracking-tighter drop-shadow-md">${m.team2}</span></div></div><div class="w-full h-px bg-[rgba(255,255,255,0.3)] relative z-10"></div><div class="flex justify-between items-center bg-[rgba(0,0,0,0.4)] relative z-10 h-[28px]"><div class="flex items-center gap-2 w-[36%] pl-5">${aPit}</div><div class="flex items-center justify-center bg-[#0d0d0e] h-full w-[28%]" style="border-left: 1px solid rgba(255,255,255,0.2); border-right: 1px solid rgba(255,255,255,0.2);"><span class="text-[11px] font-black text-gray-400 italic tracking-tighter">VS</span></div><div class="flex items-center justify-end gap-2 w-[36%] pr-5">${hPit}</div></div><div class="w-full bg-[#111113]/90 flex flex-col pt-1.5 pb-2 px-3 relative z-10 border-t border-[rgba(255,255,255,0.15)] backdrop-blur-md"><div class="grid grid-cols-[42px_1fr_75px] gap-2 w-full text-[10px] font-bold text-center"><div class="text-gray-400 text-left pl-2">팀명</div><div class="grid grid-cols-9 text-gray-400"><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div></div><div class="grid grid-cols-4 text-[#60A5FA]"><div class="font-black">R</div><div>H</div><div>E</div><div>B</div></div><div class="text-white text-left pl-2 truncate mt-1">${m.team1}</div><div class="grid grid-cols-9 text-gray-500 mt-1">${dash9}</div><div class="grid grid-cols-4 text-gray-500 mt-1"><div>-</div><div>-</div><div>-</div><div>-</div></div><div class="text-white text-left pl-2 truncate mt-0.5">${m.team2}</div><div class="grid grid-cols-9 text-gray-500 mt-0.5">${dash9}</div><div class="grid grid-cols-4 text-gray-500 mt-0.5"><div>-</div><div>-</div><div>-</div><div>-</div></div></div></div>${wpBand}${cancelOverlay}</div>${bottomInfoHtml}`;
                         }
                     }
                 }
@@ -2099,7 +2113,8 @@
                         </div>
                     </div>
                 </div>`;
-                
+                if (iC) sbh = sbh.replace(/<\/div>\s*$/, bigStamp('우천취소', STAMP_HEX.CANCEL) + '</div>');
+
                 if (m.date.startsWith('2026-05')) {
                     sbh += `<div class="w-full mb-5">
                         <button onclick="openTicketPopup('${m.date}')" class="w-full bg-gradient-to-r from-[#0B132B] to-[#1E3A8A]/40 border border-blue-500/30 shadow-[0_4px_12px_rgba(37,99,235,0.15)] text-blue-50 text-[14px] font-black tracking-tight py-3.5 rounded-2xl flex items-center justify-center gap-2 active:scale-[0.98] transition-all" style="color: #ffffff !important;">
@@ -2278,8 +2293,9 @@
                         </div>
                     </div>
                 </div>`;
+                if (iC) sbh = sbh.replace(/<\/div>\s*$/, bigStamp('우천취소', STAMP_HEX.CANCEL) + '</div>');
             }
-            
+
             // [추가] 스코어보드 밑 승리 확률 막대 (클래식 테마는 레트로 디자인 유지 위해 제외)
             let wpb = isClassic ? '' : winProbBarHtml(m, l);
 
