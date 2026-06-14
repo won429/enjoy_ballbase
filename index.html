@@ -57,45 +57,82 @@
         #app-header-shell {
             position: relative;
             pointer-events: auto;
-            transition: width 0.48s cubic-bezier(0.22, 1, 0.36, 1), transform 0.48s cubic-bezier(0.22, 1, 0.36, 1), padding 0.48s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+            margin-left: auto;
+            margin-right: auto;
+            transition: width 0.44s cubic-bezier(0.22, 1, 0.36, 1), transform 0.44s cubic-bezier(0.22, 1, 0.36, 1), padding 0.44s cubic-bezier(0.22, 1, 0.36, 1), gap 0.44s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.3s ease, border-color 0.3s ease, border-radius 0.44s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
         }
         #app-header-shell > * { position: relative; z-index: 2; }
         #app-header.home-header-compact #app-header-shell {
-            width: min(370px, calc(100% - 8px));
-            padding: 4px 7px;
-            border: 1px solid rgba(255,255,255,0.12);
+            width: min(344px, calc(100% - 24px));
+            gap: 5px;
+            padding: 3px 8px;
+            border: 1px solid rgba(255,255,255,0.10);
             border-radius: 999px;
-            background: rgba(13,15,19,0.88);
-            box-shadow: 0 10px 28px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.10);
-            backdrop-filter: blur(22px) saturate(170%);
-            -webkit-backdrop-filter: blur(22px) saturate(170%);
-            transform: translateY(3px) scale(0.965);
+            background: rgba(18,20,24,0.92);
+            box-shadow: 0 7px 20px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.07);
+            backdrop-filter: blur(18px) saturate(145%);
+            -webkit-backdrop-filter: blur(18px) saturate(145%);
+            transform: translateY(2px);
             overflow: hidden;
         }
         #app-header.home-header-compact #app-header-shell::after {
-            content: '';
-            position: absolute;
-            z-index: 1;
-            inset: 0;
-            pointer-events: none;
-            background: linear-gradient(105deg, transparent 25%, rgba(255,255,255,0.12) 48%, transparent 70%);
-            transform: translateX(-115%);
-            animation: header-pill-sheen 0.72s ease-out 1;
+            content: none;
+        }
+        #app-header.home-header-compact #left-wrapper {
+            flex: 1 1 176px;
+            height: 30px;
+            min-width: 0;
+        }
+        #app-header.home-header-compact #header-calendar-nav {
+            height: 30px;
+        }
+        #app-header.home-header-compact #header-calendar-nav button.bg-point {
+            width: 24px !important;
+            height: 24px !important;
+        }
+        #app-header.home-header-compact #header-calendar-nav button i {
+            font-size: 9px !important;
+        }
+        #app-header.home-header-compact #calendar-title {
+            padding-left: 2px;
+            padding-right: 2px;
+            font-size: 12px !important;
+            letter-spacing: -0.45px;
+        }
+        #app-header.home-header-compact #ctrl-wrapper {
+            height: 30px;
+            padding-left: 7px !important;
+            border-left: 1px solid rgba(255,255,255,0.10) !important;
+            border-radius: 0 !important;
+        }
+        #app-header.home-header-compact #ctrl-team {
+            height: 30px;
+            gap: 0 !important;
+        }
+        #app-header.home-header-compact #ctrl-team button {
+            height: 28px;
+            padding: 4px 5px 6px !important;
+            font-size: 10px !important;
         }
         #app-header.home-header-compact #calendar-title { color: #f8fafc !important; }
         #app-header.home-header-compact #ctrl-team button { color: #9aa3af !important; }
         #app-header.home-header-compact #ctrl-team button.bg-point { color: var(--point-color) !important; }
-        html.light-mode #app-header.home-header-compact #app-header-shell {
-            border-color: rgba(15,23,42,0.10);
-            background: rgba(255,255,255,0.90);
-            box-shadow: 0 10px 30px rgba(15,23,42,0.14), inset 0 1px 0 rgba(255,255,255,0.85);
+        #app-header.home-header-compact #ctrl-team button.bg-point::after {
+            left: 5px;
+            right: 5px;
+            bottom: 1px;
+            height: 2px;
         }
+        html.light-mode #app-header.home-header-compact #app-header-shell {
+            border-color: rgba(15,23,42,0.09);
+            background: rgba(255,255,255,0.94);
+            box-shadow: 0 7px 20px rgba(15,23,42,0.11), inset 0 1px 0 rgba(255,255,255,0.90);
+        }
+        html.light-mode #app-header.home-header-compact #ctrl-wrapper { border-left-color: rgba(15,23,42,0.09) !important; }
         html.light-mode #app-header.home-header-compact #calendar-title { color: #111827 !important; }
         html.light-mode #app-header.home-header-compact #ctrl-team button { color: #8b95a1 !important; }
-        @keyframes header-pill-sheen { to { transform: translateX(115%); } }
         @media (prefers-reduced-motion: reduce) {
             #app-header-shell { transition-duration: 0.01ms !important; }
-            #app-header.home-header-compact #app-header-shell::after { animation: none !important; }
         }
         /* [수정] 라이트모드에서 .bg-point 내부 아이콘이 흰색으로 강제돼 안 보이던 문제 — 네비/뒤로가기 아이콘을 포인트 컬러로 */
         html.light-mode #header-calendar-nav button.bg-point i, html.light-mode #ctrl-back button i { color: var(--point-color) !important; }
