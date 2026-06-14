@@ -149,6 +149,20 @@
         /* 직관 히트맵 빈 칸 — 라이트/다크 모두에서 격자가 보이도록 */
         .heat-cell { background: rgba(255,255,255,0.07); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06); }
         html.light-mode .heat-cell { background: rgba(0,0,0,0.06); box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05); }
+        /* 배너와 동일한 다크 프리미엄 홈 카드 — 라이트 모드에서도 다크 유지하고 글자/아이콘은 항상 밝게 */
+        .bn-card { position: relative; border-radius: 18px; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 8px 28px rgba(0,0,0,0.35); }
+        html.light-mode .bn-card { box-shadow: 0 8px 22px rgba(0,0,0,0.14); border-color: rgba(255,255,255,0.1); }
+        html.light-mode .bn-card .text-white { color: #ffffff !important; }
+        html.light-mode .bn-card .text-gray-200 { color: #e5e7eb !important; }
+        html.light-mode .bn-card .text-gray-300 { color: #d1d5db !important; }
+        html.light-mode .bn-card .text-gray-400 { color: #9ca3af !important; }
+        html.light-mode .bn-card .text-gray-500 { color: #7c8694 !important; }
+        html.light-mode .bn-card .text-gray-600 { color: #6b7280 !important; }
+        .bn-card .text-point { color: #ffffff !important; }
+        html.light-mode .bn-card .bg-white\/5 { background-color: rgba(255,255,255,0.05) !important; }
+        html.light-mode .bn-card .border-white\/5 { border-color: rgba(255,255,255,0.08) !important; }
+        html.light-mode .bn-card .border-white\/10 { border-color: rgba(255,255,255,0.12) !important; }
+        html.light-mode .bn-card .heat-cell { background: rgba(255,255,255,0.08) !important; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06) !important; }
 
         html { background-color: #030303; }
         html.light-mode { background-color: #f3f4f6; }
@@ -1293,10 +1307,9 @@
             });
             return map;
         }
-        // [통일] 경기중 배너 톤의 프리미엄 카드 요소 — 팀컬러 그라데이션 워시 + 상태 점 헤더
-        //   워시는 알파를 낮게 둬 라이트(흰 카드)·다크(글래스) 모두에서 본문 글자/아이콘 대비를 해치지 않음
-        function _cardWash(hex) { return `<div class="absolute inset-0 pointer-events-none z-0" style="background:linear-gradient(135deg, ${hex}1f 0%, ${hex}0d 36%, transparent 70%)"></div>`; }
-        function _cardWash2(h1, h2) { return `<div class="absolute inset-0 pointer-events-none z-0" style="background:linear-gradient(120deg, ${h1}26 0%, ${h1}0a 28%, transparent 50%, ${h2}0a 72%, ${h2}26 100%)"></div>`; }
+        // [통일] 경기중 전광판 배너와 동일한 다크 프리미엄 카드 — 팀컬러를 헤더쪽에 얹은 다크 베이스 + 상태 점 헤더
+        function _bnBg(hex) { return `background: linear-gradient(160deg, ${hex}CC 0%, #1b1b1e 27%, #161618 76%);`; }
+        function _bnBg2(h1, h2) { return `background: linear-gradient(to right, ${h1}D9 0%, #18181b 44%, #18181b 56%, ${h2}D9 100%);`; }
         function _cardHead(dot, label, right, dotClass) { return `<div class="flex items-center justify-between mb-3"><div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full ${dotClass || ''}"${dot ? ` style="background:${dot}"` : ''}></span><span class="text-[13px] font-extrabold text-white tracking-tight">${label}</span></div>${right || ''}</div>`; }
         // 1) 직관 히트맵 (잔디형 그리드)
         function homeCardHeatmap() {
@@ -1327,9 +1340,9 @@
             let tot = w + l, pct = tot ? Math.round(w / tot * 100) : 0, total = w + l + d;
             let summary = total === 0
                 ? `<span class="text-[12px] text-gray-500">아직 직관 기록이 없어요. 탭해서 기록을 남겨보세요</span>`
-                : `<span class="text-[12px] font-bold text-gray-300">직관 ${total}경기 · ${w}승 ${l}패${d ? ' ' + d + '무' : ''}</span><span class="text-[12px] font-black" style="color:${hx}">승률 ${pct}%</span>`;
+                : `<span class="text-[12px] font-bold text-gray-300">직관 ${total}경기 · ${w}승 ${l}패${d ? ' ' + d + '무' : ''}</span><span class="text-[12px] font-black text-white">승률 ${pct}%</span>`;
             let legend = `<div class="flex items-center gap-2.5 text-[9px] text-gray-500"><span class="flex items-center gap-1"><span class="w-[9px] h-[9px] rounded-[2px]" style="background:#22c55e"></span>승</span><span class="flex items-center gap-1"><span class="w-[9px] h-[9px] rounded-[2px]" style="background:#ef4444"></span>패</span><span class="flex items-center gap-1"><span class="w-[9px] h-[9px] rounded-[2px] bg-gray-500"></span>무</span></div>`;
-            return `<div class="home-card relative overflow-hidden p-4 cursor-pointer" onclick="switchTab(1)"><div class="relative z-10">${_cardHead(hx, '직관 히트맵 · ' + t, legend)}<div class="text-[10px] text-gray-500 -mt-1.5 mb-3">최근 13주, 직관 간 날의 승패를 색으로 기록해요</div><div class="flex gap-[3px] overflow-x-auto scrollbar-hide pb-1">${cols}</div><div class="flex items-center justify-between mt-3 flex-wrap gap-1">${summary}</div></div></div>`;
+            return `<div class="bn-card p-4 cursor-pointer" style="${_bnBg(hx)}" onclick="switchTab(1)"><div class="relative z-10">${_cardHead(hx, '직관 히트맵 · ' + t, legend)}<div class="text-[10px] text-gray-500 -mt-1.5 mb-3">최근 13주, 직관 간 날의 승패를 색으로 기록해요</div><div class="flex gap-[3px] overflow-x-auto scrollbar-hide pb-1">${cols}</div><div class="flex items-center justify-between mt-3 flex-wrap gap-1">${summary}</div></div></div>`;
         }
         // 2) 오늘의 직관 운세
         function homeCardFortune() {
@@ -1361,7 +1374,7 @@
             }
             let bar = `<div class="mt-3 h-2 rounded-full overflow-hidden" style="background:rgba(128,128,128,0.18)"><div class="h-full rounded-full" style="width:${prob}%;background:${pc}"></div></div>`;
             let rightMeta = `<div class="flex items-center gap-1.5 text-[12px] font-bold text-gray-300"><span class="text-point">${when}</span><span>vs ${opp}</span></div>`;
-            return `<div class="home-card relative overflow-hidden p-4 cursor-pointer" onclick="openLineupPopup('${g.id}')"><div class="relative z-10">${_cardHead(pc, '오늘의 직관 운세', rightMeta)}<div class="flex items-baseline gap-2"><span class="text-[34px] font-black leading-none" style="color:${pc}">${prob}</span><span class="text-[14px] font-black" style="color:${pc}">%</span><span class="text-[11px] font-bold text-gray-500 ml-0.5">행운 지수</span></div>${bar}<div class="text-[12px] font-bold text-gray-300 mt-2.5 leading-snug">${phrase}</div>${songRow}</div></div>`;
+            return `<div class="bn-card p-4 cursor-pointer" style="${_bnBg(hx)}" onclick="openLineupPopup('${g.id}')"><div class="relative z-10">${_cardHead(pc, '오늘의 직관 운세', rightMeta)}<div class="flex items-baseline gap-2"><span class="text-[34px] font-black leading-none" style="color:${pc}">${prob}</span><span class="text-[14px] font-black" style="color:${pc}">%</span><span class="text-[11px] font-bold text-gray-500 ml-0.5">행운 지수</span></div>${bar}<div class="text-[12px] font-bold text-gray-300 mt-2.5 leading-snug">${phrase}</div>${songRow}</div></div>`;
         }
         // 3) 라이벌 전광판 (KIA vs 삼성)
         function homeCardRivalBoard() {
@@ -1391,8 +1404,8 @@
                 provoke = '올 시즌 라이벌전 데이터를 기다리는 중';
             }
             let col = (team, rank) => `<div class="flex flex-col items-center gap-1 w-[34%]"><img src="${teamLogos[team]}" class="w-11 h-11 object-contain"><span class="text-[13px] font-black text-white">${team}</span>${rank ? `<span class="text-[10px] font-bold text-gray-500">${rank}위</span>` : ''}</div>`;
-            let center = `<div class="flex flex-col items-center gap-0.5 flex-1"><div class="flex items-baseline gap-1.5"><span class="text-[26px] font-black leading-none" style="color:${teamHex[A]}">${h.hw}</span><span class="text-[15px] font-black text-gray-600">:</span><span class="text-[26px] font-black leading-none" style="color:${teamHex[B]}">${h.aw}</span></div><span class="text-[9px] font-bold text-gray-500 tracking-wide">시즌 상대전적</span></div>`;
-            return `<div class="home-card relative overflow-hidden p-4"><div class="relative z-10">${_cardHead(null, '라이벌 전광판', `<span class="text-[10px] text-gray-500">KIA vs 삼성</span>`, 'bg-point')}<div class="flex items-center justify-between mb-3">${col(A, rA)}${center}${col(B, rB)}</div><div class="flex items-center gap-1.5 text-[11px] font-bold pt-2.5 border-t border-white/5 mb-1.5"><i class="fa-regular fa-calendar text-gray-500 text-[10px]"></i>${nextHtml}</div><div class="flex items-center gap-1.5 text-[11px]"><i class="fa-regular fa-comment-dots text-gray-500 text-[10px]"></i><span class="text-gray-300 font-bold">${provoke}</span></div></div></div>`;
+            let center = `<div class="flex flex-col items-center gap-0.5 flex-1"><div class="flex items-baseline gap-1.5"><span class="text-[26px] font-black leading-none text-white">${h.hw}</span><span class="text-[15px] font-black text-gray-500">:</span><span class="text-[26px] font-black leading-none text-white">${h.aw}</span></div><span class="text-[9px] font-bold text-gray-400 tracking-wide">시즌 상대전적</span></div>`;
+            return `<div class="bn-card p-4" style="${_bnBg2(teamHex[A], teamHex[B])}"><div class="relative z-10">${_cardHead('#cbd5e1', '라이벌 전광판', `<span class="text-[10px] text-gray-400">KIA vs 삼성</span>`)}<div class="flex items-center justify-between mb-3">${col(A, rA)}${center}${col(B, rB)}</div><div class="flex items-center gap-1.5 text-[11px] font-bold pt-2.5 border-t border-white/5 mb-1.5"><i class="fa-regular fa-calendar text-gray-500 text-[10px]"></i>${nextHtml}</div><div class="flex items-center gap-1.5 text-[11px]"><i class="fa-regular fa-comment-dots text-gray-500 text-[10px]"></i><span class="text-gray-300 font-bold">${provoke}</span></div></div></div>`;
         }
         // 4) 우리 팀 기분 날씨
         function homeCardMoodWeather() {
@@ -1424,8 +1437,9 @@
                 return `<div class="flex items-center gap-3 py-1"><div class="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0" style="background:${col}1f"><i class="fa-solid ${icon} text-[18px]" style="color:${col}"></i></div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-baseline gap-1.5"><span class="text-[14px] font-black text-white">${t}</span><span class="text-[12px] font-black" style="color:${col}">${label}</span></div><span class="text-[11px] text-gray-400 truncate">${msg}</span></div><div class="flex items-center gap-1 shrink-0">${dots}</div></div>`;
             }).join('<div class="h-px bg-white/5 my-1"></div>');
             let isTeam = (selectedTeam === 'KIA' || selectedTeam === '삼성');
-            let head = isTeam ? _cardHead(teamHex[selectedTeam], '팀 기분 날씨', '') : _cardHead(null, '팀 기분 날씨', `<span class="text-[10px] text-gray-500">전 구단</span>`, 'bg-point');
-            return `<div class="home-card relative overflow-hidden p-4"><div class="relative z-10">${head}${rows}</div></div>`;
+            let bg = isTeam ? _bnBg(teamHex[selectedTeam]) : `background:#161618;`;
+            let head = isTeam ? _cardHead(teamHex[selectedTeam], '팀 기분 날씨', '') : _cardHead('#cbd5e1', '팀 기분 날씨', `<span class="text-[10px] text-gray-400">전 구단</span>`);
+            return `<div class="bn-card p-4" style="${bg}"><div class="relative z-10">${head}${rows}</div></div>`;
         }
 
         function renderCalendar() {
