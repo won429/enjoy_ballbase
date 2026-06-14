@@ -53,6 +53,50 @@
         #header-calendar-nav button.bg-point { background: transparent !important; background-color: transparent !important; background-image: none !important; box-shadow: none !important; color: var(--point-color) !important; width: 30px !important; height: 30px !important; }
         #header-calendar-nav button.bg-point:active { transform: scale(0.85); }
         #ctrl-back button { background: transparent !important; background-color: transparent !important; background-image: none !important; box-shadow: none !important; color: var(--point-color) !important; border-radius: 0 !important; padding: 4px 4px !important; font-weight: 700 !important; }
+        #app-header { pointer-events: none; }
+        #app-header-shell {
+            position: relative;
+            pointer-events: auto;
+            transition: width 0.48s cubic-bezier(0.22, 1, 0.36, 1), transform 0.48s cubic-bezier(0.22, 1, 0.36, 1), padding 0.48s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+        }
+        #app-header-shell > * { position: relative; z-index: 2; }
+        #app-header.home-header-compact #app-header-shell {
+            width: min(370px, calc(100% - 8px));
+            padding: 4px 7px;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 999px;
+            background: rgba(13,15,19,0.88);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.10);
+            backdrop-filter: blur(22px) saturate(170%);
+            -webkit-backdrop-filter: blur(22px) saturate(170%);
+            transform: translateY(3px) scale(0.965);
+            overflow: hidden;
+        }
+        #app-header.home-header-compact #app-header-shell::after {
+            content: '';
+            position: absolute;
+            z-index: 1;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(105deg, transparent 25%, rgba(255,255,255,0.12) 48%, transparent 70%);
+            transform: translateX(-115%);
+            animation: header-pill-sheen 0.72s ease-out 1;
+        }
+        #app-header.home-header-compact #calendar-title { color: #f8fafc !important; }
+        #app-header.home-header-compact #ctrl-team button { color: #9aa3af !important; }
+        #app-header.home-header-compact #ctrl-team button.bg-point { color: var(--point-color) !important; }
+        html.light-mode #app-header.home-header-compact #app-header-shell {
+            border-color: rgba(15,23,42,0.10);
+            background: rgba(255,255,255,0.90);
+            box-shadow: 0 10px 30px rgba(15,23,42,0.14), inset 0 1px 0 rgba(255,255,255,0.85);
+        }
+        html.light-mode #app-header.home-header-compact #calendar-title { color: #111827 !important; }
+        html.light-mode #app-header.home-header-compact #ctrl-team button { color: #8b95a1 !important; }
+        @keyframes header-pill-sheen { to { transform: translateX(115%); } }
+        @media (prefers-reduced-motion: reduce) {
+            #app-header-shell { transition-duration: 0.01ms !important; }
+            #app-header.home-header-compact #app-header-shell::after { animation: none !important; }
+        }
         /* [수정] 라이트모드에서 .bg-point 내부 아이콘이 흰색으로 강제돼 안 보이던 문제 — 네비/뒤로가기 아이콘을 포인트 컬러로 */
         html.light-mode #header-calendar-nav button.bg-point i, html.light-mode #ctrl-back button i { color: var(--point-color) !important; }
         /* [수정] 어두운 스코어보드 패널(이닝표) 안의 텍스트는 라이트모드에서도 밝게 유지 (팀명 안 보이던 문제) */
@@ -329,8 +373,8 @@
             <span class="text-sm font-bold text-white tracking-widest animate-pulse">데이터를 불러오는 중...</span>
         </div>
         
-        <header class="absolute top-0 left-0 right-0 pt-safe px-4 pb-2 z-[100] app-bg">
-            <div class="mt-1 flex items-center justify-between gap-2 w-full pb-1">
+        <header id="app-header" class="absolute top-0 left-0 right-0 pt-safe px-4 pb-2 z-[100] app-bg">
+            <div id="app-header-shell" class="mt-1 flex items-center justify-between gap-2 w-full pb-1">
                 <div id="left-wrapper" class="flex items-center flex-1 min-w-0 rounded-full transition-all duration-700 h-[36px]">
                     <div id="header-title-container" class="flex items-center gap-1.5 px-3 h-[32px] min-w-0">
                         <h1 id="di-main-text" class="text-[13px] font-extrabold text-white flex items-center tracking-tight shrink-0">KBO 리그<span class="w-1 h-1 bg-point rounded-full ml-1 mb-0.5"></span></h1>
@@ -609,7 +653,7 @@
         let scheduleData = [], rankingData = [], liveDataStore = {}, currentPopupMatchId = null, currentTabIndex = 0, watchRecords = [], recordPopupDate = new Date(), currentRecordTeam = null, currentRecordType = null;
         let audioPlayer, currentSongTitle = '', currentSongCover = '', currentPlaylist = [], currentSongIndex = -1, isSeeking = false;
         let fpStartY = 0, fpCurrentY = 0, fpIsDragging = false, currentBanner = 0, totalBanners = 1, bannerInterval, isPlaying = true;
-        let isInitialPopupChecked = false;
+        let isInitialPopupChecked = false, homeHeaderFrame = 0;
         
         function applyTimeBasedTheme() {
             const currentHour = new Date().getHours();
@@ -1201,6 +1245,35 @@
             isInitialPopupChecked = true;
         }
 
+        function updateHomeHeaderMorph() {
+            const header = document.getElementById('app-header');
+            const screen = document.getElementById('calendar-screen');
+            const lineup = document.getElementById('lineup-popup');
+            const sheet = document.getElementById('bottom-sheet');
+            const record = document.getElementById('record-popup');
+            if (!header || !screen) return;
+            const overlayOpen =
+                (lineup && !lineup.classList.contains('render-hidden')) ||
+                (sheet && !sheet.classList.contains('hidden')) ||
+                (record && !record.classList.contains('hidden'));
+            const compact = currentTabIndex === 0 && !overlayOpen && !screen.classList.contains('hidden') && screen.scrollTop > 56;
+            header.classList.toggle('home-header-compact', compact);
+        }
+
+        function initHomeHeaderMorph() {
+            const screen = document.getElementById('calendar-screen');
+            if (!screen || screen.dataset.headerMorphBound === 'true') return;
+            screen.dataset.headerMorphBound = 'true';
+            screen.addEventListener('scroll', () => {
+                if (homeHeaderFrame) return;
+                homeHeaderFrame = requestAnimationFrame(() => {
+                    homeHeaderFrame = 0;
+                    updateHomeHeaderMorph();
+                });
+            }, { passive: true });
+            updateHomeHeaderMorph();
+        }
+
         function updateHeaderCtrlForPopup(isOpen, titleStr) {
             const els = ['ctrl-team', 'ctrl-sort', 'ctrl-back', 'ctrl-ranking', 'ctrl-wrapper', 'header-title-container', 'header-calendar-nav', 'header-popup-title', 'header-popup-text'].reduce((a, id) => ({...a, [id]: document.getElementById(id)}), {});
             
@@ -1236,6 +1309,12 @@
                     if (els['header-calendar-nav']) { els['header-calendar-nav'].classList.add('hidden'); els['header-calendar-nav'].classList.remove('flex'); }
                 }
             }
+            if (isOpen) {
+                const header = document.getElementById('app-header');
+                if (header) header.classList.remove('home-header-compact');
+            } else {
+                requestAnimationFrame(updateHomeHeaderMorph);
+            }
         }
 
         function goBackFromPopup() {
@@ -1267,6 +1346,7 @@
             ['calendar-screen', 'winrate-screen', 'ranking-screen', 'cheer-screen'].forEach((id, i) => { const sc = document.getElementById(id); if (sc) { sc.classList.toggle('hidden', i !== index); sc.classList.toggle('flex', i === index); } });
             
             if (index === 1) renderWinRate(); else if (index === 0) renderCalendar(); else if (index === 2) renderRanking(); else if (index === 3) renderCheerSongs();
+            requestAnimationFrame(updateHomeHeaderMorph);
         }
 
         function setViewMode(mode) {
@@ -1364,17 +1444,74 @@
             cards.push(homeCardMoodWeather());
             c.innerHTML = `<div class="flex flex-col gap-5">${cards.filter(Boolean).join('')}</div>`;
         }
-        // 브리핑 헤더 (인사 + 날짜 + 오늘의 경기 수)
+        // 브리핑 헤더 (시간대 + 선택 구단 + 실제 경기 흐름)
         function briefHeaderCard() {
             const days = ['일', '월', '화', '수', '목', '금', '토'];
             const [yy, mm, dd] = todayStr.split('-').map(Number);
             const base = new Date(yy, mm - 1, dd);
             const dateTxt = `${mm}월 ${dd}일 ${days[base.getDay()]}요일`;
             const h = new Date().getHours();
-            const greet = h < 6 ? '아직 새벽이에요' : h < 12 ? '좋은 아침이에요' : h < 18 ? '좋은 오후예요' : '좋은 저녁이에요';
-            const gToday = scheduleData.filter(m => m.date === todayStr).length;
-            const sub = gToday ? `오늘 KBO ${gToday}경기가 열려요` : '오늘은 KBO 경기가 없어요';
-            return `<div class="px-0.5"><div class="flex items-center gap-1.5 mb-1.5"><i class="fa-solid fa-newspaper text-point text-[11px]"></i><span class="text-[11px] font-bold text-gray-500 tracking-wide">오늘의 브리핑</span></div><div class="text-[21px] font-black text-white leading-tight tracking-tight">${greet}</div><div class="flex items-center gap-2 mt-1"><span class="text-[12px] font-bold text-gray-400">${dateTxt}</span><span class="w-1 h-1 rounded-full bg-gray-600"></span><span class="text-[12px] text-gray-400">${sub}</span></div></div>`;
+            const allGreetings = [
+                [5, '야구 생각이 깊어지는 밤이에요'],
+                [7, '조용한 새벽, 새로운 경기를 기다려요'],
+                [10, '힘찬 아침이에요'],
+                [12, '기분 좋은 오전이에요'],
+                [14, '점심과 함께 오늘 경기를 살펴봐요'],
+                [17, '나른한 오후, 야구로 기운 내요'],
+                [19, '야구가 기다려지는 저녁이에요'],
+                [22, '경기에 빠져들기 좋은 밤이에요'],
+                [24, '오늘 하루도 수고했어요']
+            ];
+            let greet = allGreetings.find(x => h < x[0])[1];
+            const isTeam = selectedTeam === 'KIA' || selectedTeam === '삼성';
+            if (isTeam) {
+                const teamGreetings = selectedTeam === 'KIA'
+                    ? ['타이거즈와 힘차게 시작해요', '오늘도 타이거즈를 응원해요', '붉은 함성으로 저녁을 채워요', '끝까지 타이거즈와 함께해요']
+                    : ['라이온즈와 힘차게 시작해요', '오늘도 라이온즈를 응원해요', '푸른 함성으로 저녁을 채워요', '끝까지 라이온즈와 함께해요'];
+                greet = h < 10 ? teamGreetings[0] : h < 17 ? teamGreetings[1] : h < 22 ? teamGreetings[2] : teamGreetings[3];
+            }
+
+            const todayGames = scheduleData.filter(m => m.date === todayStr);
+            let sub = todayGames.length ? `오늘 KBO ${todayGames.length}경기가 열려요` : '오늘은 KBO 경기가 없어요';
+            if (isTeam) {
+                const g = todayGames.filter(m => m.team1 === selectedTeam || m.team2 === selectedTeam)
+                    .sort((a, b) => (a.time || '').localeCompare(b.time || ''))[0];
+                if (!g) {
+                    sub = `오늘 ${selectedTeam} 경기는 없어요. 다음 경기를 차분히 기다려요`;
+                } else {
+                    const lv = liveDataStore[g.id] || {};
+                    const status = String(lv.gameStatus || '경기전');
+                    const canceled = status.includes('취소') || status.includes('우취') || String(lv.inning || '').includes('취소') || String(lv.inning || '').includes('우취');
+                    const myScore = Number(g.team1 === selectedTeam ? lv.awayScore : lv.homeScore) || 0;
+                    const oppScore = Number(g.team1 === selectedTeam ? lv.homeScore : lv.awayScore) || 0;
+                    const opp = g.team1 === selectedTeam ? g.team2 : g.team1;
+                    if (canceled) {
+                        sub = `${opp}전은 취소됐어요. 다음 만남을 기다려요`;
+                    } else if (status === '경기중') {
+                        if (myScore > oppScore) sub = `${selectedTeam}가 ${opp}에 ${myScore}-${oppScore}로 앞서요. 끝까지 힘을 보태요`;
+                        else if (myScore < oppScore) sub = `${selectedTeam}가 ${opp}에 ${myScore}-${oppScore}로 뒤지고 있어요. 더 크게 응원해요`;
+                        else sub = `${opp}와 ${myScore}-${oppScore} 팽팽한 승부예요. 응원이 필요한 순간이에요`;
+                    } else if (status === '종료') {
+                        if (myScore > oppScore) sub = `${selectedTeam}의 ${myScore}-${oppScore} 승리. 오늘의 기쁨을 오래 간직해요`;
+                        else if (myScore < oppScore) sub = `오늘은 ${myScore}-${oppScore}로 아쉬웠어요. 다음 경기도 함께 응원해요`;
+                        else sub = `${opp}와 ${myScore}-${oppScore} 무승부. 다음 승부를 기대해요`;
+                    } else {
+                        const start = new Date(`${todayStr}T${g.time || '00:00'}:00`);
+                        const mins = Math.round((start.getTime() - Date.now()) / 60000);
+                        if (mins > 60) sub = `${g.time} ${opp}전이 열려요. 미리 응원할 준비를 해요`;
+                        else if (mins > 0) sub = `${opp}전 시작까지 ${mins}분. 이제 응원할 시간이에요`;
+                        else sub = `${opp}전 소식을 기다리고 있어요. 곧 경기 흐름을 전해드릴게요`;
+                    }
+                }
+            } else {
+                const liveCount = todayGames.filter(g => (liveDataStore[g.id] || {}).gameStatus === '경기중').length;
+                const endedCount = todayGames.filter(g => (liveDataStore[g.id] || {}).gameStatus === '종료').length;
+                if (liveCount) sub = `현재 KBO ${liveCount}경기가 진행 중이에요. 오늘의 승부를 함께 지켜봐요`;
+                else if (todayGames.length && endedCount === todayGames.length) sub = `오늘 KBO ${endedCount}경기가 모두 끝났어요. 결과를 천천히 돌아봐요`;
+            }
+
+            const teamTag = isTeam ? `<span class="text-[10px] font-black text-point">${selectedTeam}</span>` : '';
+            return `<div class="px-0.5"><div class="flex items-center justify-between mb-1.5"><div class="flex items-center gap-1.5"><i class="fa-solid fa-newspaper text-point text-[11px]"></i><span class="text-[11px] font-bold text-gray-500 tracking-wide">오늘의 브리핑</span></div>${teamTag}</div><div class="text-[21px] font-black text-white leading-tight tracking-tight">${greet}</div><div class="text-[11px] font-bold text-gray-400 mt-1.5">${dateTxt}</div><div class="text-[12px] text-gray-400 mt-1 leading-relaxed">${sub}</div></div>`;
         }
         // 내 직관 기록을 날짜별 결과로 집계
         function _myAttendMap(t) {
@@ -1398,12 +1535,16 @@
         // [통일] 경기중 전광판 배너와 동일한 다크 프리미엄 카드 — 팀컬러를 헤더쪽에 얹은 다크 베이스 + 상태 점 헤더
         function _bnBg(hex) { return `background: linear-gradient(160deg, ${hex}CC 0%, #1b1b1e 27%, #161618 76%);`; }
         function _bnBg2(h1, h2) { return `background: linear-gradient(to right, ${h1}D9 0%, #18181b 44%, #18181b 56%, ${h2}D9 100%);`; }
-        function _cardHead(dot, label, right, dotClass) { return `<div class="flex items-center justify-between mb-3"><div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full ${dotClass || ''}"${dot ? ` style="background:${dot}"` : ''}></span><span class="text-[13px] font-extrabold text-white tracking-tight">${label}</span></div>${right || ''}</div>`; }
+        function _cardHead(icon, label, right, color) {
+            const iconColor = color || 'var(--point-color)';
+            const iconBg = color ? `${color}18` : 'var(--point-bg)';
+            return `<div class="flex items-center justify-between mb-3"><div class="flex items-center gap-2"><span class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0" style="background:${iconBg}"><i class="fa-solid ${icon} text-[11px]" style="color:${iconColor}"></i></span><span class="text-[13px] font-extrabold text-white tracking-tight">${label}</span></div>${right || ''}</div>`;
+        }
         // 현재 보이는 배너의 구장·중계 정보를 홈 피드 첫 브리핑으로 표시
         function homeCardGameBrief() {
             let hx = (selectedTeam === 'KIA' || selectedTeam === '삼성') ? teamHex[selectedTeam] : null;
-            let head = _cardHead(hx, '경기 브리핑', `<span id="home-game-matchup" class="text-[10px] text-gray-500 font-bold"></span>`, hx ? '' : 'bg-point');
-            return `<div id="home-game-brief" class="px-0.5 hidden"><div>${head}<div class="flex items-center gap-x-5 gap-y-2 flex-wrap"><div class="flex items-center gap-1.5 min-w-0"><i class="fa-solid fa-location-dot text-point text-[11px]"></i><span class="text-[10px] text-gray-500 font-bold">구장</span><span id="home-game-stadium" class="text-[12px] text-gray-300 font-extrabold"></span></div><div class="flex items-center gap-1.5 min-w-0"><i class="fa-solid fa-tv text-point text-[10px]"></i><span class="text-[10px] text-gray-500 font-bold">중계</span><span id="home-game-broadcaster" class="text-[12px] text-gray-300 font-extrabold"></span></div></div></div></div>`;
+            let head = _cardHead('fa-location-dot', '경기 브리핑', `<span id="home-game-matchup" class="text-[10px] text-gray-500 font-bold"></span>`, hx);
+            return `<div id="home-game-brief" class="px-0.5 hidden"><div>${head}<div id="home-game-venue-line" class="text-[18px] font-black text-white leading-snug tracking-tight"></div><div class="flex items-end justify-between gap-4 mt-3"><div class="min-w-0 flex-1"><div class="flex items-center gap-1.5 mb-0.5"><i class="fa-solid fa-tv text-point text-[10px]"></i><span class="text-[10px] text-gray-500 font-bold">중계 방송사</span></div><div id="home-game-broadcaster" class="text-[15px] text-gray-300 font-extrabold truncate"></div></div><div class="home-chip rounded-full px-2.5 py-1.5 flex items-center gap-1.5 shrink-0"><i class="fa-regular fa-clock text-point text-[10px]"></i><span id="home-game-time" class="text-[11px] text-gray-300 font-black"></span></div></div></div></div>`;
         }
         // 1) 직관 히트맵 (잔디형 그리드)
         function homeCardHeatmap() {
@@ -1436,7 +1577,7 @@
                 ? `<span class="text-[12px] text-gray-500">아직 직관 기록이 없어요. 탭해서 기록을 남겨보세요</span>`
                 : `<span class="text-[12px] font-bold text-gray-300">직관 ${total}경기 · ${w}승 ${l}패${d ? ' ' + d + '무' : ''}</span><span class="text-[12px] font-black text-white">승률 ${pct}%</span>`;
             let legend = `<div class="flex items-center gap-2.5 text-[9px] text-gray-500"><span class="flex items-center gap-1"><span class="w-[9px] h-[9px] rounded-[2px]" style="background:#22c55e"></span>승</span><span class="flex items-center gap-1"><span class="w-[9px] h-[9px] rounded-[2px]" style="background:#ef4444"></span>패</span><span class="flex items-center gap-1"><span class="w-[9px] h-[9px] rounded-[2px] bg-gray-500"></span>무</span></div>`;
-            return `<div class="px-0.5 cursor-pointer" onclick="switchTab(1)"><div>${_cardHead(hx, '직관 히트맵 · ' + t, legend)}<div class="text-[10px] text-gray-500 -mt-1.5 mb-3">최근 13주, 직관 간 날의 승패를 색으로 기록해요</div><div class="flex gap-[3px] overflow-x-auto scrollbar-hide pb-1">${cols}</div><div class="flex items-center justify-between mt-3 flex-wrap gap-1">${summary}</div></div></div>`;
+            return `<div class="px-0.5 cursor-pointer" onclick="switchTab(1)"><div>${_cardHead('fa-calendar-check', '직관 히트맵 · ' + t, legend, hx)}<div class="text-[10px] text-gray-500 -mt-1.5 mb-3">최근 13주, 직관 간 날의 승패를 색으로 기록해요</div><div class="flex gap-[3px] overflow-x-auto scrollbar-hide pb-1">${cols}</div><div class="flex items-center justify-between mt-3 flex-wrap gap-1">${summary}</div></div></div>`;
         }
         // 2) 오늘의 직관 운세
         function homeCardFortune() {
@@ -1468,7 +1609,7 @@
             }
             let bar = `<div class="mt-3 h-2 rounded-full overflow-hidden" style="background:rgba(128,128,128,0.18)"><div class="h-full rounded-full" style="width:${prob}%;background:${pc}"></div></div>`;
             let rightMeta = `<div class="flex items-center gap-1.5 text-[12px] font-bold text-gray-300"><span class="text-point">${when}</span><span>vs ${opp}</span></div>`;
-            return `<div class="px-0.5 cursor-pointer" onclick="openLineupPopup('${g.id}')"><div>${_cardHead(pc, '오늘의 직관 운세', rightMeta)}<div class="flex items-baseline gap-2"><span class="text-[34px] font-black leading-none" style="color:${pc}">${prob}</span><span class="text-[14px] font-black" style="color:${pc}">%</span><span class="text-[11px] font-bold text-gray-500 ml-0.5">행운 지수</span></div>${bar}<div class="text-[12px] font-bold text-gray-300 mt-2.5 leading-snug">${phrase}</div>${songRow}</div></div>`;
+            return `<div class="px-0.5 cursor-pointer" onclick="openLineupPopup('${g.id}')"><div>${_cardHead('fa-wand-magic-sparkles', '오늘의 직관 운세', rightMeta, pc)}<div class="flex items-baseline gap-2"><span class="text-[34px] font-black leading-none" style="color:${pc}">${prob}</span><span class="text-[14px] font-black" style="color:${pc}">%</span><span class="text-[11px] font-bold text-gray-500 ml-0.5">행운 지수</span></div>${bar}<div class="text-[12px] font-bold text-gray-300 mt-2.5 leading-snug">${phrase}</div>${songRow}</div></div>`;
         }
         // 3) 라이벌 전광판 (KIA vs 삼성)
         function homeCardRivalBoard() {
@@ -1499,7 +1640,7 @@
             }
             let col = (team, rank) => `<div class="flex flex-col items-center gap-1 w-[34%]"><img src="${teamLogos[team]}" class="w-11 h-11 object-contain"><span class="text-[13px] font-black text-white">${team}</span>${rank ? `<span class="text-[10px] font-bold text-gray-500">${rank}위</span>` : ''}</div>`;
             let center = `<div class="flex flex-col items-center gap-0.5 flex-1"><div class="flex items-baseline gap-1.5"><span class="text-[26px] font-black leading-none text-white">${h.hw}</span><span class="text-[15px] font-black text-gray-500">:</span><span class="text-[26px] font-black leading-none text-white">${h.aw}</span></div><span class="text-[9px] font-bold text-gray-400 tracking-wide">시즌 상대전적</span></div>`;
-            return `<div class="px-0.5"><div>${_cardHead(null, '라이벌 전광판', `<span class="text-[10px] text-gray-500">KIA vs 삼성</span>`, 'bg-point')}<div class="flex items-center justify-between mb-3">${col(A, rA)}${center}${col(B, rB)}</div><div class="flex items-center gap-1.5 text-[11px] font-bold pt-2.5 border-t border-white/5 mb-1.5"><i class="fa-regular fa-calendar text-gray-500 text-[10px]"></i>${nextHtml}</div><div class="flex items-center gap-1.5 text-[11px]"><i class="fa-regular fa-comment-dots text-gray-500 text-[10px]"></i><span class="text-gray-300 font-bold">${provoke}</span></div></div></div>`;
+            return `<div class="px-0.5"><div>${_cardHead('fa-trophy', '라이벌 전광판', `<span class="text-[10px] text-gray-500">KIA vs 삼성</span>`)}<div class="flex items-center justify-between mb-3">${col(A, rA)}${center}${col(B, rB)}</div><div class="flex items-center gap-1.5 text-[11px] font-bold pt-2.5 border-t border-white/5 mb-1.5"><i class="fa-regular fa-calendar text-gray-500 text-[10px]"></i>${nextHtml}</div><div class="flex items-center gap-1.5 text-[11px]"><i class="fa-regular fa-comment-dots text-gray-500 text-[10px]"></i><span class="text-gray-300 font-bold">${provoke}</span></div></div></div>`;
         }
         // 4) 우리 팀 기분 날씨
         function homeCardMoodWeather() {
@@ -1531,7 +1672,7 @@
                 return `<div class="flex items-center gap-3 py-1"><div class="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0" style="background:${col}1f"><i class="fa-solid ${icon} text-[18px]" style="color:${col}"></i></div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-baseline gap-1.5"><span class="text-[14px] font-black text-white">${t}</span><span class="text-[12px] font-black" style="color:${col}">${label}</span></div><span class="text-[11px] text-gray-400 truncate">${msg}</span></div><div class="flex items-center gap-1 shrink-0">${dots}</div></div>`;
             }).join('<div class="h-px bg-white/5 my-1"></div>');
             let isTeam = (selectedTeam === 'KIA' || selectedTeam === '삼성');
-            let head = isTeam ? _cardHead(teamHex[selectedTeam], '팀 기분 날씨', '') : _cardHead(null, '팀 기분 날씨', `<span class="text-[10px] text-gray-500">전 구단</span>`, 'bg-point');
+            let head = isTeam ? _cardHead('fa-cloud-sun', '팀 기분 날씨', '', teamHex[selectedTeam]) : _cardHead('fa-cloud-sun', '팀 기분 날씨', `<span class="text-[10px] text-gray-500">전 구단</span>`);
             return `<div class="px-0.5"><div>${head}${rows}</div></div>`;
         }
 
@@ -1787,11 +1928,21 @@
             if (brief) {
                 brief.classList.toggle('hidden', !card);
                 const matchup = document.getElementById('home-game-matchup');
-                const stadium = document.getElementById('home-game-stadium');
+                const venueLine = document.getElementById('home-game-venue-line');
                 const broadcaster = document.getElementById('home-game-broadcaster');
-                if (matchup) matchup.textContent = card ? `${card.dataset.team1 || ''} vs ${card.dataset.team2 || ''}${card.dataset.gameTime ? ` · ${card.dataset.gameTime}` : ''}` : '';
-                if (stadium) stadium.textContent = card?.dataset.stadium || '구장 정보 미정';
+                const gameTime = document.getElementById('home-game-time');
+                const team1 = card?.dataset.team1 || '';
+                const team2 = card?.dataset.team2 || '';
+                const stadium = card?.dataset.stadium || '구장 미정';
+                if (matchup) matchup.textContent = card ? `${team1} vs ${team2}` : '';
+                if (venueLine) {
+                    const opponent = selectedTeam === team1 ? team2 : selectedTeam === team2 ? team1 : '';
+                    venueLine.textContent = opponent
+                        ? `이번 ${opponent}전은 ${stadium}에서 열려요`
+                        : `${team1}와 ${team2}의 경기는 ${stadium}에서 열려요`;
+                }
                 if (broadcaster) broadcaster.textContent = card?.dataset.broadcaster || '중계 정보 미정';
+                if (gameTime) gameTime.textContent = card?.dataset.gameTime || '시간 미정';
             }
         }
 
@@ -2918,6 +3069,7 @@
 
         // [수정점] 데이터 동기화 및 앱 최초 실행 동기화 보강
         window.addEventListener('DOMContentLoaded', () => {
+            initHomeHeaderMorph();
             if (window.KBO_HISTORY_2026 && window.KBO_HISTORY_2026.gamesByDate) {
                 Object.values(window.KBO_HISTORY_2026.gamesByDate).forEach(dayGames => {
                     dayGames.forEach(g => {
