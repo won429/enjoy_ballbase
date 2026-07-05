@@ -1,14 +1,14 @@
 // kbo_history_2026.js
 // 2026 KBO regular-season history from Naver Sports API.
-// 범위: 2026-03-28 ~ 2026-07-03. 라인업은 Naver preview fullLineUp 기준입니다. 배너 링크는 항상 빈 문자열입니다.
+// 범위: 2026-03-28 ~ 2026-07-04. 라인업은 Naver preview fullLineUp 기준입니다. 배너 링크는 항상 빈 문자열입니다.
 (function () {
   const KBO_HISTORY_2026 = {
   "version": 1,
   "source": "Naver Sports API",
-  "generatedAt": "2026-07-04T18:00:14.706692+09:00",
+  "generatedAt": "2026-07-04T21:50:42.497174+09:00",
   "from": "2026-03-28",
-  "to": "2026-07-03",
-  "lineupTo": "2026-07-03",
+  "to": "2026-07-04",
+  "lineupTo": "2026-07-04",
   "gamesByDate": {
     "2026-03-28": [
       {
@@ -185076,6 +185076,2508 @@
           "신민재"
         ]
       }
+    ],
+    "2026-07-04": [
+      {
+        "awayPitcherCount": 19,
+        "homeError": 0,
+        "homeTeam": "키움",
+        "homeScore": 5,
+        "base2": false,
+        "date": "2026-07-04",
+        "broadcastLink": "",
+        "homeBattersString": "서건창, 추재현, 데이비슨, 히우라, 안치홍, 박찬혁, 여동욱, 김동헌, 권혁빈",
+        "naverGameId": "20260704OBWO02026",
+        "awayPitcherDetail": {
+          "name": "이영하",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "66291"
+        },
+        "homeLineupText": "서건창\n추재현\n데이비슨\n히우라\n안치홍\n박찬혁\n여동욱\n김동헌\n권혁빈",
+        "inning": "9회말",
+        "lineup": {
+          "away": [
+            "김민석",
+            "손아섭",
+            "박준순",
+            "양의지",
+            "안재석",
+            "박찬호",
+            "정수빈",
+            "윤준호",
+            "강승호"
+          ],
+          "home": [
+            "서건창",
+            "추재현",
+            "데이비슨",
+            "히우라",
+            "안치홍",
+            "박찬혁",
+            "여동욱",
+            "김동헌",
+            "권혁빈"
+          ]
+        },
+        "homeInning": [
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "4",
+          "0",
+          "1",
+          "0"
+        ],
+        "awayLineup": [
+          "김민석",
+          "손아섭",
+          "박준순",
+          "양의지",
+          "안재석",
+          "박찬호",
+          "정수빈",
+          "윤준호",
+          "강승호"
+        ],
+        "awayTeam": "두산",
+        "awayHit": 9,
+        "awayInning": [
+          "0",
+          "0",
+          "2",
+          "3",
+          "0",
+          "2",
+          "0",
+          "1",
+          "0"
+        ],
+        "homeLineup": [
+          "서건창",
+          "추재현",
+          "데이비슨",
+          "히우라",
+          "안치홍",
+          "박찬혁",
+          "여동욱",
+          "김동헌",
+          "권혁빈"
+        ],
+        "homePlayers": [
+          "서건창",
+          "추재현",
+          "데이비슨",
+          "히우라",
+          "안치홍",
+          "박찬혁",
+          "여동욱",
+          "김동헌",
+          "권혁빈"
+        ],
+        "base3": false,
+        "awayScore": 8,
+        "awayBatters": [
+          "김민석",
+          "손아섭",
+          "박준순",
+          "양의지",
+          "안재석",
+          "박찬호",
+          "정수빈",
+          "윤준호",
+          "강승호"
+        ],
+        "awayBattersDetail": [
+          {
+            "playerCode": "53554",
+            "name": "김민석",
+            "batsThrows": "좌타",
+            "position": "좌익수",
+            "order": 1
+          },
+          {
+            "playerCode": "77532",
+            "name": "손아섭",
+            "batsThrows": "좌타",
+            "position": "우익수",
+            "order": 2
+          },
+          {
+            "playerCode": "55252",
+            "name": "박준순",
+            "batsThrows": "우타",
+            "position": "2루수",
+            "order": 3
+          },
+          {
+            "playerCode": "76232",
+            "name": "양의지",
+            "batsThrows": "우타",
+            "position": "지명타자",
+            "order": 4
+          },
+          {
+            "playerCode": "51203",
+            "name": "안재석",
+            "batsThrows": "좌타",
+            "position": "3루수",
+            "order": 5
+          },
+          {
+            "playerCode": "64646",
+            "name": "박찬호",
+            "batsThrows": "우타",
+            "position": "유격수",
+            "order": 6
+          },
+          {
+            "playerCode": "79231",
+            "name": "정수빈",
+            "batsThrows": "좌타",
+            "position": "중견수",
+            "order": 7
+          },
+          {
+            "playerCode": "53296",
+            "name": "윤준호",
+            "batsThrows": "우타",
+            "position": "포수",
+            "order": 8
+          },
+          {
+            "playerCode": "63123",
+            "name": "강승호",
+            "batsThrows": "우타",
+            "position": "1루수",
+            "order": 9
+          }
+        ],
+        "awayPlayers": [
+          "김민석",
+          "손아섭",
+          "박준순",
+          "양의지",
+          "안재석",
+          "박찬호",
+          "정수빈",
+          "윤준호",
+          "강승호"
+        ],
+        "awayLineupString": "김민석, 손아섭, 박준순, 양의지, 안재석, 박찬호, 정수빈, 윤준호, 강승호",
+        "bannerLink": "",
+        "gameStatus": "종료",
+        "homeLineupString": "서건창, 추재현, 데이비슨, 히우라, 안치홍, 박찬혁, 여동욱, 김동헌, 권혁빈",
+        "homeLineupDetail": [
+          {
+            "playerCode": "78168",
+            "name": "서건창",
+            "batsThrows": "좌타",
+            "position": "2루수",
+            "order": 1
+          },
+          {
+            "playerCode": "68362",
+            "name": "추재현",
+            "batsThrows": "좌타",
+            "position": "중견수",
+            "order": 2
+          },
+          {
+            "playerCode": "54944",
+            "name": "데이비슨",
+            "batsThrows": "우타",
+            "position": "1루수",
+            "order": 3
+          },
+          {
+            "playerCode": "56305",
+            "name": "히우라",
+            "batsThrows": "우타",
+            "position": "좌익수",
+            "order": 4
+          },
+          {
+            "playerCode": "79608",
+            "name": "안치홍",
+            "batsThrows": "우타",
+            "position": "지명타자",
+            "order": 5
+          },
+          {
+            "playerCode": "52348",
+            "name": "박찬혁",
+            "batsThrows": "우타",
+            "position": "우익수",
+            "order": 6
+          },
+          {
+            "playerCode": "55393",
+            "name": "여동욱",
+            "batsThrows": "우타",
+            "position": "3루수",
+            "order": 7
+          },
+          {
+            "playerCode": "53344",
+            "name": "김동헌",
+            "batsThrows": "우타",
+            "position": "포수",
+            "order": 8
+          },
+          {
+            "playerCode": "55371",
+            "name": "권혁빈",
+            "batsThrows": "우타",
+            "position": "유격수",
+            "order": 9
+          }
+        ],
+        "awayStarter": "최승용",
+        "team2": "키움",
+        "status": "종료",
+        "homeBattersText": "서건창\n추재현\n데이비슨\n히우라\n안치홍\n박찬혁\n여동욱\n김동헌\n권혁빈",
+        "homeStarterDetail": {
+          "name": "박준현",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "56318"
+        },
+        "team1": "두산",
+        "time": "18:00",
+        "homeBase": 6,
+        "id": "2607041",
+        "broadcast": "SPOTV2",
+        "winPitcher": "최승용",
+        "homeHit": 10,
+        "homeBatters": [
+          "서건창",
+          "추재현",
+          "데이비슨",
+          "히우라",
+          "안치홍",
+          "박찬혁",
+          "여동욱",
+          "김동헌",
+          "권혁빈"
+        ],
+        "awayLineupDetail": [
+          {
+            "playerCode": "53554",
+            "name": "김민석",
+            "batsThrows": "좌타",
+            "position": "좌익수",
+            "order": 1
+          },
+          {
+            "playerCode": "77532",
+            "name": "손아섭",
+            "batsThrows": "좌타",
+            "position": "우익수",
+            "order": 2
+          },
+          {
+            "playerCode": "55252",
+            "name": "박준순",
+            "batsThrows": "우타",
+            "position": "2루수",
+            "order": 3
+          },
+          {
+            "playerCode": "76232",
+            "name": "양의지",
+            "batsThrows": "우타",
+            "position": "지명타자",
+            "order": 4
+          },
+          {
+            "playerCode": "51203",
+            "name": "안재석",
+            "batsThrows": "좌타",
+            "position": "3루수",
+            "order": 5
+          },
+          {
+            "playerCode": "64646",
+            "name": "박찬호",
+            "batsThrows": "우타",
+            "position": "유격수",
+            "order": 6
+          },
+          {
+            "playerCode": "79231",
+            "name": "정수빈",
+            "batsThrows": "좌타",
+            "position": "중견수",
+            "order": 7
+          },
+          {
+            "playerCode": "53296",
+            "name": "윤준호",
+            "batsThrows": "우타",
+            "position": "포수",
+            "order": 8
+          },
+          {
+            "playerCode": "63123",
+            "name": "강승호",
+            "batsThrows": "우타",
+            "position": "1루수",
+            "order": 9
+          }
+        ],
+        "awayBattersString": "김민석, 손아섭, 박준순, 양의지, 안재석, 박찬호, 정수빈, 윤준호, 강승호",
+        "homePitcherDetail": {
+          "name": "정다훈",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "56345"
+        },
+        "updatedAt": 1783169440994,
+        "gameTime": "18:00",
+        "naverOffsetMode": "auto",
+        "awayStarterDetail": {
+          "name": "최승용",
+          "position": "투수",
+          "batsThrows": "좌투",
+          "playerCode": "51264"
+        },
+        "awayPitcher": "이영하",
+        "broadcaster": "SPOTV2",
+        "losePitcher": "박준현",
+        "stadium": "고척",
+        "homeBattersDetail": [
+          {
+            "playerCode": "78168",
+            "name": "서건창",
+            "batsThrows": "좌타",
+            "position": "2루수",
+            "order": 1
+          },
+          {
+            "playerCode": "68362",
+            "name": "추재현",
+            "batsThrows": "좌타",
+            "position": "중견수",
+            "order": 2
+          },
+          {
+            "playerCode": "54944",
+            "name": "데이비슨",
+            "batsThrows": "우타",
+            "position": "1루수",
+            "order": 3
+          },
+          {
+            "playerCode": "56305",
+            "name": "히우라",
+            "batsThrows": "우타",
+            "position": "좌익수",
+            "order": 4
+          },
+          {
+            "playerCode": "79608",
+            "name": "안치홍",
+            "batsThrows": "우타",
+            "position": "지명타자",
+            "order": 5
+          },
+          {
+            "playerCode": "52348",
+            "name": "박찬혁",
+            "batsThrows": "우타",
+            "position": "우익수",
+            "order": 6
+          },
+          {
+            "playerCode": "55393",
+            "name": "여동욱",
+            "batsThrows": "우타",
+            "position": "3루수",
+            "order": 7
+          },
+          {
+            "playerCode": "53344",
+            "name": "김동헌",
+            "batsThrows": "우타",
+            "position": "포수",
+            "order": 8
+          },
+          {
+            "playerCode": "55371",
+            "name": "권혁빈",
+            "batsThrows": "우타",
+            "position": "유격수",
+            "order": 9
+          }
+        ],
+        "awayError": 1,
+        "awayBase": 10,
+        "awayBattersText": "김민석\n손아섭\n박준순\n양의지\n안재석\n박찬호\n정수빈\n윤준호\n강승호",
+        "out": 0,
+        "endTime": 1783169440994,
+        "lineups": {
+          "away": [
+            "김민석",
+            "손아섭",
+            "박준순",
+            "양의지",
+            "안재석",
+            "박찬호",
+            "정수빈",
+            "윤준호",
+            "강승호"
+          ],
+          "home": [
+            "서건창",
+            "추재현",
+            "데이비슨",
+            "히우라",
+            "안치홍",
+            "박찬혁",
+            "여동욱",
+            "김동헌",
+            "권혁빈"
+          ]
+        },
+        "awayLineupText": "김민석\n손아섭\n박준순\n양의지\n안재석\n박찬호\n정수빈\n윤준호\n강승호",
+        "homePitcherCount": 10,
+        "homeStarter": "박준현",
+        "ball": 0,
+        "strike": 0,
+        "base1": false,
+        "homePitcher": "정다훈",
+        "awayCurrentPitcher": "이영하",
+        "homeCurrentPitcher": "정다훈",
+        "awayCurrentPitcherDetail": {
+          "name": "이영하",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "66291"
+        },
+        "homeCurrentPitcherDetail": {
+          "name": "정다훈",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "56345"
+        },
+        "awayBullpenPitcher": "이영하",
+        "homeBullpenPitcher": "정다훈",
+        "awayBullpenPitcherDetail": {
+          "name": "이영하",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "66291"
+        },
+        "homeBullpenPitcherDetail": {
+          "name": "정다훈",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "56345"
+        }
+      },
+      {
+        "homeStarter": "시라카와",
+        "homePitcherCount": 13,
+        "awayLineupText": "김주원\n권희동\n블레인\n이우성\n박건우\n김휘집\n김형준\n천재환\n김한별",
+        "lineups": {
+          "away": [
+            "김주원",
+            "권희동",
+            "블레인",
+            "이우성",
+            "박건우",
+            "김휘집",
+            "김형준",
+            "천재환",
+            "김한별"
+          ],
+          "home": [
+            "김호령",
+            "박상준",
+            "김도영",
+            "나성범",
+            "카스트로",
+            "한준수",
+            "김선빈",
+            "박재현",
+            "김규성"
+          ]
+        },
+        "endTime": 1783169441342,
+        "homePitcher": "곽도규",
+        "base1": false,
+        "ball": 0,
+        "strike": 0,
+        "awayBattersText": "김주원\n권희동\n블레인\n이우성\n박건우\n김휘집\n김형준\n천재환\n김한별",
+        "awayBase": 5,
+        "awayError": 0,
+        "out": 0,
+        "naverOffsetMode": "auto",
+        "gameTime": "18:00",
+        "updatedAt": 1783169441342,
+        "homePitcherDetail": {
+          "name": "곽도규",
+          "position": "투수",
+          "batsThrows": "좌투",
+          "playerCode": "53609"
+        },
+        "awayBattersString": "김주원, 권희동, 블레인, 이우성, 박건우, 김휘집, 김형준, 천재환, 김한별",
+        "homeBattersDetail": [
+          {
+            "playerCode": "65653",
+            "name": "김호령",
+            "batsThrows": "우타",
+            "position": "중견수",
+            "order": 1
+          },
+          {
+            "playerCode": "52634",
+            "name": "박상준",
+            "batsThrows": "좌타",
+            "position": "1루수",
+            "order": 2
+          },
+          {
+            "playerCode": "52605",
+            "name": "김도영",
+            "batsThrows": "우타",
+            "position": "3루수",
+            "order": 3
+          },
+          {
+            "playerCode": "62947",
+            "name": "나성범",
+            "batsThrows": "좌타",
+            "position": "우익수",
+            "order": 4
+          },
+          {
+            "playerCode": "56626",
+            "name": "카스트로",
+            "batsThrows": "좌타",
+            "position": "지명타자",
+            "order": 5
+          },
+          {
+            "playerCode": "68646",
+            "name": "한준수",
+            "batsThrows": "좌타",
+            "position": "포수",
+            "order": 6
+          },
+          {
+            "playerCode": "78603",
+            "name": "김선빈",
+            "batsThrows": "우타",
+            "position": "2루수",
+            "order": 7
+          },
+          {
+            "playerCode": "55636",
+            "name": "박재현",
+            "batsThrows": "좌타",
+            "position": "좌익수",
+            "order": 8
+          },
+          {
+            "playerCode": "66614",
+            "name": "김규성",
+            "batsThrows": "좌타",
+            "position": "유격수",
+            "order": 9
+          }
+        ],
+        "stadium": "광주",
+        "losePitcher": "시라카와",
+        "broadcaster": "SBS SPORTS",
+        "awayPitcher": "임지민",
+        "awayStarterDetail": {
+          "name": "라일리",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "55903"
+        },
+        "id": "2607042",
+        "homeBase": 3,
+        "time": "18:00",
+        "team1": "NC",
+        "homeStarterDetail": {
+          "name": "시라카와",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "54843"
+        },
+        "homeBattersText": "김호령\n박상준\n김도영\n나성범\n카스트로\n한준수\n김선빈\n박재현\n김규성",
+        "awayLineupDetail": [
+          {
+            "playerCode": "51907",
+            "name": "김주원",
+            "batsThrows": "양타",
+            "position": "유격수",
+            "order": 1
+          },
+          {
+            "playerCode": "63963",
+            "name": "권희동",
+            "batsThrows": "우타",
+            "position": "우익수",
+            "order": 2
+          },
+          {
+            "playerCode": "56950",
+            "name": "블레인",
+            "batsThrows": "우타",
+            "position": "1루수",
+            "order": 3
+          },
+          {
+            "playerCode": "63260",
+            "name": "이우성",
+            "batsThrows": "우타",
+            "position": "좌익수",
+            "order": 4
+          },
+          {
+            "playerCode": "79215",
+            "name": "박건우",
+            "batsThrows": "우타",
+            "position": "지명타자",
+            "order": 5
+          },
+          {
+            "playerCode": "51344",
+            "name": "김휘집",
+            "batsThrows": "우타",
+            "position": "3루수",
+            "order": 6
+          },
+          {
+            "playerCode": "68912",
+            "name": "김형준",
+            "batsThrows": "우타",
+            "position": "포수",
+            "order": 7
+          },
+          {
+            "playerCode": "67905",
+            "name": "천재환",
+            "batsThrows": "우타",
+            "position": "중견수",
+            "order": 8
+          },
+          {
+            "playerCode": "50902",
+            "name": "김한별",
+            "batsThrows": "우타",
+            "position": "2루수",
+            "order": 9
+          }
+        ],
+        "homeBatters": [
+          "김호령",
+          "박상준",
+          "김도영",
+          "나성범",
+          "카스트로",
+          "한준수",
+          "김선빈",
+          "박재현",
+          "김규성"
+        ],
+        "homeHit": 9,
+        "winPitcher": "라일리",
+        "broadcast": "SBS SPORTS",
+        "homeLineupString": "김호령, 박상준, 김도영, 나성범, 카스트로, 한준수, 김선빈, 박재현, 김규성",
+        "status": "종료",
+        "team2": "KIA",
+        "awayStarter": "라일리",
+        "homeLineupDetail": [
+          {
+            "playerCode": "65653",
+            "name": "김호령",
+            "batsThrows": "우타",
+            "position": "중견수",
+            "order": 1
+          },
+          {
+            "playerCode": "52634",
+            "name": "박상준",
+            "batsThrows": "좌타",
+            "position": "1루수",
+            "order": 2
+          },
+          {
+            "playerCode": "52605",
+            "name": "김도영",
+            "batsThrows": "우타",
+            "position": "3루수",
+            "order": 3
+          },
+          {
+            "playerCode": "62947",
+            "name": "나성범",
+            "batsThrows": "좌타",
+            "position": "우익수",
+            "order": 4
+          },
+          {
+            "playerCode": "56626",
+            "name": "카스트로",
+            "batsThrows": "좌타",
+            "position": "지명타자",
+            "order": 5
+          },
+          {
+            "playerCode": "68646",
+            "name": "한준수",
+            "batsThrows": "좌타",
+            "position": "포수",
+            "order": 6
+          },
+          {
+            "playerCode": "78603",
+            "name": "김선빈",
+            "batsThrows": "우타",
+            "position": "2루수",
+            "order": 7
+          },
+          {
+            "playerCode": "55636",
+            "name": "박재현",
+            "batsThrows": "좌타",
+            "position": "좌익수",
+            "order": 8
+          },
+          {
+            "playerCode": "66614",
+            "name": "김규성",
+            "batsThrows": "좌타",
+            "position": "유격수",
+            "order": 9
+          }
+        ],
+        "awayBattersDetail": [
+          {
+            "playerCode": "51907",
+            "name": "김주원",
+            "batsThrows": "양타",
+            "position": "유격수",
+            "order": 1
+          },
+          {
+            "playerCode": "63963",
+            "name": "권희동",
+            "batsThrows": "우타",
+            "position": "우익수",
+            "order": 2
+          },
+          {
+            "playerCode": "56950",
+            "name": "블레인",
+            "batsThrows": "우타",
+            "position": "1루수",
+            "order": 3
+          },
+          {
+            "playerCode": "63260",
+            "name": "이우성",
+            "batsThrows": "우타",
+            "position": "좌익수",
+            "order": 4
+          },
+          {
+            "playerCode": "79215",
+            "name": "박건우",
+            "batsThrows": "우타",
+            "position": "지명타자",
+            "order": 5
+          },
+          {
+            "playerCode": "51344",
+            "name": "김휘집",
+            "batsThrows": "우타",
+            "position": "3루수",
+            "order": 6
+          },
+          {
+            "playerCode": "68912",
+            "name": "김형준",
+            "batsThrows": "우타",
+            "position": "포수",
+            "order": 7
+          },
+          {
+            "playerCode": "67905",
+            "name": "천재환",
+            "batsThrows": "우타",
+            "position": "중견수",
+            "order": 8
+          },
+          {
+            "playerCode": "50902",
+            "name": "김한별",
+            "batsThrows": "우타",
+            "position": "2루수",
+            "order": 9
+          }
+        ],
+        "awayBatters": [
+          "김주원",
+          "권희동",
+          "블레인",
+          "이우성",
+          "박건우",
+          "김휘집",
+          "김형준",
+          "천재환",
+          "김한별"
+        ],
+        "awayScore": 5,
+        "gameStatus": "종료",
+        "bannerLink": "",
+        "awayLineupString": "김주원, 권희동, 블레인, 이우성, 박건우, 김휘집, 김형준, 천재환, 김한별",
+        "awayPlayers": [
+          "김주원",
+          "권희동",
+          "블레인",
+          "이우성",
+          "박건우",
+          "김휘집",
+          "김형준",
+          "천재환",
+          "김한별"
+        ],
+        "awayTeam": "NC",
+        "awayLineup": [
+          "김주원",
+          "권희동",
+          "블레인",
+          "이우성",
+          "박건우",
+          "김휘집",
+          "김형준",
+          "천재환",
+          "김한별"
+        ],
+        "homeInning": [
+          "1",
+          "0",
+          "1",
+          "0",
+          "0",
+          "1",
+          "0",
+          "1",
+          "0"
+        ],
+        "base3": false,
+        "homePlayers": [
+          "김호령",
+          "박상준",
+          "김도영",
+          "나성범",
+          "카스트로",
+          "한준수",
+          "김선빈",
+          "박재현",
+          "김규성"
+        ],
+        "homeLineup": [
+          "김호령",
+          "박상준",
+          "김도영",
+          "나성범",
+          "카스트로",
+          "한준수",
+          "김선빈",
+          "박재현",
+          "김규성"
+        ],
+        "awayInning": [
+          "0",
+          "0",
+          "2",
+          "2",
+          "0",
+          "0",
+          "0",
+          "1",
+          "0"
+        ],
+        "awayHit": 7,
+        "homeTeam": "KIA",
+        "homeError": 0,
+        "awayPitcherCount": 26,
+        "inning": "9회말",
+        "lineup": {
+          "away": [
+            "김주원",
+            "권희동",
+            "블레인",
+            "이우성",
+            "박건우",
+            "김휘집",
+            "김형준",
+            "천재환",
+            "김한별"
+          ],
+          "home": [
+            "김호령",
+            "박상준",
+            "김도영",
+            "나성범",
+            "카스트로",
+            "한준수",
+            "김선빈",
+            "박재현",
+            "김규성"
+          ]
+        },
+        "homeLineupText": "김호령\n박상준\n김도영\n나성범\n카스트로\n한준수\n김선빈\n박재현\n김규성",
+        "naverGameId": "20260704NCHT02026",
+        "awayPitcherDetail": {
+          "name": "임지민",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "52902"
+        },
+        "broadcastLink": "",
+        "homeBattersString": "김호령, 박상준, 김도영, 나성범, 카스트로, 한준수, 김선빈, 박재현, 김규성",
+        "date": "2026-07-04",
+        "base2": false,
+        "homeScore": 4,
+        "awayCurrentPitcher": "임지민",
+        "homeCurrentPitcher": "곽도규",
+        "awayCurrentPitcherDetail": {
+          "name": "임지민",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "52902"
+        },
+        "homeCurrentPitcherDetail": {
+          "name": "곽도규",
+          "position": "투수",
+          "batsThrows": "좌투",
+          "playerCode": "53609"
+        },
+        "awayBullpenPitcher": "임지민",
+        "homeBullpenPitcher": "곽도규",
+        "awayBullpenPitcherDetail": {
+          "name": "임지민",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "52902"
+        },
+        "homeBullpenPitcherDetail": {
+          "name": "곽도규",
+          "position": "투수",
+          "batsThrows": "좌투",
+          "playerCode": "53609"
+        }
+      },
+      {
+        "status": "종료",
+        "team2": "SSG",
+        "awayStarter": "최원태",
+        "homeLineupDetail": [
+          {
+            "playerCode": "54812",
+            "name": "정준재",
+            "batsThrows": "좌타",
+            "position": "2루수",
+            "order": 1
+          },
+          {
+            "playerCode": "67893",
+            "name": "박성한",
+            "batsThrows": "좌타",
+            "position": "유격수",
+            "order": 2
+          },
+          {
+            "playerCode": "62934",
+            "name": "김성욱",
+            "batsThrows": "우타",
+            "position": "우익수",
+            "order": 3
+          },
+          {
+            "playerCode": "53827",
+            "name": "에레디아",
+            "batsThrows": "우타",
+            "position": "좌익수",
+            "order": 4
+          },
+          {
+            "playerCode": "50820",
+            "name": "전의산",
+            "batsThrows": "좌타",
+            "position": "1루수",
+            "order": 5
+          },
+          {
+            "playerCode": "51868",
+            "name": "고명준",
+            "batsThrows": "우타",
+            "position": "3루수",
+            "order": 6
+          },
+          {
+            "playerCode": "68868",
+            "name": "최준우",
+            "batsThrows": "좌타",
+            "position": "지명타자",
+            "order": 7
+          },
+          {
+            "playerCode": "79456",
+            "name": "이지영",
+            "batsThrows": "우타",
+            "position": "포수",
+            "order": 8
+          },
+          {
+            "playerCode": "50854",
+            "name": "최지훈",
+            "batsThrows": "좌타",
+            "position": "중견수",
+            "order": 9
+          }
+        ],
+        "homeLineupString": "정준재, 박성한, 김성욱, 에레디아, 전의산, 고명준, 최준우, 이지영, 최지훈",
+        "gameStatus": "종료",
+        "bannerLink": "",
+        "awayLineupString": "김지찬, 박승규, 구자욱, 최형우, 디아즈, 류지혁, 김도환, 전병우, 김상준",
+        "awayPlayers": [
+          "김지찬",
+          "박승규",
+          "구자욱",
+          "최형우",
+          "디아즈",
+          "류지혁",
+          "김도환",
+          "전병우",
+          "김상준"
+        ],
+        "awayBattersDetail": [
+          {
+            "playerCode": "50458",
+            "name": "김지찬",
+            "batsThrows": "좌타",
+            "position": "중견수",
+            "order": 1
+          },
+          {
+            "playerCode": "69418",
+            "name": "박승규",
+            "batsThrows": "우타",
+            "position": "우익수",
+            "order": 2
+          },
+          {
+            "playerCode": "62404",
+            "name": "구자욱",
+            "batsThrows": "좌타",
+            "position": "좌익수",
+            "order": 3
+          },
+          {
+            "playerCode": "72443",
+            "name": "최형우",
+            "batsThrows": "좌타",
+            "position": "지명타자",
+            "order": 4
+          },
+          {
+            "playerCode": "54400",
+            "name": "디아즈",
+            "batsThrows": "좌타",
+            "position": "1루수",
+            "order": 5
+          },
+          {
+            "playerCode": "62234",
+            "name": "류지혁",
+            "batsThrows": "좌타",
+            "position": "2루수",
+            "order": 6
+          },
+          {
+            "playerCode": "69442",
+            "name": "김도환",
+            "batsThrows": "우타",
+            "position": "포수",
+            "order": 7
+          },
+          {
+            "playerCode": "65586",
+            "name": "전병우",
+            "batsThrows": "우타",
+            "position": "3루수",
+            "order": 8
+          },
+          {
+            "playerCode": "55425",
+            "name": "김상준",
+            "batsThrows": "좌타",
+            "position": "유격수",
+            "order": 9
+          }
+        ],
+        "awayBatters": [
+          "김지찬",
+          "박승규",
+          "구자욱",
+          "최형우",
+          "디아즈",
+          "류지혁",
+          "김도환",
+          "전병우",
+          "김상준"
+        ],
+        "awayScore": 13,
+        "base3": false,
+        "homePlayers": [
+          "정준재",
+          "박성한",
+          "김성욱",
+          "에레디아",
+          "전의산",
+          "고명준",
+          "최준우",
+          "이지영",
+          "최지훈"
+        ],
+        "awayHit": 16,
+        "awayInning": [
+          "2",
+          "0",
+          "0",
+          "8",
+          "3",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "homeLineup": [
+          "정준재",
+          "박성한",
+          "김성욱",
+          "에레디아",
+          "전의산",
+          "고명준",
+          "최준우",
+          "이지영",
+          "최지훈"
+        ],
+        "awayTeam": "삼성",
+        "homeInning": [
+          "5",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "1"
+        ],
+        "awayLineup": [
+          "김지찬",
+          "박승규",
+          "구자욱",
+          "최형우",
+          "디아즈",
+          "류지혁",
+          "김도환",
+          "전병우",
+          "김상준"
+        ],
+        "homeLineupText": "정준재\n박성한\n김성욱\n에레디아\n전의산\n고명준\n최준우\n이지영\n최지훈",
+        "inning": "9회말",
+        "lineup": {
+          "away": [
+            "김지찬",
+            "박승규",
+            "구자욱",
+            "최형우",
+            "디아즈",
+            "류지혁",
+            "김도환",
+            "전병우",
+            "김상준"
+          ],
+          "home": [
+            "정준재",
+            "박성한",
+            "김성욱",
+            "에레디아",
+            "전의산",
+            "고명준",
+            "최준우",
+            "이지영",
+            "최지훈"
+          ]
+        },
+        "awayPitcherDetail": {
+          "name": "임기영",
+          "position": "투수",
+          "batsThrows": "우언",
+          "playerCode": "62754"
+        },
+        "naverGameId": "20260704SSSK02026",
+        "date": "2026-07-04",
+        "homeBattersString": "정준재, 박성한, 김성욱, 에레디아, 전의산, 고명준, 최준우, 이지영, 최지훈",
+        "broadcastLink": "",
+        "base2": false,
+        "homeScore": 7,
+        "homeTeam": "SSG",
+        "homeError": 3,
+        "awayPitcherCount": 13,
+        "base1": false,
+        "homePitcher": "노경은",
+        "ball": 0,
+        "strike": 0,
+        "homeStarter": "타케다",
+        "homePitcherCount": 13,
+        "lineups": {
+          "away": [
+            "김지찬",
+            "박승규",
+            "구자욱",
+            "최형우",
+            "디아즈",
+            "류지혁",
+            "김도환",
+            "전병우",
+            "김상준"
+          ],
+          "home": [
+            "정준재",
+            "박성한",
+            "김성욱",
+            "에레디아",
+            "전의산",
+            "고명준",
+            "최준우",
+            "이지영",
+            "최지훈"
+          ]
+        },
+        "endTime": 1783169441586,
+        "awayLineupText": "김지찬\n박승규\n구자욱\n최형우\n디아즈\n류지혁\n김도환\n전병우\n김상준",
+        "out": 0,
+        "awayError": 0,
+        "awayBase": 7,
+        "awayBattersText": "김지찬\n박승규\n구자욱\n최형우\n디아즈\n류지혁\n김도환\n전병우\n김상준",
+        "homeBattersDetail": [
+          {
+            "playerCode": "54812",
+            "name": "정준재",
+            "batsThrows": "좌타",
+            "position": "2루수",
+            "order": 1
+          },
+          {
+            "playerCode": "67893",
+            "name": "박성한",
+            "batsThrows": "좌타",
+            "position": "유격수",
+            "order": 2
+          },
+          {
+            "playerCode": "62934",
+            "name": "김성욱",
+            "batsThrows": "우타",
+            "position": "우익수",
+            "order": 3
+          },
+          {
+            "playerCode": "53827",
+            "name": "에레디아",
+            "batsThrows": "우타",
+            "position": "좌익수",
+            "order": 4
+          },
+          {
+            "playerCode": "50820",
+            "name": "전의산",
+            "batsThrows": "좌타",
+            "position": "1루수",
+            "order": 5
+          },
+          {
+            "playerCode": "51868",
+            "name": "고명준",
+            "batsThrows": "우타",
+            "position": "3루수",
+            "order": 6
+          },
+          {
+            "playerCode": "68868",
+            "name": "최준우",
+            "batsThrows": "좌타",
+            "position": "지명타자",
+            "order": 7
+          },
+          {
+            "playerCode": "79456",
+            "name": "이지영",
+            "batsThrows": "우타",
+            "position": "포수",
+            "order": 8
+          },
+          {
+            "playerCode": "50854",
+            "name": "최지훈",
+            "batsThrows": "좌타",
+            "position": "중견수",
+            "order": 9
+          }
+        ],
+        "losePitcher": "이건욱",
+        "broadcaster": "SPOTV",
+        "stadium": "문학",
+        "awayPitcher": "임기영",
+        "awayStarterDetail": {
+          "name": "최원태",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "65320"
+        },
+        "naverOffsetMode": "auto",
+        "gameTime": "18:00",
+        "updatedAt": 1783169441586,
+        "homePitcherDetail": {
+          "name": "노경은",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "73211"
+        },
+        "awayBattersString": "김지찬, 박승규, 구자욱, 최형우, 디아즈, 류지혁, 김도환, 전병우, 김상준",
+        "awayLineupDetail": [
+          {
+            "playerCode": "50458",
+            "name": "김지찬",
+            "batsThrows": "좌타",
+            "position": "중견수",
+            "order": 1
+          },
+          {
+            "playerCode": "69418",
+            "name": "박승규",
+            "batsThrows": "우타",
+            "position": "우익수",
+            "order": 2
+          },
+          {
+            "playerCode": "62404",
+            "name": "구자욱",
+            "batsThrows": "좌타",
+            "position": "좌익수",
+            "order": 3
+          },
+          {
+            "playerCode": "72443",
+            "name": "최형우",
+            "batsThrows": "좌타",
+            "position": "지명타자",
+            "order": 4
+          },
+          {
+            "playerCode": "54400",
+            "name": "디아즈",
+            "batsThrows": "좌타",
+            "position": "1루수",
+            "order": 5
+          },
+          {
+            "playerCode": "62234",
+            "name": "류지혁",
+            "batsThrows": "좌타",
+            "position": "2루수",
+            "order": 6
+          },
+          {
+            "playerCode": "69442",
+            "name": "김도환",
+            "batsThrows": "우타",
+            "position": "포수",
+            "order": 7
+          },
+          {
+            "playerCode": "65586",
+            "name": "전병우",
+            "batsThrows": "우타",
+            "position": "3루수",
+            "order": 8
+          },
+          {
+            "playerCode": "55425",
+            "name": "김상준",
+            "batsThrows": "좌타",
+            "position": "유격수",
+            "order": 9
+          }
+        ],
+        "homeBatters": [
+          "정준재",
+          "박성한",
+          "김성욱",
+          "에레디아",
+          "전의산",
+          "고명준",
+          "최준우",
+          "이지영",
+          "최지훈"
+        ],
+        "winPitcher": "최원태",
+        "homeHit": 9,
+        "broadcast": "SPOTV",
+        "id": "2607043",
+        "team1": "삼성",
+        "homeBase": 4,
+        "time": "18:00",
+        "homeStarterDetail": {
+          "name": "타케다",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "56823"
+        },
+        "homeBattersText": "정준재\n박성한\n김성욱\n에레디아\n전의산\n고명준\n최준우\n이지영\n최지훈",
+        "awayCurrentPitcher": "임기영",
+        "homeCurrentPitcher": "노경은",
+        "awayCurrentPitcherDetail": {
+          "name": "임기영",
+          "position": "투수",
+          "batsThrows": "우언",
+          "playerCode": "62754"
+        },
+        "homeCurrentPitcherDetail": {
+          "name": "노경은",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "73211"
+        },
+        "awayBullpenPitcher": "임기영",
+        "homeBullpenPitcher": "노경은",
+        "awayBullpenPitcherDetail": {
+          "name": "임기영",
+          "position": "투수",
+          "batsThrows": "우언",
+          "playerCode": "62754"
+        },
+        "homeBullpenPitcherDetail": {
+          "name": "노경은",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "73211"
+        }
+      },
+      {
+        "base1": false,
+        "homePitcher": "손동현",
+        "strike": 0,
+        "ball": 0,
+        "endTime": 1783169442012,
+        "lineups": {
+          "away": [
+            "황성빈",
+            "고승민",
+            "레이예스",
+            "한동희",
+            "나승엽",
+            "박찬형",
+            "윤동희",
+            "전민재",
+            "손성빈"
+          ],
+          "home": [
+            "류현인",
+            "김현수",
+            "안현민",
+            "힐리어드",
+            "김상수",
+            "김민혁",
+            "장진혁",
+            "한승택",
+            "권동진"
+          ]
+        },
+        "awayLineupText": "황성빈\n고승민\n레이예스\n한동희\n나승엽\n박찬형\n윤동희\n전민재\n손성빈",
+        "homePitcherCount": 12,
+        "homeStarter": "고영표",
+        "out": 0,
+        "awayError": 0,
+        "awayBase": 1,
+        "awayBattersText": "황성빈\n고승민\n레이예스\n한동희\n나승엽\n박찬형\n윤동희\n전민재\n손성빈",
+        "losePitcher": "고영표",
+        "broadcaster": "KBS N SPORTS",
+        "stadium": "수원",
+        "awayPitcher": "김원중",
+        "awayStarterDetail": {
+          "name": "비슬리",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "56523"
+        },
+        "homeBattersDetail": [
+          {
+            "playerCode": "53036",
+            "name": "류현인",
+            "batsThrows": "좌타",
+            "position": "3루수",
+            "order": 1
+          },
+          {
+            "playerCode": "76290",
+            "name": "김현수",
+            "batsThrows": "좌타",
+            "position": "1루수",
+            "order": 2
+          },
+          {
+            "playerCode": "52001",
+            "name": "안현민",
+            "batsThrows": "우타",
+            "position": "지명타자",
+            "order": 3
+          },
+          {
+            "playerCode": "56034",
+            "name": "힐리어드",
+            "batsThrows": "좌타",
+            "position": "중견수",
+            "order": 4
+          },
+          {
+            "playerCode": "79402",
+            "name": "김상수",
+            "batsThrows": "우타",
+            "position": "2루수",
+            "order": 5
+          },
+          {
+            "playerCode": "64004",
+            "name": "김민혁",
+            "batsThrows": "좌타",
+            "position": "좌익수",
+            "order": 6
+          },
+          {
+            "playerCode": "66706",
+            "name": "장진혁",
+            "batsThrows": "좌타",
+            "position": "우익수",
+            "order": 7
+          },
+          {
+            "playerCode": "63722",
+            "name": "한승택",
+            "batsThrows": "우타",
+            "position": "포수",
+            "order": 8
+          },
+          {
+            "playerCode": "51003",
+            "name": "권동진",
+            "batsThrows": "좌타",
+            "position": "유격수",
+            "order": 9
+          }
+        ],
+        "homePitcherDetail": {
+          "name": "손동현",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "69041"
+        },
+        "awayBattersString": "황성빈, 고승민, 레이예스, 한동희, 나승엽, 박찬형, 윤동희, 전민재, 손성빈",
+        "naverOffsetMode": "auto",
+        "gameTime": "18:00",
+        "updatedAt": 1783169442012,
+        "winPitcher": "비슬리",
+        "homeHit": 3,
+        "broadcast": "KBS N SPORTS",
+        "awayLineupDetail": [
+          {
+            "playerCode": "50500",
+            "name": "황성빈",
+            "batsThrows": "좌타",
+            "position": "중견수",
+            "order": 1
+          },
+          {
+            "playerCode": "69517",
+            "name": "고승민",
+            "batsThrows": "좌타",
+            "position": "2루수",
+            "order": 2
+          },
+          {
+            "playerCode": "54529",
+            "name": "레이예스",
+            "batsThrows": "양타",
+            "position": "좌익수",
+            "order": 3
+          },
+          {
+            "playerCode": "68525",
+            "name": "한동희",
+            "batsThrows": "우타",
+            "position": "지명타자",
+            "order": 4
+          },
+          {
+            "playerCode": "51551",
+            "name": "나승엽",
+            "batsThrows": "좌타",
+            "position": "1루수",
+            "order": 5
+          },
+          {
+            "playerCode": "55530",
+            "name": "박찬형",
+            "batsThrows": "좌타",
+            "position": "3루수",
+            "order": 6
+          },
+          {
+            "playerCode": "52591",
+            "name": "윤동희",
+            "batsThrows": "우타",
+            "position": "우익수",
+            "order": 7
+          },
+          {
+            "playerCode": "68205",
+            "name": "전민재",
+            "batsThrows": "우타",
+            "position": "유격수",
+            "order": 8
+          },
+          {
+            "playerCode": "51528",
+            "name": "손성빈",
+            "batsThrows": "우타",
+            "position": "포수",
+            "order": 9
+          }
+        ],
+        "homeBatters": [
+          "류현인",
+          "김현수",
+          "안현민",
+          "힐리어드",
+          "김상수",
+          "김민혁",
+          "장진혁",
+          "한승택",
+          "권동진"
+        ],
+        "homeStarterDetail": {
+          "name": "고영표",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "64001"
+        },
+        "homeBattersText": "류현인\n김현수\n안현민\n힐리어드\n김상수\n김민혁\n장진혁\n한승택\n권동진",
+        "id": "2607044",
+        "team1": "롯데",
+        "homeBase": 4,
+        "time": "18:00",
+        "team2": "KT",
+        "homeLineupDetail": [
+          {
+            "playerCode": "53036",
+            "name": "류현인",
+            "batsThrows": "좌타",
+            "position": "3루수",
+            "order": 1
+          },
+          {
+            "playerCode": "76290",
+            "name": "김현수",
+            "batsThrows": "좌타",
+            "position": "1루수",
+            "order": 2
+          },
+          {
+            "playerCode": "52001",
+            "name": "안현민",
+            "batsThrows": "우타",
+            "position": "지명타자",
+            "order": 3
+          },
+          {
+            "playerCode": "56034",
+            "name": "힐리어드",
+            "batsThrows": "좌타",
+            "position": "중견수",
+            "order": 4
+          },
+          {
+            "playerCode": "79402",
+            "name": "김상수",
+            "batsThrows": "우타",
+            "position": "2루수",
+            "order": 5
+          },
+          {
+            "playerCode": "64004",
+            "name": "김민혁",
+            "batsThrows": "좌타",
+            "position": "좌익수",
+            "order": 6
+          },
+          {
+            "playerCode": "66706",
+            "name": "장진혁",
+            "batsThrows": "좌타",
+            "position": "우익수",
+            "order": 7
+          },
+          {
+            "playerCode": "63722",
+            "name": "한승택",
+            "batsThrows": "우타",
+            "position": "포수",
+            "order": 8
+          },
+          {
+            "playerCode": "51003",
+            "name": "권동진",
+            "batsThrows": "좌타",
+            "position": "유격수",
+            "order": 9
+          }
+        ],
+        "awayStarter": "비슬리",
+        "status": "종료",
+        "homeLineupString": "류현인, 김현수, 안현민, 힐리어드, 김상수, 김민혁, 장진혁, 한승택, 권동진",
+        "awayPlayers": [
+          "황성빈",
+          "고승민",
+          "레이예스",
+          "한동희",
+          "나승엽",
+          "박찬형",
+          "윤동희",
+          "전민재",
+          "손성빈"
+        ],
+        "gameStatus": "종료",
+        "bannerLink": "",
+        "awayLineupString": "황성빈, 고승민, 레이예스, 한동희, 나승엽, 박찬형, 윤동희, 전민재, 손성빈",
+        "awayScore": 4,
+        "awayBattersDetail": [
+          {
+            "playerCode": "50500",
+            "name": "황성빈",
+            "batsThrows": "좌타",
+            "position": "중견수",
+            "order": 1
+          },
+          {
+            "playerCode": "69517",
+            "name": "고승민",
+            "batsThrows": "좌타",
+            "position": "2루수",
+            "order": 2
+          },
+          {
+            "playerCode": "54529",
+            "name": "레이예스",
+            "batsThrows": "양타",
+            "position": "좌익수",
+            "order": 3
+          },
+          {
+            "playerCode": "68525",
+            "name": "한동희",
+            "batsThrows": "우타",
+            "position": "지명타자",
+            "order": 4
+          },
+          {
+            "playerCode": "51551",
+            "name": "나승엽",
+            "batsThrows": "좌타",
+            "position": "1루수",
+            "order": 5
+          },
+          {
+            "playerCode": "55530",
+            "name": "박찬형",
+            "batsThrows": "좌타",
+            "position": "3루수",
+            "order": 6
+          },
+          {
+            "playerCode": "52591",
+            "name": "윤동희",
+            "batsThrows": "우타",
+            "position": "우익수",
+            "order": 7
+          },
+          {
+            "playerCode": "68205",
+            "name": "전민재",
+            "batsThrows": "우타",
+            "position": "유격수",
+            "order": 8
+          },
+          {
+            "playerCode": "51528",
+            "name": "손성빈",
+            "batsThrows": "우타",
+            "position": "포수",
+            "order": 9
+          }
+        ],
+        "awayBatters": [
+          "황성빈",
+          "고승민",
+          "레이예스",
+          "한동희",
+          "나승엽",
+          "박찬형",
+          "윤동희",
+          "전민재",
+          "손성빈"
+        ],
+        "homePlayers": [
+          "류현인",
+          "김현수",
+          "안현민",
+          "힐리어드",
+          "김상수",
+          "김민혁",
+          "장진혁",
+          "한승택",
+          "권동진"
+        ],
+        "awayHit": 9,
+        "awayInning": [
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "2",
+          "0",
+          "1",
+          "1"
+        ],
+        "homeLineup": [
+          "류현인",
+          "김현수",
+          "안현민",
+          "힐리어드",
+          "김상수",
+          "김민혁",
+          "장진혁",
+          "한승택",
+          "권동진"
+        ],
+        "base3": false,
+        "homeInning": [
+          "0",
+          "0",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "awayLineup": [
+          "황성빈",
+          "고승민",
+          "레이예스",
+          "한동희",
+          "나승엽",
+          "박찬형",
+          "윤동희",
+          "전민재",
+          "손성빈"
+        ],
+        "awayTeam": "롯데",
+        "date": "2026-07-04",
+        "broadcastLink": "",
+        "homeBattersString": "류현인, 김현수, 안현민, 힐리어드, 김상수, 김민혁, 장진혁, 한승택, 권동진",
+        "homeScore": 1,
+        "base2": false,
+        "homeLineupText": "류현인\n김현수\n안현민\n힐리어드\n김상수\n김민혁\n장진혁\n한승택\n권동진",
+        "inning": "9회말",
+        "lineup": {
+          "away": [
+            "황성빈",
+            "고승민",
+            "레이예스",
+            "한동희",
+            "나승엽",
+            "박찬형",
+            "윤동희",
+            "전민재",
+            "손성빈"
+          ],
+          "home": [
+            "류현인",
+            "김현수",
+            "안현민",
+            "힐리어드",
+            "김상수",
+            "김민혁",
+            "장진혁",
+            "한승택",
+            "권동진"
+          ]
+        },
+        "awayPitcherDetail": {
+          "name": "김원중",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "62528"
+        },
+        "naverGameId": "20260704LTKT02026",
+        "awayPitcherCount": 13,
+        "homeTeam": "KT",
+        "homeError": 3,
+        "awayCurrentPitcher": "김원중",
+        "homeCurrentPitcher": "손동현",
+        "awayCurrentPitcherDetail": {
+          "name": "김원중",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "62528"
+        },
+        "homeCurrentPitcherDetail": {
+          "name": "손동현",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "69041"
+        },
+        "awayBullpenPitcher": "김원중",
+        "homeBullpenPitcher": "손동현",
+        "awayBullpenPitcherDetail": {
+          "name": "김원중",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "62528"
+        },
+        "homeBullpenPitcherDetail": {
+          "name": "손동현",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "69041"
+        }
+      },
+      {
+        "awayScore": 3,
+        "awayBattersDetail": [
+          {
+            "playerCode": "50707",
+            "name": "최인호",
+            "batsThrows": "좌타",
+            "position": "좌익수",
+            "order": 1
+          },
+          {
+            "playerCode": "54730",
+            "name": "페라자",
+            "batsThrows": "양타",
+            "position": "우익수",
+            "order": 2
+          },
+          {
+            "playerCode": "53764",
+            "name": "문현빈",
+            "batsThrows": "좌타",
+            "position": "중견수",
+            "order": 3
+          },
+          {
+            "playerCode": "68050",
+            "name": "강백호",
+            "batsThrows": "좌타",
+            "position": "지명타자",
+            "order": 4
+          },
+          {
+            "playerCode": "69737",
+            "name": "노시환",
+            "batsThrows": "우타",
+            "position": "3루수",
+            "order": 5
+          },
+          {
+            "playerCode": "52764",
+            "name": "허인서",
+            "batsThrows": "우타",
+            "position": "포수",
+            "order": 6
+          },
+          {
+            "playerCode": "66704",
+            "name": "김태연",
+            "batsThrows": "우타",
+            "position": "1루수",
+            "order": 7
+          },
+          {
+            "playerCode": "65703",
+            "name": "이도윤",
+            "batsThrows": "좌타",
+            "position": "2루수",
+            "order": 8
+          },
+          {
+            "playerCode": "50709",
+            "name": "박정현",
+            "batsThrows": "우타",
+            "position": "유격수",
+            "order": 9
+          }
+        ],
+        "awayBatters": [
+          "최인호",
+          "페라자",
+          "문현빈",
+          "강백호",
+          "노시환",
+          "허인서",
+          "김태연",
+          "이도윤",
+          "박정현"
+        ],
+        "awayPlayers": [
+          "최인호",
+          "페라자",
+          "문현빈",
+          "강백호",
+          "노시환",
+          "허인서",
+          "김태연",
+          "이도윤",
+          "박정현"
+        ],
+        "gameStatus": "종료",
+        "bannerLink": "",
+        "awayLineupString": "최인호, 페라자, 문현빈, 강백호, 노시환, 허인서, 김태연, 이도윤, 박정현",
+        "homeLineupString": "홍창기, 박해민, 오스틴, 문보경, 송찬의, 문정빈, 박동원, 이영빈, 구본혁",
+        "team2": "LG",
+        "awayStarter": "에르난데스",
+        "homeLineupDetail": [
+          {
+            "playerCode": "66108",
+            "name": "홍창기",
+            "batsThrows": "좌타",
+            "position": "우익수",
+            "order": 1
+          },
+          {
+            "playerCode": "62415",
+            "name": "박해민",
+            "batsThrows": "좌타",
+            "position": "중견수",
+            "order": 2
+          },
+          {
+            "playerCode": "53123",
+            "name": "오스틴",
+            "batsThrows": "우타",
+            "position": "지명타자",
+            "order": 3
+          },
+          {
+            "playerCode": "69102",
+            "name": "문보경",
+            "batsThrows": "좌타",
+            "position": "3루수",
+            "order": 4
+          },
+          {
+            "playerCode": "68110",
+            "name": "송찬의",
+            "batsThrows": "우타",
+            "position": "좌익수",
+            "order": 5
+          },
+          {
+            "playerCode": "52121",
+            "name": "문정빈",
+            "batsThrows": "우타",
+            "position": "1루수",
+            "order": 6
+          },
+          {
+            "playerCode": "79365",
+            "name": "박동원",
+            "batsThrows": "우타",
+            "position": "포수",
+            "order": 7
+          },
+          {
+            "playerCode": "51100",
+            "name": "이영빈",
+            "batsThrows": "좌타",
+            "position": "유격수",
+            "order": 8
+          },
+          {
+            "playerCode": "69100",
+            "name": "구본혁",
+            "batsThrows": "우타",
+            "position": "2루수",
+            "order": 9
+          }
+        ],
+        "status": "종료",
+        "awayPitcherCount": 10,
+        "homeTeam": "LG",
+        "homeError": 1,
+        "date": "2026-07-04",
+        "homeBattersString": "홍창기, 박해민, 오스틴, 문보경, 송찬의, 문정빈, 박동원, 이영빈, 구본혁",
+        "broadcastLink": "",
+        "homeScore": 5,
+        "base2": false,
+        "homeLineupText": "홍창기\n박해민\n오스틴\n문보경\n송찬의\n문정빈\n박동원\n이영빈\n구본혁",
+        "inning": "9회초",
+        "lineup": {
+          "away": [
+            "최인호",
+            "페라자",
+            "문현빈",
+            "강백호",
+            "노시환",
+            "허인서",
+            "김태연",
+            "이도윤",
+            "박정현"
+          ],
+          "home": [
+            "홍창기",
+            "박해민",
+            "오스틴",
+            "문보경",
+            "송찬의",
+            "문정빈",
+            "박동원",
+            "이영빈",
+            "구본혁"
+          ]
+        },
+        "naverGameId": "20260704HHLG02026",
+        "awayPitcherDetail": {
+          "name": "강재민",
+          "position": "투수",
+          "batsThrows": "우언",
+          "playerCode": "50705"
+        },
+        "awayLineup": [
+          "최인호",
+          "페라자",
+          "문현빈",
+          "강백호",
+          "노시환",
+          "허인서",
+          "김태연",
+          "이도윤",
+          "박정현"
+        ],
+        "homeInning": [
+          "4",
+          "0",
+          "0",
+          "0",
+          "0",
+          "1",
+          "0",
+          "0",
+          "-"
+        ],
+        "awayTeam": "한화",
+        "homePlayers": [
+          "홍창기",
+          "박해민",
+          "오스틴",
+          "문보경",
+          "송찬의",
+          "문정빈",
+          "박동원",
+          "이영빈",
+          "구본혁"
+        ],
+        "awayInning": [
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "3",
+          "0",
+          "0",
+          "0"
+        ],
+        "awayHit": 6,
+        "homeLineup": [
+          "홍창기",
+          "박해민",
+          "오스틴",
+          "문보경",
+          "송찬의",
+          "문정빈",
+          "박동원",
+          "이영빈",
+          "구본혁"
+        ],
+        "base3": false,
+        "awayBase": 6,
+        "awayError": 0,
+        "awayBattersText": "최인호\n페라자\n문현빈\n강백호\n노시환\n허인서\n김태연\n이도윤\n박정현",
+        "out": 0,
+        "endTime": 1783169442390,
+        "lineups": {
+          "away": [
+            "최인호",
+            "페라자",
+            "문현빈",
+            "강백호",
+            "노시환",
+            "허인서",
+            "김태연",
+            "이도윤",
+            "박정현"
+          ],
+          "home": [
+            "홍창기",
+            "박해민",
+            "오스틴",
+            "문보경",
+            "송찬의",
+            "문정빈",
+            "박동원",
+            "이영빈",
+            "구본혁"
+          ]
+        },
+        "awayLineupText": "최인호\n페라자\n문현빈\n강백호\n노시환\n허인서\n김태연\n이도윤\n박정현",
+        "homePitcherCount": 21,
+        "homeStarter": "장현식",
+        "base1": false,
+        "homePitcher": "리오스",
+        "strike": 0,
+        "ball": 0,
+        "homeStarterDetail": {
+          "name": "장현식",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "63950"
+        },
+        "homeBattersText": "홍창기\n박해민\n오스틴\n문보경\n송찬의\n문정빈\n박동원\n이영빈\n구본혁",
+        "id": "2607045",
+        "team1": "한화",
+        "homeBase": 8,
+        "time": "18:00",
+        "winPitcher": "장현식",
+        "homeHit": 9,
+        "broadcast": "MBC SPORTS+",
+        "awayLineupDetail": [
+          {
+            "playerCode": "50707",
+            "name": "최인호",
+            "batsThrows": "좌타",
+            "position": "좌익수",
+            "order": 1
+          },
+          {
+            "playerCode": "54730",
+            "name": "페라자",
+            "batsThrows": "양타",
+            "position": "우익수",
+            "order": 2
+          },
+          {
+            "playerCode": "53764",
+            "name": "문현빈",
+            "batsThrows": "좌타",
+            "position": "중견수",
+            "order": 3
+          },
+          {
+            "playerCode": "68050",
+            "name": "강백호",
+            "batsThrows": "좌타",
+            "position": "지명타자",
+            "order": 4
+          },
+          {
+            "playerCode": "69737",
+            "name": "노시환",
+            "batsThrows": "우타",
+            "position": "3루수",
+            "order": 5
+          },
+          {
+            "playerCode": "52764",
+            "name": "허인서",
+            "batsThrows": "우타",
+            "position": "포수",
+            "order": 6
+          },
+          {
+            "playerCode": "66704",
+            "name": "김태연",
+            "batsThrows": "우타",
+            "position": "1루수",
+            "order": 7
+          },
+          {
+            "playerCode": "65703",
+            "name": "이도윤",
+            "batsThrows": "좌타",
+            "position": "2루수",
+            "order": 8
+          },
+          {
+            "playerCode": "50709",
+            "name": "박정현",
+            "batsThrows": "우타",
+            "position": "유격수",
+            "order": 9
+          }
+        ],
+        "homeBatters": [
+          "홍창기",
+          "박해민",
+          "오스틴",
+          "문보경",
+          "송찬의",
+          "문정빈",
+          "박동원",
+          "이영빈",
+          "구본혁"
+        ],
+        "homePitcherDetail": {
+          "name": "리오스",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "56146"
+        },
+        "awayBattersString": "최인호, 페라자, 문현빈, 강백호, 노시환, 허인서, 김태연, 이도윤, 박정현",
+        "naverOffsetMode": "auto",
+        "gameTime": "18:00",
+        "updatedAt": 1783169442390,
+        "broadcaster": "MBC SPORTS+",
+        "losePitcher": "에르난데스",
+        "stadium": "잠실",
+        "awayPitcher": "강재민",
+        "awayStarterDetail": {
+          "name": "에르난데스",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "56712"
+        },
+        "homeBattersDetail": [
+          {
+            "playerCode": "66108",
+            "name": "홍창기",
+            "batsThrows": "좌타",
+            "position": "우익수",
+            "order": 1
+          },
+          {
+            "playerCode": "62415",
+            "name": "박해민",
+            "batsThrows": "좌타",
+            "position": "중견수",
+            "order": 2
+          },
+          {
+            "playerCode": "53123",
+            "name": "오스틴",
+            "batsThrows": "우타",
+            "position": "지명타자",
+            "order": 3
+          },
+          {
+            "playerCode": "69102",
+            "name": "문보경",
+            "batsThrows": "좌타",
+            "position": "3루수",
+            "order": 4
+          },
+          {
+            "playerCode": "68110",
+            "name": "송찬의",
+            "batsThrows": "우타",
+            "position": "좌익수",
+            "order": 5
+          },
+          {
+            "playerCode": "52121",
+            "name": "문정빈",
+            "batsThrows": "우타",
+            "position": "1루수",
+            "order": 6
+          },
+          {
+            "playerCode": "79365",
+            "name": "박동원",
+            "batsThrows": "우타",
+            "position": "포수",
+            "order": 7
+          },
+          {
+            "playerCode": "51100",
+            "name": "이영빈",
+            "batsThrows": "좌타",
+            "position": "유격수",
+            "order": 8
+          },
+          {
+            "playerCode": "69100",
+            "name": "구본혁",
+            "batsThrows": "우타",
+            "position": "2루수",
+            "order": 9
+          }
+        ],
+        "awayCurrentPitcher": "강재민",
+        "homeCurrentPitcher": "리오스",
+        "awayCurrentPitcherDetail": {
+          "name": "강재민",
+          "position": "투수",
+          "batsThrows": "우언",
+          "playerCode": "50705"
+        },
+        "homeCurrentPitcherDetail": {
+          "name": "리오스",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "56146"
+        },
+        "awayBullpenPitcher": "강재민",
+        "homeBullpenPitcher": "리오스",
+        "awayBullpenPitcherDetail": {
+          "name": "강재민",
+          "position": "투수",
+          "batsThrows": "우언",
+          "playerCode": "50705"
+        },
+        "homeBullpenPitcherDetail": {
+          "name": "리오스",
+          "position": "투수",
+          "batsThrows": "우투",
+          "playerCode": "56146"
+        }
+      }
     ]
   },
   "games": [
@@ -369977,108 +372479,2608 @@
         "이주헌",
         "신민재"
       ]
+    },
+    {
+      "awayPitcherCount": 19,
+      "homeError": 0,
+      "homeTeam": "키움",
+      "homeScore": 5,
+      "base2": false,
+      "date": "2026-07-04",
+      "broadcastLink": "",
+      "homeBattersString": "서건창, 추재현, 데이비슨, 히우라, 안치홍, 박찬혁, 여동욱, 김동헌, 권혁빈",
+      "naverGameId": "20260704OBWO02026",
+      "awayPitcherDetail": {
+        "name": "이영하",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "66291"
+      },
+      "homeLineupText": "서건창\n추재현\n데이비슨\n히우라\n안치홍\n박찬혁\n여동욱\n김동헌\n권혁빈",
+      "inning": "9회말",
+      "lineup": {
+        "away": [
+          "김민석",
+          "손아섭",
+          "박준순",
+          "양의지",
+          "안재석",
+          "박찬호",
+          "정수빈",
+          "윤준호",
+          "강승호"
+        ],
+        "home": [
+          "서건창",
+          "추재현",
+          "데이비슨",
+          "히우라",
+          "안치홍",
+          "박찬혁",
+          "여동욱",
+          "김동헌",
+          "권혁빈"
+        ]
+      },
+      "homeInning": [
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "4",
+        "0",
+        "1",
+        "0"
+      ],
+      "awayLineup": [
+        "김민석",
+        "손아섭",
+        "박준순",
+        "양의지",
+        "안재석",
+        "박찬호",
+        "정수빈",
+        "윤준호",
+        "강승호"
+      ],
+      "awayTeam": "두산",
+      "awayHit": 9,
+      "awayInning": [
+        "0",
+        "0",
+        "2",
+        "3",
+        "0",
+        "2",
+        "0",
+        "1",
+        "0"
+      ],
+      "homeLineup": [
+        "서건창",
+        "추재현",
+        "데이비슨",
+        "히우라",
+        "안치홍",
+        "박찬혁",
+        "여동욱",
+        "김동헌",
+        "권혁빈"
+      ],
+      "homePlayers": [
+        "서건창",
+        "추재현",
+        "데이비슨",
+        "히우라",
+        "안치홍",
+        "박찬혁",
+        "여동욱",
+        "김동헌",
+        "권혁빈"
+      ],
+      "base3": false,
+      "awayScore": 8,
+      "awayBatters": [
+        "김민석",
+        "손아섭",
+        "박준순",
+        "양의지",
+        "안재석",
+        "박찬호",
+        "정수빈",
+        "윤준호",
+        "강승호"
+      ],
+      "awayBattersDetail": [
+        {
+          "playerCode": "53554",
+          "name": "김민석",
+          "batsThrows": "좌타",
+          "position": "좌익수",
+          "order": 1
+        },
+        {
+          "playerCode": "77532",
+          "name": "손아섭",
+          "batsThrows": "좌타",
+          "position": "우익수",
+          "order": 2
+        },
+        {
+          "playerCode": "55252",
+          "name": "박준순",
+          "batsThrows": "우타",
+          "position": "2루수",
+          "order": 3
+        },
+        {
+          "playerCode": "76232",
+          "name": "양의지",
+          "batsThrows": "우타",
+          "position": "지명타자",
+          "order": 4
+        },
+        {
+          "playerCode": "51203",
+          "name": "안재석",
+          "batsThrows": "좌타",
+          "position": "3루수",
+          "order": 5
+        },
+        {
+          "playerCode": "64646",
+          "name": "박찬호",
+          "batsThrows": "우타",
+          "position": "유격수",
+          "order": 6
+        },
+        {
+          "playerCode": "79231",
+          "name": "정수빈",
+          "batsThrows": "좌타",
+          "position": "중견수",
+          "order": 7
+        },
+        {
+          "playerCode": "53296",
+          "name": "윤준호",
+          "batsThrows": "우타",
+          "position": "포수",
+          "order": 8
+        },
+        {
+          "playerCode": "63123",
+          "name": "강승호",
+          "batsThrows": "우타",
+          "position": "1루수",
+          "order": 9
+        }
+      ],
+      "awayPlayers": [
+        "김민석",
+        "손아섭",
+        "박준순",
+        "양의지",
+        "안재석",
+        "박찬호",
+        "정수빈",
+        "윤준호",
+        "강승호"
+      ],
+      "awayLineupString": "김민석, 손아섭, 박준순, 양의지, 안재석, 박찬호, 정수빈, 윤준호, 강승호",
+      "bannerLink": "",
+      "gameStatus": "종료",
+      "homeLineupString": "서건창, 추재현, 데이비슨, 히우라, 안치홍, 박찬혁, 여동욱, 김동헌, 권혁빈",
+      "homeLineupDetail": [
+        {
+          "playerCode": "78168",
+          "name": "서건창",
+          "batsThrows": "좌타",
+          "position": "2루수",
+          "order": 1
+        },
+        {
+          "playerCode": "68362",
+          "name": "추재현",
+          "batsThrows": "좌타",
+          "position": "중견수",
+          "order": 2
+        },
+        {
+          "playerCode": "54944",
+          "name": "데이비슨",
+          "batsThrows": "우타",
+          "position": "1루수",
+          "order": 3
+        },
+        {
+          "playerCode": "56305",
+          "name": "히우라",
+          "batsThrows": "우타",
+          "position": "좌익수",
+          "order": 4
+        },
+        {
+          "playerCode": "79608",
+          "name": "안치홍",
+          "batsThrows": "우타",
+          "position": "지명타자",
+          "order": 5
+        },
+        {
+          "playerCode": "52348",
+          "name": "박찬혁",
+          "batsThrows": "우타",
+          "position": "우익수",
+          "order": 6
+        },
+        {
+          "playerCode": "55393",
+          "name": "여동욱",
+          "batsThrows": "우타",
+          "position": "3루수",
+          "order": 7
+        },
+        {
+          "playerCode": "53344",
+          "name": "김동헌",
+          "batsThrows": "우타",
+          "position": "포수",
+          "order": 8
+        },
+        {
+          "playerCode": "55371",
+          "name": "권혁빈",
+          "batsThrows": "우타",
+          "position": "유격수",
+          "order": 9
+        }
+      ],
+      "awayStarter": "최승용",
+      "team2": "키움",
+      "status": "종료",
+      "homeBattersText": "서건창\n추재현\n데이비슨\n히우라\n안치홍\n박찬혁\n여동욱\n김동헌\n권혁빈",
+      "homeStarterDetail": {
+        "name": "박준현",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "56318"
+      },
+      "team1": "두산",
+      "time": "18:00",
+      "homeBase": 6,
+      "id": "2607041",
+      "broadcast": "SPOTV2",
+      "winPitcher": "최승용",
+      "homeHit": 10,
+      "homeBatters": [
+        "서건창",
+        "추재현",
+        "데이비슨",
+        "히우라",
+        "안치홍",
+        "박찬혁",
+        "여동욱",
+        "김동헌",
+        "권혁빈"
+      ],
+      "awayLineupDetail": [
+        {
+          "playerCode": "53554",
+          "name": "김민석",
+          "batsThrows": "좌타",
+          "position": "좌익수",
+          "order": 1
+        },
+        {
+          "playerCode": "77532",
+          "name": "손아섭",
+          "batsThrows": "좌타",
+          "position": "우익수",
+          "order": 2
+        },
+        {
+          "playerCode": "55252",
+          "name": "박준순",
+          "batsThrows": "우타",
+          "position": "2루수",
+          "order": 3
+        },
+        {
+          "playerCode": "76232",
+          "name": "양의지",
+          "batsThrows": "우타",
+          "position": "지명타자",
+          "order": 4
+        },
+        {
+          "playerCode": "51203",
+          "name": "안재석",
+          "batsThrows": "좌타",
+          "position": "3루수",
+          "order": 5
+        },
+        {
+          "playerCode": "64646",
+          "name": "박찬호",
+          "batsThrows": "우타",
+          "position": "유격수",
+          "order": 6
+        },
+        {
+          "playerCode": "79231",
+          "name": "정수빈",
+          "batsThrows": "좌타",
+          "position": "중견수",
+          "order": 7
+        },
+        {
+          "playerCode": "53296",
+          "name": "윤준호",
+          "batsThrows": "우타",
+          "position": "포수",
+          "order": 8
+        },
+        {
+          "playerCode": "63123",
+          "name": "강승호",
+          "batsThrows": "우타",
+          "position": "1루수",
+          "order": 9
+        }
+      ],
+      "awayBattersString": "김민석, 손아섭, 박준순, 양의지, 안재석, 박찬호, 정수빈, 윤준호, 강승호",
+      "homePitcherDetail": {
+        "name": "정다훈",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "56345"
+      },
+      "updatedAt": 1783169440994,
+      "gameTime": "18:00",
+      "naverOffsetMode": "auto",
+      "awayStarterDetail": {
+        "name": "최승용",
+        "position": "투수",
+        "batsThrows": "좌투",
+        "playerCode": "51264"
+      },
+      "awayPitcher": "이영하",
+      "broadcaster": "SPOTV2",
+      "losePitcher": "박준현",
+      "stadium": "고척",
+      "homeBattersDetail": [
+        {
+          "playerCode": "78168",
+          "name": "서건창",
+          "batsThrows": "좌타",
+          "position": "2루수",
+          "order": 1
+        },
+        {
+          "playerCode": "68362",
+          "name": "추재현",
+          "batsThrows": "좌타",
+          "position": "중견수",
+          "order": 2
+        },
+        {
+          "playerCode": "54944",
+          "name": "데이비슨",
+          "batsThrows": "우타",
+          "position": "1루수",
+          "order": 3
+        },
+        {
+          "playerCode": "56305",
+          "name": "히우라",
+          "batsThrows": "우타",
+          "position": "좌익수",
+          "order": 4
+        },
+        {
+          "playerCode": "79608",
+          "name": "안치홍",
+          "batsThrows": "우타",
+          "position": "지명타자",
+          "order": 5
+        },
+        {
+          "playerCode": "52348",
+          "name": "박찬혁",
+          "batsThrows": "우타",
+          "position": "우익수",
+          "order": 6
+        },
+        {
+          "playerCode": "55393",
+          "name": "여동욱",
+          "batsThrows": "우타",
+          "position": "3루수",
+          "order": 7
+        },
+        {
+          "playerCode": "53344",
+          "name": "김동헌",
+          "batsThrows": "우타",
+          "position": "포수",
+          "order": 8
+        },
+        {
+          "playerCode": "55371",
+          "name": "권혁빈",
+          "batsThrows": "우타",
+          "position": "유격수",
+          "order": 9
+        }
+      ],
+      "awayError": 1,
+      "awayBase": 10,
+      "awayBattersText": "김민석\n손아섭\n박준순\n양의지\n안재석\n박찬호\n정수빈\n윤준호\n강승호",
+      "out": 0,
+      "endTime": 1783169440994,
+      "lineups": {
+        "away": [
+          "김민석",
+          "손아섭",
+          "박준순",
+          "양의지",
+          "안재석",
+          "박찬호",
+          "정수빈",
+          "윤준호",
+          "강승호"
+        ],
+        "home": [
+          "서건창",
+          "추재현",
+          "데이비슨",
+          "히우라",
+          "안치홍",
+          "박찬혁",
+          "여동욱",
+          "김동헌",
+          "권혁빈"
+        ]
+      },
+      "awayLineupText": "김민석\n손아섭\n박준순\n양의지\n안재석\n박찬호\n정수빈\n윤준호\n강승호",
+      "homePitcherCount": 10,
+      "homeStarter": "박준현",
+      "ball": 0,
+      "strike": 0,
+      "base1": false,
+      "homePitcher": "정다훈",
+      "awayCurrentPitcher": "이영하",
+      "homeCurrentPitcher": "정다훈",
+      "awayCurrentPitcherDetail": {
+        "name": "이영하",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "66291"
+      },
+      "homeCurrentPitcherDetail": {
+        "name": "정다훈",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "56345"
+      },
+      "awayBullpenPitcher": "이영하",
+      "homeBullpenPitcher": "정다훈",
+      "awayBullpenPitcherDetail": {
+        "name": "이영하",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "66291"
+      },
+      "homeBullpenPitcherDetail": {
+        "name": "정다훈",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "56345"
+      }
+    },
+    {
+      "homeStarter": "시라카와",
+      "homePitcherCount": 13,
+      "awayLineupText": "김주원\n권희동\n블레인\n이우성\n박건우\n김휘집\n김형준\n천재환\n김한별",
+      "lineups": {
+        "away": [
+          "김주원",
+          "권희동",
+          "블레인",
+          "이우성",
+          "박건우",
+          "김휘집",
+          "김형준",
+          "천재환",
+          "김한별"
+        ],
+        "home": [
+          "김호령",
+          "박상준",
+          "김도영",
+          "나성범",
+          "카스트로",
+          "한준수",
+          "김선빈",
+          "박재현",
+          "김규성"
+        ]
+      },
+      "endTime": 1783169441342,
+      "homePitcher": "곽도규",
+      "base1": false,
+      "ball": 0,
+      "strike": 0,
+      "awayBattersText": "김주원\n권희동\n블레인\n이우성\n박건우\n김휘집\n김형준\n천재환\n김한별",
+      "awayBase": 5,
+      "awayError": 0,
+      "out": 0,
+      "naverOffsetMode": "auto",
+      "gameTime": "18:00",
+      "updatedAt": 1783169441342,
+      "homePitcherDetail": {
+        "name": "곽도규",
+        "position": "투수",
+        "batsThrows": "좌투",
+        "playerCode": "53609"
+      },
+      "awayBattersString": "김주원, 권희동, 블레인, 이우성, 박건우, 김휘집, 김형준, 천재환, 김한별",
+      "homeBattersDetail": [
+        {
+          "playerCode": "65653",
+          "name": "김호령",
+          "batsThrows": "우타",
+          "position": "중견수",
+          "order": 1
+        },
+        {
+          "playerCode": "52634",
+          "name": "박상준",
+          "batsThrows": "좌타",
+          "position": "1루수",
+          "order": 2
+        },
+        {
+          "playerCode": "52605",
+          "name": "김도영",
+          "batsThrows": "우타",
+          "position": "3루수",
+          "order": 3
+        },
+        {
+          "playerCode": "62947",
+          "name": "나성범",
+          "batsThrows": "좌타",
+          "position": "우익수",
+          "order": 4
+        },
+        {
+          "playerCode": "56626",
+          "name": "카스트로",
+          "batsThrows": "좌타",
+          "position": "지명타자",
+          "order": 5
+        },
+        {
+          "playerCode": "68646",
+          "name": "한준수",
+          "batsThrows": "좌타",
+          "position": "포수",
+          "order": 6
+        },
+        {
+          "playerCode": "78603",
+          "name": "김선빈",
+          "batsThrows": "우타",
+          "position": "2루수",
+          "order": 7
+        },
+        {
+          "playerCode": "55636",
+          "name": "박재현",
+          "batsThrows": "좌타",
+          "position": "좌익수",
+          "order": 8
+        },
+        {
+          "playerCode": "66614",
+          "name": "김규성",
+          "batsThrows": "좌타",
+          "position": "유격수",
+          "order": 9
+        }
+      ],
+      "stadium": "광주",
+      "losePitcher": "시라카와",
+      "broadcaster": "SBS SPORTS",
+      "awayPitcher": "임지민",
+      "awayStarterDetail": {
+        "name": "라일리",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "55903"
+      },
+      "id": "2607042",
+      "homeBase": 3,
+      "time": "18:00",
+      "team1": "NC",
+      "homeStarterDetail": {
+        "name": "시라카와",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "54843"
+      },
+      "homeBattersText": "김호령\n박상준\n김도영\n나성범\n카스트로\n한준수\n김선빈\n박재현\n김규성",
+      "awayLineupDetail": [
+        {
+          "playerCode": "51907",
+          "name": "김주원",
+          "batsThrows": "양타",
+          "position": "유격수",
+          "order": 1
+        },
+        {
+          "playerCode": "63963",
+          "name": "권희동",
+          "batsThrows": "우타",
+          "position": "우익수",
+          "order": 2
+        },
+        {
+          "playerCode": "56950",
+          "name": "블레인",
+          "batsThrows": "우타",
+          "position": "1루수",
+          "order": 3
+        },
+        {
+          "playerCode": "63260",
+          "name": "이우성",
+          "batsThrows": "우타",
+          "position": "좌익수",
+          "order": 4
+        },
+        {
+          "playerCode": "79215",
+          "name": "박건우",
+          "batsThrows": "우타",
+          "position": "지명타자",
+          "order": 5
+        },
+        {
+          "playerCode": "51344",
+          "name": "김휘집",
+          "batsThrows": "우타",
+          "position": "3루수",
+          "order": 6
+        },
+        {
+          "playerCode": "68912",
+          "name": "김형준",
+          "batsThrows": "우타",
+          "position": "포수",
+          "order": 7
+        },
+        {
+          "playerCode": "67905",
+          "name": "천재환",
+          "batsThrows": "우타",
+          "position": "중견수",
+          "order": 8
+        },
+        {
+          "playerCode": "50902",
+          "name": "김한별",
+          "batsThrows": "우타",
+          "position": "2루수",
+          "order": 9
+        }
+      ],
+      "homeBatters": [
+        "김호령",
+        "박상준",
+        "김도영",
+        "나성범",
+        "카스트로",
+        "한준수",
+        "김선빈",
+        "박재현",
+        "김규성"
+      ],
+      "homeHit": 9,
+      "winPitcher": "라일리",
+      "broadcast": "SBS SPORTS",
+      "homeLineupString": "김호령, 박상준, 김도영, 나성범, 카스트로, 한준수, 김선빈, 박재현, 김규성",
+      "status": "종료",
+      "team2": "KIA",
+      "awayStarter": "라일리",
+      "homeLineupDetail": [
+        {
+          "playerCode": "65653",
+          "name": "김호령",
+          "batsThrows": "우타",
+          "position": "중견수",
+          "order": 1
+        },
+        {
+          "playerCode": "52634",
+          "name": "박상준",
+          "batsThrows": "좌타",
+          "position": "1루수",
+          "order": 2
+        },
+        {
+          "playerCode": "52605",
+          "name": "김도영",
+          "batsThrows": "우타",
+          "position": "3루수",
+          "order": 3
+        },
+        {
+          "playerCode": "62947",
+          "name": "나성범",
+          "batsThrows": "좌타",
+          "position": "우익수",
+          "order": 4
+        },
+        {
+          "playerCode": "56626",
+          "name": "카스트로",
+          "batsThrows": "좌타",
+          "position": "지명타자",
+          "order": 5
+        },
+        {
+          "playerCode": "68646",
+          "name": "한준수",
+          "batsThrows": "좌타",
+          "position": "포수",
+          "order": 6
+        },
+        {
+          "playerCode": "78603",
+          "name": "김선빈",
+          "batsThrows": "우타",
+          "position": "2루수",
+          "order": 7
+        },
+        {
+          "playerCode": "55636",
+          "name": "박재현",
+          "batsThrows": "좌타",
+          "position": "좌익수",
+          "order": 8
+        },
+        {
+          "playerCode": "66614",
+          "name": "김규성",
+          "batsThrows": "좌타",
+          "position": "유격수",
+          "order": 9
+        }
+      ],
+      "awayBattersDetail": [
+        {
+          "playerCode": "51907",
+          "name": "김주원",
+          "batsThrows": "양타",
+          "position": "유격수",
+          "order": 1
+        },
+        {
+          "playerCode": "63963",
+          "name": "권희동",
+          "batsThrows": "우타",
+          "position": "우익수",
+          "order": 2
+        },
+        {
+          "playerCode": "56950",
+          "name": "블레인",
+          "batsThrows": "우타",
+          "position": "1루수",
+          "order": 3
+        },
+        {
+          "playerCode": "63260",
+          "name": "이우성",
+          "batsThrows": "우타",
+          "position": "좌익수",
+          "order": 4
+        },
+        {
+          "playerCode": "79215",
+          "name": "박건우",
+          "batsThrows": "우타",
+          "position": "지명타자",
+          "order": 5
+        },
+        {
+          "playerCode": "51344",
+          "name": "김휘집",
+          "batsThrows": "우타",
+          "position": "3루수",
+          "order": 6
+        },
+        {
+          "playerCode": "68912",
+          "name": "김형준",
+          "batsThrows": "우타",
+          "position": "포수",
+          "order": 7
+        },
+        {
+          "playerCode": "67905",
+          "name": "천재환",
+          "batsThrows": "우타",
+          "position": "중견수",
+          "order": 8
+        },
+        {
+          "playerCode": "50902",
+          "name": "김한별",
+          "batsThrows": "우타",
+          "position": "2루수",
+          "order": 9
+        }
+      ],
+      "awayBatters": [
+        "김주원",
+        "권희동",
+        "블레인",
+        "이우성",
+        "박건우",
+        "김휘집",
+        "김형준",
+        "천재환",
+        "김한별"
+      ],
+      "awayScore": 5,
+      "gameStatus": "종료",
+      "bannerLink": "",
+      "awayLineupString": "김주원, 권희동, 블레인, 이우성, 박건우, 김휘집, 김형준, 천재환, 김한별",
+      "awayPlayers": [
+        "김주원",
+        "권희동",
+        "블레인",
+        "이우성",
+        "박건우",
+        "김휘집",
+        "김형준",
+        "천재환",
+        "김한별"
+      ],
+      "awayTeam": "NC",
+      "awayLineup": [
+        "김주원",
+        "권희동",
+        "블레인",
+        "이우성",
+        "박건우",
+        "김휘집",
+        "김형준",
+        "천재환",
+        "김한별"
+      ],
+      "homeInning": [
+        "1",
+        "0",
+        "1",
+        "0",
+        "0",
+        "1",
+        "0",
+        "1",
+        "0"
+      ],
+      "base3": false,
+      "homePlayers": [
+        "김호령",
+        "박상준",
+        "김도영",
+        "나성범",
+        "카스트로",
+        "한준수",
+        "김선빈",
+        "박재현",
+        "김규성"
+      ],
+      "homeLineup": [
+        "김호령",
+        "박상준",
+        "김도영",
+        "나성범",
+        "카스트로",
+        "한준수",
+        "김선빈",
+        "박재현",
+        "김규성"
+      ],
+      "awayInning": [
+        "0",
+        "0",
+        "2",
+        "2",
+        "0",
+        "0",
+        "0",
+        "1",
+        "0"
+      ],
+      "awayHit": 7,
+      "homeTeam": "KIA",
+      "homeError": 0,
+      "awayPitcherCount": 26,
+      "inning": "9회말",
+      "lineup": {
+        "away": [
+          "김주원",
+          "권희동",
+          "블레인",
+          "이우성",
+          "박건우",
+          "김휘집",
+          "김형준",
+          "천재환",
+          "김한별"
+        ],
+        "home": [
+          "김호령",
+          "박상준",
+          "김도영",
+          "나성범",
+          "카스트로",
+          "한준수",
+          "김선빈",
+          "박재현",
+          "김규성"
+        ]
+      },
+      "homeLineupText": "김호령\n박상준\n김도영\n나성범\n카스트로\n한준수\n김선빈\n박재현\n김규성",
+      "naverGameId": "20260704NCHT02026",
+      "awayPitcherDetail": {
+        "name": "임지민",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "52902"
+      },
+      "broadcastLink": "",
+      "homeBattersString": "김호령, 박상준, 김도영, 나성범, 카스트로, 한준수, 김선빈, 박재현, 김규성",
+      "date": "2026-07-04",
+      "base2": false,
+      "homeScore": 4,
+      "awayCurrentPitcher": "임지민",
+      "homeCurrentPitcher": "곽도규",
+      "awayCurrentPitcherDetail": {
+        "name": "임지민",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "52902"
+      },
+      "homeCurrentPitcherDetail": {
+        "name": "곽도규",
+        "position": "투수",
+        "batsThrows": "좌투",
+        "playerCode": "53609"
+      },
+      "awayBullpenPitcher": "임지민",
+      "homeBullpenPitcher": "곽도규",
+      "awayBullpenPitcherDetail": {
+        "name": "임지민",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "52902"
+      },
+      "homeBullpenPitcherDetail": {
+        "name": "곽도규",
+        "position": "투수",
+        "batsThrows": "좌투",
+        "playerCode": "53609"
+      }
+    },
+    {
+      "status": "종료",
+      "team2": "SSG",
+      "awayStarter": "최원태",
+      "homeLineupDetail": [
+        {
+          "playerCode": "54812",
+          "name": "정준재",
+          "batsThrows": "좌타",
+          "position": "2루수",
+          "order": 1
+        },
+        {
+          "playerCode": "67893",
+          "name": "박성한",
+          "batsThrows": "좌타",
+          "position": "유격수",
+          "order": 2
+        },
+        {
+          "playerCode": "62934",
+          "name": "김성욱",
+          "batsThrows": "우타",
+          "position": "우익수",
+          "order": 3
+        },
+        {
+          "playerCode": "53827",
+          "name": "에레디아",
+          "batsThrows": "우타",
+          "position": "좌익수",
+          "order": 4
+        },
+        {
+          "playerCode": "50820",
+          "name": "전의산",
+          "batsThrows": "좌타",
+          "position": "1루수",
+          "order": 5
+        },
+        {
+          "playerCode": "51868",
+          "name": "고명준",
+          "batsThrows": "우타",
+          "position": "3루수",
+          "order": 6
+        },
+        {
+          "playerCode": "68868",
+          "name": "최준우",
+          "batsThrows": "좌타",
+          "position": "지명타자",
+          "order": 7
+        },
+        {
+          "playerCode": "79456",
+          "name": "이지영",
+          "batsThrows": "우타",
+          "position": "포수",
+          "order": 8
+        },
+        {
+          "playerCode": "50854",
+          "name": "최지훈",
+          "batsThrows": "좌타",
+          "position": "중견수",
+          "order": 9
+        }
+      ],
+      "homeLineupString": "정준재, 박성한, 김성욱, 에레디아, 전의산, 고명준, 최준우, 이지영, 최지훈",
+      "gameStatus": "종료",
+      "bannerLink": "",
+      "awayLineupString": "김지찬, 박승규, 구자욱, 최형우, 디아즈, 류지혁, 김도환, 전병우, 김상준",
+      "awayPlayers": [
+        "김지찬",
+        "박승규",
+        "구자욱",
+        "최형우",
+        "디아즈",
+        "류지혁",
+        "김도환",
+        "전병우",
+        "김상준"
+      ],
+      "awayBattersDetail": [
+        {
+          "playerCode": "50458",
+          "name": "김지찬",
+          "batsThrows": "좌타",
+          "position": "중견수",
+          "order": 1
+        },
+        {
+          "playerCode": "69418",
+          "name": "박승규",
+          "batsThrows": "우타",
+          "position": "우익수",
+          "order": 2
+        },
+        {
+          "playerCode": "62404",
+          "name": "구자욱",
+          "batsThrows": "좌타",
+          "position": "좌익수",
+          "order": 3
+        },
+        {
+          "playerCode": "72443",
+          "name": "최형우",
+          "batsThrows": "좌타",
+          "position": "지명타자",
+          "order": 4
+        },
+        {
+          "playerCode": "54400",
+          "name": "디아즈",
+          "batsThrows": "좌타",
+          "position": "1루수",
+          "order": 5
+        },
+        {
+          "playerCode": "62234",
+          "name": "류지혁",
+          "batsThrows": "좌타",
+          "position": "2루수",
+          "order": 6
+        },
+        {
+          "playerCode": "69442",
+          "name": "김도환",
+          "batsThrows": "우타",
+          "position": "포수",
+          "order": 7
+        },
+        {
+          "playerCode": "65586",
+          "name": "전병우",
+          "batsThrows": "우타",
+          "position": "3루수",
+          "order": 8
+        },
+        {
+          "playerCode": "55425",
+          "name": "김상준",
+          "batsThrows": "좌타",
+          "position": "유격수",
+          "order": 9
+        }
+      ],
+      "awayBatters": [
+        "김지찬",
+        "박승규",
+        "구자욱",
+        "최형우",
+        "디아즈",
+        "류지혁",
+        "김도환",
+        "전병우",
+        "김상준"
+      ],
+      "awayScore": 13,
+      "base3": false,
+      "homePlayers": [
+        "정준재",
+        "박성한",
+        "김성욱",
+        "에레디아",
+        "전의산",
+        "고명준",
+        "최준우",
+        "이지영",
+        "최지훈"
+      ],
+      "awayHit": 16,
+      "awayInning": [
+        "2",
+        "0",
+        "0",
+        "8",
+        "3",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "homeLineup": [
+        "정준재",
+        "박성한",
+        "김성욱",
+        "에레디아",
+        "전의산",
+        "고명준",
+        "최준우",
+        "이지영",
+        "최지훈"
+      ],
+      "awayTeam": "삼성",
+      "homeInning": [
+        "5",
+        "1",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "1"
+      ],
+      "awayLineup": [
+        "김지찬",
+        "박승규",
+        "구자욱",
+        "최형우",
+        "디아즈",
+        "류지혁",
+        "김도환",
+        "전병우",
+        "김상준"
+      ],
+      "homeLineupText": "정준재\n박성한\n김성욱\n에레디아\n전의산\n고명준\n최준우\n이지영\n최지훈",
+      "inning": "9회말",
+      "lineup": {
+        "away": [
+          "김지찬",
+          "박승규",
+          "구자욱",
+          "최형우",
+          "디아즈",
+          "류지혁",
+          "김도환",
+          "전병우",
+          "김상준"
+        ],
+        "home": [
+          "정준재",
+          "박성한",
+          "김성욱",
+          "에레디아",
+          "전의산",
+          "고명준",
+          "최준우",
+          "이지영",
+          "최지훈"
+        ]
+      },
+      "awayPitcherDetail": {
+        "name": "임기영",
+        "position": "투수",
+        "batsThrows": "우언",
+        "playerCode": "62754"
+      },
+      "naverGameId": "20260704SSSK02026",
+      "date": "2026-07-04",
+      "homeBattersString": "정준재, 박성한, 김성욱, 에레디아, 전의산, 고명준, 최준우, 이지영, 최지훈",
+      "broadcastLink": "",
+      "base2": false,
+      "homeScore": 7,
+      "homeTeam": "SSG",
+      "homeError": 3,
+      "awayPitcherCount": 13,
+      "base1": false,
+      "homePitcher": "노경은",
+      "ball": 0,
+      "strike": 0,
+      "homeStarter": "타케다",
+      "homePitcherCount": 13,
+      "lineups": {
+        "away": [
+          "김지찬",
+          "박승규",
+          "구자욱",
+          "최형우",
+          "디아즈",
+          "류지혁",
+          "김도환",
+          "전병우",
+          "김상준"
+        ],
+        "home": [
+          "정준재",
+          "박성한",
+          "김성욱",
+          "에레디아",
+          "전의산",
+          "고명준",
+          "최준우",
+          "이지영",
+          "최지훈"
+        ]
+      },
+      "endTime": 1783169441586,
+      "awayLineupText": "김지찬\n박승규\n구자욱\n최형우\n디아즈\n류지혁\n김도환\n전병우\n김상준",
+      "out": 0,
+      "awayError": 0,
+      "awayBase": 7,
+      "awayBattersText": "김지찬\n박승규\n구자욱\n최형우\n디아즈\n류지혁\n김도환\n전병우\n김상준",
+      "homeBattersDetail": [
+        {
+          "playerCode": "54812",
+          "name": "정준재",
+          "batsThrows": "좌타",
+          "position": "2루수",
+          "order": 1
+        },
+        {
+          "playerCode": "67893",
+          "name": "박성한",
+          "batsThrows": "좌타",
+          "position": "유격수",
+          "order": 2
+        },
+        {
+          "playerCode": "62934",
+          "name": "김성욱",
+          "batsThrows": "우타",
+          "position": "우익수",
+          "order": 3
+        },
+        {
+          "playerCode": "53827",
+          "name": "에레디아",
+          "batsThrows": "우타",
+          "position": "좌익수",
+          "order": 4
+        },
+        {
+          "playerCode": "50820",
+          "name": "전의산",
+          "batsThrows": "좌타",
+          "position": "1루수",
+          "order": 5
+        },
+        {
+          "playerCode": "51868",
+          "name": "고명준",
+          "batsThrows": "우타",
+          "position": "3루수",
+          "order": 6
+        },
+        {
+          "playerCode": "68868",
+          "name": "최준우",
+          "batsThrows": "좌타",
+          "position": "지명타자",
+          "order": 7
+        },
+        {
+          "playerCode": "79456",
+          "name": "이지영",
+          "batsThrows": "우타",
+          "position": "포수",
+          "order": 8
+        },
+        {
+          "playerCode": "50854",
+          "name": "최지훈",
+          "batsThrows": "좌타",
+          "position": "중견수",
+          "order": 9
+        }
+      ],
+      "losePitcher": "이건욱",
+      "broadcaster": "SPOTV",
+      "stadium": "문학",
+      "awayPitcher": "임기영",
+      "awayStarterDetail": {
+        "name": "최원태",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "65320"
+      },
+      "naverOffsetMode": "auto",
+      "gameTime": "18:00",
+      "updatedAt": 1783169441586,
+      "homePitcherDetail": {
+        "name": "노경은",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "73211"
+      },
+      "awayBattersString": "김지찬, 박승규, 구자욱, 최형우, 디아즈, 류지혁, 김도환, 전병우, 김상준",
+      "awayLineupDetail": [
+        {
+          "playerCode": "50458",
+          "name": "김지찬",
+          "batsThrows": "좌타",
+          "position": "중견수",
+          "order": 1
+        },
+        {
+          "playerCode": "69418",
+          "name": "박승규",
+          "batsThrows": "우타",
+          "position": "우익수",
+          "order": 2
+        },
+        {
+          "playerCode": "62404",
+          "name": "구자욱",
+          "batsThrows": "좌타",
+          "position": "좌익수",
+          "order": 3
+        },
+        {
+          "playerCode": "72443",
+          "name": "최형우",
+          "batsThrows": "좌타",
+          "position": "지명타자",
+          "order": 4
+        },
+        {
+          "playerCode": "54400",
+          "name": "디아즈",
+          "batsThrows": "좌타",
+          "position": "1루수",
+          "order": 5
+        },
+        {
+          "playerCode": "62234",
+          "name": "류지혁",
+          "batsThrows": "좌타",
+          "position": "2루수",
+          "order": 6
+        },
+        {
+          "playerCode": "69442",
+          "name": "김도환",
+          "batsThrows": "우타",
+          "position": "포수",
+          "order": 7
+        },
+        {
+          "playerCode": "65586",
+          "name": "전병우",
+          "batsThrows": "우타",
+          "position": "3루수",
+          "order": 8
+        },
+        {
+          "playerCode": "55425",
+          "name": "김상준",
+          "batsThrows": "좌타",
+          "position": "유격수",
+          "order": 9
+        }
+      ],
+      "homeBatters": [
+        "정준재",
+        "박성한",
+        "김성욱",
+        "에레디아",
+        "전의산",
+        "고명준",
+        "최준우",
+        "이지영",
+        "최지훈"
+      ],
+      "winPitcher": "최원태",
+      "homeHit": 9,
+      "broadcast": "SPOTV",
+      "id": "2607043",
+      "team1": "삼성",
+      "homeBase": 4,
+      "time": "18:00",
+      "homeStarterDetail": {
+        "name": "타케다",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "56823"
+      },
+      "homeBattersText": "정준재\n박성한\n김성욱\n에레디아\n전의산\n고명준\n최준우\n이지영\n최지훈",
+      "awayCurrentPitcher": "임기영",
+      "homeCurrentPitcher": "노경은",
+      "awayCurrentPitcherDetail": {
+        "name": "임기영",
+        "position": "투수",
+        "batsThrows": "우언",
+        "playerCode": "62754"
+      },
+      "homeCurrentPitcherDetail": {
+        "name": "노경은",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "73211"
+      },
+      "awayBullpenPitcher": "임기영",
+      "homeBullpenPitcher": "노경은",
+      "awayBullpenPitcherDetail": {
+        "name": "임기영",
+        "position": "투수",
+        "batsThrows": "우언",
+        "playerCode": "62754"
+      },
+      "homeBullpenPitcherDetail": {
+        "name": "노경은",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "73211"
+      }
+    },
+    {
+      "base1": false,
+      "homePitcher": "손동현",
+      "strike": 0,
+      "ball": 0,
+      "endTime": 1783169442012,
+      "lineups": {
+        "away": [
+          "황성빈",
+          "고승민",
+          "레이예스",
+          "한동희",
+          "나승엽",
+          "박찬형",
+          "윤동희",
+          "전민재",
+          "손성빈"
+        ],
+        "home": [
+          "류현인",
+          "김현수",
+          "안현민",
+          "힐리어드",
+          "김상수",
+          "김민혁",
+          "장진혁",
+          "한승택",
+          "권동진"
+        ]
+      },
+      "awayLineupText": "황성빈\n고승민\n레이예스\n한동희\n나승엽\n박찬형\n윤동희\n전민재\n손성빈",
+      "homePitcherCount": 12,
+      "homeStarter": "고영표",
+      "out": 0,
+      "awayError": 0,
+      "awayBase": 1,
+      "awayBattersText": "황성빈\n고승민\n레이예스\n한동희\n나승엽\n박찬형\n윤동희\n전민재\n손성빈",
+      "losePitcher": "고영표",
+      "broadcaster": "KBS N SPORTS",
+      "stadium": "수원",
+      "awayPitcher": "김원중",
+      "awayStarterDetail": {
+        "name": "비슬리",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "56523"
+      },
+      "homeBattersDetail": [
+        {
+          "playerCode": "53036",
+          "name": "류현인",
+          "batsThrows": "좌타",
+          "position": "3루수",
+          "order": 1
+        },
+        {
+          "playerCode": "76290",
+          "name": "김현수",
+          "batsThrows": "좌타",
+          "position": "1루수",
+          "order": 2
+        },
+        {
+          "playerCode": "52001",
+          "name": "안현민",
+          "batsThrows": "우타",
+          "position": "지명타자",
+          "order": 3
+        },
+        {
+          "playerCode": "56034",
+          "name": "힐리어드",
+          "batsThrows": "좌타",
+          "position": "중견수",
+          "order": 4
+        },
+        {
+          "playerCode": "79402",
+          "name": "김상수",
+          "batsThrows": "우타",
+          "position": "2루수",
+          "order": 5
+        },
+        {
+          "playerCode": "64004",
+          "name": "김민혁",
+          "batsThrows": "좌타",
+          "position": "좌익수",
+          "order": 6
+        },
+        {
+          "playerCode": "66706",
+          "name": "장진혁",
+          "batsThrows": "좌타",
+          "position": "우익수",
+          "order": 7
+        },
+        {
+          "playerCode": "63722",
+          "name": "한승택",
+          "batsThrows": "우타",
+          "position": "포수",
+          "order": 8
+        },
+        {
+          "playerCode": "51003",
+          "name": "권동진",
+          "batsThrows": "좌타",
+          "position": "유격수",
+          "order": 9
+        }
+      ],
+      "homePitcherDetail": {
+        "name": "손동현",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "69041"
+      },
+      "awayBattersString": "황성빈, 고승민, 레이예스, 한동희, 나승엽, 박찬형, 윤동희, 전민재, 손성빈",
+      "naverOffsetMode": "auto",
+      "gameTime": "18:00",
+      "updatedAt": 1783169442012,
+      "winPitcher": "비슬리",
+      "homeHit": 3,
+      "broadcast": "KBS N SPORTS",
+      "awayLineupDetail": [
+        {
+          "playerCode": "50500",
+          "name": "황성빈",
+          "batsThrows": "좌타",
+          "position": "중견수",
+          "order": 1
+        },
+        {
+          "playerCode": "69517",
+          "name": "고승민",
+          "batsThrows": "좌타",
+          "position": "2루수",
+          "order": 2
+        },
+        {
+          "playerCode": "54529",
+          "name": "레이예스",
+          "batsThrows": "양타",
+          "position": "좌익수",
+          "order": 3
+        },
+        {
+          "playerCode": "68525",
+          "name": "한동희",
+          "batsThrows": "우타",
+          "position": "지명타자",
+          "order": 4
+        },
+        {
+          "playerCode": "51551",
+          "name": "나승엽",
+          "batsThrows": "좌타",
+          "position": "1루수",
+          "order": 5
+        },
+        {
+          "playerCode": "55530",
+          "name": "박찬형",
+          "batsThrows": "좌타",
+          "position": "3루수",
+          "order": 6
+        },
+        {
+          "playerCode": "52591",
+          "name": "윤동희",
+          "batsThrows": "우타",
+          "position": "우익수",
+          "order": 7
+        },
+        {
+          "playerCode": "68205",
+          "name": "전민재",
+          "batsThrows": "우타",
+          "position": "유격수",
+          "order": 8
+        },
+        {
+          "playerCode": "51528",
+          "name": "손성빈",
+          "batsThrows": "우타",
+          "position": "포수",
+          "order": 9
+        }
+      ],
+      "homeBatters": [
+        "류현인",
+        "김현수",
+        "안현민",
+        "힐리어드",
+        "김상수",
+        "김민혁",
+        "장진혁",
+        "한승택",
+        "권동진"
+      ],
+      "homeStarterDetail": {
+        "name": "고영표",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "64001"
+      },
+      "homeBattersText": "류현인\n김현수\n안현민\n힐리어드\n김상수\n김민혁\n장진혁\n한승택\n권동진",
+      "id": "2607044",
+      "team1": "롯데",
+      "homeBase": 4,
+      "time": "18:00",
+      "team2": "KT",
+      "homeLineupDetail": [
+        {
+          "playerCode": "53036",
+          "name": "류현인",
+          "batsThrows": "좌타",
+          "position": "3루수",
+          "order": 1
+        },
+        {
+          "playerCode": "76290",
+          "name": "김현수",
+          "batsThrows": "좌타",
+          "position": "1루수",
+          "order": 2
+        },
+        {
+          "playerCode": "52001",
+          "name": "안현민",
+          "batsThrows": "우타",
+          "position": "지명타자",
+          "order": 3
+        },
+        {
+          "playerCode": "56034",
+          "name": "힐리어드",
+          "batsThrows": "좌타",
+          "position": "중견수",
+          "order": 4
+        },
+        {
+          "playerCode": "79402",
+          "name": "김상수",
+          "batsThrows": "우타",
+          "position": "2루수",
+          "order": 5
+        },
+        {
+          "playerCode": "64004",
+          "name": "김민혁",
+          "batsThrows": "좌타",
+          "position": "좌익수",
+          "order": 6
+        },
+        {
+          "playerCode": "66706",
+          "name": "장진혁",
+          "batsThrows": "좌타",
+          "position": "우익수",
+          "order": 7
+        },
+        {
+          "playerCode": "63722",
+          "name": "한승택",
+          "batsThrows": "우타",
+          "position": "포수",
+          "order": 8
+        },
+        {
+          "playerCode": "51003",
+          "name": "권동진",
+          "batsThrows": "좌타",
+          "position": "유격수",
+          "order": 9
+        }
+      ],
+      "awayStarter": "비슬리",
+      "status": "종료",
+      "homeLineupString": "류현인, 김현수, 안현민, 힐리어드, 김상수, 김민혁, 장진혁, 한승택, 권동진",
+      "awayPlayers": [
+        "황성빈",
+        "고승민",
+        "레이예스",
+        "한동희",
+        "나승엽",
+        "박찬형",
+        "윤동희",
+        "전민재",
+        "손성빈"
+      ],
+      "gameStatus": "종료",
+      "bannerLink": "",
+      "awayLineupString": "황성빈, 고승민, 레이예스, 한동희, 나승엽, 박찬형, 윤동희, 전민재, 손성빈",
+      "awayScore": 4,
+      "awayBattersDetail": [
+        {
+          "playerCode": "50500",
+          "name": "황성빈",
+          "batsThrows": "좌타",
+          "position": "중견수",
+          "order": 1
+        },
+        {
+          "playerCode": "69517",
+          "name": "고승민",
+          "batsThrows": "좌타",
+          "position": "2루수",
+          "order": 2
+        },
+        {
+          "playerCode": "54529",
+          "name": "레이예스",
+          "batsThrows": "양타",
+          "position": "좌익수",
+          "order": 3
+        },
+        {
+          "playerCode": "68525",
+          "name": "한동희",
+          "batsThrows": "우타",
+          "position": "지명타자",
+          "order": 4
+        },
+        {
+          "playerCode": "51551",
+          "name": "나승엽",
+          "batsThrows": "좌타",
+          "position": "1루수",
+          "order": 5
+        },
+        {
+          "playerCode": "55530",
+          "name": "박찬형",
+          "batsThrows": "좌타",
+          "position": "3루수",
+          "order": 6
+        },
+        {
+          "playerCode": "52591",
+          "name": "윤동희",
+          "batsThrows": "우타",
+          "position": "우익수",
+          "order": 7
+        },
+        {
+          "playerCode": "68205",
+          "name": "전민재",
+          "batsThrows": "우타",
+          "position": "유격수",
+          "order": 8
+        },
+        {
+          "playerCode": "51528",
+          "name": "손성빈",
+          "batsThrows": "우타",
+          "position": "포수",
+          "order": 9
+        }
+      ],
+      "awayBatters": [
+        "황성빈",
+        "고승민",
+        "레이예스",
+        "한동희",
+        "나승엽",
+        "박찬형",
+        "윤동희",
+        "전민재",
+        "손성빈"
+      ],
+      "homePlayers": [
+        "류현인",
+        "김현수",
+        "안현민",
+        "힐리어드",
+        "김상수",
+        "김민혁",
+        "장진혁",
+        "한승택",
+        "권동진"
+      ],
+      "awayHit": 9,
+      "awayInning": [
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "2",
+        "0",
+        "1",
+        "1"
+      ],
+      "homeLineup": [
+        "류현인",
+        "김현수",
+        "안현민",
+        "힐리어드",
+        "김상수",
+        "김민혁",
+        "장진혁",
+        "한승택",
+        "권동진"
+      ],
+      "base3": false,
+      "homeInning": [
+        "0",
+        "0",
+        "1",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "awayLineup": [
+        "황성빈",
+        "고승민",
+        "레이예스",
+        "한동희",
+        "나승엽",
+        "박찬형",
+        "윤동희",
+        "전민재",
+        "손성빈"
+      ],
+      "awayTeam": "롯데",
+      "date": "2026-07-04",
+      "broadcastLink": "",
+      "homeBattersString": "류현인, 김현수, 안현민, 힐리어드, 김상수, 김민혁, 장진혁, 한승택, 권동진",
+      "homeScore": 1,
+      "base2": false,
+      "homeLineupText": "류현인\n김현수\n안현민\n힐리어드\n김상수\n김민혁\n장진혁\n한승택\n권동진",
+      "inning": "9회말",
+      "lineup": {
+        "away": [
+          "황성빈",
+          "고승민",
+          "레이예스",
+          "한동희",
+          "나승엽",
+          "박찬형",
+          "윤동희",
+          "전민재",
+          "손성빈"
+        ],
+        "home": [
+          "류현인",
+          "김현수",
+          "안현민",
+          "힐리어드",
+          "김상수",
+          "김민혁",
+          "장진혁",
+          "한승택",
+          "권동진"
+        ]
+      },
+      "awayPitcherDetail": {
+        "name": "김원중",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "62528"
+      },
+      "naverGameId": "20260704LTKT02026",
+      "awayPitcherCount": 13,
+      "homeTeam": "KT",
+      "homeError": 3,
+      "awayCurrentPitcher": "김원중",
+      "homeCurrentPitcher": "손동현",
+      "awayCurrentPitcherDetail": {
+        "name": "김원중",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "62528"
+      },
+      "homeCurrentPitcherDetail": {
+        "name": "손동현",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "69041"
+      },
+      "awayBullpenPitcher": "김원중",
+      "homeBullpenPitcher": "손동현",
+      "awayBullpenPitcherDetail": {
+        "name": "김원중",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "62528"
+      },
+      "homeBullpenPitcherDetail": {
+        "name": "손동현",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "69041"
+      }
+    },
+    {
+      "awayScore": 3,
+      "awayBattersDetail": [
+        {
+          "playerCode": "50707",
+          "name": "최인호",
+          "batsThrows": "좌타",
+          "position": "좌익수",
+          "order": 1
+        },
+        {
+          "playerCode": "54730",
+          "name": "페라자",
+          "batsThrows": "양타",
+          "position": "우익수",
+          "order": 2
+        },
+        {
+          "playerCode": "53764",
+          "name": "문현빈",
+          "batsThrows": "좌타",
+          "position": "중견수",
+          "order": 3
+        },
+        {
+          "playerCode": "68050",
+          "name": "강백호",
+          "batsThrows": "좌타",
+          "position": "지명타자",
+          "order": 4
+        },
+        {
+          "playerCode": "69737",
+          "name": "노시환",
+          "batsThrows": "우타",
+          "position": "3루수",
+          "order": 5
+        },
+        {
+          "playerCode": "52764",
+          "name": "허인서",
+          "batsThrows": "우타",
+          "position": "포수",
+          "order": 6
+        },
+        {
+          "playerCode": "66704",
+          "name": "김태연",
+          "batsThrows": "우타",
+          "position": "1루수",
+          "order": 7
+        },
+        {
+          "playerCode": "65703",
+          "name": "이도윤",
+          "batsThrows": "좌타",
+          "position": "2루수",
+          "order": 8
+        },
+        {
+          "playerCode": "50709",
+          "name": "박정현",
+          "batsThrows": "우타",
+          "position": "유격수",
+          "order": 9
+        }
+      ],
+      "awayBatters": [
+        "최인호",
+        "페라자",
+        "문현빈",
+        "강백호",
+        "노시환",
+        "허인서",
+        "김태연",
+        "이도윤",
+        "박정현"
+      ],
+      "awayPlayers": [
+        "최인호",
+        "페라자",
+        "문현빈",
+        "강백호",
+        "노시환",
+        "허인서",
+        "김태연",
+        "이도윤",
+        "박정현"
+      ],
+      "gameStatus": "종료",
+      "bannerLink": "",
+      "awayLineupString": "최인호, 페라자, 문현빈, 강백호, 노시환, 허인서, 김태연, 이도윤, 박정현",
+      "homeLineupString": "홍창기, 박해민, 오스틴, 문보경, 송찬의, 문정빈, 박동원, 이영빈, 구본혁",
+      "team2": "LG",
+      "awayStarter": "에르난데스",
+      "homeLineupDetail": [
+        {
+          "playerCode": "66108",
+          "name": "홍창기",
+          "batsThrows": "좌타",
+          "position": "우익수",
+          "order": 1
+        },
+        {
+          "playerCode": "62415",
+          "name": "박해민",
+          "batsThrows": "좌타",
+          "position": "중견수",
+          "order": 2
+        },
+        {
+          "playerCode": "53123",
+          "name": "오스틴",
+          "batsThrows": "우타",
+          "position": "지명타자",
+          "order": 3
+        },
+        {
+          "playerCode": "69102",
+          "name": "문보경",
+          "batsThrows": "좌타",
+          "position": "3루수",
+          "order": 4
+        },
+        {
+          "playerCode": "68110",
+          "name": "송찬의",
+          "batsThrows": "우타",
+          "position": "좌익수",
+          "order": 5
+        },
+        {
+          "playerCode": "52121",
+          "name": "문정빈",
+          "batsThrows": "우타",
+          "position": "1루수",
+          "order": 6
+        },
+        {
+          "playerCode": "79365",
+          "name": "박동원",
+          "batsThrows": "우타",
+          "position": "포수",
+          "order": 7
+        },
+        {
+          "playerCode": "51100",
+          "name": "이영빈",
+          "batsThrows": "좌타",
+          "position": "유격수",
+          "order": 8
+        },
+        {
+          "playerCode": "69100",
+          "name": "구본혁",
+          "batsThrows": "우타",
+          "position": "2루수",
+          "order": 9
+        }
+      ],
+      "status": "종료",
+      "awayPitcherCount": 10,
+      "homeTeam": "LG",
+      "homeError": 1,
+      "date": "2026-07-04",
+      "homeBattersString": "홍창기, 박해민, 오스틴, 문보경, 송찬의, 문정빈, 박동원, 이영빈, 구본혁",
+      "broadcastLink": "",
+      "homeScore": 5,
+      "base2": false,
+      "homeLineupText": "홍창기\n박해민\n오스틴\n문보경\n송찬의\n문정빈\n박동원\n이영빈\n구본혁",
+      "inning": "9회초",
+      "lineup": {
+        "away": [
+          "최인호",
+          "페라자",
+          "문현빈",
+          "강백호",
+          "노시환",
+          "허인서",
+          "김태연",
+          "이도윤",
+          "박정현"
+        ],
+        "home": [
+          "홍창기",
+          "박해민",
+          "오스틴",
+          "문보경",
+          "송찬의",
+          "문정빈",
+          "박동원",
+          "이영빈",
+          "구본혁"
+        ]
+      },
+      "naverGameId": "20260704HHLG02026",
+      "awayPitcherDetail": {
+        "name": "강재민",
+        "position": "투수",
+        "batsThrows": "우언",
+        "playerCode": "50705"
+      },
+      "awayLineup": [
+        "최인호",
+        "페라자",
+        "문현빈",
+        "강백호",
+        "노시환",
+        "허인서",
+        "김태연",
+        "이도윤",
+        "박정현"
+      ],
+      "homeInning": [
+        "4",
+        "0",
+        "0",
+        "0",
+        "0",
+        "1",
+        "0",
+        "0",
+        "-"
+      ],
+      "awayTeam": "한화",
+      "homePlayers": [
+        "홍창기",
+        "박해민",
+        "오스틴",
+        "문보경",
+        "송찬의",
+        "문정빈",
+        "박동원",
+        "이영빈",
+        "구본혁"
+      ],
+      "awayInning": [
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "3",
+        "0",
+        "0",
+        "0"
+      ],
+      "awayHit": 6,
+      "homeLineup": [
+        "홍창기",
+        "박해민",
+        "오스틴",
+        "문보경",
+        "송찬의",
+        "문정빈",
+        "박동원",
+        "이영빈",
+        "구본혁"
+      ],
+      "base3": false,
+      "awayBase": 6,
+      "awayError": 0,
+      "awayBattersText": "최인호\n페라자\n문현빈\n강백호\n노시환\n허인서\n김태연\n이도윤\n박정현",
+      "out": 0,
+      "endTime": 1783169442390,
+      "lineups": {
+        "away": [
+          "최인호",
+          "페라자",
+          "문현빈",
+          "강백호",
+          "노시환",
+          "허인서",
+          "김태연",
+          "이도윤",
+          "박정현"
+        ],
+        "home": [
+          "홍창기",
+          "박해민",
+          "오스틴",
+          "문보경",
+          "송찬의",
+          "문정빈",
+          "박동원",
+          "이영빈",
+          "구본혁"
+        ]
+      },
+      "awayLineupText": "최인호\n페라자\n문현빈\n강백호\n노시환\n허인서\n김태연\n이도윤\n박정현",
+      "homePitcherCount": 21,
+      "homeStarter": "장현식",
+      "base1": false,
+      "homePitcher": "리오스",
+      "strike": 0,
+      "ball": 0,
+      "homeStarterDetail": {
+        "name": "장현식",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "63950"
+      },
+      "homeBattersText": "홍창기\n박해민\n오스틴\n문보경\n송찬의\n문정빈\n박동원\n이영빈\n구본혁",
+      "id": "2607045",
+      "team1": "한화",
+      "homeBase": 8,
+      "time": "18:00",
+      "winPitcher": "장현식",
+      "homeHit": 9,
+      "broadcast": "MBC SPORTS+",
+      "awayLineupDetail": [
+        {
+          "playerCode": "50707",
+          "name": "최인호",
+          "batsThrows": "좌타",
+          "position": "좌익수",
+          "order": 1
+        },
+        {
+          "playerCode": "54730",
+          "name": "페라자",
+          "batsThrows": "양타",
+          "position": "우익수",
+          "order": 2
+        },
+        {
+          "playerCode": "53764",
+          "name": "문현빈",
+          "batsThrows": "좌타",
+          "position": "중견수",
+          "order": 3
+        },
+        {
+          "playerCode": "68050",
+          "name": "강백호",
+          "batsThrows": "좌타",
+          "position": "지명타자",
+          "order": 4
+        },
+        {
+          "playerCode": "69737",
+          "name": "노시환",
+          "batsThrows": "우타",
+          "position": "3루수",
+          "order": 5
+        },
+        {
+          "playerCode": "52764",
+          "name": "허인서",
+          "batsThrows": "우타",
+          "position": "포수",
+          "order": 6
+        },
+        {
+          "playerCode": "66704",
+          "name": "김태연",
+          "batsThrows": "우타",
+          "position": "1루수",
+          "order": 7
+        },
+        {
+          "playerCode": "65703",
+          "name": "이도윤",
+          "batsThrows": "좌타",
+          "position": "2루수",
+          "order": 8
+        },
+        {
+          "playerCode": "50709",
+          "name": "박정현",
+          "batsThrows": "우타",
+          "position": "유격수",
+          "order": 9
+        }
+      ],
+      "homeBatters": [
+        "홍창기",
+        "박해민",
+        "오스틴",
+        "문보경",
+        "송찬의",
+        "문정빈",
+        "박동원",
+        "이영빈",
+        "구본혁"
+      ],
+      "homePitcherDetail": {
+        "name": "리오스",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "56146"
+      },
+      "awayBattersString": "최인호, 페라자, 문현빈, 강백호, 노시환, 허인서, 김태연, 이도윤, 박정현",
+      "naverOffsetMode": "auto",
+      "gameTime": "18:00",
+      "updatedAt": 1783169442390,
+      "broadcaster": "MBC SPORTS+",
+      "losePitcher": "에르난데스",
+      "stadium": "잠실",
+      "awayPitcher": "강재민",
+      "awayStarterDetail": {
+        "name": "에르난데스",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "56712"
+      },
+      "homeBattersDetail": [
+        {
+          "playerCode": "66108",
+          "name": "홍창기",
+          "batsThrows": "좌타",
+          "position": "우익수",
+          "order": 1
+        },
+        {
+          "playerCode": "62415",
+          "name": "박해민",
+          "batsThrows": "좌타",
+          "position": "중견수",
+          "order": 2
+        },
+        {
+          "playerCode": "53123",
+          "name": "오스틴",
+          "batsThrows": "우타",
+          "position": "지명타자",
+          "order": 3
+        },
+        {
+          "playerCode": "69102",
+          "name": "문보경",
+          "batsThrows": "좌타",
+          "position": "3루수",
+          "order": 4
+        },
+        {
+          "playerCode": "68110",
+          "name": "송찬의",
+          "batsThrows": "우타",
+          "position": "좌익수",
+          "order": 5
+        },
+        {
+          "playerCode": "52121",
+          "name": "문정빈",
+          "batsThrows": "우타",
+          "position": "1루수",
+          "order": 6
+        },
+        {
+          "playerCode": "79365",
+          "name": "박동원",
+          "batsThrows": "우타",
+          "position": "포수",
+          "order": 7
+        },
+        {
+          "playerCode": "51100",
+          "name": "이영빈",
+          "batsThrows": "좌타",
+          "position": "유격수",
+          "order": 8
+        },
+        {
+          "playerCode": "69100",
+          "name": "구본혁",
+          "batsThrows": "우타",
+          "position": "2루수",
+          "order": 9
+        }
+      ],
+      "awayCurrentPitcher": "강재민",
+      "homeCurrentPitcher": "리오스",
+      "awayCurrentPitcherDetail": {
+        "name": "강재민",
+        "position": "투수",
+        "batsThrows": "우언",
+        "playerCode": "50705"
+      },
+      "homeCurrentPitcherDetail": {
+        "name": "리오스",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "56146"
+      },
+      "awayBullpenPitcher": "강재민",
+      "homeBullpenPitcher": "리오스",
+      "awayBullpenPitcherDetail": {
+        "name": "강재민",
+        "position": "투수",
+        "batsThrows": "우언",
+        "playerCode": "50705"
+      },
+      "homeBullpenPitcherDetail": {
+        "name": "리오스",
+        "position": "투수",
+        "batsThrows": "우투",
+        "playerCode": "56146"
+      }
     }
   ],
   "rankings": [
     {
-      "rank": "1",
+      "gb": "-",
+      "winRate": "0.635",
+      "d": 0,
+      "l": 23,
       "team": "LG",
       "w": 40,
-      "d": 0,
       "streak": "4승",
-      "winRate": "0.635",
-      "gb": "-",
-      "l": 23
+      "rank": "1"
     },
     {
-      "l": 25,
+      "rank": "2",
+      "streak": "1승",
       "winRate": "0.597",
       "gb": "2.5",
-      "team": "KT",
-      "d": 1,
       "w": 37,
-      "streak": "1승",
-      "rank": "2"
+      "team": "KT",
+      "l": 25,
+      "d": 1
     },
     {
-      "l": 26,
-      "winRate": "0.574",
-      "gb": "4",
-      "team": "삼성",
       "streak": "2승",
-      "w": 35,
+      "rank": "3",
+      "gb": "4",
+      "winRate": "0.574",
       "d": 1,
-      "rank": "3"
+      "l": 26,
+      "w": 35,
+      "team": "삼성"
     },
     {
-      "team": "KIA",
       "d": 1,
       "w": 34,
-      "streak": "1승",
-      "rank": "4",
       "l": 29,
+      "team": "KIA",
+      "gb": "6",
       "winRate": "0.540",
-      "gb": "6"
+      "streak": "1승",
+      "rank": "4"
     },
     {
       "rank": "5",
-      "team": "한화",
-      "d": 1,
       "streak": "1패",
-      "w": 32,
       "winRate": "0.525",
       "gb": "7",
-      "l": 29
+      "w": 32,
+      "l": 29,
+      "team": "한화",
+      "d": 1
     },
     {
-      "l": 31,
-      "gb": "8.5",
-      "winRate": "0.500",
-      "w": 31,
       "streak": "1패",
+      "rank": "6",
       "d": 2,
       "team": "두산",
-      "rank": "6"
+      "w": 31,
+      "l": 31,
+      "gb": "8.5",
+      "winRate": "0.500"
     },
     {
+      "winRate": "0.459",
+      "gb": "11",
       "team": "NC",
-      "streak": "1패",
       "w": 28,
+      "l": 33,
       "d": 1,
       "rank": "7",
-      "l": 33,
-      "winRate": "0.459",
-      "gb": "11"
+      "streak": "1패"
     },
     {
-      "streak": "4패",
-      "w": 26,
-      "d": 1,
-      "team": "SSG",
-      "rank": "8",
-      "l": 36,
+      "winRate": "0.419",
       "gb": "13.5",
-      "winRate": "0.419"
+      "w": 26,
+      "team": "SSG",
+      "l": 36,
+      "d": 1,
+      "rank": "8",
+      "streak": "4패"
     },
     {
+      "streak": "2패",
+      "rank": "9",
       "gb": "16",
       "winRate": "0.377",
-      "l": 38,
-      "rank": "9",
-      "w": 23,
-      "streak": "2패",
       "d": 1,
+      "w": 23,
+      "l": 38,
       "team": "롯데"
     },
     {
-      "rank": "10",
-      "team": "키움",
-      "d": 1,
-      "w": 24,
-      "streak": "1승",
       "winRate": "0.375",
       "gb": "16.5",
-      "l": 40
+      "w": 24,
+      "team": "키움",
+      "l": 40,
+      "d": 1,
+      "rank": "10",
+      "streak": "1승"
     }
   ]
 };
