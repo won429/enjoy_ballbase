@@ -5,7 +5,7 @@
   const KBO_HISTORY_2026 = {
   "version": 1,
   "source": "Naver Sports API",
-  "generatedAt": "2026-07-08T16:13:27.373301+09:00",
+  "generatedAt": "2026-07-08T17:56:38.143037+09:00",
   "from": "2026-03-28",
   "to": "2026-07-07",
   "lineupTo": "2026-07-07",
@@ -190123,7 +190123,7 @@
         "ball": 0,
         "broadcastLink": "",
         "homePitcherDetail": {
-          "name": "이승현",
+          "name": "우승현",
           "position": "투수",
           "batsThrows": "우투",
           "playerCode": "60146"
@@ -190219,7 +190219,7 @@
         ],
         "awayBattersString": "홍창기, 박해민, 오스틴, 문보경, 문정빈, 문성주, 오지환, 박동원, 신민재",
         "out": 0,
-        "homePitcher": "이승현",
+        "homePitcher": "우승현",
         "bannerLink": "",
         "base1": false,
         "homeBattersText": "김지찬\n김현준\n구자욱\n최형우\n디아즈\n류지혁\n강민호\n김영웅\n심재훈",
@@ -190554,7 +190554,7 @@
           }
         ],
         "awayCurrentPitcher": "이정용",
-        "homeCurrentPitcher": "이승현",
+        "homeCurrentPitcher": "우승현",
         "awayCurrentPitcherDetail": {
           "name": "이정용",
           "position": "투수",
@@ -190562,13 +190562,13 @@
           "playerCode": "69134"
         },
         "homeCurrentPitcherDetail": {
-          "name": "이승현",
+          "name": "우승현",
           "position": "투수",
           "batsThrows": "우투",
           "playerCode": "60146"
         },
         "awayBullpenPitcher": "이정용",
-        "homeBullpenPitcher": "이승현",
+        "homeBullpenPitcher": "우승현",
         "awayBullpenPitcherDetail": {
           "name": "이정용",
           "position": "투수",
@@ -190576,7 +190576,7 @@
           "playerCode": "69134"
         },
         "homeBullpenPitcherDetail": {
-          "name": "이승현",
+          "name": "우승현",
           "position": "투수",
           "batsThrows": "우투",
           "playerCode": "60146"
@@ -382525,7 +382525,7 @@
       "ball": 0,
       "broadcastLink": "",
       "homePitcherDetail": {
-        "name": "이승현",
+        "name": "우승현",
         "position": "투수",
         "batsThrows": "우투",
         "playerCode": "60146"
@@ -382621,7 +382621,7 @@
       ],
       "awayBattersString": "홍창기, 박해민, 오스틴, 문보경, 문정빈, 문성주, 오지환, 박동원, 신민재",
       "out": 0,
-      "homePitcher": "이승현",
+      "homePitcher": "우승현",
       "bannerLink": "",
       "base1": false,
       "homeBattersText": "김지찬\n김현준\n구자욱\n최형우\n디아즈\n류지혁\n강민호\n김영웅\n심재훈",
@@ -382956,7 +382956,7 @@
         }
       ],
       "awayCurrentPitcher": "이정용",
-      "homeCurrentPitcher": "이승현",
+      "homeCurrentPitcher": "우승현",
       "awayCurrentPitcherDetail": {
         "name": "이정용",
         "position": "투수",
@@ -382964,13 +382964,13 @@
         "playerCode": "69134"
       },
       "homeCurrentPitcherDetail": {
-        "name": "이승현",
+        "name": "우승현",
         "position": "투수",
         "batsThrows": "우투",
         "playerCode": "60146"
       },
       "awayBullpenPitcher": "이정용",
-      "homeBullpenPitcher": "이승현",
+      "homeBullpenPitcher": "우승현",
       "awayBullpenPitcherDetail": {
         "name": "이정용",
         "position": "투수",
@@ -382978,7 +382978,7 @@
         "playerCode": "69134"
       },
       "homeBullpenPitcherDetail": {
-        "name": "이승현",
+        "name": "우승현",
         "position": "투수",
         "batsThrows": "우투",
         "playerCode": "60146"
