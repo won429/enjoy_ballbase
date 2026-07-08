@@ -918,14 +918,29 @@
             const size = compact ? 'w-[38px] h-[28px]' : 'w-24 h-16';
             return `<img src="${ALLSTAR_LOGO_URL}" alt="올스타전 로고" class="${size} object-contain">`;
         };
-        const openAllstarGameInfo = date => {
-            let match = scheduleData.find(m => m.date === date);
+        const allstarMatchByDate = (date, create = false) => {
+            if (!isAllstarDate(date)) return null;
+            const matchId = date === '2026-07-10' ? '260710_FUTURES_ALLSTAR' : '260711_ALLSTAR';
+            const fallback = date === '2026-07-10'
+                ? { id: matchId, date, team1: '북부 올스타', team2: '남부 올스타', time: '', stadium: '' }
+                : { id: matchId, date, team1: '나눔', team2: '드림', time: '', stadium: '' };
+            let match = scheduleData.find(m => String(m.id) === matchId);
             if (!match) {
-                match = date === '2026-07-10'
-                    ? { id: '260710_FUTURES_ALLSTAR', date, team1: '북부 올스타', team2: '남부 올스타', time: '', stadium: '' }
-                    : { id: '260711_ALLSTAR', date, team1: '나눔', team2: '드림', time: '', stadium: '' };
+                match = scheduleData.find(m => m.date === date && (
+                    (m.team1 === fallback.team1 && m.team2 === fallback.team2) ||
+                    (m.team1 === fallback.team2 && m.team2 === fallback.team1)
+                ));
+            }
+            if (!match) {
+                match = fallback;
+            }
+            if (create && !scheduleData.find(x => String(x.id) === String(match.id))) {
                 scheduleData.push(match);
             }
+            return match;
+        };
+        const openAllstarGameInfo = date => {
+            const match = allstarMatchByDate(date, true);
             openLineupPopup(match.id);
         };
         const teamCharacters = {'LG':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/lglucky.png', '두산':'', 'KIA':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/ho.png', '삼성':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/laoni.png', 'SSG':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/landus.png', '롯데':'', '한화':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/egl.png', 'KT':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/wiz.png', 'NC':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/dandi.png', '키움':''};
@@ -950,7 +965,35 @@
         // 어두운/밝은 배경 양쪽에서 잘 보이도록 보정한 팀별 표시 색상 (승리 확률 UI 전용)
         const teamWinHex = {'LG':'#E4376E', '두산':'#3D5AFE', 'KIA':'#FF2D55', '삼성':'#2F7BE0', 'SSG':'#E63950', '롯데':'#3B6FD4', '한화':'#FF7A1A', 'KT':'#9AA0A6', 'NC':'#4A78C0', '키움':'#C23A6B', '나눔':'#002038', '드림':'#90C0E0', '북부 올스타':'#123B8D', '남부 올스타':'#13B9D1'};
         const KBO_TEAMS = ['LG','두산','KIA','삼성','SSG','롯데','한화','KT','NC','키움'];
+        const CLASSIC_SERIES_DATES = new Set(['2026-05-22', '2026-05-23', '2026-05-24', '2026-07-16', '2026-07-17', '2026-07-18', '2026-07-19']);
         let teamStats = {};
+
+        function isMatchup(m, a, b) {
+            return m && ((m.team1 === a && m.team2 === b) || (m.team1 === b && m.team2 === a));
+        }
+
+        function isClassicSeriesGame(m) {
+            return Boolean(m && CLASSIC_SERIES_DATES.has(m.date) && isMatchup(m, '롯데', '삼성'));
+        }
+
+        function classicSeriesDateLabel(m) {
+            return m && m.date && m.date.startsWith('2026-07') ? '7.16(목)-19(일)' : '5.22(금)-24(일)';
+        }
+
+        function hasHangulBatchim(text) {
+            const s = String(text || '').trim();
+            if (!s) return false;
+            const code = s.charCodeAt(s.length - 1);
+            return code >= 0xAC00 && code <= 0xD7A3 && ((code - 0xAC00) % 28) !== 0;
+        }
+
+        function teamSubject(team) {
+            return `${team}${hasHangulBatchim(team) ? '이' : '가'}`;
+        }
+
+        function teamAnd(team) {
+            return `${team}${hasHangulBatchim(team) ? '과' : '와'}`;
+        }
 
         // 완료된 경기들로부터 팀별 전적/최근 흐름/상대전적을 집계한다. (과거 데이터 파일 기반)
         function buildTeamStats() {
@@ -1530,6 +1573,27 @@
         const STAMP_HEX = { WIN: '#EA0029', LOSE: '#64748B', DRAW: '#10B981', CANCEL: '#3B82F6' };
         // 스코어보드 위에 쾅 찍히는 큰 도장 (모션 포함)
         function bigStamp(label, hex) { return `<div class="stamp-pop absolute top-1/2 left-1/2 z-30 font-black pointer-events-none whitespace-nowrap text-[26px] px-5 py-1.5 border-[3px] rounded-tl-[26px] rounded-br-[26px] rounded-tr-md rounded-bl-md tracking-[0.12em]" style="color:${hex};border-color:${hex};background:${hex}26;box-shadow:0 6px 18px ${hex}55, inset 0 0 0 1px ${hex}33;text-shadow:0 1px 2px rgba(0,0,0,0.18);">${label}</div>`; }
+        function classicSeriesHeader(m) {
+            if (!isClassicSeriesGame(m)) return '';
+            return `<div class="classic-marker hidden"></div><div class="w-full mb-3">
+                <div class="relative overflow-hidden rounded-2xl border-[3px] border-[#2A2A2A] bg-[#EBE7DF] px-4 py-3 shadow-[5px_5px_0_rgba(0,0,0,0.16)]" style="background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 14px 14px;">
+                    <div class="absolute -top-5 left-1/2 -translate-x-1/2 w-28 h-10 rounded-full bg-black/10 blur-md"></div>
+                    <div class="relative z-10 flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <img src="${teamLogos[m.team1]}" class="w-10 h-10 object-contain drop-shadow-sm shrink-0">
+                            <div class="flex flex-col min-w-0">
+                                <span class="text-[10px] font-black text-[#2A2A2A] tracking-[0.18em]">CLASSIC SERIES</span>
+                                <span class="text-[17px] font-black text-[#111] tracking-tight truncate">${m.team1} vs ${m.team2}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span class="text-[11px] font-black text-white bg-black px-2.5 py-1 rounded-full">${classicSeriesDateLabel(m)}</span>
+                            <img src="${teamLogos[m.team2]}" class="w-10 h-10 object-contain drop-shadow-sm">
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
 
         // [추가] 홈 Now Brief 피드 — 배너 아래 카드형 콘텐츠
         // 갤럭시 Now Brief 스타일 홈 브리핑 피드 (이모티콘 미사용 · FontAwesome 아이콘/색상/도형만 사용)
@@ -1539,8 +1603,13 @@
             const bh = document.getElementById('brief-header'); if (bh) bh.innerHTML = briefHeaderCard();
             const isAll = !(selectedTeam === 'KIA' || selectedTeam === '삼성');
             let cards = [homeCardGameBrief()];
-            if (!isAll) { cards.push(homeCardHeatmap()); cards.push(homeCardFortune()); }
-            cards.push(homeCardRivalBoard());
+            if (isAll) {
+                cards.push(homeCardPostseasonForecast());
+            } else {
+                cards.push(homeCardHeatmap());
+                cards.push(homeCardFortune());
+                cards.push(homeCardRivalBoard());
+            }
             cards.push(homeCardMoodWeather());
             c.innerHTML = `<div class="flex flex-col gap-5">${cards.filter(Boolean).join('')}</div>`;
         }
@@ -1588,13 +1657,13 @@
                     if (canceled) {
                         sub = `${opp}전은 취소됐어요. 다음 만남을 기다려요`;
                     } else if (status === '경기중') {
-                        if (myScore > oppScore) sub = `${selectedTeam}가 ${opp}에 ${myScore}-${oppScore}로 앞서요. 끝까지 힘을 보태요`;
-                        else if (myScore < oppScore) sub = `${selectedTeam}가 ${opp}에 ${myScore}-${oppScore}로 뒤지고 있어요. 더 크게 응원해요`;
-                        else sub = `${opp}와 ${myScore}-${oppScore} 팽팽한 승부예요. 응원이 필요한 순간이에요`;
+                        if (myScore > oppScore) sub = `${teamSubject(selectedTeam)} ${opp}에 ${myScore}-${oppScore}로 앞서요. 끝까지 힘을 보태요`;
+                        else if (myScore < oppScore) sub = `${teamSubject(selectedTeam)} ${opp}에 ${myScore}-${oppScore}로 뒤지고 있어요. 더 크게 응원해요`;
+                        else sub = `${teamAnd(opp)} ${myScore}-${oppScore} 팽팽한 승부예요. 응원이 필요한 순간이에요`;
                     } else if (status === '종료') {
                         if (myScore > oppScore) sub = `${selectedTeam}의 ${myScore}-${oppScore} 승리. 오늘의 기쁨을 오래 간직해요`;
                         else if (myScore < oppScore) sub = `오늘은 ${myScore}-${oppScore}로 아쉬웠어요. 다음 경기도 함께 응원해요`;
-                        else sub = `${opp}와 ${myScore}-${oppScore} 무승부. 다음 승부를 기대해요`;
+                        else sub = `${teamAnd(opp)} ${myScore}-${oppScore} 무승부. 다음 승부를 기대해요`;
                     } else {
                         const start = new Date(`${todayStr}T${g.time || '00:00'}:00`);
                         const mins = Math.round((start.getTime() - Date.now()) / 60000);
@@ -1610,8 +1679,9 @@
                 else if (todayGames.length && endedCount === todayGames.length) sub = `오늘 KBO ${endedCount}경기가 모두 끝났어요. 결과를 천천히 돌아봐요`;
             }
 
+            const insight = briefInsightLine(isTeam, todayGames);
             const teamTag = isTeam ? `<span class="text-[10px] font-black text-point">${selectedTeam}</span>` : '';
-            return `<div class="px-0.5"><div class="flex items-center justify-between mb-1.5"><div class="flex items-center gap-1.5"><i class="fa-solid fa-newspaper text-point text-[11px]"></i><span class="text-[11px] font-bold text-gray-500 tracking-wide">오늘의 브리핑</span></div>${teamTag}</div><div class="text-[21px] font-black text-white leading-tight tracking-tight">${greet}</div><div class="text-[11px] font-bold text-gray-400 mt-1.5">${dateTxt}</div><div class="text-[12px] text-gray-400 mt-1 leading-relaxed">${sub}</div></div>`;
+            return `<div class="px-0.5"><div class="flex items-center justify-between mb-1.5"><div class="flex items-center gap-1.5"><i class="fa-solid fa-newspaper text-point text-[11px]"></i><span class="text-[11px] font-bold text-gray-500 tracking-wide">오늘의 브리핑</span></div>${teamTag}</div><div class="text-[21px] font-black text-white leading-tight tracking-tight">${greet}</div><div class="text-[11px] font-bold text-gray-400 mt-1.5">${dateTxt}</div><div class="text-[12px] text-gray-400 mt-1 leading-relaxed">${sub}</div>${insight ? `<div class="text-[11px] text-gray-500 mt-1.5 leading-relaxed">${insight}</div>` : ''}</div>`;
         }
         // 내 직관 기록을 날짜별 결과로 집계
         function _myAttendMap(t) {
@@ -1645,6 +1715,41 @@
             let hx = (selectedTeam === 'KIA' || selectedTeam === '삼성') ? teamHex[selectedTeam] : null;
             let head = _cardHead('fa-location-dot', '경기 브리핑', `<span id="home-game-matchup" class="text-[10px] text-gray-500 font-bold"></span>`, hx);
             return `<div id="home-game-brief" class="px-0.5 hidden"><div>${head}<div id="home-game-venue-line" class="text-[18px] font-black text-white leading-snug tracking-tight"></div><div class="flex items-end justify-between gap-4 mt-3"><div class="min-w-0 flex-1"><div class="flex items-center gap-1.5 mb-0.5"><i class="fa-solid fa-tv text-point text-[10px]"></i><span class="text-[10px] text-gray-500 font-bold">중계 방송사</span></div><div id="home-game-broadcaster" class="text-[15px] text-gray-300 font-extrabold truncate"></div></div><div class="home-chip rounded-full px-2.5 py-1.5 flex items-center gap-1.5 shrink-0"><i class="fa-regular fa-clock text-point text-[10px]"></i><span id="home-game-time" class="text-[11px] text-gray-300 font-black"></span></div></div></div></div>`;
+        }
+        function briefInsightLine(isTeam, todayGames) {
+            const rk = (rankingData && rankingData.length) ? rankingData : (computeRankingFromHistory() || []);
+            if (isTeam) {
+                const row = rk.find(r => r.team === selectedTeam);
+                const st = teamStats[selectedTeam] || { results: [] };
+                const recent = (st.results || []).slice(-5);
+                const parts = [];
+                if (row && row.rank && row.rank !== '-') parts.push(`${teamSubject(selectedTeam)} 현재 ${row.rank}위 · 승률 ${row.winRate}`);
+                if (recent.length) {
+                    const w = recent.filter(x => x === 'W').length;
+                    const l = recent.filter(x => x === 'L').length;
+                    const d = recent.filter(x => x === 'D').length;
+                    parts.push(`최근 5경기 ${w}승 ${l}패${d ? ' ' + d + '무' : ''}`);
+                }
+                const next = scheduleData.filter(m => (m.team1 === selectedTeam || m.team2 === selectedTeam) && m.date >= todayStr)
+                    .sort((a, b) => a.date.localeCompare(b.date) || (a.time || '').localeCompare(b.time || ''))[0];
+                if (next && next.date !== todayStr) {
+                    const opp = next.team1 === selectedTeam ? next.team2 : next.team1;
+                    const dd = Math.round((new Date(next.date) - new Date(todayStr)) / 86400000);
+                    parts.push(`${dd === 1 ? '내일' : next.date.slice(5).replace('-', '.')} ${opp}전`);
+                }
+                return parts.slice(0, 2).join(' · ');
+            }
+            const proj = postseasonProjectionRows();
+            if (proj.length >= 6) {
+                const fifth = proj[4], sixth = proj[5];
+                return `가을야구 경계선은 ${teamAnd(fifth.team)} ${sixth.team} 사이, ${Math.max(0, sixth.gap).toFixed(1).replace('.0','')}경기 차예요`;
+            }
+            const liveCount = todayGames.filter(g => (liveDataStore[g.id] || {}).gameStatus === '경기중').length;
+            const endedCount = todayGames.filter(g => (liveDataStore[g.id] || {}).gameStatus === '종료').length;
+            if (liveCount) return `지금 진행 중인 ${liveCount}경기의 흐름이 순위표를 흔들 수 있어요`;
+            if (endedCount) return `끝난 ${endedCount}경기의 결과를 순위표와 함께 확인해봐요`;
+            const leader = rk[0];
+            return leader && leader.team ? `현재 선두는 ${leader.team}, 오늘은 다음 승부를 기다리는 흐름이에요` : '';
         }
         // 1) 직관 히트맵 (잔디형 그리드)
         function homeCardHeatmap() {
@@ -1742,6 +1847,63 @@
             let center = `<div class="flex flex-col items-center gap-0.5 flex-1"><div class="flex items-baseline gap-1.5"><span class="text-[26px] font-black leading-none text-white">${h.hw}</span><span class="text-[15px] font-black text-gray-500">:</span><span class="text-[26px] font-black leading-none text-white">${h.aw}</span></div><span class="text-[9px] font-bold text-gray-400 tracking-wide">시즌 상대전적</span></div>`;
             return `<div class="px-0.5"><div>${_cardHead('fa-trophy', '라이벌 전광판', `<span class="text-[10px] text-gray-500">KIA vs 삼성</span>`)}<div class="flex items-center justify-between mb-3">${col(A, rA)}${center}${col(B, rB)}</div><div class="flex items-center gap-1.5 text-[11px] font-bold pt-2.5 border-t border-white/5 mb-1.5"><i class="fa-regular fa-calendar text-gray-500 text-[10px]"></i>${nextHtml}</div><div class="flex items-center gap-1.5 text-[11px]"><i class="fa-regular fa-comment-dots text-gray-500 text-[10px]"></i><span class="text-gray-300 font-bold">${provoke}</span></div></div></div>`;
         }
+        function _rankNum(row, fallback = 99) {
+            const n = parseInt(String((row || {}).rank || '').replace('T', ''), 10);
+            return Number.isFinite(n) ? n : fallback;
+        }
+        function postseasonProjectionRows() {
+            const src = (rankingData && rankingData.length) ? rankingData : (computeRankingFromHistory() || []);
+            let rows = src.filter(r => r && KBO_TEAMS.includes(r.team)).map((r, idx) => {
+                const w = Number(r.w || 0), l = Number(r.l || 0), d = Number(r.d || 0);
+                let wr = Number(r.winRate);
+                if (!Number.isFinite(wr)) wr = (w + l) > 0 ? w / (w + l) : 0;
+                return { ...r, rankNum: _rankNum(r, idx + 1), w, l, d, gp: w + l + d, wr };
+            }).sort((a, b) => a.rankNum - b.rankNum || b.wr - a.wr);
+            if (!rows.some(r => r.gp > 0)) return [];
+            const fifth = rows[4], sixth = rows[5];
+            return rows.map(r => {
+                const form = _teamForm(r.team);
+                let gap = 0;
+                if (r.rankNum <= 5 && sixth) gap = ((r.w - sixth.w) + (sixth.l - r.l)) / 2;
+                if (r.rankNum > 5 && fifth) gap = ((fifth.w - r.w) + (r.l - fifth.l)) / 2;
+                gap = Math.max(0, gap);
+                let pct = r.rankNum <= 5
+                    ? 62 + (6 - r.rankNum) * 5 + Math.min(20, gap * 4) + (r.wr - 0.5) * 45 + (form - 0.5) * 20
+                    : 44 - (r.rankNum - 6) * 7 - Math.min(28, gap * 4) + (r.wr - 0.5) * 45 + (form - 0.5) * 20;
+                if (r.rankNum === 1) pct = Math.max(pct, 86);
+                pct = Math.max(4, Math.min(97, Math.round(pct)));
+                let label = pct >= 78 ? '안정권' : pct >= 60 ? '유력' : pct >= 42 ? '경합' : pct >= 22 ? '추격' : '험난';
+                return { ...r, pct, label, gap };
+            });
+        }
+        function homeCardPostseasonForecast() {
+            const rows = postseasonProjectionRows();
+            if (!rows.length) return '';
+            const topRows = rows.slice(0, 5).map(r => {
+                const hx = teamHex[r.team] || '#9ca3af';
+                const badgeCls = r.rankNum <= 3 ? 'text-[#111827] bg-white' : 'text-white bg-white/10';
+                return `<div class="flex items-center gap-2 py-1.5">
+                    <div class="w-6 h-6 rounded-full ${badgeCls} flex items-center justify-center text-[10px] font-black shrink-0">${r.rankNum}</div>
+                    <img src="${teamLogos[r.team]}" class="w-7 h-7 object-contain shrink-0">
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-2 mb-1">
+                            <span class="text-[13px] font-black text-white truncate">${r.team}</span>
+                            <span class="text-[11px] font-black" style="color:${hx}">${r.pct}% · ${r.label}</span>
+                        </div>
+                        <div class="h-1.5 rounded-full overflow-hidden bg-white/10"><div class="h-full rounded-full" style="width:${r.pct}%;background:${hx}"></div></div>
+                    </div>
+                </div>`;
+            }).join('');
+            const chase = rows.slice(5, 8).map(r => {
+                const hx = teamHex[r.team] || '#9ca3af';
+                return `<span class="inline-flex items-center gap-1.5 rounded-full bg-white/5 border border-white/5 px-2.5 py-1 text-[10px] font-black text-gray-300"><span style="color:${hx}">${r.team}</span>${r.pct}%</span>`;
+            }).join('');
+            const fifth = rows[4], sixth = rows[5];
+            const boundary = fifth && sixth
+                ? `<div class="text-[11px] text-gray-400 font-bold pt-2.5 mt-2 border-t border-white/5">5위 ${fifth.team} · 6위 ${sixth.team}의 경계선은 ${Math.max(0, sixth.gap).toFixed(1).replace('.0','')}경기 차</div>`
+                : '';
+            return `<div class="px-0.5"><div>${_cardHead('fa-ranking-star', '가을야구 예상도', `<span class="text-[10px] text-gray-500">순위+결과 기반</span>`)}<div class="flex flex-col">${topRows}</div>${chase ? `<div class="flex flex-wrap gap-1.5 mt-2">${chase}</div>` : ''}${boundary}</div></div>`;
+        }
         // 4) 우리 팀 기분 날씨
         function homeCardMoodWeather() {
             let teams;
@@ -1801,7 +1963,29 @@
                 let mt = scheduleData.filter(m => m.date === dStr && m.id !== '260711_ALLSTAR');
                 
                 if (isAllstarDate(dStr)) {
-                    grid.innerHTML = `<div class="bg-[#1A1A1C]/60 border border-white/5 rounded-2xl px-4 py-5 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition-transform" onclick="openAllstarGameInfo('${dStr}')">${getAllstarCalendarLogoHtml(dStr)}</div>`;
+                    const allstarMatch = allstarMatchByDate(dStr, false);
+                    const allstarTitle = dStr === '2026-07-10' ? '퓨처스 올스타전' : 'KBO 올스타전';
+                    const allstarMeta = [allstarMatch.time, allstarMatch.stadium].filter(Boolean).join(' · ');
+                    grid.innerHTML = `<div class="bg-[#1A1A1C]/60 border border-white/5 rounded-2xl px-4 py-4 flex flex-col gap-3 shadow-sm cursor-pointer active:scale-95 transition-transform" onclick="openAllstarGameInfo('${dStr}')">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[12px] font-black text-gray-400"><i class="fa-solid fa-star text-point mr-1.5"></i>${allstarTitle}</span>
+                            ${allstarMeta ? `<span class="text-[10px] font-bold text-gray-500">${allstarMeta}</span>` : ''}
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex flex-col items-center gap-1 w-[38%]">
+                                ${uiTeamLogo(allstarMatch.team1, 'w-12 h-12', 'w-12 h-12')}
+                                <span class="text-[14px] font-black text-white tracking-tight whitespace-nowrap">${allstarMatch.team1}</span>
+                            </div>
+                            <div class="flex flex-col items-center justify-center w-[24%]">
+                                ${getAllstarCalendarLogoHtml(dStr, true)}
+                                <span class="text-[13px] font-black text-gray-500 tracking-widest mt-1">VS</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-1 w-[38%]">
+                                ${uiTeamLogo(allstarMatch.team2, 'w-12 h-12', 'w-12 h-12')}
+                                <span class="text-[14px] font-black text-white tracking-tight whitespace-nowrap">${allstarMatch.team2}</span>
+                            </div>
+                        </div>
+                    </div>`;
                 } else if (mt.length > 0) {
                     let mh = mt.map(m => {
                         let isDal = (m.date === '2026-05-15' || m.date === '2026-05-16' || m.date === '2026-05-17' || m.date === '2026-06-05' || m.date === '2026-06-06' || m.date === '2026-06-07') && ((m.team1 === 'KIA' && m.team2 === '삼성') || (m.team1 === '삼성' && m.team2 === 'KIA'));
@@ -2044,7 +2228,7 @@
                     const opponent = selectedTeam === team1 ? team2 : selectedTeam === team2 ? team1 : '';
                     venueLine.textContent = opponent
                         ? `이번 ${opponent}전은 ${stadium}에서 열려요`
-                        : `${team1}와 ${team2}의 경기는 ${stadium}에서 열려요`;
+                        : `${teamAnd(team1)} ${team2}의 경기는 ${stadium}에서 열려요`;
                 }
                 if (broadcaster) broadcaster.textContent = card?.dataset.broadcaster || '중계 정보 미정';
                 if (gameTime) gameTime.textContent = card?.dataset.gameTime || '시간 미정';
@@ -2108,7 +2292,8 @@
                 div.dataset.broadcaster = m.broadcaster || l.broadcaster || '';
                 
                 let isDalBanner = (m.date === '2026-05-15' || m.date === '2026-05-16' || m.date === '2026-05-17' || m.date === '2026-06-05' || m.date === '2026-06-06' || m.date === '2026-06-07') && ((m.team1 === 'KIA' && m.team2 === '삼성') || (m.team1 === '삼성' && m.team2 === 'KIA'));
-                let isClassicBanner = (m.date === '2026-05-22' || m.date === '2026-05-23' || m.date === '2026-05-24') && (m.team1 === '삼성' || m.team2 === '삼성') && l.gameStatus === '경기전';
+                let isClassicBanner = isClassicSeriesGame(m) && l.gameStatus === '경기전';
+                let classicBannerDate = classicSeriesDateLabel(m);
 
                 if (isClassicBanner) {
                     div.className = 'min-w-full shrink-0 snap-center transition-transform duration-300 active:scale-[0.98] py-4 flex flex-col px-4'; 
@@ -2125,18 +2310,18 @@
                             <!-- TV Body -->
                             <div class="w-full relative overflow-hidden flex flex-col items-center justify-center border-[4px] border-[#2A2A2A] rounded-[24px] bg-[#EBE7DF] z-10 pt-4 pb-3" style="box-shadow: 6px 6px 0 rgba(0,0,0,0.15); background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 15px 15px;">
                                 
-                                <span class="text-[10px] font-black text-white tracking-widest border-[2px] border-black px-2 py-0.5 rounded-full whitespace-nowrap bg-black mb-3 shadow-sm" style="color: #ffffff !important; background-color: #000000 !important; border-color: #000000 !important;">클래식씨리즈</span>
+                                <span class="text-[10px] font-black text-white tracking-widest border-[2px] border-black px-2 py-0.5 rounded-full whitespace-nowrap bg-black mb-3 shadow-sm" style="color: #ffffff !important; background-color: #000000 !important; border-color: #000000 !important;">클래식 시리즈</span>
 
                                 <div class="flex items-center justify-center w-full px-2 gap-1 mb-2">
                                     <div class="flex flex-col items-center w-1/3">
-                                        <img src="${teamLogos['삼성']}" class="w-14 h-14 object-contain drop-shadow-md">
+                                        <img src="${teamLogos[m.team1]}" class="w-14 h-14 object-contain drop-shadow-md">
                                     </div>
                                     <div class="flex flex-col items-center justify-center w-1/3 shrink-0">
                                         <div class="text-[14px] font-black text-[#2A2A2A] tracking-widest mb-1 font-serif opacity-90">2026</div>
                                         <span class="text-[20px] font-black text-[#111] italic leading-tight tracking-tighter">VS</span>
                                     </div>
                                     <div class="flex flex-col items-center w-1/3">
-                                        <img src="${teamLogos['롯데']}" class="w-14 h-14 object-contain drop-shadow-md">
+                                        <img src="${teamLogos[m.team2]}" class="w-14 h-14 object-contain drop-shadow-md">
                                     </div>
                                 </div>
 
@@ -2145,14 +2330,14 @@
                                     <span class="text-[20px] font-black px-1.5 py-0 -rotate-3 shadow-[1.5px_1.5px_0_#000] border border-black leading-tight" style="color: #ffffff !important; background-color: #111111 !important; font-family: 'Georgia', serif; font-style: italic;">클</span>
                                     <span class="text-[20px] font-black px-1.5 py-0 rotate-2 shadow-[1.5px_1.5px_0_#000] border border-black leading-tight ml-[-2px] z-10" style="color: #ffffff !important; background-color: #0F3789 !important; font-style: italic;">래</span>
                                     <span class="text-[20px] font-black px-1.5 py-0 -rotate-2 shadow-[1.5px_1.5px_0_#000] border border-black leading-tight ml-[-2px] z-20" style="color: #111111 !important; background-color: #E2235B !important; font-style: italic;">식</span>
-                                    <span class="text-[20px] font-black px-1.5 py-0 rotate-3 shadow-[1.5px_1.5px_0_#000] border border-black leading-tight ml-[3px] z-10" style="color: #ffffff !important; background-color: #0F3789 !important; font-family: 'Georgia', serif; font-style: italic;">씨</span>
+                                    <span class="text-[20px] font-black px-1.5 py-0 rotate-3 shadow-[1.5px_1.5px_0_#000] border border-black leading-tight ml-[3px] z-10" style="color: #ffffff !important; background-color: #0F3789 !important; font-family: 'Georgia', serif; font-style: italic;">시</span>
                                     <span class="text-[20px] font-black px-1.5 py-0 -rotate-2 shadow-[1.5px_1.5px_0_#000] border border-black leading-tight ml-[-2px] z-20" style="color: #111111 !important; background-color: #D1D1D1 !important; font-style: italic;">리</span>
                                     <span class="text-[20px] font-black px-1.5 py-0 rotate-2 shadow-[1.5px_1.5px_0_#000] border border-black leading-tight ml-[-2px] z-30" style="color: #ffffff !important; background-color: #E2235B !important; font-family: 'Georgia', serif; font-style: italic;">즈</span>
                                 </div>
 
                                 <!-- Date -->
                                 <div class="bg-[#D1BA98] px-3 py-1 mt-1 transform -rotate-1 shadow-[1.5px_1.5px_0_rgba(0,0,0,0.1)] relative border-b border-[#A6906A]" style="clip-path: polygon(1% 0%, 99% 1%, 100% 98%, 0% 100%);">
-                                    <span class="text-[12px] font-black text-[#2A2A2A] tracking-widest italic font-serif opacity-90">5.22(금)-24(일)</span>
+                                    <span class="text-[12px] font-black text-[#2A2A2A] tracking-widest italic font-serif opacity-90">${classicBannerDate}</span>
                                 </div>
                             </div>
                             
@@ -2354,7 +2539,8 @@
             const l2Lg = uiTeamLogo(m.team2, 'w-12 h-12', 'w-12 h-12', 'drop-shadow-lg mb-1.5');
             
             let isDal = (m.date === '2026-05-15' || m.date === '2026-05-16' || m.date === '2026-05-17' || m.date === '2026-06-05' || m.date === '2026-06-06' || m.date === '2026-06-07') && ((m.team1 === 'KIA' && m.team2 === '삼성') || (m.team1 === '삼성' && m.team2 === 'KIA'));
-            let isClassic = (m.date === '2026-05-22' || m.date === '2026-05-23' || m.date === '2026-05-24') && (m.team1 === '삼성' || m.team2 === '삼성');
+            let isClassicSeries = isClassicSeriesGame(m);
+            let isClassic = false;
             
             let sbh = '';
             if (isDal) {
@@ -2419,7 +2605,7 @@
                     hPitcherArea = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate text-right">${hText}</span>`;
                     inningArea = `<span class="text-[14px] font-black text-[#FFFFFF] drop-shadow-md tracking-widest mt-1">종료</span>`; 
                     centerArea = `<span class="text-[12px] font-bold text-gray-400 tracking-widest mt-px">FINAL</span>`;
-                } else if (l.gameStatus === '경기전' || l.gameStatus === '취소' || (l.gameStatus && l.gameStatus.includes('취소'))) {
+                } else if (l.gameStatus === '경기전' || iC) {
                     aPitcherArea = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate">${aPitcher !== '-' ? '선발 ' + aPitcher : '-'}</span>`;
                     hPitcherArea = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate text-right">${hPitcher !== '-' ? '선발 ' + hPitcher : '-'}</span>`;
                     let centerTxt = l.gameStatus === '경기전' ? m.time : '취소';
@@ -2481,8 +2667,8 @@
                             
                             <div class="flex flex-col w-[60px] shrink-0 gap-y-1.5 pl-1 text-center" style="border-left: 1px solid rgba(255,255,255,0.1);">
                                 <div class="flex gap-1 text-[#60A5FA] justify-center"><div class="font-black w-[12px]">R</div><div class="w-[12px]">H</div><div class="w-[12px]">E</div><div class="w-[12px]">B</div></div>
-                                <div class="flex gap-1 mt-0.5 justify-center"><div class="text-white font-black w-[12px]">${aScoreBanner !== '-' ? aScoreBanner : '0'}</div><div class="text-gray-400 w-[12px]">${aHit}</div><div class="text-gray-400 w-[12px]">${aErr}</div><div class="text-gray-400 w-[12px]">${aBase}</div></div>
-                                <div class="flex gap-1 mt-0.5 justify-center"><div class="text-white font-black w-[12px]">${hScoreBanner !== '-' ? hScoreBanner : '0'}</div><div class="text-gray-400 w-[12px]">${hHit}</div><div class="text-gray-400 w-[12px]">${hErr}</div><div class="text-gray-400 w-[12px]">${hBase}</div></div>
+                                <div class="flex gap-1 mt-0.5 justify-center"><div class="text-white font-black w-[12px]">${aScoreBanner}</div><div class="text-gray-400 w-[12px]">${aHit}</div><div class="text-gray-400 w-[12px]">${aErr}</div><div class="text-gray-400 w-[12px]">${aBase}</div></div>
+                                <div class="flex gap-1 mt-0.5 justify-center"><div class="text-white font-black w-[12px]">${hScoreBanner}</div><div class="text-gray-400 w-[12px]">${hHit}</div><div class="text-gray-400 w-[12px]">${hErr}</div><div class="text-gray-400 w-[12px]">${hBase}</div></div>
                             </div>
                         </div>
                     </div>
@@ -2605,7 +2791,7 @@
                     hPitcherArea = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate text-right">${hText}</span>`;
                     inningArea = `<span class="text-[14px] font-black text-[#FFFFFF] drop-shadow-md tracking-widest mt-1">종료</span>`; 
                     centerArea = `<span class="text-[12px] font-bold text-gray-400 tracking-widest mt-px">FINAL</span>`;
-                } else if (l.gameStatus === '경기전' || l.gameStatus === '취소' || (l.gameStatus && l.gameStatus.includes('취소'))) {
+                } else if (l.gameStatus === '경기전' || iC) {
                     aPitcherArea = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate">${aPitcher !== '-' ? '선발 ' + aPitcher : '-'}</span>`;
                     hPitcherArea = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate text-right">${hPitcher !== '-' ? '선발 ' + hPitcher : '-'}</span>`;
                     let centerTxt = l.gameStatus === '경기전' ? m.time : '취소';
@@ -2668,14 +2854,16 @@
                             
                             <div class="flex flex-col w-[60px] shrink-0 gap-y-1.5 pl-1 text-center" style="border-left: 1px solid rgba(255,255,255,0.1);">
                                 <div class="flex gap-1 text-[#60A5FA] justify-center"><div class="font-black w-[12px]">R</div><div class="w-[12px]">H</div><div class="w-[12px]">E</div><div class="w-[12px]">B</div></div>
-                                <div class="flex gap-1 mt-0.5 justify-center"><div class="text-white font-black w-[12px]">${aScoreBanner !== '-' ? aScoreBanner : '0'}</div><div class="text-gray-400 w-[12px]">${aHit}</div><div class="text-gray-400 w-[12px]">${aErr}</div><div class="text-gray-400 w-[12px]">${aBase}</div></div>
-                                <div class="flex gap-1 mt-0.5 justify-center"><div class="text-white font-black w-[12px]">${hScoreBanner !== '-' ? hScoreBanner : '0'}</div><div class="text-gray-400 w-[12px]">${hHit}</div><div class="text-gray-400 w-[12px]">${hErr}</div><div class="text-gray-400 w-[12px]">${hBase}</div></div>
+                                <div class="flex gap-1 mt-0.5 justify-center"><div class="text-white font-black w-[12px]">${aScoreBanner}</div><div class="text-gray-400 w-[12px]">${aHit}</div><div class="text-gray-400 w-[12px]">${aErr}</div><div class="text-gray-400 w-[12px]">${aBase}</div></div>
+                                <div class="flex gap-1 mt-0.5 justify-center"><div class="text-white font-black w-[12px]">${hScoreBanner}</div><div class="text-gray-400 w-[12px]">${hHit}</div><div class="text-gray-400 w-[12px]">${hErr}</div><div class="text-gray-400 w-[12px]">${hBase}</div></div>
                             </div>
                         </div>
                     </div>
                 </div>`;
                 if (iC) sbh = sbh.replace(/<\/div>\s*$/, bigStamp('우천취소', STAMP_HEX.CANCEL) + '</div>');
             }
+
+            if (isClassicSeries) sbh = classicSeriesHeader(m) + sbh;
 
             // [추가] 스코어보드 밑 승리 확률 막대 (클래식 테마는 레트로 디자인 유지 위해 제외)
             let wpb = isClassic ? '' : winProbBarHtml(m, l);
