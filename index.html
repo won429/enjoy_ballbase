@@ -201,10 +201,18 @@
         .banner-dot.bg-white { background-color: var(--point-color) !important; box-shadow: 0 0 8px var(--point-color) !important; }
         .live-badge { background: rgba(234, 0, 41, 0.1) !important; color: #EA0029 !important; border: 1px solid rgba(234, 0, 41, 0.3) !important; box-shadow: 0 0 10px rgba(234, 0, 41, 0.3) !important; font-weight: 800 !important; border-radius: 8px !important; }
         
+        #calendar-screen, #winrate-screen, #ranking-screen, #cheer-screen, #lineup-content {
+            overflow-x: hidden !important;
+            overscroll-behavior-x: none;
+        }
+        #winrate-screen, #cheer-screen { touch-action: pan-y; }
         .cheer-team { display: none; flex-direction: column; gap: 16px; }
         body[data-theme="KIA"] .cheer-KIA { display: flex; }
         body[data-theme="삼성"] .cheer-삼성 { display: flex; }
-        .btn-collapse { max-width: 0px !important; padding-left: 0px !important; padding-right: 0px !important; opacity: 0 !important; pointer-events: none !important; margin-right: -4px !important; border-width: 0px !important; }
+        .btn-collapse { width: 0px !important; min-width: 0px !important; max-width: 0px !important; flex: 0 0 0px !important; padding-left: 0px !important; padding-right: 0px !important; opacity: 0 !important; pointer-events: none !important; margin: 0 !important; border-width: 0px !important; color: transparent !important; transform: scaleX(0); }
+        .btn-collapse::after { content: none !important; }
+        body[data-active-tab="1"] #btn-team-all,
+        body[data-active-tab="3"] #btn-team-all { display: none !important; }
         .team-btn-anim { transition: all 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); overflow: hidden; max-width: 80px; white-space: nowrap; }
         
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
@@ -257,7 +265,7 @@
         .wp-front { position: absolute; top: -1px; bottom: -1px; width: 2.5px; margin-left: -1.25px; border-radius: 2px; background: #fff; z-index: 6; box-shadow: 0 0 6px rgba(255,255,255,0.9), 0 0 12px rgba(255,255,255,0.5); animation: wp-front-pulse 1.05s ease-in-out infinite; }
         @keyframes wp-front-pulse { 0%, 100% { opacity: 0.5; transform: translateX(-1.5px) scaleY(0.8); } 50% { opacity: 1; transform: translateX(1.5px) scaleY(1); } }
         /* 요정/응원가 탭에서 '전체' 버튼 완전히 접기 (살짝 보이던 문제 수정) */
-        #ctrl-team button.btn-collapse { padding-left: 0 !important; padding-right: 0 !important; }
+        #ctrl-team button.btn-collapse { width: 0 !important; min-width: 0 !important; max-width: 0 !important; padding-left: 0 !important; padding-right: 0 !important; }
         /* [추가] 홈 Now Brief 피드 카드 (라이트/다크 모두 대응) */
         .home-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 18px; box-shadow: var(--glass-shadow); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
         .home-chip { background: rgba(128,128,128,0.10); border: 1px solid var(--glass-border); }
@@ -1525,6 +1533,7 @@
 
         function switchTab(index) {
             currentTabIndex = index; if (navigator.vibrate) navigator.vibrate(10);
+            document.body.dataset.activeTab = String(index);
             closeBottomSheet(); closeLineupPopup(); closeRecordPopup();
             
             const nb = document.querySelectorAll('#bottom-nav button');
@@ -1629,18 +1638,8 @@
         const STAMP_HEX = { WIN: '#EA0029', LOSE: '#64748B', DRAW: '#10B981', CANCEL: '#3B82F6' };
         // 스코어보드 위에 쾅 찍히는 큰 도장 (모션 포함)
         function bigStamp(label, hex) { return `<div class="stamp-pop absolute top-1/2 left-1/2 z-30 font-black pointer-events-none whitespace-nowrap text-[26px] px-5 py-1.5 border-[3px] rounded-tl-[26px] rounded-br-[26px] rounded-tr-md rounded-bl-md tracking-[0.12em]" style="color:${hex};border-color:${hex};background:${hex}26;box-shadow:0 6px 18px ${hex}55, inset 0 0 0 1px ${hex}33;text-shadow:0 1px 2px rgba(0,0,0,0.18);">${label}</div>`; }
-        function classicSeriesHeader(m, l, sch, l1Lg, l2Lg) {
+        function classicSeriesHeader(m) {
             if (!isClassicSeriesGame(m)) return '';
-            const classicSch = (sch || `<span class="text-2xl font-black text-gray-700">VS</span>`)
-                .replace(/text-white/g, 'text-gray-700 drop-shadow-none')
-                .replace(/text-point/g, 'text-[#EA0029] drop-shadow-none')
-                .replace(/text-gray-700/g, 'text-gray-800')
-                .replace(/text-gray-500/g, 'text-gray-600')
-                .replace(/text-gray-400/g, 'text-gray-600')
-                .replace(/bg-white\/5/g, 'bg-black/5 border-black/10 text-gray-900 shadow-none border')
-                .replace(/text-\[#FFFFFF\]/g, 'text-[#111]')
-                .replace(/text-\[#93c5fd\]/g, 'text-gray-800');
-
             return `
                 <style>
                     html:has(#lineup-popup:not(.render-hidden) .classic-marker) #lineup-popup.app-bg,
@@ -1729,9 +1728,21 @@
                     #lineup-content:has(.classic-marker) .scoreboard-surface .bg-white\\/10 { background-color: rgba(255,255,255,0.10) !important; }
                     #lineup-content:has(.classic-marker) .scoreboard-surface .border-white\\/5 { border-color: rgba(255,255,255,0.05) !important; }
                     #lineup-content:has(.classic-marker) .scoreboard-surface .border-white\\/10 { border-color: rgba(255,255,255,0.10) !important; }
+                    html.light-mode #lineup-content:has(.classic-marker) .scoreboard-surface span.text-white,
+                    html.light-mode #lineup-content:has(.classic-marker) .scoreboard-surface div.text-white,
+                    html.light-mode #lineup-content:has(.classic-marker) .scoreboard-surface .text-\\[\\#FFFFFF\\] {
+                        color: #111827 !important;
+                        text-shadow: none !important;
+                    }
+                    html.light-mode #lineup-content:has(.classic-marker) .scoreboard-surface .text-gray-200 { color: #374151 !important; }
+                    html.light-mode #lineup-content:has(.classic-marker) .scoreboard-surface .text-gray-300 { color: #4b5563 !important; }
+                    html.light-mode #lineup-content:has(.classic-marker) .scoreboard-surface .text-gray-400 { color: #6b7280 !important; }
+                    html.light-mode #lineup-content:has(.classic-marker) .scoreboard-surface .text-gray-500 { color: #8b95a1 !important; }
+                    html.light-mode #lineup-content:has(.classic-marker) .scoreboard-surface .bg-white\\/5 { background-color: rgba(0,0,0,0.03) !important; border-color: rgba(0,0,0,0.05) !important; }
+                    html.light-mode #lineup-content:has(.classic-marker) .scoreboard-surface .bg-white\\/10 { background-color: rgba(0,0,0,0.06) !important; }
                 </style>
                 <div class="classic-marker hidden"></div>
-                <div class="relative px-4 pb-6 pt-1 mb-2 mt-0">
+                <div class="relative px-4 pb-5 pt-1 mb-2 mt-0">
                     <div class="flex justify-center items-center gap-[1.5px] mt-1 mb-2 z-10 relative opacity-95">
                         <span class="text-[14px] font-black px-1.5 py-0.5 -rotate-3 shadow-[1.5px_1.5px_0_#000] border border-black" style="color: #ffffff !important; background-color: #111111 !important; font-family: 'Georgia', serif; font-style: italic;">클</span>
                         <span class="text-[14px] font-black px-1.5 py-0.5 rotate-2 shadow-[1.5px_1.5px_0_#000] border border-black" style="color: #ffffff !important; background-color: #0F3789 !important; font-style: italic;">래</span>
@@ -1740,11 +1751,8 @@
                         <span class="text-[14px] font-black px-1.5 py-0.5 -rotate-2 shadow-[1.5px_1.5px_0_#000] border border-black" style="color: #111111 !important; background-color: #D1D1D1 !important; font-style: italic;">리</span>
                         <span class="text-[14px] font-black px-1.5 py-0.5 rotate-6 shadow-[1.5px_1.5px_0_#000] border border-black" style="color: #ffffff !important; background-color: #E2235B !important; font-family: 'Georgia', serif; font-style: italic;">즈</span>
                     </div>
-
-                    <div class="flex justify-between items-center relative z-10 mt-4">
-                        <div class="flex flex-col items-center w-[30%]">${l1Lg.replace('drop-shadow-lg', 'drop-shadow-md')}<span class="text-[16px] font-black text-gray-900 mt-1" style="color: #111 !important;">${m.team1}</span><span class="text-[12px] font-black text-gray-600 mt-0.5" style="color: #444 !important;">AWAY</span></div>
-                        <div class="flex flex-col items-center justify-center w-[40%]">${classicSch}</div>
-                        <div class="flex flex-col items-center w-[30%]">${l2Lg.replace('drop-shadow-lg', 'drop-shadow-md')}<span class="text-[16px] font-black text-gray-900 mt-1" style="color: #111 !important;">${m.team2}</span><span class="text-[12px] font-black text-gray-600 mt-0.5" style="color: #444 !important;">HOME</span></div>
+                    <div class="flex justify-center mt-3">
+                        <span class="text-[11px] font-black text-[#2A2A2A] bg-[#D1BA98] px-3 py-1 rotate-[-1deg] shadow-[1.5px_1.5px_0_rgba(0,0,0,0.10)] border-b border-[#A6906A]" style="clip-path: polygon(1% 0%, 99% 1%, 100% 98%, 0% 100%);">${classicSeriesDateLabel(m)}</span>
                     </div>
                 </div>`;
         }
@@ -1764,7 +1772,7 @@
                 cards.push(homeCardFortune());
                 cards.push(homeCardRivalBoard());
             }
-            cards.push(homeCardMoodWeather());
+            cards.push(homeCardRecentForm());
             c.innerHTML = `<div class="flex flex-col gap-5">${cards.filter(Boolean).join('')}</div>`;
         }
         // 브리핑 헤더 (시간대 + 선택 구단 + 실제 경기 흐름)
@@ -1781,7 +1789,7 @@
                 [12, '기분 좋은 오전이에요'],
                 [14, '점심과 함께 오늘 경기를 살펴봐요'],
                 [17, '나른한 오후, 야구로 기운 내요'],
-                [19, '야구가 기다려지는 저녁이에요'],
+                [19, '오늘의 야구 흐름을 살펴봐요'],
                 [22, '경기에 빠져들기 좋은 밤이에요'],
                 [24, '오늘 하루도 수고했어요']
             ];
@@ -1795,6 +1803,23 @@
             }
 
             const todayGames = scheduleData.filter(m => m.date === todayStr);
+            const gameStatusOf = g => String((liveDataStore[g.id] || {}).gameStatus || '경기전');
+            const isCanceledBriefGame = g => gameStatusOf(g).includes('취소') || gameStatusOf(g).includes('우취') || String((liveDataStore[g.id] || {}).inning || '').includes('취소') || String((liveDataStore[g.id] || {}).inning || '').includes('우취');
+            const scheduledStarted = g => {
+                const t = String(g.time || '').match(/(\d{1,2}):(\d{2})/);
+                if (!t) return false;
+                const start = new Date(`${todayStr}T${String(t[1]).padStart(2, '0')}:${t[2]}:00`);
+                return Date.now() >= start.getTime();
+            };
+            const liveOrStartedGames = todayGames.filter(g => {
+                const st = gameStatusOf(g);
+                return st === '경기중' || (st === '경기전' && scheduledStarted(g) && !isCanceledBriefGame(g));
+            });
+            const endedGamesForBrief = todayGames.filter(g => gameStatusOf(g) === '종료' && !isCanceledBriefGame(g));
+            if (!isTeam) {
+                if (liveOrStartedGames.length) greet = liveOrStartedGames.length === 1 ? '지금 경기가 진행 중이에요' : `지금 ${liveOrStartedGames.length}경기가 진행 중이에요`;
+                else if (todayGames.length && endedGamesForBrief.length === todayGames.length) greet = '오늘 경기 결과가 나왔어요';
+            }
             let sub = todayGames.length ? `오늘 KBO ${todayGames.length}경기가 열려요` : '오늘은 KBO 경기가 없어요';
             if (isTeam) {
                 const g = todayGames.filter(m => m.team1 === selectedTeam || m.team2 === selectedTeam)
@@ -1809,12 +1834,15 @@
                     const oppScore = Number(g.team1 === selectedTeam ? lv.homeScore : lv.awayScore) || 0;
                     const opp = g.team1 === selectedTeam ? g.team2 : g.team1;
                     if (canceled) {
+                        greet = '오늘 경기가 취소됐어요';
                         sub = `${opp}전은 취소됐어요. 다음 만남을 기다려요`;
                     } else if (status === '경기중') {
+                        greet = `${selectedTeam} 경기가 진행 중이에요`;
                         if (myScore > oppScore) sub = `${teamSubject(selectedTeam)} ${opp}에 ${myScore}-${oppScore}로 앞서요. 끝까지 힘을 보태요`;
                         else if (myScore < oppScore) sub = `${teamSubject(selectedTeam)} ${opp}에 ${myScore}-${oppScore}로 뒤지고 있어요. 더 크게 응원해요`;
                         else sub = `${teamAnd(opp)} ${myScore}-${oppScore} 팽팽한 승부예요. 응원이 필요한 순간이에요`;
                     } else if (status === '종료') {
+                        greet = '오늘 경기 결과가 나왔어요';
                         if (myScore > oppScore) sub = `${selectedTeam}의 ${myScore}-${oppScore} 승리. 오늘의 기쁨을 오래 간직해요`;
                         else if (myScore < oppScore) sub = `오늘은 ${myScore}-${oppScore}로 아쉬웠어요. 다음 경기도 함께 응원해요`;
                         else sub = `${teamAnd(opp)} ${myScore}-${oppScore} 무승부. 다음 승부를 기대해요`;
@@ -1823,12 +1851,15 @@
                         const mins = Math.round((start.getTime() - Date.now()) / 60000);
                         if (mins > 60) sub = `${g.time} ${opp}전이 열려요. 미리 응원할 준비를 해요`;
                         else if (mins > 0) sub = `${opp}전 시작까지 ${mins}분. 이제 응원할 시간이에요`;
-                        else sub = `${opp}전 소식을 기다리고 있어요. 곧 경기 흐름을 전해드릴게요`;
+                        else {
+                            greet = `${selectedTeam} 경기 흐름을 확인해요`;
+                            sub = `${opp}전이 시작 시간에 들어섰어요. 최신 흐름을 확인해요`;
+                        }
                     }
                 }
             } else {
-                const liveCount = todayGames.filter(g => (liveDataStore[g.id] || {}).gameStatus === '경기중').length;
-                const endedCount = todayGames.filter(g => (liveDataStore[g.id] || {}).gameStatus === '종료').length;
+                const liveCount = liveOrStartedGames.length;
+                const endedCount = endedGamesForBrief.length;
                 if (liveCount) sub = `현재 KBO ${liveCount}경기가 진행 중이에요. 오늘의 승부를 함께 지켜봐요`;
                 else if (todayGames.length && endedCount === todayGames.length) sub = `오늘 KBO ${endedCount}경기가 모두 끝났어요. 결과를 천천히 돌아봐요`;
             }
@@ -2034,7 +2065,7 @@
         function homeCardPostseasonForecast() {
             const rows = postseasonProjectionRows();
             if (!rows.length) return '';
-            const forecastRows = rows.map((r, idx) => {
+            const forecastRows = rows.slice(0, 6).map((r, idx) => {
                 const hx = teamHex[r.team] || '#9ca3af';
                 const badgeCls = r.rankNum <= 3 ? 'text-[#111827] bg-white' : 'text-white bg-white/10';
                 const boundaryCls = idx === 5 ? 'mt-1 pt-2 border-t border-white/5' : '';
@@ -2050,14 +2081,16 @@
                     </div>
                 </div>`;
             }).join('');
+            const rest = rows.slice(6).map(r => `${r.rankNum}위 ${r.team} ${r.pct}%`).join(' · ');
             const fifth = rows[4], sixth = rows[5];
             const boundary = fifth && sixth
                 ? `<div class="text-[11px] text-gray-400 font-bold pt-2.5 mt-2 border-t border-white/5">5위 ${fifth.team} · 6위 ${sixth.team}의 경계선은 ${Math.max(0, sixth.gap).toFixed(1).replace('.0','')}경기 차</div>`
                 : '';
-            return `<div class="px-0.5"><div>${_cardHead('fa-ranking-star', '가을야구 예상도', `<span class="text-[10px] text-gray-500">순위+결과 기반 · 10개 구단</span>`)}<div class="flex flex-col">${forecastRows}</div>${boundary}</div></div>`;
+            const restLine = rest ? `<div class="text-[10.5px] text-gray-500 font-bold leading-relaxed mt-2">${rest}</div>` : '';
+            return `<div class="px-0.5"><div>${_cardHead('fa-ranking-star', '가을야구 예상도', `<span class="text-[10px] text-gray-500">순위+결과 기반</span>`)}<div class="flex flex-col">${forecastRows}</div>${restLine}${boundary}</div></div>`;
         }
-        // 4) 우리 팀 기분 날씨
-        function homeCardMoodWeather() {
+        // 4) 최근 승패 흐름
+        function homeCardRecentForm() {
             let teams;
             if (selectedTeam === 'KIA' || selectedTeam === '삼성') { teams = [selectedTeam]; }
             else {
@@ -2068,25 +2101,21 @@
             let rows = teams.map(t => {
                 let st = teamStats[t] || { results: [] };
                 let last5 = (st.results || []).slice(-5);
-                let wins = last5.filter(x => x === 'W').length;
                 let sType = last5.length ? last5[last5.length - 1] : null, streak = 0;
                 for (let i = last5.length - 1; i >= 0; i--) { if (last5[i] === sType) streak++; else break; }
-                let icon, label, col, msg;
-                if (last5.length === 0) { icon = 'fa-cloud'; label = '정보 없음'; col = '#9ca3af'; msg = '최근 경기 기록이 부족해요'; }
-                else if (wins >= 4 || (sType === 'W' && streak >= 3)) { icon = 'fa-sun'; col = '#f59e0b'; label = '쾌청'; msg = (sType === 'W' && streak >= 3) ? `${streak}연승, 기세가 뜨거워요` : '분위기 최고, 직관 가기 좋은 날'; }
-                else if (wins === 3) { icon = 'fa-cloud-sun'; col = '#fbbf24'; label = '맑음'; msg = '흐름이 살아나고 있어요'; }
-                else if (wins === 2) { icon = 'fa-cloud'; col = '#9ca3af'; label = '흐림'; msg = '반등의 한 방이 필요한 시점'; }
-                else if (wins === 1) { icon = 'fa-cloud-rain'; col = '#60a5fa'; label = '비'; msg = '침체기, 우리의 응원이 필요해요'; }
-                else { icon = 'fa-cloud-bolt'; col = '#a78bfa'; label = '폭풍우'; msg = (sType === 'L' && streak >= 3) ? `${streak}연패, 곧 갠다고 믿어요` : '먹구름이 잔뜩, 그래도 우리 팀'; }
+                let formText = last5.map(x => x === 'W' ? '승' : (x === 'L' ? '패' : '무')).join('');
+                let label = last5.length ? `최근 ${last5.length}경기 ${formText}` : '최근 기록 없음';
+                let streakText = sType === 'W' ? `${streak}연승` : (sType === 'L' ? `${streak}연패` : (sType === 'D' ? `${streak}무` : '데이터 대기'));
+                let col = teamHex[t] || '#9ca3af';
                 let dots = last5.map(x => {
                     let cc = x === 'W' ? 'background:#22c55e' : (x === 'L' ? 'background:#ef4444' : 'background:#6b7280');
                     let tx = x === 'W' ? '승' : (x === 'L' ? '패' : '무');
                     return `<span class="w-[16px] h-[16px] rounded-full text-white text-[8px] font-black flex items-center justify-center" style="${cc}">${tx}</span>`;
                 }).join('') || '<span class="text-[10px] text-gray-500">기록 없음</span>';
-                return `<div class="flex items-center gap-3 py-1"><i class="fa-solid ${icon} w-9 text-center shrink-0 text-[22px]" style="color:${col}"></i><div class="flex flex-col min-w-0 flex-1"><div class="flex items-baseline gap-1.5"><span class="text-[14px] font-black text-white">${t}</span><span class="text-[12px] font-black" style="color:${col}">${label}</span></div><span class="text-[11px] text-gray-400 truncate">${msg}</span></div><div class="flex items-center gap-1 shrink-0">${dots}</div></div>`;
+                return `<div class="flex items-center gap-3 py-1"><img src="${teamLogos[t]}" class="w-8 h-8 object-contain shrink-0"><div class="flex flex-col min-w-0 flex-1"><div class="flex items-baseline gap-1.5"><span class="text-[14px] font-black text-white">${t}</span><span class="text-[11px] font-black" style="color:${col}">${streakText}</span></div><span class="text-[11px] text-gray-400 truncate">${label}</span></div><div class="flex items-center gap-1 shrink-0">${dots}</div></div>`;
             }).join('<div class="h-px bg-white/5 my-1"></div>');
             let isTeam = (selectedTeam === 'KIA' || selectedTeam === '삼성');
-            let head = isTeam ? _cardHead('fa-cloud-sun', '팀 기분 날씨', '', teamHex[selectedTeam]) : _cardHead('fa-cloud-sun', '팀 기분 날씨', `<span class="text-[10px] text-gray-500">전 구단</span>`);
+            let head = isTeam ? _cardHead('fa-chart-line', '최근 승패 흐름', '', teamHex[selectedTeam]) : _cardHead('fa-chart-line', '최근 승패 흐름', `<span class="text-[10px] text-gray-500">전 구단</span>`);
             return `<div class="px-0.5"><div>${head}${rows}</div></div>`;
         }
 
@@ -3019,7 +3048,7 @@
                 if (iC) sbh = sbh.replace(/<\/div>\s*$/, bigStamp('우천취소', STAMP_HEX.CANCEL) + '</div>');
             }
 
-            if (isClassicSeries) sbh = classicSeriesHeader(m, l, sch, l1Lg, l2Lg) + sbh;
+            if (isClassicSeries) sbh = classicSeriesHeader(m) + sbh;
 
             // [추가] 스코어보드 밑 승리 확률 막대 (클래식 테마는 레트로 디자인 유지 위해 제외)
             let wpb = isClassic ? '' : winProbBarHtml(m, l);
@@ -3438,7 +3467,7 @@
                 
                 let ac = iR ? 'items-end' : 'items-start', rc = iR ? 'flex-row-reverse' : 'flex-row';
                 
-                return `<div class="flex flex-col items-center w-full relative h-[520px] pt-8"><div class="flex flex-col items-center w-full z-20 relative"><div class="flex items-start justify-center w-full"><span class="text-[120px] font-black text-pattern-${t} leading-normal tracking-tighter pointer-events-none select-none drop-shadow-xl">${p}</span><span class="text-[36px] font-black ${tc} mt-8 ml-1 drop-shadow-md">%</span></div><div class="flex justify-between items-center w-full px-8 mt-2"><div class="flex items-center gap-3"><span class="text-[28px] font-extrabold text-white tracking-tight drop-shadow-md">${ty}</span><button onclick="openRecordPopup('${t}', '${ty}')" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/90 hover:bg-white/20 transition-all shadow-md border border-white/10 active:scale-95 z-30 pointer-events-auto"><i class="fa-solid fa-plus text-[16px]"></i></button></div><div class="text-[14px] font-bold text-gray-200 bg-black/50 px-4 py-2 rounded-xl border border-white/10 shadow-inner whitespace-nowrap tracking-tight drop-shadow-md flex flex-col items-end"><span>${r.w}승 ${r.d}무 ${r.l}패</span><span class="opacity-60 text-[11px] font-medium mt-0.5">총 ${r.w + r.d + r.l}전</span></div></div></div><div class="absolute -bottom-[40px] left-0 w-full h-[230px] flex items-end justify-center pointer-events-none z-10 scale-[1.35] origin-bottom">${ch}</div></div>`;
+                return `<div class="flex flex-col items-center w-full relative h-[520px] pt-8 overflow-hidden"><div class="flex flex-col items-center w-full z-20 relative"><div class="flex items-start justify-center w-full"><span class="text-[120px] font-black text-pattern-${t} leading-normal tracking-tighter pointer-events-none select-none drop-shadow-xl">${p}</span><span class="text-[36px] font-black ${tc} mt-8 ml-1 drop-shadow-md">%</span></div><div class="flex justify-between items-center w-full px-8 mt-2"><div class="flex items-center gap-3"><span class="text-[28px] font-extrabold text-white tracking-tight drop-shadow-md">${ty}</span><button onclick="openRecordPopup('${t}', '${ty}')" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/90 hover:bg-white/20 transition-all shadow-md border border-white/10 active:scale-95 z-30 pointer-events-auto"><i class="fa-solid fa-plus text-[16px]"></i></button></div><div class="text-[14px] font-bold text-gray-200 bg-black/50 px-4 py-2 rounded-xl border border-white/10 shadow-inner whitespace-nowrap tracking-tight drop-shadow-md flex flex-col items-end"><span>${r.w}승 ${r.d}무 ${r.l}패</span><span class="opacity-60 text-[11px] font-medium mt-0.5">총 ${r.w + r.d + r.l}전</span></div></div></div><div class="absolute -bottom-[40px] left-0 w-full h-[230px] flex items-end justify-center pointer-events-none z-10 scale-[1.18] origin-bottom overflow-hidden">${ch}</div></div>`;
             }
             c.innerHTML = `<div class="flex flex-col w-full pb-8 pt-4">${cc('직관', jkp, jk, false, jkp >= 50)}</div>`;
         }
