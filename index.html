@@ -26,7 +26,7 @@
         body[data-theme="삼성"] { --point-color: #074CA1; --point-bg: rgba(7, 76, 161, 0.2); --app-bg: #00020a; }
         body[data-theme="all"] { --point-color: #ffffff; --point-bg: rgba(255, 255, 255, 0.15); --app-bg: #030303; }
         
-        body { font-family: 'KBO-Dia-Gothic', sans-serif; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; touch-action: pan-y; letter-spacing: -0.3px; color: #f8fafc; }
+        body { font-family: 'KBO-Dia-Gothic', sans-serif; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; touch-action: pan-y; letter-spacing: 0; color: #f8fafc; }
         .app-bg { background-color: var(--app-bg) !important; background-image: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.04) 0%, transparent 60%) !important; background-attachment: fixed !important; transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         
         .toss-card, .list-card, .bg-\[\#1C1C1E\] { background: var(--glass-bg) !important; backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border: 1px solid var(--glass-border) !important; box-shadow: var(--glass-shadow) !important; }
@@ -36,8 +36,18 @@
         body[data-theme="all"] .bg-point { color: #000000 !important; }
         .bg-point-sub { background: rgba(255,255,255,0.05) !important; color: var(--point-color) !important; border: 1px solid var(--glass-border) !important; }
         
-        #bottom-nav .bg-\[\#1C1C1E\] { background: rgba(15, 15, 18, 1) !important; backdrop-filter: blur(30px) saturate(200%); -webkit-backdrop-filter: blur(30px) saturate(200%); border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 100px !important; box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1) !important; padding: 6px !important; }
-        #nav-indicator { background: var(--point-color) !important; box-shadow: 0 0 12px var(--point-bg) !important; border-radius: 100px !important; height: calc(100% - 12px) !important; top: 6px !important; border: none !important; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        #bottom-nav { transition: width 0.54s cubic-bezier(0.18, 1.18, 0.22, 1), max-width 0.54s cubic-bezier(0.18, 1.18, 0.22, 1), bottom 0.54s cubic-bezier(0.18, 1.18, 0.22, 1), padding 0.54s cubic-bezier(0.18, 1.18, 0.22, 1); }
+        #bottom-nav .bg-\[\#1C1C1E\] { background: rgba(15, 15, 18, 1) !important; backdrop-filter: blur(30px) saturate(200%); -webkit-backdrop-filter: blur(30px) saturate(200%); border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 100px !important; box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1) !important; padding: 6px !important; transition: padding 0.54s cubic-bezier(0.18, 1.18, 0.22, 1), box-shadow 0.42s ease, background-color 0.42s ease; }
+        #bottom-nav button { transition: padding 0.54s cubic-bezier(0.18, 1.18, 0.22, 1), transform 0.2s cubic-bezier(0.18, 1.18, 0.22, 1); }
+        #bottom-nav button > div, #bottom-nav button i, #bottom-nav button span { transition: gap 0.54s cubic-bezier(0.18, 1.18, 0.22, 1), opacity 0.34s ease, transform 0.54s cubic-bezier(0.18, 1.18, 0.22, 1), max-height 0.42s ease, font-size 0.54s cubic-bezier(0.18, 1.18, 0.22, 1), color 0.25s ease; }
+        #bottom-nav.bottom-nav-compact { width: min(236px, calc(100% - 90px)) !important; max-width: 236px !important; bottom: 14px !important; padding-left: 0 !important; padding-right: 0 !important; }
+        #bottom-nav.bottom-nav-compact .bg-\[\#1C1C1E\] { padding: 5px !important; box-shadow: 0 14px 34px rgba(0,0,0,0.58), inset 0 1px 0 rgba(255,255,255,0.1) !important; }
+        #bottom-nav.bottom-nav-compact button { padding-top: 8px !important; padding-bottom: 8px !important; }
+        #bottom-nav.bottom-nav-compact button > div { gap: 0 !important; }
+        #bottom-nav.bottom-nav-compact button span { opacity: 0; max-height: 0; line-height: 0; transform: translateY(5px) scale(0.82); overflow: hidden; }
+        #bottom-nav.bottom-nav-compact button i { font-size: 15px !important; transform: translateY(0); }
+        #nav-indicator { background: var(--point-color) !important; box-shadow: 0 0 12px var(--point-bg) !important; border-radius: 100px !important; height: calc(100% - 12px) !important; top: 6px !important; border: none !important; transition: transform 0.52s cubic-bezier(0.18, 1.18, 0.22, 1), width 0.52s cubic-bezier(0.18, 1.18, 0.22, 1), height 0.52s cubic-bezier(0.18, 1.18, 0.22, 1), top 0.52s cubic-bezier(0.18, 1.18, 0.22, 1); }
+        #bottom-nav.bottom-nav-compact #nav-indicator { height: calc(100% - 10px) !important; top: 5px !important; }
         #bottom-nav button .text-white { color: #FFFFFF !important; font-weight: 800 !important; }
         #bottom-nav button i.text-white { color: #FFFFFF !important; }
         body[data-theme="all"] #bottom-nav button .text-white { color: #000000 !important; }
@@ -59,7 +69,7 @@
             pointer-events: auto;
             margin-left: auto;
             margin-right: auto;
-            transition: width 0.44s cubic-bezier(0.22, 1, 0.36, 1), transform 0.44s cubic-bezier(0.22, 1, 0.36, 1), padding 0.44s cubic-bezier(0.22, 1, 0.36, 1), gap 0.44s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.3s ease, border-color 0.3s ease, border-radius 0.44s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+            transition: width 0.58s cubic-bezier(0.18, 1.18, 0.22, 1), transform 0.58s cubic-bezier(0.18, 1.18, 0.22, 1), padding 0.58s cubic-bezier(0.18, 1.18, 0.22, 1), gap 0.58s cubic-bezier(0.18, 1.18, 0.22, 1), background-color 0.34s ease, border-color 0.34s ease, border-radius 0.58s cubic-bezier(0.18, 1.18, 0.22, 1), box-shadow 0.34s ease;
         }
         #app-header-shell > * { position: relative; z-index: 2; }
         #app-header.home-header-compact {
@@ -101,7 +111,7 @@
             padding-left: 2px;
             padding-right: 2px;
             font-size: 12px !important;
-            letter-spacing: -0.45px;
+            letter-spacing: 0;
         }
         #app-header.home-header-compact #ctrl-wrapper {
             height: 30px;
@@ -119,6 +129,25 @@
             font-size: 10px !important;
         }
         #app-header.home-header-compact #calendar-title { color: #f8fafc !important; }
+        #app-header.home-header-compact #header-popup-title {
+            height: 30px;
+            padding-left: 4px;
+            padding-right: 4px;
+        }
+        #app-header.home-header-compact #header-popup-text {
+            color: #f8fafc !important;
+            font-size: 12px !important;
+            font-weight: 900 !important;
+        }
+        #app-header.home-header-compact #ctrl-back button {
+            height: 26px !important;
+            padding: 0 10px !important;
+            border-radius: 999px !important;
+            background: var(--point-color) !important;
+            color: #ffffff !important;
+            box-shadow: 0 6px 15px var(--point-bg) !important;
+        }
+        #app-header.home-header-compact #ctrl-back button i { color: #ffffff !important; }
         #app-header.home-header-compact #ctrl-team button { color: #9aa3af !important; }
         #app-header.home-header-compact #ctrl-team button.bg-point { color: var(--point-color) !important; }
         #app-header.home-header-compact #ctrl-team button.bg-point::after {
@@ -134,9 +163,11 @@
         }
         html.light-mode #app-header.home-header-compact #ctrl-wrapper { border-left-color: rgba(15,23,42,0.09) !important; }
         html.light-mode #app-header.home-header-compact #calendar-title { color: #111827 !important; }
+        html.light-mode #app-header.home-header-compact #header-popup-text { color: #111827 !important; }
         html.light-mode #app-header.home-header-compact #ctrl-team button { color: #8b95a1 !important; }
         @media (prefers-reduced-motion: reduce) {
             #app-header-shell { transition-duration: 0.01ms !important; }
+            #bottom-nav, #bottom-nav .bg-\[\#1C1C1E\], #nav-indicator, #bottom-nav button, #bottom-nav button > div, #bottom-nav button i, #bottom-nav button span { transition-duration: 0.01ms !important; }
         }
         /* [수정] 라이트모드에서 .bg-point 내부 아이콘이 흰색으로 강제돼 안 보이던 문제 — 네비/뒤로가기 아이콘을 포인트 컬러로 */
         html.light-mode #header-calendar-nav button.bg-point i, html.light-mode #ctrl-back button i { color: var(--point-color) !important; }
@@ -149,7 +180,7 @@
         .pt-main { padding-top: calc(max(20px, env(safe-area-inset-top)) + 54px) !important; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        .ctrl-item { transition: max-width 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), padding 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.7s ease, visibility 0.7s; overflow: hidden; white-space: nowrap; width: max-content; justify-self: end; }
+        .ctrl-item { transition: max-width 0.62s cubic-bezier(0.18, 1.18, 0.22, 1), padding 0.62s cubic-bezier(0.18, 1.18, 0.22, 1), opacity 0.42s ease, visibility 0.42s; overflow: hidden; white-space: nowrap; width: max-content; justify-self: end; }
         .ctrl-show { max-width: 250px; opacity: 1; padding-left: 16px; padding-right: 16px; z-index: 50; position: relative; pointer-events: auto !important; visibility: visible; }
         #ctrl-team.ctrl-show, #ctrl-back.ctrl-show, #ctrl-ranking.ctrl-show { padding-left: 0px; padding-right: 0px; }
         .ctrl-hide { max-width: 0px; opacity: 0; padding-left: 0px; padding-right: 0px; z-index: -10; position: absolute !important; right: 2px; top: 2px; pointer-events: none !important; visibility: hidden; }
@@ -1388,32 +1419,62 @@
             isInitialPopupChecked = true;
         }
 
+        function activeScrollMorphTarget() {
+            const lineup = document.getElementById('lineup-popup');
+            if (lineup && !lineup.classList.contains('render-hidden')) return document.getElementById('lineup-content');
+            const ids = ['calendar-screen', 'winrate-screen', 'ranking-screen', 'cheer-screen'];
+            const screen = document.getElementById(ids[currentTabIndex]);
+            return screen && !screen.classList.contains('hidden') ? screen : null;
+        }
+
+        function positionBottomNavIndicator() {
+            const nav = document.getElementById('bottom-nav');
+            const ind = document.getElementById('nav-indicator');
+            const buttons = document.querySelectorAll('#bottom-nav button');
+            if (!nav || !ind || !buttons[currentTabIndex]) return;
+            const btn = buttons[currentTabIndex];
+            ind.style.width = `${btn.offsetWidth}px`;
+            ind.style.transform = `translateX(${btn.offsetLeft - 4}px)`;
+        }
+
+        function settleBottomNavIndicator() {
+            positionBottomNavIndicator();
+            requestAnimationFrame(() => {
+                positionBottomNavIndicator();
+                requestAnimationFrame(positionBottomNavIndicator);
+            });
+            setTimeout(positionBottomNavIndicator, 180);
+            setTimeout(positionBottomNavIndicator, 560);
+        }
+
         function updateHomeHeaderMorph() {
             const header = document.getElementById('app-header');
-            const screen = document.getElementById('calendar-screen');
-            const lineup = document.getElementById('lineup-popup');
-            const sheet = document.getElementById('bottom-sheet');
-            const record = document.getElementById('record-popup');
-            if (!header || !screen) return;
-            const overlayOpen =
-                (lineup && !lineup.classList.contains('render-hidden')) ||
-                (sheet && !sheet.classList.contains('hidden')) ||
-                (record && !record.classList.contains('hidden'));
-            const compact = currentTabIndex === 0 && !overlayOpen && !screen.classList.contains('hidden') && screen.scrollTop > 56;
+            const nav = document.getElementById('bottom-nav');
+            const target = activeScrollMorphTarget();
+            if (!header) return;
+            const compact = Boolean(target && target.scrollTop > 2);
             header.classList.toggle('home-header-compact', compact);
+            if (nav) {
+                const wasCompact = nav.classList.contains('bottom-nav-compact');
+                nav.classList.toggle('bottom-nav-compact', compact);
+                if (wasCompact !== compact) settleBottomNavIndicator();
+                else positionBottomNavIndicator();
+            }
         }
 
         function initHomeHeaderMorph() {
-            const screen = document.getElementById('calendar-screen');
-            if (!screen || screen.dataset.headerMorphBound === 'true') return;
-            screen.dataset.headerMorphBound = 'true';
-            screen.addEventListener('scroll', () => {
-                if (homeHeaderFrame) return;
-                homeHeaderFrame = requestAnimationFrame(() => {
-                    homeHeaderFrame = 0;
-                    updateHomeHeaderMorph();
-                });
-            }, { passive: true });
+            ['calendar-screen', 'winrate-screen', 'ranking-screen', 'cheer-screen', 'lineup-content'].forEach(id => {
+                const screen = document.getElementById(id);
+                if (!screen || screen.dataset.headerMorphBound === 'true') return;
+                screen.dataset.headerMorphBound = 'true';
+                screen.addEventListener('scroll', () => {
+                    if (homeHeaderFrame) return;
+                    homeHeaderFrame = requestAnimationFrame(() => {
+                        homeHeaderFrame = 0;
+                        updateHomeHeaderMorph();
+                    });
+                }, { passive: true });
+            });
             updateHomeHeaderMorph();
         }
 
@@ -1452,12 +1513,7 @@
                     if (els['header-calendar-nav']) { els['header-calendar-nav'].classList.add('hidden'); els['header-calendar-nav'].classList.remove('flex'); }
                 }
             }
-            if (isOpen) {
-                const header = document.getElementById('app-header');
-                if (header) header.classList.remove('home-header-compact');
-            } else {
-                requestAnimationFrame(updateHomeHeaderMorph);
-            }
+            requestAnimationFrame(updateHomeHeaderMorph);
         }
 
         function goBackFromPopup() {
@@ -1471,8 +1527,8 @@
             currentTabIndex = index; if (navigator.vibrate) navigator.vibrate(10);
             closeBottomSheet(); closeLineupPopup(); closeRecordPopup();
             
-            const nb = document.querySelectorAll('#bottom-nav button'), ind = document.getElementById('nav-indicator');
-            if (nb[index] && ind) { ind.style.width = `${nb[index].offsetWidth}px`; ind.style.transform = `translateX(${nb[index].offsetLeft - 4}px)`; }
+            const nb = document.querySelectorAll('#bottom-nav button');
+            settleBottomNavIndicator();
             
             nb.forEach((b, i) => {
                 const ic = b.querySelector('i'), l = b.querySelector('span');
@@ -1489,7 +1545,7 @@
             ['calendar-screen', 'winrate-screen', 'ranking-screen', 'cheer-screen'].forEach((id, i) => { const sc = document.getElementById(id); if (sc) { sc.classList.toggle('hidden', i !== index); sc.classList.toggle('flex', i === index); } });
             
             if (index === 1) renderWinRate(); else if (index === 0) renderCalendar(); else if (index === 2) renderRanking(); else if (index === 3) renderCheerSongs();
-            requestAnimationFrame(updateHomeHeaderMorph);
+            requestAnimationFrame(() => { updateHomeHeaderMorph(); settleBottomNavIndicator(); });
         }
 
         function setViewMode(mode) {
@@ -1573,26 +1629,124 @@
         const STAMP_HEX = { WIN: '#EA0029', LOSE: '#64748B', DRAW: '#10B981', CANCEL: '#3B82F6' };
         // 스코어보드 위에 쾅 찍히는 큰 도장 (모션 포함)
         function bigStamp(label, hex) { return `<div class="stamp-pop absolute top-1/2 left-1/2 z-30 font-black pointer-events-none whitespace-nowrap text-[26px] px-5 py-1.5 border-[3px] rounded-tl-[26px] rounded-br-[26px] rounded-tr-md rounded-bl-md tracking-[0.12em]" style="color:${hex};border-color:${hex};background:${hex}26;box-shadow:0 6px 18px ${hex}55, inset 0 0 0 1px ${hex}33;text-shadow:0 1px 2px rgba(0,0,0,0.18);">${label}</div>`; }
-        function classicSeriesHeader(m) {
+        function classicSeriesHeader(m, l, sch, l1Lg, l2Lg) {
             if (!isClassicSeriesGame(m)) return '';
-            return `<div class="classic-marker hidden"></div><div class="w-full mb-3">
-                <div class="relative overflow-hidden rounded-2xl border-[3px] border-[#2A2A2A] bg-[#EBE7DF] px-4 py-3 shadow-[5px_5px_0_rgba(0,0,0,0.16)]" style="background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 14px 14px;">
-                    <div class="absolute -top-5 left-1/2 -translate-x-1/2 w-28 h-10 rounded-full bg-black/10 blur-md"></div>
-                    <div class="relative z-10 flex items-center justify-between gap-3">
-                        <div class="flex items-center gap-2 min-w-0">
-                            <img src="${teamLogos[m.team1]}" class="w-10 h-10 object-contain drop-shadow-sm shrink-0">
-                            <div class="flex flex-col min-w-0">
-                                <span class="text-[10px] font-black text-[#2A2A2A] tracking-[0.18em]">CLASSIC SERIES</span>
-                                <span class="text-[17px] font-black text-[#111] tracking-tight truncate">${m.team1} vs ${m.team2}</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <span class="text-[11px] font-black text-white bg-black px-2.5 py-1 rounded-full">${classicSeriesDateLabel(m)}</span>
-                            <img src="${teamLogos[m.team2]}" class="w-10 h-10 object-contain drop-shadow-sm">
-                        </div>
+            const classicSch = (sch || `<span class="text-2xl font-black text-gray-700">VS</span>`)
+                .replace(/text-white/g, 'text-gray-700 drop-shadow-none')
+                .replace(/text-point/g, 'text-[#EA0029] drop-shadow-none')
+                .replace(/text-gray-700/g, 'text-gray-800')
+                .replace(/text-gray-500/g, 'text-gray-600')
+                .replace(/text-gray-400/g, 'text-gray-600')
+                .replace(/bg-white\/5/g, 'bg-black/5 border-black/10 text-gray-900 shadow-none border')
+                .replace(/text-\[#FFFFFF\]/g, 'text-[#111]')
+                .replace(/text-\[#93c5fd\]/g, 'text-gray-800');
+
+            return `
+                <style>
+                    html:has(#lineup-popup:not(.render-hidden) .classic-marker) #lineup-popup.app-bg,
+                    html.light-mode:has(#lineup-popup:not(.render-hidden) .classic-marker) #lineup-popup.app-bg {
+                        background-color: #EBE7DF !important;
+                        background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px) !important;
+                        background-size: 15px 15px !important;
+                        transition: none !important;
+                    }
+                    html:has(#lineup-popup:not(.render-hidden) .classic-marker) header.app-bg,
+                    html.light-mode:has(#lineup-popup:not(.render-hidden) .classic-marker) header.app-bg {
+                        background-color: transparent !important;
+                        background-image: none !important;
+                    }
+                    html:has(#lineup-popup:not(.render-hidden) .classic-marker) #header-popup-text {
+                        color: #111 !important;
+                        font-weight: 900 !important;
+                    }
+                    html:has(#lineup-popup:not(.render-hidden) .classic-marker) #ctrl-back button {
+                        color: #004A99 !important;
+                    }
+                    html:has(#lineup-popup:not(.render-hidden) .classic-marker) #app-header.home-header-compact #app-header-shell,
+                    html.light-mode:has(#lineup-popup:not(.render-hidden) .classic-marker) #app-header.home-header-compact #app-header-shell {
+                        background: rgba(255,255,255,0.92) !important;
+                        border-color: rgba(0,0,0,0.10) !important;
+                        box-shadow: 0 7px 20px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.86) !important;
+                    }
+                    html:has(#lineup-popup:not(.render-hidden) .classic-marker) #app-header.home-header-compact #ctrl-back button {
+                        color: #fff !important;
+                        background: #004A99 !important;
+                        box-shadow: 0 6px 15px rgba(0,74,153,0.24) !important;
+                    }
+                    #lineup-content:has(.classic-marker) { color: #111 !important; }
+                    #lineup-content:has(.classic-marker) span.text-white,
+                    #lineup-content:has(.classic-marker) div.text-white,
+                    #lineup-content:has(.classic-marker) .text-\\[\\#FFFFFF\\] {
+                        color: #111 !important;
+                        text-shadow: none !important;
+                    }
+                    #lineup-content:has(.classic-marker) span.text-gray-200,
+                    #lineup-content:has(.classic-marker) span.text-gray-400,
+                    #lineup-content:has(.classic-marker) span.text-gray-500,
+                    #lineup-content:has(.classic-marker) div.text-gray-500 {
+                        color: #444 !important;
+                    }
+                    #lineup-content:has(.classic-marker) .text-gray-400\\/60 { color: #555 !important; }
+                    #lineup-content:has(.classic-marker) .bg-white\\/5 {
+                        background-color: rgba(255,255,255,0.40) !important;
+                        border-color: rgba(0,0,0,0.10) !important;
+                        border-bottom: 1px solid rgba(0,0,0,0.10) !important;
+                    }
+                    #lineup-content:has(.classic-marker) .bg-white\\/10 { background-color: rgba(0,0,0,0.05) !important; }
+                    #lineup-content:has(.classic-marker) .bg-\\[\\#222224\\] {
+                        background-color: #fff !important;
+                        border-color: #e5e7eb !important;
+                        box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+                    }
+                    #lineup-content:has(.classic-marker) .fa-user,
+                    #lineup-content:has(.classic-marker) .fa-clipboard-question { color: #9ca3af !important; }
+                    #lineup-content:has(.classic-marker) .border-white\\/5,
+                    #lineup-content:has(.classic-marker) .border-white\\/10 { border-color: rgba(0,0,0,0.08) !important; }
+                    #lineup-content:has(.classic-marker) .text-\\[14px\\].font-bold.text-gray-200.truncate {
+                        color: #111 !important;
+                        font-weight: 900 !important;
+                        font-size: 16px !important;
+                    }
+                    #lineup-content:has(.classic-marker) .bg-blue-600 {
+                        background-color: #004A99 !important;
+                        color: white !important;
+                    }
+                    #lineup-content:has(.classic-marker) .scoreboard-surface,
+                    #lineup-content:has(.classic-marker) .scoreboard-surface * {
+                        text-shadow: inherit;
+                    }
+                    #lineup-content:has(.classic-marker) .scoreboard-surface span.text-white,
+                    #lineup-content:has(.classic-marker) .scoreboard-surface div.text-white,
+                    #lineup-content:has(.classic-marker) .scoreboard-surface .text-\\[\\#FFFFFF\\] {
+                        color: #ffffff !important;
+                        text-shadow: 0 1px 3px rgba(0,0,0,0.35) !important;
+                    }
+                    #lineup-content:has(.classic-marker) .scoreboard-surface .text-gray-200 { color: #e5e7eb !important; }
+                    #lineup-content:has(.classic-marker) .scoreboard-surface .text-gray-300 { color: #d1d5db !important; }
+                    #lineup-content:has(.classic-marker) .scoreboard-surface .text-gray-400 { color: #9ca3af !important; }
+                    #lineup-content:has(.classic-marker) .scoreboard-surface .text-gray-500 { color: #6b7280 !important; }
+                    #lineup-content:has(.classic-marker) .scoreboard-surface .bg-white\\/5 { background-color: rgba(255,255,255,0.05) !important; border-color: rgba(255,255,255,0.05) !important; }
+                    #lineup-content:has(.classic-marker) .scoreboard-surface .bg-white\\/10 { background-color: rgba(255,255,255,0.10) !important; }
+                    #lineup-content:has(.classic-marker) .scoreboard-surface .border-white\\/5 { border-color: rgba(255,255,255,0.05) !important; }
+                    #lineup-content:has(.classic-marker) .scoreboard-surface .border-white\\/10 { border-color: rgba(255,255,255,0.10) !important; }
+                </style>
+                <div class="classic-marker hidden"></div>
+                <div class="relative px-4 pb-6 pt-1 mb-2 mt-0">
+                    <div class="flex justify-center items-center gap-[1.5px] mt-1 mb-2 z-10 relative opacity-95">
+                        <span class="text-[14px] font-black px-1.5 py-0.5 -rotate-3 shadow-[1.5px_1.5px_0_#000] border border-black" style="color: #ffffff !important; background-color: #111111 !important; font-family: 'Georgia', serif; font-style: italic;">클</span>
+                        <span class="text-[14px] font-black px-1.5 py-0.5 rotate-2 shadow-[1.5px_1.5px_0_#000] border border-black" style="color: #ffffff !important; background-color: #0F3789 !important; font-style: italic;">래</span>
+                        <span class="text-[14px] font-black px-1.5 py-0.5 -rotate-6 shadow-[1.5px_1.5px_0_#000] border border-black" style="color: #111111 !important; background-color: #E2235B !important; font-style: italic;">식</span>
+                        <span class="text-[14px] font-black px-1.5 py-0.5 rotate-3 shadow-[1.5px_1.5px_0_#000] border border-black" style="color: #ffffff !important; background-color: #0F3789 !important; font-family: 'Georgia', serif; font-style: italic;">씨</span>
+                        <span class="text-[14px] font-black px-1.5 py-0.5 -rotate-2 shadow-[1.5px_1.5px_0_#000] border border-black" style="color: #111111 !important; background-color: #D1D1D1 !important; font-style: italic;">리</span>
+                        <span class="text-[14px] font-black px-1.5 py-0.5 rotate-6 shadow-[1.5px_1.5px_0_#000] border border-black" style="color: #ffffff !important; background-color: #E2235B !important; font-family: 'Georgia', serif; font-style: italic;">즈</span>
                     </div>
-                </div>
-            </div>`;
+
+                    <div class="flex justify-between items-center relative z-10 mt-4">
+                        <div class="flex flex-col items-center w-[30%]">${l1Lg.replace('drop-shadow-lg', 'drop-shadow-md')}<span class="text-[16px] font-black text-gray-900 mt-1" style="color: #111 !important;">${m.team1}</span><span class="text-[12px] font-black text-gray-600 mt-0.5" style="color: #444 !important;">AWAY</span></div>
+                        <div class="flex flex-col items-center justify-center w-[40%]">${classicSch}</div>
+                        <div class="flex flex-col items-center w-[30%]">${l2Lg.replace('drop-shadow-lg', 'drop-shadow-md')}<span class="text-[16px] font-black text-gray-900 mt-1" style="color: #111 !important;">${m.team2}</span><span class="text-[12px] font-black text-gray-600 mt-0.5" style="color: #444 !important;">HOME</span></div>
+                    </div>
+                </div>`;
         }
 
         // [추가] 홈 Now Brief 피드 — 배너 아래 카드형 콘텐츠
@@ -1707,8 +1861,7 @@
         function _bnBg2(h1, h2) { return `background: linear-gradient(to right, ${h1}D9 0%, #18181b 44%, #18181b 56%, ${h2}D9 100%);`; }
         function _cardHead(icon, label, right, color) {
             const iconColor = color || 'var(--point-color)';
-            const iconBg = color ? `${color}18` : 'var(--point-bg)';
-            return `<div class="flex items-center justify-between mb-3"><div class="flex items-center gap-2"><span class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0" style="background:${iconBg}"><i class="fa-solid ${icon} text-[11px]" style="color:${iconColor}"></i></span><span class="text-[13px] font-extrabold text-white tracking-tight">${label}</span></div>${right || ''}</div>`;
+            return `<div class="flex items-center justify-between mb-3"><div class="flex items-center gap-2"><i class="fa-solid ${icon} text-[13px] w-5 text-center shrink-0" style="color:${iconColor}"></i><span class="text-[13px] font-extrabold text-white tracking-tight">${label}</span></div>${right || ''}</div>`;
         }
         // 현재 보이는 배너의 구장·중계 정보를 홈 피드 첫 브리핑으로 표시
         function homeCardGameBrief() {
@@ -1721,14 +1874,14 @@
             if (isTeam) {
                 const row = rk.find(r => r.team === selectedTeam);
                 const st = teamStats[selectedTeam] || { results: [] };
-                const recent = (st.results || []).slice(-5);
+                const recent = (st.results || []).slice(-10);
                 const parts = [];
                 if (row && row.rank && row.rank !== '-') parts.push(`${teamSubject(selectedTeam)} 현재 ${row.rank}위 · 승률 ${row.winRate}`);
                 if (recent.length) {
                     const w = recent.filter(x => x === 'W').length;
                     const l = recent.filter(x => x === 'L').length;
                     const d = recent.filter(x => x === 'D').length;
-                    parts.push(`최근 5경기 ${w}승 ${l}패${d ? ' ' + d + '무' : ''}`);
+                    parts.push(`최근 10경기 ${w}승 ${l}패${d ? ' ' + d + '무' : ''}`);
                 }
                 const next = scheduleData.filter(m => (m.team1 === selectedTeam || m.team2 === selectedTeam) && m.date >= todayStr)
                     .sort((a, b) => a.date.localeCompare(b.date) || (a.time || '').localeCompare(b.time || ''))[0];
@@ -1852,6 +2005,8 @@
             return Number.isFinite(n) ? n : fallback;
         }
         function postseasonProjectionRows() {
+            const needsHistoryRefresh = window.KBO_HISTORY_2026 && (!rankingData || !rankingData.some(r => Number(r.w || 0) + Number(r.l || 0) + Number(r.d || 0) > 0));
+            if (needsHistoryRefresh) refreshRankingFromHistory();
             const src = (rankingData && rankingData.length) ? rankingData : (computeRankingFromHistory() || []);
             let rows = src.filter(r => r && KBO_TEAMS.includes(r.team)).map((r, idx) => {
                 const w = Number(r.w || 0), l = Number(r.l || 0), d = Number(r.d || 0);
@@ -1879,10 +2034,11 @@
         function homeCardPostseasonForecast() {
             const rows = postseasonProjectionRows();
             if (!rows.length) return '';
-            const topRows = rows.slice(0, 5).map(r => {
+            const forecastRows = rows.map((r, idx) => {
                 const hx = teamHex[r.team] || '#9ca3af';
                 const badgeCls = r.rankNum <= 3 ? 'text-[#111827] bg-white' : 'text-white bg-white/10';
-                return `<div class="flex items-center gap-2 py-1.5">
+                const boundaryCls = idx === 5 ? 'mt-1 pt-2 border-t border-white/5' : '';
+                return `<div class="flex items-center gap-2 py-1.5 ${boundaryCls}">
                     <div class="w-6 h-6 rounded-full ${badgeCls} flex items-center justify-center text-[10px] font-black shrink-0">${r.rankNum}</div>
                     <img src="${teamLogos[r.team]}" class="w-7 h-7 object-contain shrink-0">
                     <div class="min-w-0 flex-1">
@@ -1894,15 +2050,11 @@
                     </div>
                 </div>`;
             }).join('');
-            const chase = rows.slice(5, 8).map(r => {
-                const hx = teamHex[r.team] || '#9ca3af';
-                return `<span class="inline-flex items-center gap-1.5 rounded-full bg-white/5 border border-white/5 px-2.5 py-1 text-[10px] font-black text-gray-300"><span style="color:${hx}">${r.team}</span>${r.pct}%</span>`;
-            }).join('');
             const fifth = rows[4], sixth = rows[5];
             const boundary = fifth && sixth
                 ? `<div class="text-[11px] text-gray-400 font-bold pt-2.5 mt-2 border-t border-white/5">5위 ${fifth.team} · 6위 ${sixth.team}의 경계선은 ${Math.max(0, sixth.gap).toFixed(1).replace('.0','')}경기 차</div>`
                 : '';
-            return `<div class="px-0.5"><div>${_cardHead('fa-ranking-star', '가을야구 예상도', `<span class="text-[10px] text-gray-500">순위+결과 기반</span>`)}<div class="flex flex-col">${topRows}</div>${chase ? `<div class="flex flex-wrap gap-1.5 mt-2">${chase}</div>` : ''}${boundary}</div></div>`;
+            return `<div class="px-0.5"><div>${_cardHead('fa-ranking-star', '가을야구 예상도', `<span class="text-[10px] text-gray-500">순위+결과 기반 · 10개 구단</span>`)}<div class="flex flex-col">${forecastRows}</div>${boundary}</div></div>`;
         }
         // 4) 우리 팀 기분 날씨
         function homeCardMoodWeather() {
@@ -1931,7 +2083,7 @@
                     let tx = x === 'W' ? '승' : (x === 'L' ? '패' : '무');
                     return `<span class="w-[16px] h-[16px] rounded-full text-white text-[8px] font-black flex items-center justify-center" style="${cc}">${tx}</span>`;
                 }).join('') || '<span class="text-[10px] text-gray-500">기록 없음</span>';
-                return `<div class="flex items-center gap-3 py-1"><div class="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0" style="background:${col}1f"><i class="fa-solid ${icon} text-[18px]" style="color:${col}"></i></div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-baseline gap-1.5"><span class="text-[14px] font-black text-white">${t}</span><span class="text-[12px] font-black" style="color:${col}">${label}</span></div><span class="text-[11px] text-gray-400 truncate">${msg}</span></div><div class="flex items-center gap-1 shrink-0">${dots}</div></div>`;
+                return `<div class="flex items-center gap-3 py-1"><i class="fa-solid ${icon} w-9 text-center shrink-0 text-[22px]" style="color:${col}"></i><div class="flex flex-col min-w-0 flex-1"><div class="flex items-baseline gap-1.5"><span class="text-[14px] font-black text-white">${t}</span><span class="text-[12px] font-black" style="color:${col}">${label}</span></div><span class="text-[11px] text-gray-400 truncate">${msg}</span></div><div class="flex items-center gap-1 shrink-0">${dots}</div></div>`;
             }).join('<div class="h-px bg-white/5 my-1"></div>');
             let isTeam = (selectedTeam === 'KIA' || selectedTeam === '삼성');
             let head = isTeam ? _cardHead('fa-cloud-sun', '팀 기분 날씨', '', teamHex[selectedTeam]) : _cardHead('fa-cloud-sun', '팀 기분 날씨', `<span class="text-[10px] text-gray-500">전 구단</span>`);
@@ -2485,9 +2637,12 @@
 
             currentPopupMatchId = id; if (navigator.vibrate) navigator.vibrate(5);
             const p = document.getElementById('lineup-popup'); p.classList.remove('render-hidden');
+            const lc = document.getElementById('lineup-content');
+            if (lc) lc.scrollTop = 0;
             let ts = "경기 정보", m = scheduleData.find(x => x.id === parseInt(id) || x.id === id);
             if (m) { const d = new Date(m.date), dy = ['일', '월', '화', '수', '목', '금', '토']; ts = `${d.getMonth() + 1}월 ${d.getDate()}일 ${dy[d.getDay()]}요일 경기 정보`; }
             renderPopupContent(id); updateHeaderCtrlForPopup(true, ts);
+            requestAnimationFrame(updateHomeHeaderMorph);
         }
 
         function closeLineupPopup() {
@@ -2496,6 +2651,7 @@
                 currentPopupMatchId = null; p.classList.add('render-hidden'); updateHeaderCtrlForPopup(false);
                 const l = document.getElementById('lineup-content');
                 if (l) l.classList.remove('render-hidden', 'hidden');
+                requestAnimationFrame(updateHomeHeaderMorph);
             }
         }
 
@@ -2597,7 +2753,7 @@
                 let base1 = l.base1 ? 'bg-[#6ee7b7] shadow-[0_0_5px_rgba(110,231,183,0.6)]' : 'bg-[#374151]', base2 = l.base2 ? 'bg-[#6ee7b7] shadow-[0_0_5px_rgba(110,231,183,0.6)]' : 'bg-[#374151]', base3 = l.base3 ? 'bg-[#6ee7b7] shadow-[0_0_5px_rgba(110,231,183,0.6)]' : 'bg-[#374151]';
                 let innIcon = isTop ? `<div class="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[6px] border-b-[#6ee7b7] mt-0.5"></div>` : `<div class="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[6px] border-t-[#6ee7b7] mt-0.5"></div>`;
 
-                if (l.gameStatus === '종료') {
+                if (l.gameStatus === '종료' && !iC) {
                     let aWin = parseInt(aScoreBanner) > parseInt(hScoreBanner), hWin = parseInt(hScoreBanner) > parseInt(aScoreBanner);
                     let aText = aWin ? `<span class="text-[#f87171] font-black mr-1">승</span>${l.winPitcher||'-'}` : (hWin ? `<span class="text-[#60a5fa] font-black mr-1">패</span>${l.losePitcher||'-'}` : `<span class="text-gray-400">무승부</span>`);
                     let hText = hWin ? `<span class="text-[#f87171] font-black mr-1">승</span>${l.winPitcher||'-'}` : (aWin ? `<span class="text-[#60a5fa] font-black mr-1">패</span>${l.losePitcher||'-'}` : `<span class="text-gray-400">무승부</span>`);
@@ -2608,7 +2764,7 @@
                 } else if (l.gameStatus === '경기전' || iC) {
                     aPitcherArea = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate">${aPitcher !== '-' ? '선발 ' + aPitcher : '-'}</span>`;
                     hPitcherArea = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate text-right">${hPitcher !== '-' ? '선발 ' + hPitcher : '-'}</span>`;
-                    let centerTxt = l.gameStatus === '경기전' ? m.time : '취소';
+                    let centerTxt = iC ? '우천취소' : m.time;
                     inningArea = `<span class="text-[14px] font-black text-[#FFFFFF] drop-shadow-md tracking-widest mt-1">${centerTxt}</span>`;
                     centerArea = `<span class="text-[11px] font-bold text-gray-400 tracking-widest mt-px">${m.stadium}</span>`;
                     aScoreBanner = '-'; hScoreBanner = '-';
@@ -2783,7 +2939,7 @@
                 let base1 = l.base1 ? 'bg-[#6ee7b7] shadow-[0_0_5px_rgba(110,231,183,0.6)]' : 'bg-[#374151]', base2 = l.base2 ? 'bg-[#6ee7b7] shadow-[0_0_5px_rgba(110,231,183,0.6)]' : 'bg-[#374151]', base3 = l.base3 ? 'bg-[#6ee7b7] shadow-[0_0_5px_rgba(110,231,183,0.6)]' : 'bg-[#374151]';
                 let innIcon = isTop ? `<div class="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[6px] border-b-[#6ee7b7] mt-0.5"></div>` : `<div class="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[6px] border-t-[#6ee7b7] mt-0.5"></div>`;
 
-                if (l.gameStatus === '종료') {
+                if (l.gameStatus === '종료' && !iC) {
                     let aWin = parseInt(aScoreBanner) > parseInt(hScoreBanner), hWin = parseInt(hScoreBanner) > parseInt(aScoreBanner);
                     let aText = aWin ? `<span class="text-[#f87171] font-black mr-1">승</span>${l.winPitcher||'-'}` : (hWin ? `<span class="text-[#60a5fa] font-black mr-1">패</span>${l.losePitcher||'-'}` : `<span class="text-gray-400">무승부</span>`);
                     let hText = hWin ? `<span class="text-[#f87171] font-black mr-1">승</span>${l.winPitcher||'-'}` : (aWin ? `<span class="text-[#60a5fa] font-black mr-1">패</span>${l.losePitcher||'-'}` : `<span class="text-gray-400">무승부</span>`);
@@ -2794,7 +2950,7 @@
                 } else if (l.gameStatus === '경기전' || iC) {
                     aPitcherArea = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate">${aPitcher !== '-' ? '선발 ' + aPitcher : '-'}</span>`;
                     hPitcherArea = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate text-right">${hPitcher !== '-' ? '선발 ' + hPitcher : '-'}</span>`;
-                    let centerTxt = l.gameStatus === '경기전' ? m.time : '취소';
+                    let centerTxt = iC ? '우천취소' : m.time;
                     inningArea = `<span class="text-[14px] font-black text-[#FFFFFF] drop-shadow-md tracking-widest mt-1">${centerTxt}</span>`;
                     centerArea = `<span class="text-[11px] font-bold text-gray-400 tracking-widest mt-px">${m.stadium}</span>`;
                     aScoreBanner = '-'; hScoreBanner = '-';
@@ -2863,7 +3019,7 @@
                 if (iC) sbh = sbh.replace(/<\/div>\s*$/, bigStamp('우천취소', STAMP_HEX.CANCEL) + '</div>');
             }
 
-            if (isClassicSeries) sbh = classicSeriesHeader(m) + sbh;
+            if (isClassicSeries) sbh = classicSeriesHeader(m, l, sch, l1Lg, l2Lg) + sbh;
 
             // [추가] 스코어보드 밑 승리 확률 막대 (클래식 테마는 레트로 디자인 유지 위해 제외)
             let wpb = isClassic ? '' : winProbBarHtml(m, l);
