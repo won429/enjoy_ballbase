@@ -1,14 +1,14 @@
 // kbo_history_2026.js
 // 2026 KBO regular-season history from Naver Sports API.
-// 범위: 2026-03-28 ~ 2026-07-09. 라인업은 Naver preview fullLineUp 기준입니다. 배너 링크는 항상 빈 문자열입니다.
+// 범위: 2026-03-28 ~ 2026-07-10. 라인업은 Naver preview fullLineUp 기준입니다. 배너 링크는 항상 빈 문자열입니다.
 (function () {
   const KBO_HISTORY_2026 = {
   "version": 1,
   "source": "Naver Sports API",
-  "generatedAt": "2026-07-09T23:54:42.306024+09:00",
+  "generatedAt": "2026-07-11T17:11:41.050854+09:00",
   "from": "2026-03-28",
-  "to": "2026-07-09",
-  "lineupTo": "2026-07-09",
+  "to": "2026-07-10",
+  "lineupTo": "2026-07-10",
   "gamesByDate": {
     "2026-03-28": [
       {
@@ -197230,6 +197230,957 @@
         },
         "updatedAt": 1783608882181
       }
+    ],
+    "2026-07-10": [
+      {
+        "awayScore": 0,
+        "roundCode": "kbo_futures_allstar",
+        "date": "2026-07-10",
+        "awayHit": 0,
+        "awayPitcher": "강건우",
+        "homeLineup": [
+          "심재훈",
+          "고준휘",
+          "신재인",
+          "조민영",
+          "함수호",
+          "김민석",
+          "이재원",
+          "노강민",
+          "엄준현"
+        ],
+        "base3": false,
+        "awayBatters": [
+          "이도훈",
+          "고영우",
+          "심건보",
+          "박한결",
+          "염승원",
+          "박채울",
+          "안재연",
+          "신용석",
+          "김현종"
+        ],
+        "base2": false,
+        "broadcaster": "KBS N SPORTS, MBC SPORTS+, SBS SPORTS, SPOTV2, SPOTV",
+        "awayLineup": [
+          "이도훈",
+          "고영우",
+          "심건보",
+          "박한결",
+          "염승원",
+          "박채울",
+          "안재연",
+          "신용석",
+          "김현종"
+        ],
+        "awayPitcherCount": 0,
+        "team1": "북부 올스타",
+        "homeTeam": "남부 올스타",
+        "homeScore": 4,
+        "awayBattersText": "1. 이도훈 (중견수)\n2. 고영우 (3루수)\n3. 심건보 (유격수)\n4. 박한결 (지명타자)\n5. 염승원 (2루수)\n6. 박채울 (좌익수)\n7. 안재연 (1루수)\n8. 신용석 (포수)\n9. 김현종 (우익수)",
+        "homeBase": 0,
+        "awayLineupText": "1. 이도훈 (중견수)\n2. 고영우 (3루수)\n3. 심건보 (유격수)\n4. 박한결 (지명타자)\n5. 염승원 (2루수)\n6. 박채울 (좌익수)\n7. 안재연 (1루수)\n8. 신용석 (포수)\n9. 김현종 (우익수)",
+        "losePitcher": "",
+        "broadcastLink": "",
+        "winPitcher": "",
+        "awayLineupDetail": [
+          {
+            "name": "이도훈",
+            "batsThrows": "",
+            "playerCode": "",
+            "order": 1,
+            "position": "중견수"
+          },
+          {
+            "order": 2,
+            "position": "3루수",
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "고영우"
+          },
+          {
+            "batsThrows": "",
+            "name": "심건보",
+            "position": "유격수",
+            "order": 3,
+            "playerCode": ""
+          },
+          {
+            "playerCode": "",
+            "order": 4,
+            "position": "지명타자",
+            "name": "박한결",
+            "batsThrows": ""
+          },
+          {
+            "name": "염승원",
+            "batsThrows": "",
+            "playerCode": "",
+            "position": "2루수",
+            "order": 5
+          },
+          {
+            "position": "좌익수",
+            "order": 6,
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "박채울"
+          },
+          {
+            "playerCode": "",
+            "order": 7,
+            "position": "1루수",
+            "name": "안재연",
+            "batsThrows": ""
+          },
+          {
+            "playerCode": "",
+            "order": 8,
+            "position": "포수",
+            "name": "신용석",
+            "batsThrows": ""
+          },
+          {
+            "order": 9,
+            "position": "우익수",
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "김현종"
+          }
+        ],
+        "homeError": 0,
+        "awayLineupString": "이도훈, 고영우, 심건보, 박한결, 염승원, 박채울, 안재연, 신용석, 김현종",
+        "homeLineupText": "1. 심재훈 (2루수)\n2. 고준휘 (우익수)\n3. 신재인 (3루수)\n4. 조민영 (지명타자)\n5. 함수호 (좌익수)\n6. 김민석 (포수)\n7. 이재원 (중견수)\n8. 노강민 (1루수)\n9. 엄준현 (유격수)",
+        "homePitcherDetail": {
+          "batsThrows": "",
+          "name": "박지훈",
+          "position": "투수",
+          "order": "SP",
+          "playerCode": ""
+        },
+        "homeBattersText": "1. 심재훈 (2루수)\n2. 고준휘 (우익수)\n3. 신재인 (3루수)\n4. 조민영 (지명타자)\n5. 함수호 (좌익수)\n6. 김민석 (포수)\n7. 이재원 (중견수)\n8. 노강민 (1루수)\n9. 엄준현 (유격수)",
+        "lineup": {
+          "home": [
+            {
+              "playerCode": "",
+              "position": "2루수",
+              "order": 1,
+              "name": "심재훈",
+              "batsThrows": ""
+            },
+            {
+              "playerCode": "",
+              "order": 2,
+              "position": "우익수",
+              "name": "고준휘",
+              "batsThrows": ""
+            },
+            {
+              "order": 3,
+              "position": "3루수",
+              "playerCode": "",
+              "batsThrows": "",
+              "name": "신재인"
+            },
+            {
+              "playerCode": "",
+              "position": "지명타자",
+              "order": 4,
+              "name": "조민영",
+              "batsThrows": ""
+            },
+            {
+              "playerCode": "",
+              "order": 5,
+              "position": "좌익수",
+              "name": "함수호",
+              "batsThrows": ""
+            },
+            {
+              "batsThrows": "",
+              "name": "김민석",
+              "position": "포수",
+              "order": 6,
+              "playerCode": ""
+            },
+            {
+              "batsThrows": "",
+              "name": "이재원",
+              "order": 7,
+              "position": "중견수",
+              "playerCode": ""
+            },
+            {
+              "playerCode": "",
+              "order": 8,
+              "position": "1루수",
+              "name": "노강민",
+              "batsThrows": ""
+            },
+            {
+              "name": "엄준현",
+              "batsThrows": "",
+              "playerCode": "",
+              "order": 9,
+              "position": "유격수"
+            }
+          ],
+          "away": [
+            {
+              "order": 1,
+              "position": "중견수",
+              "playerCode": "",
+              "batsThrows": "",
+              "name": "이도훈"
+            },
+            {
+              "playerCode": "",
+              "position": "3루수",
+              "order": 2,
+              "name": "고영우",
+              "batsThrows": ""
+            },
+            {
+              "name": "심건보",
+              "batsThrows": "",
+              "playerCode": "",
+              "position": "유격수",
+              "order": 3
+            },
+            {
+              "position": "지명타자",
+              "order": 4,
+              "playerCode": "",
+              "batsThrows": "",
+              "name": "박한결"
+            },
+            {
+              "playerCode": "",
+              "order": 5,
+              "position": "2루수",
+              "name": "염승원",
+              "batsThrows": ""
+            },
+            {
+              "playerCode": "",
+              "position": "좌익수",
+              "order": 6,
+              "name": "박채울",
+              "batsThrows": ""
+            },
+            {
+              "name": "안재연",
+              "batsThrows": "",
+              "playerCode": "",
+              "order": 7,
+              "position": "1루수"
+            },
+            {
+              "order": 8,
+              "position": "포수",
+              "playerCode": "",
+              "batsThrows": "",
+              "name": "신용석"
+            },
+            {
+              "batsThrows": "",
+              "name": "김현종",
+              "position": "우익수",
+              "order": 9,
+              "playerCode": ""
+            }
+          ]
+        },
+        "source": "KBO official GameCenter API",
+        "lineups": {
+          "away": [
+            {
+              "playerCode": "",
+              "position": "중견수",
+              "order": 1,
+              "name": "이도훈",
+              "batsThrows": ""
+            },
+            {
+              "batsThrows": "",
+              "name": "고영우",
+              "order": 2,
+              "position": "3루수",
+              "playerCode": ""
+            },
+            {
+              "playerCode": "",
+              "order": 3,
+              "position": "유격수",
+              "name": "심건보",
+              "batsThrows": ""
+            },
+            {
+              "playerCode": "",
+              "position": "지명타자",
+              "order": 4,
+              "name": "박한결",
+              "batsThrows": ""
+            },
+            {
+              "batsThrows": "",
+              "name": "염승원",
+              "position": "2루수",
+              "order": 5,
+              "playerCode": ""
+            },
+            {
+              "batsThrows": "",
+              "name": "박채울",
+              "order": 6,
+              "position": "좌익수",
+              "playerCode": ""
+            },
+            {
+              "order": 7,
+              "position": "1루수",
+              "playerCode": "",
+              "batsThrows": "",
+              "name": "안재연"
+            },
+            {
+              "playerCode": "",
+              "order": 8,
+              "position": "포수",
+              "name": "신용석",
+              "batsThrows": ""
+            },
+            {
+              "playerCode": "",
+              "position": "우익수",
+              "order": 9,
+              "name": "김현종",
+              "batsThrows": ""
+            }
+          ],
+          "home": [
+            {
+              "batsThrows": "",
+              "name": "심재훈",
+              "position": "2루수",
+              "order": 1,
+              "playerCode": ""
+            },
+            {
+              "playerCode": "",
+              "order": 2,
+              "position": "우익수",
+              "name": "고준휘",
+              "batsThrows": ""
+            },
+            {
+              "position": "3루수",
+              "order": 3,
+              "playerCode": "",
+              "batsThrows": "",
+              "name": "신재인"
+            },
+            {
+              "playerCode": "",
+              "position": "지명타자",
+              "order": 4,
+              "name": "조민영",
+              "batsThrows": ""
+            },
+            {
+              "batsThrows": "",
+              "name": "함수호",
+              "order": 5,
+              "position": "좌익수",
+              "playerCode": ""
+            },
+            {
+              "name": "김민석",
+              "batsThrows": "",
+              "playerCode": "",
+              "order": 6,
+              "position": "포수"
+            },
+            {
+              "order": 7,
+              "position": "중견수",
+              "playerCode": "",
+              "batsThrows": "",
+              "name": "이재원"
+            },
+            {
+              "order": 8,
+              "position": "1루수",
+              "playerCode": "",
+              "batsThrows": "",
+              "name": "노강민"
+            },
+            {
+              "playerCode": "",
+              "order": 9,
+              "position": "유격수",
+              "name": "엄준현",
+              "batsThrows": ""
+            }
+          ]
+        },
+        "homeHit": 0,
+        "awayLineupWithPitcher": [
+          {
+            "batsThrows": "",
+            "name": "이도훈",
+            "order": 1,
+            "position": "중견수",
+            "playerCode": ""
+          },
+          {
+            "playerCode": "",
+            "order": 2,
+            "position": "3루수",
+            "name": "고영우",
+            "batsThrows": ""
+          },
+          {
+            "playerCode": "",
+            "position": "유격수",
+            "order": 3,
+            "name": "심건보",
+            "batsThrows": ""
+          },
+          {
+            "name": "박한결",
+            "batsThrows": "",
+            "playerCode": "",
+            "order": 4,
+            "position": "지명타자"
+          },
+          {
+            "name": "염승원",
+            "batsThrows": "",
+            "playerCode": "",
+            "position": "2루수",
+            "order": 5
+          },
+          {
+            "name": "박채울",
+            "batsThrows": "",
+            "playerCode": "",
+            "position": "좌익수",
+            "order": 6
+          },
+          {
+            "batsThrows": "",
+            "name": "안재연",
+            "position": "1루수",
+            "order": 7,
+            "playerCode": ""
+          },
+          {
+            "batsThrows": "",
+            "name": "신용석",
+            "order": 8,
+            "position": "포수",
+            "playerCode": ""
+          },
+          {
+            "position": "우익수",
+            "order": 9,
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "김현종"
+          },
+          {
+            "name": "강건우",
+            "batsThrows": "",
+            "playerCode": "",
+            "position": "투수",
+            "order": "SP"
+          }
+        ],
+        "homeBattersString": "심재훈, 고준휘, 신재인, 조민영, 함수호, 김민석, 이재원, 노강민, 엄준현",
+        "homeLineupWithPitcher": [
+          {
+            "playerCode": "",
+            "position": "2루수",
+            "order": 1,
+            "name": "심재훈",
+            "batsThrows": ""
+          },
+          {
+            "playerCode": "",
+            "order": 2,
+            "position": "우익수",
+            "name": "고준휘",
+            "batsThrows": ""
+          },
+          {
+            "batsThrows": "",
+            "name": "신재인",
+            "position": "3루수",
+            "order": 3,
+            "playerCode": ""
+          },
+          {
+            "playerCode": "",
+            "position": "지명타자",
+            "order": 4,
+            "name": "조민영",
+            "batsThrows": ""
+          },
+          {
+            "position": "좌익수",
+            "order": 5,
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "함수호"
+          },
+          {
+            "playerCode": "",
+            "order": 6,
+            "position": "포수",
+            "name": "김민석",
+            "batsThrows": ""
+          },
+          {
+            "batsThrows": "",
+            "name": "이재원",
+            "position": "중견수",
+            "order": 7,
+            "playerCode": ""
+          },
+          {
+            "batsThrows": "",
+            "name": "노강민",
+            "order": 8,
+            "position": "1루수",
+            "playerCode": ""
+          },
+          {
+            "playerCode": "",
+            "position": "유격수",
+            "order": 9,
+            "name": "엄준현",
+            "batsThrows": ""
+          },
+          {
+            "name": "박지훈",
+            "batsThrows": "",
+            "playerCode": "",
+            "position": "투수",
+            "order": "SP"
+          }
+        ],
+        "naverGameId": "",
+        "homeLineupString": "심재훈, 고준휘, 신재인, 조민영, 함수호, 김민석, 이재원, 노강민, 엄준현",
+        "inning": "종료",
+        "eventName": "2026 KBO 퓨처스 올스타전",
+        "awayTeam": "북부 올스타",
+        "awayBattersDetail": [
+          {
+            "name": "이도훈",
+            "batsThrows": "",
+            "playerCode": "",
+            "order": 1,
+            "position": "중견수"
+          },
+          {
+            "playerCode": "",
+            "position": "3루수",
+            "order": 2,
+            "name": "고영우",
+            "batsThrows": ""
+          },
+          {
+            "order": 3,
+            "position": "유격수",
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "심건보"
+          },
+          {
+            "playerCode": "",
+            "order": 4,
+            "position": "지명타자",
+            "name": "박한결",
+            "batsThrows": ""
+          },
+          {
+            "name": "염승원",
+            "batsThrows": "",
+            "playerCode": "",
+            "order": 5,
+            "position": "2루수"
+          },
+          {
+            "playerCode": "",
+            "order": 6,
+            "position": "좌익수",
+            "name": "박채울",
+            "batsThrows": ""
+          },
+          {
+            "name": "안재연",
+            "batsThrows": "",
+            "playerCode": "",
+            "position": "1루수",
+            "order": 7
+          },
+          {
+            "batsThrows": "",
+            "name": "신용석",
+            "order": 8,
+            "position": "포수",
+            "playerCode": ""
+          },
+          {
+            "position": "우익수",
+            "order": 9,
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "김현종"
+          }
+        ],
+        "status": "종료",
+        "time": "18:00",
+        "awayFullLineupDetail": [
+          {
+            "batsThrows": "",
+            "name": "이도훈",
+            "order": 1,
+            "position": "중견수",
+            "playerCode": ""
+          },
+          {
+            "batsThrows": "",
+            "name": "고영우",
+            "order": 2,
+            "position": "3루수",
+            "playerCode": ""
+          },
+          {
+            "name": "심건보",
+            "batsThrows": "",
+            "playerCode": "",
+            "position": "유격수",
+            "order": 3
+          },
+          {
+            "order": 4,
+            "position": "지명타자",
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "박한결"
+          },
+          {
+            "position": "2루수",
+            "order": 5,
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "염승원"
+          },
+          {
+            "name": "박채울",
+            "batsThrows": "",
+            "playerCode": "",
+            "position": "좌익수",
+            "order": 6
+          },
+          {
+            "order": 7,
+            "position": "1루수",
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "안재연"
+          },
+          {
+            "name": "신용석",
+            "batsThrows": "",
+            "playerCode": "",
+            "order": 8,
+            "position": "포수"
+          },
+          {
+            "order": 9,
+            "position": "우익수",
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "김현종"
+          },
+          {
+            "batsThrows": "",
+            "name": "강건우",
+            "order": "SP",
+            "position": "투수",
+            "playerCode": ""
+          }
+        ],
+        "awayBase": 0,
+        "base1": false,
+        "awayBattersString": "이도훈, 고영우, 심건보, 박한결, 염승원, 박채울, 안재연, 신용석, 김현종",
+        "gameStatus": "종료",
+        "homeBattersDetail": [
+          {
+            "playerCode": "",
+            "order": 1,
+            "position": "2루수",
+            "name": "심재훈",
+            "batsThrows": ""
+          },
+          {
+            "playerCode": "",
+            "position": "우익수",
+            "order": 2,
+            "name": "고준휘",
+            "batsThrows": ""
+          },
+          {
+            "playerCode": "",
+            "order": 3,
+            "position": "3루수",
+            "name": "신재인",
+            "batsThrows": ""
+          },
+          {
+            "playerCode": "",
+            "position": "지명타자",
+            "order": 4,
+            "name": "조민영",
+            "batsThrows": ""
+          },
+          {
+            "name": "함수호",
+            "batsThrows": "",
+            "playerCode": "",
+            "order": 5,
+            "position": "좌익수"
+          },
+          {
+            "batsThrows": "",
+            "name": "김민석",
+            "position": "포수",
+            "order": 6,
+            "playerCode": ""
+          },
+          {
+            "order": 7,
+            "position": "중견수",
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "이재원"
+          },
+          {
+            "position": "1루수",
+            "order": 8,
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "노강민"
+          },
+          {
+            "name": "엄준현",
+            "batsThrows": "",
+            "playerCode": "",
+            "position": "유격수",
+            "order": 9
+          }
+        ],
+        "strike": 0,
+        "homeInning": [],
+        "naverOffsetMode": "manual_kbo_futures_allstar",
+        "homeStarter": "박지훈",
+        "bannerLink": "",
+        "awayInning": [],
+        "gameTime": "18:00",
+        "awayStarter": "강건우",
+        "broadcast": "KBS N SPORTS, MBC SPORTS+, SBS SPORTS, SPOTV2, SPOTV",
+        "awayError": 0,
+        "homePitcherCount": 0,
+        "kboGameId": "20260710FNFS0",
+        "homeBatters": [
+          "심재훈",
+          "고준휘",
+          "신재인",
+          "조민영",
+          "함수호",
+          "김민석",
+          "이재원",
+          "노강민",
+          "엄준현"
+        ],
+        "team2": "남부 올스타",
+        "homeFullLineupDetail": [
+          {
+            "batsThrows": "",
+            "name": "심재훈",
+            "position": "2루수",
+            "order": 1,
+            "playerCode": ""
+          },
+          {
+            "name": "고준휘",
+            "batsThrows": "",
+            "playerCode": "",
+            "position": "우익수",
+            "order": 2
+          },
+          {
+            "name": "신재인",
+            "batsThrows": "",
+            "playerCode": "",
+            "position": "3루수",
+            "order": 3
+          },
+          {
+            "playerCode": "",
+            "position": "지명타자",
+            "order": 4,
+            "name": "조민영",
+            "batsThrows": ""
+          },
+          {
+            "name": "함수호",
+            "batsThrows": "",
+            "playerCode": "",
+            "order": 5,
+            "position": "좌익수"
+          },
+          {
+            "batsThrows": "",
+            "name": "김민석",
+            "position": "포수",
+            "order": 6,
+            "playerCode": ""
+          },
+          {
+            "playerCode": "",
+            "order": 7,
+            "position": "중견수",
+            "name": "이재원",
+            "batsThrows": ""
+          },
+          {
+            "name": "노강민",
+            "batsThrows": "",
+            "playerCode": "",
+            "position": "1루수",
+            "order": 8
+          },
+          {
+            "playerCode": "",
+            "position": "유격수",
+            "order": 9,
+            "name": "엄준현",
+            "batsThrows": ""
+          },
+          {
+            "name": "박지훈",
+            "batsThrows": "",
+            "playerCode": "",
+            "order": "SP",
+            "position": "투수"
+          }
+        ],
+        "id": "260710_FUTURES_ALLSTAR",
+        "updatedAt": 1783683938966,
+        "homeLineupDetail": [
+          {
+            "order": 1,
+            "position": "2루수",
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "심재훈"
+          },
+          {
+            "name": "고준휘",
+            "batsThrows": "",
+            "playerCode": "",
+            "order": 2,
+            "position": "우익수"
+          },
+          {
+            "playerCode": "",
+            "position": "3루수",
+            "order": 3,
+            "name": "신재인",
+            "batsThrows": ""
+          },
+          {
+            "position": "지명타자",
+            "order": 4,
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "조민영"
+          },
+          {
+            "batsThrows": "",
+            "name": "함수호",
+            "position": "좌익수",
+            "order": 5,
+            "playerCode": ""
+          },
+          {
+            "position": "포수",
+            "order": 6,
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "김민석"
+          },
+          {
+            "batsThrows": "",
+            "name": "이재원",
+            "position": "중견수",
+            "order": 7,
+            "playerCode": ""
+          },
+          {
+            "order": 8,
+            "position": "1루수",
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "노강민"
+          },
+          {
+            "name": "엄준현",
+            "batsThrows": "",
+            "playerCode": "",
+            "order": 9,
+            "position": "유격수"
+          }
+        ],
+        "out": 0,
+        "awayPitcherDetail": {
+          "order": "SP",
+          "position": "투수",
+          "playerCode": "",
+          "batsThrows": "",
+          "name": "강건우"
+        },
+        "ball": 0,
+        "homePitcher": "박지훈",
+        "stadium": "잠실",
+        "awayPlayers": [
+          "이도훈",
+          "고영우",
+          "심건보",
+          "박한결",
+          "염승원",
+          "박채울",
+          "안재연",
+          "신용석",
+          "김현종"
+        ],
+        "homePlayers": [
+          "심재훈",
+          "고준휘",
+          "신재인",
+          "조민영",
+          "함수호",
+          "김민석",
+          "이재원",
+          "노강민",
+          "엄준현"
+        ]
+      }
     ]
   },
   "games": [
@@ -394275,108 +395226,1057 @@
         "playerCode": "68249"
       },
       "updatedAt": 1783608882181
+    },
+    {
+      "awayScore": 0,
+      "roundCode": "kbo_futures_allstar",
+      "date": "2026-07-10",
+      "awayHit": 0,
+      "awayPitcher": "강건우",
+      "homeLineup": [
+        "심재훈",
+        "고준휘",
+        "신재인",
+        "조민영",
+        "함수호",
+        "김민석",
+        "이재원",
+        "노강민",
+        "엄준현"
+      ],
+      "base3": false,
+      "awayBatters": [
+        "이도훈",
+        "고영우",
+        "심건보",
+        "박한결",
+        "염승원",
+        "박채울",
+        "안재연",
+        "신용석",
+        "김현종"
+      ],
+      "base2": false,
+      "broadcaster": "KBS N SPORTS, MBC SPORTS+, SBS SPORTS, SPOTV2, SPOTV",
+      "awayLineup": [
+        "이도훈",
+        "고영우",
+        "심건보",
+        "박한결",
+        "염승원",
+        "박채울",
+        "안재연",
+        "신용석",
+        "김현종"
+      ],
+      "awayPitcherCount": 0,
+      "team1": "북부 올스타",
+      "homeTeam": "남부 올스타",
+      "homeScore": 4,
+      "awayBattersText": "1. 이도훈 (중견수)\n2. 고영우 (3루수)\n3. 심건보 (유격수)\n4. 박한결 (지명타자)\n5. 염승원 (2루수)\n6. 박채울 (좌익수)\n7. 안재연 (1루수)\n8. 신용석 (포수)\n9. 김현종 (우익수)",
+      "homeBase": 0,
+      "awayLineupText": "1. 이도훈 (중견수)\n2. 고영우 (3루수)\n3. 심건보 (유격수)\n4. 박한결 (지명타자)\n5. 염승원 (2루수)\n6. 박채울 (좌익수)\n7. 안재연 (1루수)\n8. 신용석 (포수)\n9. 김현종 (우익수)",
+      "losePitcher": "",
+      "broadcastLink": "",
+      "winPitcher": "",
+      "awayLineupDetail": [
+        {
+          "name": "이도훈",
+          "batsThrows": "",
+          "playerCode": "",
+          "order": 1,
+          "position": "중견수"
+        },
+        {
+          "order": 2,
+          "position": "3루수",
+          "playerCode": "",
+          "batsThrows": "",
+          "name": "고영우"
+        },
+        {
+          "batsThrows": "",
+          "name": "심건보",
+          "position": "유격수",
+          "order": 3,
+          "playerCode": ""
+        },
+        {
+          "playerCode": "",
+          "order": 4,
+          "position": "지명타자",
+          "name": "박한결",
+          "batsThrows": ""
+        },
+        {
+          "name": "염승원",
+          "batsThrows": "",
+          "playerCode": "",
+          "position": "2루수",
+          "order": 5
+        },
+        {
+          "position": "좌익수",
+          "order": 6,
+          "playerCode": "",
+          "batsThrows": "",
+          "name": "박채울"
+        },
+        {
+          "playerCode": "",
+          "order": 7,
+          "position": "1루수",
+          "name": "안재연",
+          "batsThrows": ""
+        },
+        {
+          "playerCode": "",
+          "order": 8,
+          "position": "포수",
+          "name": "신용석",
+          "batsThrows": ""
+        },
+        {
+          "order": 9,
+          "position": "우익수",
+          "playerCode": "",
+          "batsThrows": "",
+          "name": "김현종"
+        }
+      ],
+      "homeError": 0,
+      "awayLineupString": "이도훈, 고영우, 심건보, 박한결, 염승원, 박채울, 안재연, 신용석, 김현종",
+      "homeLineupText": "1. 심재훈 (2루수)\n2. 고준휘 (우익수)\n3. 신재인 (3루수)\n4. 조민영 (지명타자)\n5. 함수호 (좌익수)\n6. 김민석 (포수)\n7. 이재원 (중견수)\n8. 노강민 (1루수)\n9. 엄준현 (유격수)",
+      "homePitcherDetail": {
+        "batsThrows": "",
+        "name": "박지훈",
+        "position": "투수",
+        "order": "SP",
+        "playerCode": ""
+      },
+      "homeBattersText": "1. 심재훈 (2루수)\n2. 고준휘 (우익수)\n3. 신재인 (3루수)\n4. 조민영 (지명타자)\n5. 함수호 (좌익수)\n6. 김민석 (포수)\n7. 이재원 (중견수)\n8. 노강민 (1루수)\n9. 엄준현 (유격수)",
+      "lineup": {
+        "home": [
+          {
+            "playerCode": "",
+            "position": "2루수",
+            "order": 1,
+            "name": "심재훈",
+            "batsThrows": ""
+          },
+          {
+            "playerCode": "",
+            "order": 2,
+            "position": "우익수",
+            "name": "고준휘",
+            "batsThrows": ""
+          },
+          {
+            "order": 3,
+            "position": "3루수",
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "신재인"
+          },
+          {
+            "playerCode": "",
+            "position": "지명타자",
+            "order": 4,
+            "name": "조민영",
+            "batsThrows": ""
+          },
+          {
+            "playerCode": "",
+            "order": 5,
+            "position": "좌익수",
+            "name": "함수호",
+            "batsThrows": ""
+          },
+          {
+            "batsThrows": "",
+            "name": "김민석",
+            "position": "포수",
+            "order": 6,
+            "playerCode": ""
+          },
+          {
+            "batsThrows": "",
+            "name": "이재원",
+            "order": 7,
+            "position": "중견수",
+            "playerCode": ""
+          },
+          {
+            "playerCode": "",
+            "order": 8,
+            "position": "1루수",
+            "name": "노강민",
+            "batsThrows": ""
+          },
+          {
+            "name": "엄준현",
+            "batsThrows": "",
+            "playerCode": "",
+            "order": 9,
+            "position": "유격수"
+          }
+        ],
+        "away": [
+          {
+            "order": 1,
+            "position": "중견수",
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "이도훈"
+          },
+          {
+            "playerCode": "",
+            "position": "3루수",
+            "order": 2,
+            "name": "고영우",
+            "batsThrows": ""
+          },
+          {
+            "name": "심건보",
+            "batsThrows": "",
+            "playerCode": "",
+            "position": "유격수",
+            "order": 3
+          },
+          {
+            "position": "지명타자",
+            "order": 4,
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "박한결"
+          },
+          {
+            "playerCode": "",
+            "order": 5,
+            "position": "2루수",
+            "name": "염승원",
+            "batsThrows": ""
+          },
+          {
+            "playerCode": "",
+            "position": "좌익수",
+            "order": 6,
+            "name": "박채울",
+            "batsThrows": ""
+          },
+          {
+            "name": "안재연",
+            "batsThrows": "",
+            "playerCode": "",
+            "order": 7,
+            "position": "1루수"
+          },
+          {
+            "order": 8,
+            "position": "포수",
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "신용석"
+          },
+          {
+            "batsThrows": "",
+            "name": "김현종",
+            "position": "우익수",
+            "order": 9,
+            "playerCode": ""
+          }
+        ]
+      },
+      "source": "KBO official GameCenter API",
+      "lineups": {
+        "away": [
+          {
+            "playerCode": "",
+            "position": "중견수",
+            "order": 1,
+            "name": "이도훈",
+            "batsThrows": ""
+          },
+          {
+            "batsThrows": "",
+            "name": "고영우",
+            "order": 2,
+            "position": "3루수",
+            "playerCode": ""
+          },
+          {
+            "playerCode": "",
+            "order": 3,
+            "position": "유격수",
+            "name": "심건보",
+            "batsThrows": ""
+          },
+          {
+            "playerCode": "",
+            "position": "지명타자",
+            "order": 4,
+            "name": "박한결",
+            "batsThrows": ""
+          },
+          {
+            "batsThrows": "",
+            "name": "염승원",
+            "position": "2루수",
+            "order": 5,
+            "playerCode": ""
+          },
+          {
+            "batsThrows": "",
+            "name": "박채울",
+            "order": 6,
+            "position": "좌익수",
+            "playerCode": ""
+          },
+          {
+            "order": 7,
+            "position": "1루수",
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "안재연"
+          },
+          {
+            "playerCode": "",
+            "order": 8,
+            "position": "포수",
+            "name": "신용석",
+            "batsThrows": ""
+          },
+          {
+            "playerCode": "",
+            "position": "우익수",
+            "order": 9,
+            "name": "김현종",
+            "batsThrows": ""
+          }
+        ],
+        "home": [
+          {
+            "batsThrows": "",
+            "name": "심재훈",
+            "position": "2루수",
+            "order": 1,
+            "playerCode": ""
+          },
+          {
+            "playerCode": "",
+            "order": 2,
+            "position": "우익수",
+            "name": "고준휘",
+            "batsThrows": ""
+          },
+          {
+            "position": "3루수",
+            "order": 3,
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "신재인"
+          },
+          {
+            "playerCode": "",
+            "position": "지명타자",
+            "order": 4,
+            "name": "조민영",
+            "batsThrows": ""
+          },
+          {
+            "batsThrows": "",
+            "name": "함수호",
+            "order": 5,
+            "position": "좌익수",
+            "playerCode": ""
+          },
+          {
+            "name": "김민석",
+            "batsThrows": "",
+            "playerCode": "",
+            "order": 6,
+            "position": "포수"
+          },
+          {
+            "order": 7,
+            "position": "중견수",
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "이재원"
+          },
+          {
+            "order": 8,
+            "position": "1루수",
+            "playerCode": "",
+            "batsThrows": "",
+            "name": "노강민"
+          },
+          {
+            "playerCode": "",
+            "order": 9,
+            "position": "유격수",
+            "name": "엄준현",
+            "batsThrows": ""
+          }
+        ]
+      },
+      "homeHit": 0,
+      "awayLineupWithPitcher": [
+        {
+          "batsThrows": "",
+          "name": "이도훈",
+          "order": 1,
+          "position": "중견수",
+          "playerCode": ""
+        },
+        {
+          "playerCode": "",
+          "order": 2,
+          "position": "3루수",
+          "name": "고영우",
+          "batsThrows": ""
+        },
+        {
+          "playerCode": "",
+          "position": "유격수",
+          "order": 3,
+          "name": "심건보",
+          "batsThrows": ""
+        },
+        {
+          "name": "박한결",
+          "batsThrows": "",
+          "playerCode": "",
+          "order": 4,
+          "position": "지명타자"
+        },
+        {
+          "name": "염승원",
+          "batsThrows": "",
+          "playerCode": "",
+          "position": "2루수",
+          "order": 5
+        },
+        {
+          "name": "박채울",
+          "batsThrows": "",
+          "playerCode": "",
+          "position": "좌익수",
+          "order": 6
+        },
+        {
+          "batsThrows": "",
+          "name": "안재연",
+          "position": "1루수",
+          "order": 7,
+          "playerCode": ""
+        },
+        {
+          "batsThrows": "",
+          "name": "신용석",
+          "order": 8,
+          "position": "포수",
+          "playerCode": ""
+        },
+        {
+          "position": "우익수",
+          "order": 9,
+          "playerCode": "",
+          "batsThrows": "",
+          "name": "김현종"
+        },
+        {
+          "name": "강건우",
+          "batsThrows": "",
+          "playerCode": "",
+          "position": "투수",
+          "order": "SP"
+        }
+      ],
+      "homeBattersString": "심재훈, 고준휘, 신재인, 조민영, 함수호, 김민석, 이재원, 노강민, 엄준현",
+      "homeLineupWithPitcher": [
+        {
+          "playerCode": "",
+          "position": "2루수",
+          "order": 1,
+          "name": "심재훈",
+          "batsThrows": ""
+        },
+        {
+          "playerCode": "",
+          "order": 2,
+          "position": "우익수",
+          "name": "고준휘",
+          "batsThrows": ""
+        },
+        {
+          "batsThrows": "",
+          "name": "신재인",
+          "position": "3루수",
+          "order": 3,
+          "playerCode": ""
+        },
+        {
+          "playerCode": "",
+          "position": "지명타자",
+          "order": 4,
+          "name": "조민영",
+          "batsThrows": ""
+        },
+        {
+          "position": "좌익수",
+          "order": 5,
+          "playerCode": "",
+          "batsThrows": "",
+          "name": "함수호"
+        },
+        {
+          "playerCode": "",
+          "order": 6,
+          "position": "포수",
+          "name": "김민석",
+          "batsThrows": ""
+        },
+        {
+          "batsThrows": "",
+          "name": "이재원",
+          "position": "중견수",
+          "order": 7,
+          "playerCode": ""
+        },
+        {
+          "batsThrows": "",
+          "name": "노강민",
+          "order": 8,
+          "position": "1루수",
+          "playerCode": ""
+        },
+        {
+          "playerCode": "",
+          "position": "유격수",
+          "order": 9,
+          "name": "엄준현",
+          "batsThrows": ""
+        },
+        {
+          "name": "박지훈",
+          "batsThrows": "",
+          "playerCode": "",
+          "position": "투수",
+          "order": "SP"
+        }
+      ],
+      "naverGameId": "",
+      "homeLineupString": "심재훈, 고준휘, 신재인, 조민영, 함수호, 김민석, 이재원, 노강민, 엄준현",
+      "inning": "종료",
+      "eventName": "2026 KBO 퓨처스 올스타전",
+      "awayTeam": "북부 올스타",
+      "awayBattersDetail": [
+        {
+          "name": "이도훈",
+          "batsThrows": "",
+          "playerCode": "",
+          "order": 1,
+          "position": "중견수"
+        },
+        {
+          "playerCode": "",
+          "position": "3루수",
+          "order": 2,
+          "name": "고영우",
+          "batsThrows": ""
+        },
+        {
+          "order": 3,
+          "position": "유격수",
+          "playerCode": "",
+          "batsThrows": "",
+          "name": "심건보"
+        },
+        {
+          "playerCode": "",
+          "order": 4,
+          "position": "지명타자",
+          "name": "박한결",
+          "batsThrows": ""
+        },
+        {
+          "name": "염승원",
+          "batsThrows": "",
+          "playerCode": "",
+          "order": 5,
+          "position": "2루수"
+        },
+        {
+          "playerCode": "",
+          "order": 6,
+          "position": "좌익수",
+          "name": "박채울",
+          "batsThrows": ""
+        },
+        {
+          "name": "안재연",
+          "batsThrows": "",
+          "playerCode": "",
+          "position": "1루수",
+          "order": 7
+        },
+        {
+          "batsThrows": "",
+          "name": "신용석",
+          "order": 8,
+          "position": "포수",
+          "playerCode": ""
+        },
+        {
+          "position": "우익수",
+          "order": 9,
+          "playerCode": "",
+          "batsThrows": "",
+          "name": "김현종"
+        }
+      ],
+      "status": "종료",
+      "time": "18:00",
+      "awayFullLineupDetail": [
+        {
+          "batsThrows": "",
+          "name": "이도훈",
+          "order": 1,
+          "position": "중견수",
+          "playerCode": ""
+        },
+        {
+          "batsThrows": "",
+          "name": "고영우",
+          "order": 2,
+          "position": "3루수",
+          "playerCode": ""
+        },
+        {
+          "name": "심건보",
+          "batsThrows": "",
+          "playerCode": "",
+          "position": "유격수",
+          "order": 3
+        },
+        {
+          "order": 4,
+          "position": "지명타자",
+          "playerCode": "",
+          "batsThrows": "",
+          "name": "박한결"
+        },
+        {
+          "position": "2루수",
+          "order": 5,
+          "playerCode": "",
+          "batsThrows": "",
+          "name": "염승원"
+        },
+        {
+          "name": "박채울",
+          "batsThrows": "",
+          "playerCode": "",
+          "position": "좌익수",
+          "order": 6
+        },
+        {
+          "order": 7,
+          "position": "1루수",
+          "playerCode": "",
+          "batsThrows": "",
+          "name": "안재연"
+        },
+        {
+          "name": "신용석",
+          "batsThrows": "",
+          "playerCode": "",
+          "order": 8,
+          "position": "포수"
+        },
+        {
+          "order": 9,
+          "position": "우익수",
+          "playerCode": "",
+          "batsThrows": "",
+          "name": "김현종"
+        },
+        {
+          "batsThrows": "",
+          "name": "강건우",
+          "order": "SP",
+          "position": "투수",
+          "playerCode": ""
+        }
+      ],
+      "awayBase": 0,
+      "base1": false,
+      "awayBattersString": "이도훈, 고영우, 심건보, 박한결, 염승원, 박채울, 안재연, 신용석, 김현종",
+      "gameStatus": "종료",
+      "homeBattersDetail": [
+        {
+          "playerCode": "",
+          "order": 1,
+          "position": "2루수",
+          "name": "심재훈",
+          "batsThrows": ""
+        },
+        {
+          "playerCode": "",
+          "position": "우익수",
+          "order": 2,
+          "name": "고준휘",
+          "batsThrows": ""
+        },
+        {
+          "playerCode": "",
+          "order": 3,
+          "position": "3루수",
+          "name": "신재인",
+          "batsThrows": ""
+        },
+        {
+          "playerCode": "",
+          "position": "지명타자",
+          "order": 4,
+          "name": "조민영",
+          "batsThrows": ""
+        },
+        {
+          "name": "함수호",
+          "batsThrows": "",
+          "playerCode": "",
+          "order": 5,
+          "position": "좌익수"
+        },
+        {
+          "batsThrows": "",
+          "name": "김민석",
+          "position": "포수",
+          "order": 6,
+          "playerCode": ""
+        },
+        {
+          "order": 7,
+          "position": "중견수",
+          "playerCode": "",
+          "batsThrows": "",
+          "name": "이재원"
+        },
+        {
+          "position": "1루수",
+          "order": 8,
+          "playerCode": "",
+          "batsThrows": "",
+          "name": "노강민"
+        },
+        {
+          "name": "엄준현",
+          "batsThrows": "",
+          "playerCode": "",
+          "position": "유격수",
+          "order": 9
+        }
+      ],
+      "strike": 0,
+      "homeInning": [],
+      "naverOffsetMode": "manual_kbo_futures_allstar",
+      "homeStarter": "박지훈",
+      "bannerLink": "",
+      "awayInning": [],
+      "gameTime": "18:00",
+      "awayStarter": "강건우",
+      "broadcast": "KBS N SPORTS, MBC SPORTS+, SBS SPORTS, SPOTV2, SPOTV",
+      "awayError": 0,
+      "homePitcherCount": 0,
+      "kboGameId": "20260710FNFS0",
+      "homeBatters": [
+        "심재훈",
+        "고준휘",
+        "신재인",
+        "조민영",
+        "함수호",
+        "김민석",
+        "이재원",
+        "노강민",
+        "엄준현"
+      ],
+      "team2": "남부 올스타",
+      "homeFullLineupDetail": [
+        {
+          "batsThrows": "",
+          "name": "심재훈",
+          "position": "2루수",
+          "order": 1,
+          "playerCode": ""
+        },
+        {
+          "name": "고준휘",
+          "batsThrows": "",
+          "playerCode": "",
+          "position": "우익수",
+          "order": 2
+        },
+        {
+          "name": "신재인",
+          "batsThrows": "",
+          "playerCode": "",
+          "position": "3루수",
+          "order": 3
+        },
+        {
+          "playerCode": "",
+          "position": "지명타자",
+          "order": 4,
+          "name": "조민영",
+          "batsThrows": ""
+        },
+        {
+          "name": "함수호",
+          "batsThrows": "",
+          "playerCode": "",
+          "order": 5,
+          "position": "좌익수"
+        },
+        {
+          "batsThrows": "",
+          "name": "김민석",
+          "position": "포수",
+          "order": 6,
+          "playerCode": ""
+        },
+        {
+          "playerCode": "",
+          "order": 7,
+          "position": "중견수",
+          "name": "이재원",
+          "batsThrows": ""
+        },
+        {
+          "name": "노강민",
+          "batsThrows": "",
+          "playerCode": "",
+          "position": "1루수",
+          "order": 8
+        },
+        {
+          "playerCode": "",
+          "position": "유격수",
+          "order": 9,
+          "name": "엄준현",
+          "batsThrows": ""
+        },
+        {
+          "name": "박지훈",
+          "batsThrows": "",
+          "playerCode": "",
+          "order": "SP",
+          "position": "투수"
+        }
+      ],
+      "id": "260710_FUTURES_ALLSTAR",
+      "updatedAt": 1783683938966,
+      "homeLineupDetail": [
+        {
+          "order": 1,
+          "position": "2루수",
+          "playerCode": "",
+          "batsThrows": "",
+          "name": "심재훈"
+        },
+        {
+          "name": "고준휘",
+          "batsThrows": "",
+          "playerCode": "",
+          "order": 2,
+          "position": "우익수"
+        },
+        {
+          "playerCode": "",
+          "position": "3루수",
+          "order": 3,
+          "name": "신재인",
+          "batsThrows": ""
+        },
+        {
+          "position": "지명타자",
+          "order": 4,
+          "playerCode": "",
+          "batsThrows": "",
+          "name": "조민영"
+        },
+        {
+          "batsThrows": "",
+          "name": "함수호",
+          "position": "좌익수",
+          "order": 5,
+          "playerCode": ""
+        },
+        {
+          "position": "포수",
+          "order": 6,
+          "playerCode": "",
+          "batsThrows": "",
+          "name": "김민석"
+        },
+        {
+          "batsThrows": "",
+          "name": "이재원",
+          "position": "중견수",
+          "order": 7,
+          "playerCode": ""
+        },
+        {
+          "order": 8,
+          "position": "1루수",
+          "playerCode": "",
+          "batsThrows": "",
+          "name": "노강민"
+        },
+        {
+          "name": "엄준현",
+          "batsThrows": "",
+          "playerCode": "",
+          "order": 9,
+          "position": "유격수"
+        }
+      ],
+      "out": 0,
+      "awayPitcherDetail": {
+        "order": "SP",
+        "position": "투수",
+        "playerCode": "",
+        "batsThrows": "",
+        "name": "강건우"
+      },
+      "ball": 0,
+      "homePitcher": "박지훈",
+      "stadium": "잠실",
+      "awayPlayers": [
+        "이도훈",
+        "고영우",
+        "심건보",
+        "박한결",
+        "염승원",
+        "박채울",
+        "안재연",
+        "신용석",
+        "김현종"
+      ],
+      "homePlayers": [
+        "심재훈",
+        "고준휘",
+        "신재인",
+        "조민영",
+        "함수호",
+        "김민석",
+        "이재원",
+        "노강민",
+        "엄준현"
+      ]
     }
   ],
   "rankings": [
     {
+      "team": "LG",
+      "rank": "1",
+      "streak": "4승",
       "l": 23,
       "winRate": "0.635",
-      "w": 40,
-      "team": "LG",
-      "d": 0,
-      "streak": "4승",
       "gb": "-",
-      "rank": "1"
+      "d": 0,
+      "w": 40
     },
     {
+      "w": 37,
+      "d": 1,
+      "gb": "2.5",
       "l": 25,
       "winRate": "0.597",
-      "w": 37,
-      "team": "KT",
-      "d": 1,
-      "rank": "2",
       "streak": "1승",
-      "gb": "2.5"
+      "rank": "2",
+      "team": "KT"
     },
     {
-      "team": "삼성",
-      "d": 1,
-      "streak": "2승",
       "gb": "4",
-      "rank": "3",
-      "l": 26,
+      "d": 1,
       "w": 35,
-      "winRate": "0.574"
+      "team": "삼성",
+      "rank": "3",
+      "winRate": "0.574",
+      "streak": "2승",
+      "l": 26
     },
     {
       "w": 34,
+      "d": 1,
+      "gb": "6",
+      "streak": "1승",
       "winRate": "0.540",
       "l": 29,
-      "streak": "1승",
-      "gb": "6",
-      "rank": "4",
       "team": "KIA",
+      "rank": "4"
+    },
+    {
+      "gb": "7",
+      "w": 32,
+      "d": 1,
+      "rank": "5",
+      "team": "한화",
+      "winRate": "0.525",
+      "streak": "1패",
+      "l": 29
+    },
+    {
+      "team": "두산",
+      "rank": "6",
+      "l": 31,
+      "streak": "1패",
+      "winRate": "0.500",
+      "gb": "8.5",
+      "d": 2,
+      "w": 31
+    },
+    {
+      "rank": "7",
+      "team": "NC",
+      "winRate": "0.459",
+      "streak": "1패",
+      "l": 33,
+      "gb": "11",
+      "w": 28,
       "d": 1
     },
     {
-      "l": 29,
-      "w": 32,
-      "winRate": "0.525",
-      "d": 1,
-      "team": "한화",
-      "rank": "5",
-      "streak": "1패",
-      "gb": "7"
-    },
-    {
-      "w": 31,
-      "winRate": "0.500",
-      "l": 31,
-      "streak": "1패",
-      "rank": "6",
-      "gb": "8.5",
-      "d": 2,
-      "team": "두산"
-    },
-    {
-      "d": 1,
-      "team": "NC",
-      "streak": "1패",
-      "rank": "7",
-      "gb": "11",
-      "l": 33,
-      "w": 28,
-      "winRate": "0.459"
-    },
-    {
       "gb": "13.5",
-      "streak": "4패",
+      "w": 26,
+      "d": 1,
       "rank": "8",
       "team": "SSG",
-      "d": 1,
-      "w": 26,
+      "streak": "4패",
       "winRate": "0.419",
       "l": 36
     },
     {
-      "l": 38,
+      "streak": "2패",
       "winRate": "0.377",
+      "l": 38,
+      "team": "롯데",
+      "rank": "9",
       "w": 23,
       "d": 1,
-      "team": "롯데",
-      "streak": "2패",
-      "rank": "9",
       "gb": "16"
     },
     {
-      "team": "키움",
-      "d": 1,
-      "rank": "10",
-      "streak": "1승",
       "gb": "16.5",
-      "l": 40,
+      "d": 1,
+      "w": 24,
+      "rank": "10",
+      "team": "키움",
       "winRate": "0.375",
-      "w": 24
+      "l": 40,
+      "streak": "1승"
     }
   ]
 };
