@@ -264,41 +264,64 @@
         @keyframes wp-stripes { from { background-position: 0 0; } to { background-position: 28px 0; } }
         .wp-front { position: absolute; top: -1px; bottom: -1px; width: 2.5px; margin-left: -1.25px; border-radius: 2px; background: #fff; z-index: 6; box-shadow: 0 0 6px rgba(255,255,255,0.9), 0 0 12px rgba(255,255,255,0.5); animation: wp-front-pulse 1.05s ease-in-out infinite; }
         @keyframes wp-front-pulse { 0%, 100% { opacity: 0.5; transform: translateX(-1.5px) scaleY(0.8); } 50% { opacity: 1; transform: translateX(1.5px) scaleY(1); } }
-        .game-info-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; margin: 0 0 20px; border: 1px solid rgba(255,255,255,0.08); border-radius: 15px; background: rgba(255,255,255,0.055); }
-        .game-info-tab { height: 38px; border-radius: 11px; color: #94a3b8; font-size: 12px; font-weight: 800; transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease; }
-        .game-info-tab.active { color: #f8fafc; background: rgba(255,255,255,0.12); box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 3px 10px rgba(0,0,0,0.16); }
-        html.light-mode .game-info-tabs { border-color: rgba(15,23,42,0.08); background: rgba(15,23,42,0.045); }
-        html.light-mode .game-info-tab { color: #64748b; }
-        html.light-mode .game-info-tab.active { color: #0f172a; background: #ffffff; box-shadow: 0 2px 9px rgba(15,23,42,0.10); }
-        .broadcast-card { overflow: hidden; border: 1px solid rgba(255,255,255,0.09); border-radius: 20px; background: #101712; box-shadow: 0 14px 30px rgba(0,0,0,0.24); }
-        .broadcast-summary { color: #f8fafc; background: rgba(7,16,10,0.92); border-bottom: 1px solid rgba(255,255,255,0.08); }
-        .broadcast-field { position: relative; height: 365px; overflow: hidden; background: radial-gradient(circle at 50% 28%, rgba(104,192,118,0.24), transparent 46%), linear-gradient(180deg, #2f8445 0%, #1d6a35 100%); }
-        .broadcast-field::before { content: ''; position: absolute; left: 50%; bottom: -82px; width: 310px; height: 310px; transform: translateX(-50%) rotate(45deg); border-radius: 24%; background: #b7a383; box-shadow: 0 0 0 3px rgba(255,255,255,0.30); }
-        .broadcast-field::after { content: ''; position: absolute; left: 50%; bottom: -52px; width: 224px; height: 224px; transform: translateX(-50%) rotate(45deg); border-radius: 20%; background: #317c43; box-shadow: inset 0 0 0 2px rgba(255,255,255,0.46); }
+        .game-info-tabs { display: flex; align-items: center; gap: 8px; padding: 0; margin: 0 0 18px; border: 0; background: transparent; }
+        .game-info-tab { flex: 1 1 0; height: 40px; border-radius: 999px; color: #a1a1aa; background: rgba(255,255,255,0.075); font-size: 12px; font-weight: 900; transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease; }
+        .game-info-tab:active { transform: scale(0.97); }
+        .game-info-tab.active { color: #fff; background: #4b91f7; box-shadow: none; }
+        html.light-mode .game-info-tab { color: #64748b; background: rgba(15,23,42,0.07); }
+        html.light-mode .game-info-tab.active { color: #fff; background: #397fe8; box-shadow: none; }
+        .broadcast-card { width: calc(100% + 48px); margin: 0 -24px; overflow: hidden; border: 0; border-radius: 0; background: #2f7f42; box-shadow: none; color: #fff; }
+        .broadcast-scoreboard { display: grid; grid-template-columns: 22% 22% 56%; min-height: 72px; background: #163e23; }
+        .broadcast-score-team { display: flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; padding: 0 8px; }
+        .broadcast-score-team img { width: 28px; height: 28px; object-fit: contain; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25)); }
+        .broadcast-score-team strong { color: #fff; font-size: 25px; font-weight: 900; line-height: 1; }
+        .broadcast-score-state { display: flex; flex-direction: column; justify-content: center; min-width: 0; padding: 8px 12px; background: rgba(9,31,17,0.82); }
+        .broadcast-score-state-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #fff; font-size: 13px; font-weight: 900; }
+        .broadcast-score-state-top > span:first-child { flex: 0 0 auto; white-space: nowrap; }
+        .broadcast-score-state-bottom { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 7px; color: #cbd5d1; font-size: 10px; font-weight: 800; }
+        .broadcast-counts { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+        .broadcast-counts b { margin-left: 3px; color: #aab6ae; font-size: 9px; }
+        .broadcast-count-dot { width: 8px; height: 8px; border-radius: 999px; background: rgba(255,255,255,0.18); }
+        .broadcast-count-dot.ball.on { background: #38d875; }
+        .broadcast-count-dot.strike.on { background: #facc15; }
+        .broadcast-count-dot.out.on { background: #ff4545; }
+        .broadcast-mini-bases { position: relative; flex: 0 0 31px; width: 31px; height: 24px; }
+        .broadcast-mini-base { position: absolute; width: 9px; height: 9px; transform: rotate(45deg); background: #56645b; }
+        .broadcast-mini-base.second { top: 0; left: 11px; }
+        .broadcast-mini-base.third { top: 10px; left: 1px; }
+        .broadcast-mini-base.first { top: 10px; right: 1px; }
+        .broadcast-mini-base.active { background: #fbbf24; box-shadow: 0 0 6px rgba(251,191,36,0.75); }
+        .broadcast-field { position: relative; height: 520px; overflow: hidden; background: radial-gradient(circle at 50% 18%, rgba(121,202,133,0.22), transparent 42%), linear-gradient(180deg, #34884a 0%, #27753d 100%); }
+        .broadcast-field::before { content: ''; position: absolute; z-index: 1; left: 50%; top: 156px; width: 390px; height: 390px; transform: translateX(-50%); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); background: #bba98a; filter: drop-shadow(0 0 1px rgba(255,255,255,0.65)); }
+        .broadcast-field::after { content: ''; position: absolute; z-index: 2; left: 50%; top: 220px; width: 274px; height: 274px; transform: translateX(-50%); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); background: #307d45; box-shadow: inset 0 0 0 2px rgba(255,255,255,0.42); }
         .broadcast-base { position: absolute; z-index: 3; width: 12px; height: 12px; transform: translate(-50%, -50%) rotate(45deg); border: 2px solid rgba(255,255,255,0.88); background: rgba(255,255,255,0.32); }
         .broadcast-base.active { border-color: #fbbf24; background: #fbbf24; box-shadow: 0 0 10px rgba(251,191,36,0.9); }
-        .broadcast-base.second { left: 50%; top: 48%; }
-        .broadcast-base.third { left: 26%; top: 66%; }
-        .broadcast-base.first { left: 74%; top: 66%; }
-        .broadcast-base.home { left: 50%; top: 85%; background: #ffffff; }
-        .broadcast-player { position: absolute; z-index: 5; display: flex; flex-direction: column; align-items: center; transform: translate(-50%, -50%); min-width: 58px; }
-        .broadcast-player .portrait { width: 34px; height: 34px; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; border: 2px solid rgba(255,255,255,0.88); border-radius: 999px; background: rgba(15,23,42,0.78); box-shadow: 0 3px 8px rgba(0,0,0,0.28); }
+        .broadcast-base.second { left: 50%; top: 45%; }
+        .broadcast-base.third { left: 22%; top: 63%; }
+        .broadcast-base.first { left: 78%; top: 63%; }
+        .broadcast-base.home { left: 50%; top: 81%; background: #ffffff; }
+        .broadcast-player { position: absolute; z-index: 5; display: flex; flex-direction: column; align-items: center; transform: translate(-50%, -50%); min-width: 68px; }
+        .broadcast-player .portrait { width: 43px; height: 43px; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; border: 2px solid rgba(255,255,255,0.94); border-radius: 999px; background: rgba(15,23,42,0.78); box-shadow: 0 3px 8px rgba(0,0,0,0.28); }
         .broadcast-player .portrait img { width: 100%; height: 100%; object-fit: contain; object-position: bottom; transform: scale(1.18); transform-origin: bottom; }
-        .broadcast-player .name { max-width: 78px; margin-top: -1px; padding: 3px 7px; overflow: hidden; border-radius: 999px; color: #ffffff; background: rgba(8,25,13,0.88); font-size: 10px; font-weight: 900; line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,0.18); }
-        .broadcast-player.cf { left: 50%; top: 12%; }
-        .broadcast-player.lf { left: 20%; top: 23%; }
-        .broadcast-player.rf { left: 80%; top: 23%; }
-        .broadcast-player.ss { left: 35%; top: 43%; }
-        .broadcast-player.sb { left: 65%; top: 43%; }
-        .broadcast-player.tb { left: 19%; top: 61%; }
-        .broadcast-player.fb { left: 81%; top: 61%; }
-        .broadcast-player.p { left: 50%; top: 60%; }
-        .broadcast-player.c { left: 50%; top: 82%; }
-        .broadcast-inning-strip { display: flex; gap: 7px; overflow-x: auto; padding: 12px; background: #17191a; scrollbar-width: none; }
+        .broadcast-player .name { max-width: 86px; margin-top: -2px; padding: 4px 9px; overflow: hidden; border-radius: 999px; color: #fff; background: rgba(8,38,18,0.92); font-size: 11px; font-weight: 900; line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,0.22); }
+        .broadcast-player.cf { left: 50%; top: 10%; }
+        .broadcast-player.lf { left: 19%; top: 22%; }
+        .broadcast-player.rf { left: 81%; top: 22%; }
+        .broadcast-player.ss { left: 34%; top: 40%; }
+        .broadcast-player.sb { left: 66%; top: 40%; }
+        .broadcast-player.tb { left: 18%; top: 59%; }
+        .broadcast-player.fb { left: 82%; top: 59%; }
+        .broadcast-player.p { left: 50%; top: 59%; }
+        .broadcast-player.c { left: 50%; top: 78%; }
+        .broadcast-waiting { position: absolute; z-index: 6; left: 18px; bottom: 22px; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.35); }
+        .broadcast-waiting strong { display: block; margin-bottom: 6px; color: rgba(255,255,255,0.48); font-size: 12px; font-weight: 900; }
+        .broadcast-waiting span { display: block; font-size: 12px; font-weight: 800; line-height: 1.65; }
+        .broadcast-view-button { position: absolute; z-index: 6; right: 18px; bottom: 22px; width: 78px; height: 76px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border-radius: 14px; color: #24262a; background: #fff; box-shadow: 0 5px 16px rgba(0,0,0,0.18); font-size: 12px; font-weight: 900; }
+        .broadcast-view-button i { font-size: 21px; }
+        .broadcast-inning-strip { display: flex; align-items: center; gap: 4px; height: 68px; overflow-x: auto; padding: 9px 12px; background: #1c1c1e; scrollbar-width: none; }
         .broadcast-inning-strip::-webkit-scrollbar { display: none; }
-        .broadcast-inning-chip { flex: 0 0 auto; min-width: 43px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 999px; color: #a1a1aa; font-size: 11px; font-weight: 900; background: rgba(255,255,255,0.055); }
-        .broadcast-inning-chip.active { color: #ffffff; background: #3b82f6; }
-        html.light-mode .broadcast-card { border-color: rgba(15,23,42,0.08); box-shadow: 0 12px 28px rgba(15,23,42,0.12); }
+        .broadcast-inning-chip { flex: 0 0 auto; min-width: 54px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 999px; color: #c4c4c7; font-size: 15px; font-weight: 900; background: transparent; }
+        .broadcast-inning-chip.active { min-width: 72px; color: #fff; background: #4b91f7; }
         html.light-mode .broadcast-card .text-white { color: #fff !important; }
         html.light-mode .broadcast-card .text-gray-300 { color: #d1d5db !important; }
         html.light-mode .broadcast-card .text-gray-400 { color: #9ca3af !important; }
@@ -2770,11 +2793,17 @@
             const isTop = String(l.inning || '').includes('초');
             const defenseSide = isLive ? (isTop ? 'home' : 'away') : 'home';
             const defenseTeam = defenseSide === 'home' ? m.team2 : m.team1;
-            const lineup = (l[`${defenseSide}LineupDetail`] && l[`${defenseSide}LineupDetail`].length) ? l[`${defenseSide}LineupDetail`] : [];
+            const offenseSide = defenseSide === 'home' ? 'away' : 'home';
+            const lineup = (l[`${defenseSide}LineupDetail`] && l[`${defenseSide}LineupDetail`].length) ? l[`${defenseSide}LineupDetail`] : (l[`${defenseSide}Lineup`] || []);
+            const offenseLineup = (l[`${offenseSide}LineupDetail`] && l[`${offenseSide}LineupDetail`].length) ? l[`${offenseSide}LineupDetail`] : (l[`${offenseSide}Lineup`] || []);
             const currentPitcher = _curPitcherName(l, defenseSide);
             const pitcherDetail = l[`${defenseSide}PitcherDetail`] || l[`${defenseSide}StarterDetail`] || null;
             const pitcherName = currentPitcher !== '-' ? currentPitcher : ((pitcherDetail && pitcherDetail.name) || '-');
             const pitchCount = l[`${defenseSide}PitcherCount`] || 0;
+            const awayScore = l.awayScore ?? '-';
+            const homeScore = l.homeScore ?? '-';
+            const awayColor = teamHex[m.team1] || '#39424e';
+            const homeColor = teamHex[m.team2] || '#39424e';
             const fielders = {};
             lineup.forEach(player => {
                 if (!player || typeof player !== 'object' || !player.position) return;
@@ -2793,24 +2822,36 @@
                     : `<i class="fa-solid fa-user text-[14px] text-gray-300 mb-1"></i>`;
                 return `<div class="broadcast-player ${cls}"><div class="portrait">${portrait}</div><span class="name" title="${position} ${name}">${name === '-' ? position : name}</span></div>`;
             }).join('');
-            const countDots = (value, max, color) => Array.from({ length: max }, (_, i) => `<span class="w-2 h-2 rounded-full" style="background:${i < Number(value || 0) ? color : 'rgba(255,255,255,0.18)'}"></span>`).join('');
+            const countDots = (value, max, type) => Array.from({ length: max }, (_, i) => `<span class="broadcast-count-dot ${type} ${i < Number(value || 0) ? 'on' : ''}"></span>`).join('');
             const baseClass = key => l[key] ? 'active' : '';
             const maxInning = Math.max(9, (l.awayInning || []).length, (l.homeInning || []).length, inningNum);
-            const inningChips = Array.from({ length: maxInning }, (_, i) => `<span class="broadcast-inning-chip ${inningNum === i + 1 ? 'active' : ''}">${i + 1}회</span>`).join('');
+            const inningChips = Array.from({ length: maxInning }, (_, i) => `<span class="broadcast-inning-chip">${i + 1}회</span>`).join('');
             const hasFielders = Object.keys(fielders).some(key => key !== '투수');
+            const waitingPlayers = offenseLineup.slice(0, 3).map((player, index) => {
+                const name = typeof player === 'object' && player ? player.name : player;
+                return `<span>${index + 1}. ${name || '-'}</span>`;
+            }).join('') || '<span>라인업 발표 전</span>';
             return `<section class="broadcast-card" aria-label="문자 중계">
-                <div class="broadcast-summary px-4 py-3">
-                    <div class="flex items-center justify-between gap-3">
-                        <div class="flex items-center gap-2 min-w-0"><img src="${teamLogos[defenseTeam]}" alt="${defenseTeam}" class="w-7 h-7 object-contain"><div class="min-w-0"><div class="text-[11px] text-gray-400 font-bold">${defenseTeam} 수비</div><div class="text-[13px] font-black truncate">${pitcherName !== '-' ? pitcherName : '투수 미정'} <span class="text-[10px] text-gray-400">${pitchCount ? pitchCount + '구' : ''}</span></div></div></div>
-                        <div class="text-center shrink-0"><div class="text-[13px] font-black">${inningText}</div><div class="flex items-center justify-center gap-1 mt-1"><span class="text-[9px] text-gray-400 mr-0.5">B</span>${countDots(l.ball, 3, '#22c55e')}<span class="text-[9px] text-gray-400 ml-1 mr-0.5">S</span>${countDots(l.strike, 2, '#facc15')}<span class="text-[9px] text-gray-400 ml-1 mr-0.5">O</span>${countDots(l.out, 2, '#ef4444')}</div></div>
+                <div class="broadcast-scoreboard">
+                    <div class="broadcast-score-team" style="background:${awayColor}"><img src="${teamLogos[m.team1]}" alt="${m.team1}"><strong>${awayScore}</strong></div>
+                    <div class="broadcast-score-team" style="background:${homeColor}"><img src="${teamLogos[m.team2]}" alt="${m.team2}"><strong>${homeScore}</strong></div>
+                    <div class="broadcast-score-state">
+                        <div class="broadcast-score-state-top">
+                            <span>${inningText}</span>
+                            <span class="broadcast-mini-bases" aria-label="주자 현황"><i class="broadcast-mini-base second ${baseClass('base2')}"></i><i class="broadcast-mini-base third ${baseClass('base3')}"></i><i class="broadcast-mini-base first ${baseClass('base1')}"></i></span>
+                            <span class="broadcast-counts"><b>B</b>${countDots(l.ball, 3, 'ball')}<b>S</b>${countDots(l.strike, 2, 'strike')}<b>O</b>${countDots(l.out, 2, 'out')}</span>
+                        </div>
+                        <div class="broadcast-score-state-bottom"><span>${defenseTeam} 수비</span><span>${pitcherName !== '-' ? pitcherName : '투수 미정'}${pitchCount ? ` ${pitchCount}구` : ''}</span></div>
                     </div>
                 </div>
                 <div class="broadcast-field">
                     <span class="broadcast-base second ${baseClass('base2')}"></span><span class="broadcast-base third ${baseClass('base3')}"></span><span class="broadcast-base first ${baseClass('base1')}"></span><span class="broadcast-base home"></span>
                     ${playerHtml}
-                    ${hasFielders ? '' : `<div class="absolute inset-x-8 top-[42%] z-10 rounded-2xl bg-black/45 px-4 py-3 text-center text-[12px] font-bold text-white backdrop-blur-sm">라인업 발표 후 수비 위치가 표시됩니다</div>`}
+                    ${hasFielders ? '' : `<div class="absolute inset-x-0 top-[42%] z-10 bg-black/45 px-4 py-3 text-center text-[12px] font-bold text-white backdrop-blur-sm">라인업 발표 후 수비 위치가 표시됩니다</div>`}
+                    <div class="broadcast-waiting"><strong>대기타석</strong>${waitingPlayers}</div>
+                    <div class="broadcast-view-button"><i class="fa-solid fa-baseball"></i><span>타석보기</span></div>
                 </div>
-                <div class="broadcast-inning-strip"><span class="broadcast-inning-chip ${!inningNum ? 'active' : ''}">득점</span>${inningChips}</div>
+                <div class="broadcast-inning-strip"><span class="broadcast-inning-chip active">득점</span>${inningChips}</div>
             </section>`;
         }
 
