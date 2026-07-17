@@ -270,6 +270,25 @@
         .home-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 18px; box-shadow: var(--glass-shadow); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
         .home-chip { background: rgba(128,128,128,0.10); border: 1px solid var(--glass-border); }
         html.light-mode .home-chip { background: rgba(0,0,0,0.04); }
+        .team-accent { color: var(--team-color); }
+        .team-accent-fill { background-color: var(--team-color); }
+        html:not(.light-mode) .team-accent { color: var(--team-color-dark); }
+        html:not(.light-mode) .team-accent-fill { background-color: var(--team-color-dark); }
+        .recent-form-results { background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.06); }
+        .recent-form-result { width: 20px; height: 20px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; }
+        .recent-form-result.win { color: #4ade80; background: rgba(34,197,94,0.16); }
+        .recent-form-result.loss { color: #fb7185; background: rgba(239,68,68,0.16); }
+        .recent-form-result.draw { color: #cbd5e1; background: rgba(148,163,184,0.16); }
+        .recent-form-streak.win { color: #4ade80; }
+        .recent-form-streak.loss { color: #fb7185; }
+        .recent-form-streak.draw { color: #cbd5e1; }
+        html.light-mode .recent-form-results { background: rgba(15,23,42,0.035); border-color: rgba(15,23,42,0.06); }
+        html.light-mode .recent-form-result.win, html.light-mode .recent-form-streak.win { color: #15803d; }
+        html.light-mode .recent-form-result.loss, html.light-mode .recent-form-streak.loss { color: #be123c; }
+        html.light-mode .recent-form-result.draw, html.light-mode .recent-form-streak.draw { color: #475569; }
+        html.light-mode .recent-form-result.win { background: rgba(21,128,61,0.10); }
+        html.light-mode .recent-form-result.loss { background: rgba(190,18,60,0.09); }
+        html.light-mode .recent-form-result.draw { background: rgba(71,85,105,0.10); }
         /* 직관 히트맵 빈 칸 — 라이트/다크 모두에서 격자가 보이도록 */
         .heat-cell { background: rgba(255,255,255,0.07); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06); }
         html.light-mode .heat-cell { background: rgba(0,0,0,0.06); box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05); }
@@ -936,6 +955,7 @@
         const initialRankingData = [{rank:'-',team:'KIA',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'삼성',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'LG',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'두산',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'KT',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'SSG',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'롯데',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'한화',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'NC',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}, {rank:'-',team:'키움',w:0,d:0,l:0,winRate:'-',gb:'-',streak:'-'}];
         const teamColors = {'LG':'bg-[#C30452]', '두산':'bg-[#131230]', 'KIA':'bg-[#EA0029]', '삼성':'bg-[#074CA1]', 'SSG':'bg-[#CE0E2D]', '롯데':'bg-[#041E42]', '한화':'bg-[#FF6600]', 'KT':'bg-[#000000]', 'NC':'bg-[#315288]', '키움':'bg-[#820024]', '나눔':'bg-[#002038]', '드림':'bg-[#90C0E0]', '북부 올스타':'bg-[#123B8D]', '남부 올스타':'bg-[#13B9D1]'};
         const teamHex = {'LG':'#C30452', '두산':'#131230', 'KIA':'#EA0029', '삼성':'#074CA1', 'SSG':'#CE0E2D', '롯데':'#041E42', '한화':'#FF6600', 'KT':'#000000', 'NC':'#315288', '키움':'#820024', '나눔':'#002038', '드림':'#90C0E0', '북부 올스타':'#123B8D', '남부 올스타':'#13B9D1'};
+        const teamDarkHex = {'LG':'#F02D72', '두산':'#818CF8', 'KIA':'#FF3358', '삼성':'#3B82F6', 'SSG':'#FF3659', '롯데':'#60A5FA', '한화':'#FF8A33', 'KT':'#E5E7EB', 'NC':'#60A5FA', '키움':'#E45277', '나눔':'#60A5FA', '드림':'#90C0E0', '북부 올스타':'#60A5FA', '남부 올스타':'#22D3EE'};
         const teamLogos = {'삼성':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/samsung_logo.png', 'KIA':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/kia_logoo.png', '롯데':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/lotteegi.png', 'NC':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/ncdin.png', 'LG':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/lgtwins.png', '두산':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/doosa.png', 'SSG':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/ssglan.png', 'KT':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/kt_logo.png', '한화':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/hanwha_logo.png', '키움':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/kiwoom.png', '나눔':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/kbo.png', '드림':'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/kbo.png'};
         const ALLSTAR_DATES = new Set(['2026-07-10', '2026-07-11']);
         const ALLSTAR_LOGO_URL = 'https://qlotfqlu5749.edge.naverncp.com/KBO_IMAGE/KBOAllstar/Client/resources/images/common/img_logo.png';
@@ -1890,14 +1910,19 @@
         // [통일] 경기중 전광판 배너와 동일한 다크 프리미엄 카드 — 팀컬러를 헤더쪽에 얹은 다크 베이스 + 상태 점 헤더
         function _bnBg(hex) { return `background: linear-gradient(160deg, ${hex}CC 0%, #1b1b1e 27%, #161618 76%);`; }
         function _bnBg2(h1, h2) { return `background: linear-gradient(to right, ${h1}D9 0%, #18181b 44%, #18181b 56%, ${h2}D9 100%);`; }
-        function _cardHead(icon, label, right, color) {
+        function _teamAccentStyle(team) {
+            return `--team-color:${teamHex[team] || '#64748b'};--team-color-dark:${teamDarkHex[team] || '#cbd5e1'}`;
+        }
+        function _cardHead(icon, label, right, color, darkColor) {
             const iconColor = color || 'var(--point-color)';
-            return `<div class="flex items-center justify-between mb-3"><div class="flex items-center gap-2"><i class="fa-solid ${icon} text-[13px] w-5 text-center shrink-0" style="color:${iconColor}"></i><span class="text-[13px] font-extrabold text-white tracking-tight">${label}</span></div>${right || ''}</div>`;
+            const iconClass = darkColor ? 'team-accent' : '';
+            const iconStyle = darkColor ? `--team-color:${iconColor};--team-color-dark:${darkColor}` : `color:${iconColor}`;
+            return `<div class="flex items-center justify-between mb-3"><div class="flex items-center gap-2"><i class="fa-solid ${icon} ${iconClass} text-[13px] w-5 text-center shrink-0" style="${iconStyle}"></i><span class="text-[13px] font-extrabold text-white tracking-tight">${label}</span></div>${right || ''}</div>`;
         }
         // 현재 보이는 배너의 구장·중계 정보를 홈 피드 첫 브리핑으로 표시
         function homeCardGameBrief() {
             let hx = (selectedTeam === 'KIA' || selectedTeam === '삼성') ? teamHex[selectedTeam] : null;
-            let head = _cardHead('fa-location-dot', '경기 브리핑', `<span id="home-game-matchup" class="text-[10px] text-gray-500 font-bold"></span>`, hx);
+            let head = _cardHead('fa-location-dot', '경기 브리핑', `<span id="home-game-matchup" class="text-[10px] text-gray-500 font-bold"></span>`, hx, teamDarkHex[selectedTeam]);
             return `<div id="home-game-brief" class="px-0.5 hidden"><div>${head}<div id="home-game-venue-line" class="text-[18px] font-black text-white leading-snug tracking-tight"></div><div class="flex items-end justify-between gap-4 mt-3"><div class="min-w-0 flex-1"><div class="flex items-center gap-1.5 mb-0.5"><i class="fa-solid fa-tv text-point text-[10px]"></i><span class="text-[10px] text-gray-500 font-bold">중계 방송사</span></div><div id="home-game-broadcaster" class="text-[15px] text-gray-300 font-extrabold truncate"></div></div><div class="home-chip rounded-full px-2.5 py-1.5 flex items-center gap-1.5 shrink-0"><i class="fa-regular fa-clock text-point text-[10px]"></i><span id="home-game-time" class="text-[11px] text-gray-300 font-black"></span></div></div></div></div>`;
         }
         function briefInsightLine(isTeam, todayGames) {
@@ -1966,7 +1991,7 @@
                 ? `<span class="text-[12px] text-gray-500">아직 직관 기록이 없어요. 탭해서 기록을 남겨보세요</span>`
                 : `<span class="text-[12px] font-bold text-gray-300">직관 ${total}경기 · ${w}승 ${l}패${d ? ' ' + d + '무' : ''}</span><span class="text-[12px] font-black text-white">승률 ${pct}%</span>`;
             let legend = `<div class="flex items-center gap-2.5 text-[9px] text-gray-500"><span class="flex items-center gap-1"><span class="w-[9px] h-[9px] rounded-[2px]" style="background:#22c55e"></span>승</span><span class="flex items-center gap-1"><span class="w-[9px] h-[9px] rounded-[2px]" style="background:#ef4444"></span>패</span><span class="flex items-center gap-1"><span class="w-[9px] h-[9px] rounded-[2px] bg-gray-500"></span>무</span></div>`;
-            return `<div class="px-0.5 cursor-pointer" onclick="switchTab(1)"><div>${_cardHead('fa-calendar-check', '직관 히트맵 · ' + t, legend, hx)}<div class="text-[10px] text-gray-500 -mt-1.5 mb-3">최근 13주, 직관 간 날의 승패를 색으로 기록해요</div><div class="flex gap-[3px] overflow-x-auto scrollbar-hide pb-1">${cols}</div><div class="flex items-center justify-between mt-3 flex-wrap gap-1">${summary}</div></div></div>`;
+            return `<div class="px-0.5 cursor-pointer" onclick="switchTab(1)"><div>${_cardHead('fa-calendar-check', '직관 히트맵 · ' + t, legend, hx, teamDarkHex[t])}<div class="text-[10px] text-gray-500 -mt-1.5 mb-3">최근 13주, 직관 간 날의 승패를 색으로 기록해요</div><div class="flex gap-[3px] overflow-x-auto scrollbar-hide pb-1">${cols}</div><div class="flex items-center justify-between mt-3 flex-wrap gap-1">${summary}</div></div></div>`;
         }
         // 2) 오늘의 직관 운세
         function homeCardFortune() {
@@ -2066,7 +2091,7 @@
             const rows = postseasonProjectionRows();
             if (!rows.length) return '';
             const forecastRows = rows.slice(0, 6).map((r, idx) => {
-                const hx = teamHex[r.team] || '#9ca3af';
+                const teamColorStyle = _teamAccentStyle(r.team);
                 const badgeCls = r.rankNum <= 3 ? 'text-[#111827] bg-white' : 'text-white bg-white/10';
                 const boundaryCls = idx === 5 ? 'mt-1 pt-2 border-t border-white/5' : '';
                 return `<div class="flex items-center gap-2 py-1.5 ${boundaryCls}">
@@ -2075,19 +2100,19 @@
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center justify-between gap-2 mb-1">
                             <span class="text-[13px] font-black text-white truncate">${r.team}</span>
-                            <span class="text-[11px] font-black" style="color:${hx}">${r.pct}% · ${r.label}</span>
+                            <span class="team-accent text-[11px] font-black" style="${teamColorStyle}">${r.pct}% · ${r.label}</span>
                         </div>
-                        <div class="h-1.5 rounded-full overflow-hidden bg-white/10"><div class="h-full rounded-full" style="width:${r.pct}%;background:${hx}"></div></div>
+                        <div class="h-1.5 rounded-full overflow-hidden bg-white/10"><div class="team-accent-fill h-full rounded-full" style="width:${r.pct}%;${teamColorStyle}"></div></div>
                     </div>
                 </div>`;
             }).join('');
             const rest = rows.slice(6).map(r => `${r.rankNum}위 ${r.team} ${r.pct}%`).join(' · ');
             const fifth = rows[4], sixth = rows[5];
             const boundary = fifth && sixth
-                ? `<div class="text-[11px] text-gray-400 font-bold pt-2.5 mt-2 border-t border-white/5">5위 ${fifth.team} · 6위 ${sixth.team}의 경계선은 ${Math.max(0, sixth.gap).toFixed(1).replace('.0','')}경기 차</div>`
+                ? `<div class="text-[11px] text-gray-300 font-bold pt-2.5 mt-2 border-t border-white/5">5위 ${fifth.team} · 6위 ${sixth.team}의 경계선은 ${Math.max(0, sixth.gap).toFixed(1).replace('.0','')}경기 차</div>`
                 : '';
-            const restLine = rest ? `<div class="text-[10.5px] text-gray-500 font-bold leading-relaxed mt-2">${rest}</div>` : '';
-            return `<div class="px-0.5"><div>${_cardHead('fa-ranking-star', '가을야구 예상도', `<span class="text-[10px] text-gray-500">순위+결과 기반</span>`)}<div class="flex flex-col">${forecastRows}</div>${restLine}${boundary}</div></div>`;
+            const restLine = rest ? `<div class="text-[10.5px] text-gray-400 font-bold leading-relaxed mt-2">${rest}</div>` : '';
+            return `<div class="px-0.5"><div>${_cardHead('fa-ranking-star', '가을야구 예상도', `<span class="text-[10px] text-gray-400">순위+결과 기반</span>`)}<div class="flex flex-col">${forecastRows}</div>${restLine}${boundary}</div></div>`;
         }
         // 4) 최근 승패 흐름
         function homeCardRecentForm() {
@@ -2103,19 +2128,17 @@
                 let last5 = (st.results || []).slice(-5);
                 let sType = last5.length ? last5[last5.length - 1] : null, streak = 0;
                 for (let i = last5.length - 1; i >= 0; i--) { if (last5[i] === sType) streak++; else break; }
-                let formText = last5.map(x => x === 'W' ? '승' : (x === 'L' ? '패' : '무')).join('');
-                let label = last5.length ? `최근 ${last5.length}경기 ${formText}` : '최근 기록 없음';
                 let streakText = sType === 'W' ? `${streak}연승` : (sType === 'L' ? `${streak}연패` : (sType === 'D' ? `${streak}무` : '데이터 대기'));
-                let col = teamHex[t] || '#9ca3af';
-                let dots = last5.map(x => {
-                    let cc = x === 'W' ? 'background:#22c55e' : (x === 'L' ? 'background:#ef4444' : 'background:#6b7280');
+                let streakClass = sType === 'W' ? 'win' : (sType === 'L' ? 'loss' : 'draw');
+                let results = last5.map(x => {
+                    let resultClass = x === 'W' ? 'win' : (x === 'L' ? 'loss' : 'draw');
                     let tx = x === 'W' ? '승' : (x === 'L' ? '패' : '무');
-                    return `<span class="w-[16px] h-[16px] rounded-full text-white text-[8px] font-black flex items-center justify-center" style="${cc}">${tx}</span>`;
-                }).join('') || '<span class="text-[10px] text-gray-500">기록 없음</span>';
-                return `<div class="flex items-center gap-3 py-1"><img src="${teamLogos[t]}" class="w-8 h-8 object-contain shrink-0"><div class="flex flex-col min-w-0 flex-1"><div class="flex items-baseline gap-1.5"><span class="text-[14px] font-black text-white">${t}</span><span class="text-[11px] font-black" style="color:${col}">${streakText}</span></div><span class="text-[11px] text-gray-400 truncate">${label}</span></div><div class="flex items-center gap-1 shrink-0">${dots}</div></div>`;
-            }).join('<div class="h-px bg-white/5 my-1"></div>');
+                    return `<span class="recent-form-result ${resultClass}" title="${tx}" aria-label="${tx}">${tx}</span>`;
+                }).join('') || '<span class="text-[10px] text-gray-400 px-1.5">기록 없음</span>';
+                return `<div class="flex items-center gap-2.5 py-1.5"><img src="${teamLogos[t]}" alt="${t} 로고" class="w-7 h-7 object-contain shrink-0"><div class="flex items-baseline gap-1.5 min-w-0 flex-1"><span class="text-[14px] font-black text-white shrink-0">${t}</span><span class="recent-form-streak ${streakClass} text-[11px] font-black truncate">${streakText}</span></div><div class="recent-form-results flex items-center gap-0.5 rounded-lg p-0.5 shrink-0" aria-label="${t} 최근 ${last5.length}경기">${results}</div></div>`;
+            }).join('<div class="h-px bg-white/5"></div>');
             let isTeam = (selectedTeam === 'KIA' || selectedTeam === '삼성');
-            let head = isTeam ? _cardHead('fa-chart-line', '최근 승패 흐름', '', teamHex[selectedTeam]) : _cardHead('fa-chart-line', '최근 승패 흐름', `<span class="text-[10px] text-gray-500">전 구단</span>`);
+            let head = isTeam ? _cardHead('fa-chart-line', '최근 승패 흐름', '', teamHex[selectedTeam], teamDarkHex[selectedTeam]) : _cardHead('fa-chart-line', '최근 승패 흐름', `<span class="text-[10px] text-gray-400">최근 5경기</span>`);
             return `<div class="px-0.5"><div>${head}${rows}</div></div>`;
         }
 
