@@ -1332,8 +1332,9 @@
                 if (_isSubstitutionPlayer(raw)) player._isSubstitute = true;
                 return player;
             });
-            let changeLists = [
-                l[side + 'Substitutions'], l[side + 'Substitution'], l[side + 'Changes'], l[side + 'Replacements']
+            let canonicalChanges = l[side + 'Substitutions'];
+            let changeLists = Array.isArray(canonicalChanges) ? [canonicalChanges] : [
+                l[side + 'Substitution'], l[side + 'Changes'], l[side + 'Replacements']
             ].filter(Array.isArray);
             changeLists.flat().forEach(change => {
                 if (!change) return;
@@ -1363,7 +1364,7 @@
             return Array.from(slots.entries()).sort((a, b) => a[0] - b[0]).map(entry => entry[1]);
         }
         function _curBatterName(l, side) {
-            let keys = [side + 'Batter', side + 'CurrentBatter', side + 'BatterDetail', side + 'CurrentBatterDetail'];
+            let keys = [side + 'CurrentBatter', side + 'Batter', side + 'CurrentBatterDetail', side + 'BatterDetail'];
             for (let key of keys) {
                 let name = _lineupPlayerName(l[key]);
                 if (name && name !== '-') return name;
