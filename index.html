@@ -265,8 +265,13 @@
         @keyframes wp-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
         .wp-bar { position: absolute; left: 0; top: 0; bottom: 0; transform-origin: left center; animation: wp-grow 0.5s cubic-bezier(0.4, 0, 0.2, 1) both; }
         .wp-num { font-variant-numeric: tabular-nums; }
-        .wp-name { color: #6b7684; }
-        html:not(.light-mode) .wp-name { color: #b0b8c1; }
+        .wp-name { color: #475569; font-weight: 700; }
+        .wp-note { color: #334155; font-weight: 800; }
+        .wp-byline { color: #64748b; opacity: 1; }
+        html:not(.light-mode) .wp-name { color: #cbd5e1; }
+        html:not(.light-mode) .wp-note { color: #d7dee7; }
+        html:not(.light-mode) .wp-byline { color: #9ca8b8; }
+        html.light-mode .wp-name { color: #334155 !important; }
 
         /* 승리 확률 게이지 — 라이브(경기중) 개표방송식 모션 */
         .wp-bar { transition: width 0.9s cubic-bezier(0.34, 1.1, 0.64, 1); }
@@ -283,35 +288,28 @@
         .game-info-tab.active { color: var(--game-info-tab-text, #fff); background: var(--game-info-tab-color, #4b91f7); box-shadow: none; }
         html.light-mode .game-info-tab { color: #64748b; background: rgba(15,23,42,0.07); }
         html.light-mode .game-info-tab.active { color: var(--game-info-tab-text, #fff); background: var(--game-info-tab-color, #397fe8); box-shadow: none; }
-        .broadcast-card { width: calc(100% + 48px); margin: 0 -24px; overflow: hidden; border: 0; border-radius: 0; background: #327e43; box-shadow: none; color: #fff; }
-        .broadcast-scoreboard { display: grid; grid-template-columns: 18% 18% 64%; width: calc(100% - 32px); height: 42px; margin: 10px 16px 0; overflow: hidden; border-radius: 8px; background: #123e20; }
+        .broadcast-card { width: calc(100% + 48px); margin: 0 -24px; overflow: hidden; border: 0; border-radius: 0; background: #3a824b; box-shadow: none; color: #fff; }
+        .broadcast-scoreboard { display: grid; grid-template-columns: 18% 18% 64%; width: calc(100% - 32px); height: 42px; margin: 10px 16px 0; overflow: hidden; border-radius: 8px; background: #0d3218; }
         .broadcast-score-team { position: relative; height: 42px; display: grid; grid-template-columns: 18px 22px; align-items: center; justify-content: center; column-gap: 4px; min-width: 0; padding: 0 3px; }
         .broadcast-score-team.at-bat::after { content: ''; position: absolute; left: 25%; right: 25%; bottom: 0; height: 2px; background: #fff; }
         .broadcast-score-team img { width: 17px; height: 17px; display: block; object-fit: contain; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.24)); }
         .broadcast-score-team strong { display: block; color: #fff; font-size: 18px; font-weight: 900; line-height: 18px; text-align: center; }
-        .broadcast-score-state { height: 42px; min-width: 0; padding: 0 8px; background: rgba(8,42,19,0.94); }
-        .broadcast-score-state-top { width: 100%; height: 42px; display: grid; grid-template-columns: 48px 24px 82px minmax(0, 1fr); align-items: center; color: #fff; font-size: 10px; font-weight: 900; }
+        .broadcast-score-state { height: 42px; min-width: 0; padding: 0 9px; background: #0a2d15; }
+        .broadcast-score-state-top { width: 100%; height: 42px; display: grid; grid-template-columns: 58px 34px minmax(0, 1fr); gap: 8px; align-items: center; color: #fff; font-size: 10px; font-weight: 900; }
         .broadcast-score-state-top > span { min-width: 0; line-height: 1; white-space: nowrap; }
-        .broadcast-score-state-top > span:first-child { text-align: center; }
-        .broadcast-counts { display: flex; align-items: center; justify-content: center; gap: 3px; color: #fff; line-height: 1; white-space: nowrap; }
-        .broadcast-counts b { color: #fff; font-size: 9px; font-weight: 800; }
-        .broadcast-count-dot { width: 7px; height: 7px; border-radius: 999px; background: #63786a; }
+        .broadcast-score-state-top > span:first-child { overflow: hidden; text-align: center; text-overflow: ellipsis; }
+        .broadcast-counts { display: flex; align-items: center; justify-content: space-evenly; gap: 5px; color: #fff; line-height: 1; white-space: nowrap; }
+        .broadcast-counts b { color: #fff; font-size: 10px; font-weight: 900; }
+        .broadcast-count-dot { flex: 0 0 auto; width: 7px; height: 7px; border-radius: 999px; background: #63786a; }
         .broadcast-count-dot.out.on { background: #ff3f35; }
         .broadcast-out-label { color: #ff3f35; font-size: 9px; font-weight: 900; }
-        .broadcast-matchup { height: 34px; display: grid; grid-template-rows: repeat(2, 1fr); align-content: center; overflow: hidden; }
-        .broadcast-matchup > span { min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 2px; overflow: hidden; color: #fff; font-size: 8px; line-height: 1; }
-        .broadcast-matchup b { flex: 0 0 auto; width: 12px; height: 12px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; color: #102318; font-size: 7px; font-weight: 900; }
-        .broadcast-matchup b.batter { background: #facc15; }
-        .broadcast-matchup b.pitcher { background: #86efac; }
-        .broadcast-matchup em { min-width: 0; overflow: hidden; color: #dce7df; font-style: normal; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
-        .broadcast-matchup small { flex: 0 0 auto; color: #83978a; font-size: 7px; font-weight: 800; }
-        .broadcast-mini-bases { position: relative; justify-self: center; width: 22px; height: 17px; }
-        .broadcast-mini-base { position: absolute; width: 7px; height: 7px; transform: rotate(45deg); background: #587261; }
-        .broadcast-mini-base.second { top: 0; left: 8px; }
-        .broadcast-mini-base.third { top: 7px; left: 1px; }
-        .broadcast-mini-base.first { top: 7px; right: 1px; }
+        .broadcast-mini-bases { position: relative; justify-self: center; width: 26px; height: 20px; }
+        .broadcast-mini-base { position: absolute; width: 8px; height: 8px; transform: rotate(45deg); background: #587261; }
+        .broadcast-mini-base.second { top: 0; left: 9px; }
+        .broadcast-mini-base.third { top: 8px; left: 1px; }
+        .broadcast-mini-base.first { top: 8px; right: 1px; }
         .broadcast-mini-base.active { background: #fbbf24; box-shadow: 0 0 5px rgba(251,191,36,0.7); }
-        .broadcast-field { position: relative; height: 300px; overflow: hidden; background: #327e43; }
+        .broadcast-field { position: relative; height: 300px; overflow: hidden; background: #3a824b; }
         .broadcast-field-art { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; display: block; object-fit: fill; }
         .broadcast-player { position: absolute; z-index: 5; display: flex; flex-direction: column; align-items: center; transform: translate(-50%, -50%); min-width: 56px; }
         .broadcast-player .portrait { display: none; }
@@ -325,8 +323,8 @@
         .broadcast-player.rf { left: 84%; top: 15%; }
         .broadcast-player.ss { left: 32%; top: 32%; }
         .broadcast-player.sb { left: 68%; top: 32%; }
-        .broadcast-player.tb { left: 26%; top: 45%; }
-        .broadcast-player.fb { left: 74%; top: 45%; }
+        .broadcast-player.tb { left: 26%; top: 50%; }
+        .broadcast-player.fb { left: 74%; top: 50%; }
         .broadcast-player.p { left: 50%; top: 55%; }
         .broadcast-player.c { left: 50%; top: 92%; }
         .broadcast-batter, .broadcast-runner { position: absolute; z-index: 8; height: 28px; display: flex; flex-direction: row; align-items: center; transform: translate(-50%, -50%); padding: 0 9px 0 27px; border-radius: 999px; color: #172019; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.18); }
@@ -336,12 +334,9 @@
         .broadcast-batter .portrait, .broadcast-runner .portrait { position: absolute; left: -1px; top: 50%; width: 27px; height: 27px; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; transform: translateY(-50%); border: 1.5px solid rgba(255,255,255,0.98); border-radius: 999px; background: #e8ece8; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
         .broadcast-batter .name, .broadcast-runner .name { max-width: 66px; overflow: hidden; color: #172019; font-size: 10px; font-weight: 900; line-height: 1; text-overflow: ellipsis; white-space: nowrap; }
         .broadcast-runner .portrait, .broadcast-runner .name { z-index: 1; }
-        .broadcast-runner::after { content: ''; position: absolute; left: 50%; width: 7px; height: 7px; transform: translateX(-50%) rotate(45deg); background: #fff; z-index: 0; }
         .broadcast-runner.first { left: 74%; top: 63%; }
         .broadcast-runner.second { left: 50%; top: 23%; }
         .broadcast-runner.third { left: 26%; top: 63%; }
-        .broadcast-runner.second::after { bottom: -3px; }
-        .broadcast-runner.first::after, .broadcast-runner.third::after { top: -3px; }
         .broadcast-waiting { position: absolute; z-index: 6; left: 16px; bottom: 15px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.18); }
         .broadcast-waiting strong { display: block; margin-bottom: 5px; color: rgba(185,233,196,0.55); font-size: 10px; font-weight: 900; }
         .broadcast-waiting span { display: block; font-size: 10px; font-weight: 700; line-height: 1.58; }
@@ -1275,7 +1270,7 @@
             let live = st === '경기중', atk = live ? ((l.inning || '').includes('말') ? 'home' : 'away') : '';
             let lc = live ? ` wp-live wp-atk-${atk}` : '', front = live ? `<div class="wp-home" style="left:${p.away}%"></div><div class="wp-front" style="left:${p.away}%"></div>` : '';
             return `<div class="w-full mb-6">
-                <div class="text-[12px] font-medium mb-3 wp-name">${note} <span class="opacity-60">with 엔조이 비서실장</span></div>
+                <div class="text-[12px] mb-3 wp-name wp-note">${note} <span class="wp-byline">with 엔조이 비서실장</span></div>
                 <div class="flex items-baseline justify-between mb-2.5">
                     <div class="flex items-baseline gap-1.5">
                         <span class="text-[26px] font-bold leading-none wp-num" style="color:${c1}">${p.away}%</span>
@@ -1922,6 +1917,12 @@
                         color: #444 !important;
                     }
                     #lineup-content:has(.classic-marker) .text-gray-400\\/60 { color: #555 !important; }
+                    #lineup-content:has(.classic-marker) .wp-name {
+                        color: #475569 !important;
+                        text-shadow: none !important;
+                    }
+                    #lineup-content:has(.classic-marker) .wp-note { color: #334155 !important; }
+                    #lineup-content:has(.classic-marker) .wp-byline { color: #64748b !important; }
                     #lineup-content:has(.classic-marker) .bg-white\\/5 {
                         background-color: rgba(255,255,255,0.40) !important;
                         border-color: rgba(0,0,0,0.10) !important;
@@ -2945,7 +2946,6 @@
             const inningText = isLive && l.inning ? l.inning : (l.gameStatus === '종료' ? '경기 종료' : '경기 전');
             const isTop = String(l.inning || '').includes('초');
             const defenseSide = isLive ? (isTop ? 'home' : 'away') : 'home';
-            const defenseTeam = defenseSide === 'home' ? m.team2 : m.team1;
             const offenseSide = defenseSide === 'home' ? 'away' : 'home';
             const lineup = _lineupWithSubstitutions(l, defenseSide);
             const offenseLineup = _lineupWithSubstitutions(l, offenseSide);
@@ -2953,7 +2953,6 @@
             const currentPitcher = _curPitcherName(l, defenseSide);
             const pitcherDetail = l[`${defenseSide}PitcherDetail`] || l[`${defenseSide}StarterDetail`] || null;
             const pitcherName = currentPitcher !== '-' ? currentPitcher : ((pitcherDetail && pitcherDetail.name) || '-');
-            const pitchCount = l[`${defenseSide}PitcherCount`] || 0;
             const awayScore = l.awayScore ?? '-';
             const homeScore = l.homeScore ?? '-';
             const awayColor = teamHex[m.team1] || '#39424e';
@@ -3011,10 +3010,6 @@
                             <span>${inningText}</span>
                             <span class="broadcast-mini-bases" aria-label="주자 현황"><i class="broadcast-mini-base second ${baseClass('base2')}"></i><i class="broadcast-mini-base third ${baseClass('base3')}"></i><i class="broadcast-mini-base first ${baseClass('base1')}"></i></span>
                             <span class="broadcast-counts"><b>${Number(l.ball || 0)}B</b><b>${Number(l.strike || 0)}S</b>${countDots(l.out, 2, 'out')}<span class="broadcast-out-label">OUT</span></span>
-                            <span class="broadcast-matchup" aria-label="현재 타자와 투수">
-                                <span title="${offenseSide === 'away' ? m.team1 : m.team2} 공격"><b class="batter">타</b><em>${batterName}</em></span>
-                                <span title="${defenseTeam} 수비"><b class="pitcher">투</b><em>${pitcherName !== '-' ? pitcherName : '투수 미정'}</em>${pitchCount ? `<small>${pitchCount}구</small>` : ''}</span>
-                            </span>
                         </div>
                     </div>
                 </div>
