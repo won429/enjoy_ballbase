@@ -307,24 +307,26 @@
         .broadcast-player .name { max-width: 74px; padding: 4px 8px; overflow: hidden; border-radius: 999px; color: #fff; background: rgba(8,52,22,0.94); font-size: 10px; font-weight: 700; line-height: 1; text-overflow: ellipsis; white-space: nowrap; }
         .broadcast-player.p .name { margin-top: -2px; font-weight: 800; }
         .broadcast-player.ss .name, .broadcast-player.sb .name, .broadcast-player.tb .name, .broadcast-player.fb .name { background: rgba(91,79,61,0.94); }
-        .broadcast-player.cf { left: 50%; top: 11%; }
-        .broadcast-player.lf { left: 19%; top: 17%; }
-        .broadcast-player.rf { left: 81%; top: 17%; }
-        .broadcast-player.ss { left: 35%; top: 27%; }
-        .broadcast-player.sb { left: 65%; top: 27%; }
-        .broadcast-player.tb { left: 26%; top: 36%; }
-        .broadcast-player.fb { left: 74%; top: 36%; }
-        .broadcast-player.p { left: 50%; top: 52%; }
-        .broadcast-player.c { left: 50%; top: 86%; }
+        .broadcast-player.cf { left: 50%; top: 7%; }
+        .broadcast-player.lf { left: 16%; top: 15%; }
+        .broadcast-player.rf { left: 84%; top: 15%; }
+        .broadcast-player.ss { left: 32%; top: 32%; }
+        .broadcast-player.sb { left: 68%; top: 32%; }
+        .broadcast-player.tb { left: 26%; top: 45%; }
+        .broadcast-player.fb { left: 74%; top: 45%; }
+        .broadcast-player.p { left: 50%; top: 55%; }
+        .broadcast-player.c { left: 50%; top: 92%; }
         .broadcast-batter, .broadcast-runner { position: absolute; z-index: 8; height: 28px; display: flex; flex-direction: row; align-items: center; transform: translate(-50%, -50%); padding: 0 9px 0 27px; border-radius: 999px; color: #172019; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.18); }
-        .broadcast-batter { left: 50%; top: 79%; }
+        .broadcast-batter { left: 50%; top: 83%; }
         .broadcast-batter .portrait, .broadcast-runner .portrait { position: absolute; left: -1px; top: 50%; width: 27px; height: 27px; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; transform: translateY(-50%); border: 1.5px solid rgba(255,255,255,0.98); border-radius: 999px; background: #e8ece8; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
         .broadcast-batter .name, .broadcast-runner .name { max-width: 66px; overflow: hidden; color: #172019; font-size: 10px; font-weight: 900; line-height: 1; text-overflow: ellipsis; white-space: nowrap; }
         .broadcast-runner .portrait, .broadcast-runner .name { z-index: 1; }
-        .broadcast-runner::after { content: ''; position: absolute; left: 50%; bottom: -3px; width: 7px; height: 7px; transform: translateX(-50%) rotate(45deg); background: #fff; z-index: 0; }
-        .broadcast-runner.first { left: 74%; top: 64%; }
-        .broadcast-runner.second { left: 50%; top: 39%; }
-        .broadcast-runner.third { left: 26%; top: 64%; }
+        .broadcast-runner::after { content: ''; position: absolute; left: 50%; width: 7px; height: 7px; transform: translateX(-50%) rotate(45deg); background: #fff; z-index: 0; }
+        .broadcast-runner.first { left: 74%; top: 59%; }
+        .broadcast-runner.second { left: 50%; top: 23%; }
+        .broadcast-runner.third { left: 26%; top: 59%; }
+        .broadcast-runner.second::after { bottom: -3px; }
+        .broadcast-runner.first::after, .broadcast-runner.third::after { top: -3px; }
         .broadcast-waiting { position: absolute; z-index: 6; left: 16px; bottom: 15px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.18); }
         .broadcast-waiting strong { display: block; margin-bottom: 5px; color: rgba(185,233,196,0.55); font-size: 10px; font-weight: 900; }
         .broadcast-waiting span { display: block; font-size: 10px; font-weight: 700; line-height: 1.58; }
