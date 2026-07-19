@@ -271,29 +271,30 @@
         html.light-mode .game-info-tab { color: #64748b; background: rgba(15,23,42,0.07); }
         html.light-mode .game-info-tab.active { color: #fff; background: #397fe8; box-shadow: none; }
         .broadcast-card { width: calc(100% + 48px); margin: 0 -24px; overflow: hidden; border: 0; border-radius: 0; background: #327e43; box-shadow: none; color: #fff; }
-        .broadcast-scoreboard { display: grid; grid-template-columns: 18% 18% 64%; width: calc(100% - 32px); min-height: 42px; margin: 10px 16px 0; overflow: hidden; border-radius: 8px; background: #123e20; }
-        .broadcast-score-team { position: relative; display: flex; align-items: center; justify-content: center; gap: 5px; min-width: 0; padding: 0 4px; }
+        .broadcast-scoreboard { display: grid; grid-template-columns: 18% 18% 64%; width: calc(100% - 32px); height: 42px; margin: 10px 16px 0; overflow: hidden; border-radius: 8px; background: #123e20; }
+        .broadcast-score-team { position: relative; height: 42px; display: grid; grid-template-columns: 18px 22px; align-items: center; justify-content: center; column-gap: 4px; min-width: 0; padding: 0 3px; }
         .broadcast-score-team.at-bat::after { content: ''; position: absolute; left: 25%; right: 25%; bottom: 0; height: 2px; background: #fff; }
-        .broadcast-score-team img { width: 17px; height: 17px; object-fit: contain; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.24)); }
-        .broadcast-score-team strong { color: #fff; font-size: 18px; font-weight: 900; line-height: 1; }
-        .broadcast-score-state { display: flex; align-items: center; min-width: 0; padding: 0 8px; background: rgba(8,42,19,0.94); }
-        .broadcast-score-state-top { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 4px; color: #fff; font-size: 10px; font-weight: 900; }
-        .broadcast-score-state-top > span { flex: 0 0 auto; white-space: nowrap; }
-        .broadcast-counts { display: flex; align-items: center; gap: 3px; color: #fff; white-space: nowrap; }
+        .broadcast-score-team img { width: 17px; height: 17px; display: block; object-fit: contain; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.24)); }
+        .broadcast-score-team strong { display: block; color: #fff; font-size: 18px; font-weight: 900; line-height: 18px; text-align: center; }
+        .broadcast-score-state { height: 42px; min-width: 0; padding: 0 8px; background: rgba(8,42,19,0.94); }
+        .broadcast-score-state-top { width: 100%; height: 42px; display: grid; grid-template-columns: 48px 24px 82px minmax(0, 1fr); align-items: center; color: #fff; font-size: 10px; font-weight: 900; }
+        .broadcast-score-state-top > span { min-width: 0; line-height: 1; white-space: nowrap; }
+        .broadcast-score-state-top > span:first-child { text-align: center; }
+        .broadcast-counts { display: flex; align-items: center; justify-content: center; gap: 3px; color: #fff; line-height: 1; white-space: nowrap; }
         .broadcast-counts b { color: #fff; font-size: 9px; font-weight: 800; }
         .broadcast-count-dot { width: 7px; height: 7px; border-radius: 999px; background: #63786a; }
         .broadcast-count-dot.out.on { background: #ff3f35; }
         .broadcast-out-label { color: #ff3f35; font-size: 9px; font-weight: 900; }
-        .broadcast-pitcher-count { max-width: 64px; overflow: hidden; color: #fff; font-size: 9px; font-weight: 900; text-overflow: ellipsis; }
-        .broadcast-pitcher-count em { margin-right: 3px; color: #83978a; font-style: normal; }
-        .broadcast-mini-bases { position: relative; flex: 0 0 22px; width: 22px; height: 17px; }
+        .broadcast-pitcher-count { display: flex; align-items: center; justify-content: flex-end; max-width: none; overflow: hidden; color: #fff; font-size: 9px; font-weight: 900; line-height: 1; text-overflow: ellipsis; }
+        .broadcast-pitcher-count em { overflow: hidden; margin-right: 3px; color: #83978a; font-style: normal; text-overflow: ellipsis; }
+        .broadcast-mini-bases { position: relative; justify-self: center; width: 22px; height: 17px; }
         .broadcast-mini-base { position: absolute; width: 7px; height: 7px; transform: rotate(45deg); background: #587261; }
         .broadcast-mini-base.second { top: 0; left: 8px; }
         .broadcast-mini-base.third { top: 7px; left: 1px; }
         .broadcast-mini-base.first { top: 7px; right: 1px; }
         .broadcast-mini-base.active { background: #fbbf24; box-shadow: 0 0 5px rgba(251,191,36,0.7); }
         .broadcast-field { position: relative; height: 300px; overflow: hidden; background: #327e43; }
-        .broadcast-field-art { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; }
+        .broadcast-field-art { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; display: block; object-fit: fill; }
         .broadcast-player { position: absolute; z-index: 5; display: flex; flex-direction: column; align-items: center; transform: translate(-50%, -50%); min-width: 56px; }
         .broadcast-player .portrait { display: none; }
         .broadcast-player.p .portrait { width: 32px; height: 32px; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; border: 1.5px solid rgba(255,255,255,0.96); border-radius: 999px; background: rgba(15,23,42,0.78); box-shadow: 0 2px 5px rgba(0,0,0,0.22); }
@@ -2842,17 +2843,7 @@
                     </div>
                 </div>
                 <div class="broadcast-field">
-                    <svg class="broadcast-field-art" viewBox="0 0 430 300" preserveAspectRatio="none" aria-hidden="true">
-                        <path d="M0 110 L215 249 L430 110" fill="none" stroke="#a9cfb1" stroke-width="1.6" opacity="0.58"/>
-                        <path d="M40 136 Q78 59 215 59 Q352 59 390 136 L318 176 L215 252 L112 176 Z M124 150 L215 108 L306 150 L215 216 Z" fill="#baa889" fill-rule="evenodd"/>
-                        <path d="M40 136 L215 249 L390 136" fill="none" stroke="#d6c4a4" stroke-width="2.3" opacity="0.82"/>
-                        <ellipse cx="215" cy="160" rx="20" ry="12" fill="#baa889"/>
-                        <ellipse cx="215" cy="248" rx="37" ry="26" fill="#baa889"/>
-                        <rect x="210" y="97" width="10" height="10" rx="1" fill="#fff" transform="rotate(45 215 102)"/>
-                        <rect x="107" y="155" width="10" height="10" rx="1" fill="#fff" transform="rotate(45 112 160)"/>
-                        <rect x="313" y="155" width="10" height="10" rx="1" fill="#fff" transform="rotate(45 318 160)"/>
-                        <path d="M209 242 H221 V250 L215 254 L209 250 Z" fill="#fff"/>
-                    </svg>
+                    <img class="broadcast-field-art" src="assets/baseball-field-broadcast.png" alt="" aria-hidden="true">
                     ${playerHtml}
                     <div class="broadcast-batter"><div class="portrait">${batterPortrait}</div><span class="name">${batterName}</span></div>
                     ${hasFielders ? '' : `<div class="absolute inset-x-0 top-[42%] z-10 bg-black/45 px-4 py-3 text-center text-[12px] font-bold text-white backdrop-blur-sm">라인업 발표 후 수비 위치가 표시됩니다</div>`}
