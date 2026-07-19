@@ -357,7 +357,7 @@
         .atbat-pitch-summary span { display: block; margin-top: 2px; font-size: 11px; font-weight: 800; }
         .atbat-pitch-summary.waiting strong { color: rgba(255,255,255,.92); font-size: 9px; }
         .atbat-pitch-summary.waiting span { display: none; }
-        .atbat-zone { position: absolute; z-index: 10; left: 50%; top: 66%; width: 68px; height: 86px; transform: translate(-50%, -50%); border: 1px solid rgba(255,255,255,.54); background: rgba(30,45,57,.12); box-shadow: 0 0 0 1px rgba(15,23,42,.08); }
+        .atbat-zone { position: absolute; z-index: 10; left: 50%; top: 56%; width: 68px; height: 86px; transform: translate(-50%, -50%); border: 1px solid rgba(255,255,255,.54); background: rgba(30,45,57,.12); box-shadow: 0 0 0 1px rgba(15,23,42,.08); }
         .atbat-zone::before, .atbat-zone::after { content: ''; position: absolute; inset: 0; pointer-events: none; }
         .atbat-zone::before { background: linear-gradient(90deg, transparent 33%, rgba(255,255,255,.36) 33% 34%, transparent 34% 66%, rgba(255,255,255,.36) 66% 67%, transparent 67%); }
         .atbat-zone::after { background: linear-gradient(180deg, transparent 33%, rgba(255,255,255,.36) 33% 34%, transparent 34% 66%, rgba(255,255,255,.36) 66% 67%, transparent 67%); }
@@ -367,6 +367,13 @@
         .atbat-trajectories .trail-core { stroke-width: 1.45; opacity: .23; }
         .atbat-pitch-marker { position: absolute; z-index: 11; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border: 2px solid rgba(255,255,255,.94); border-radius: 50%; color: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.25); font-size: 10px; font-weight: 900; }
         .atbat-pitch-marker.latest { width: 27px; height: 27px; box-shadow: 0 0 0 3px rgba(255,255,255,.14), 0 3px 8px rgba(0,0,0,.3); }
+        .atbat-batter-layer { position: absolute; z-index: 8; bottom: -35px; height: 340px; width: 213px; pointer-events: none; transform-origin: center bottom; }
+        .atbat-batter-layer.bats-right { left: -7px; }
+        .atbat-batter-layer.bats-left { right: -7px; transform: scaleX(-1); }
+        .atbat-batter-layer img { width: 100%; height: 100%; display: block; object-fit: contain; filter: drop-shadow(0 5px 5px rgba(0,0,0,.3)); }
+        .atbat-batter-team-logo { position: absolute; z-index: 9; top: 87px; width: 21px; height: 21px; object-fit: contain; filter: drop-shadow(0 1px 2px rgba(0,0,0,.35)); pointer-events: none; }
+        .atbat-batter-team-logo.bats-right { left: 79px; }
+        .atbat-batter-team-logo.bats-left { right: 79px; }
         .atbat-view-button { z-index: 14; right: 14px; bottom: 14px; width: 64px; height: 58px; border-radius: 10px; font-size: 10px; }
         .atbat-runner-icon { width: 25px; height: 20px; display: block; }
         .atbat-runner-icon svg { width: 100%; height: 100%; display: block; }
@@ -1514,7 +1521,9 @@
         function _batterSideOf(l, side, batterData) {
             const candidates = [
                 l[side + 'CurrentBatterSide'], l[side + 'BatterSide'],
-                l[side + 'CurrentBatterDetail'], l[side + 'BatterDetail'], batterData
+                l.currentBatterSide, l.batterSide,
+                l[side + 'CurrentBatterDetail'], l[side + 'BatterDetail'],
+                l.currentBatterDetail, l.batterDetail, batterData
             ];
             for (let raw of candidates) {
                 if (raw && typeof raw === 'object') raw = raw.bats || raw.battingSide || raw.batSide || raw.batsThrows || raw.hand || '';
@@ -3141,9 +3150,24 @@
                     result: _atBatSafeText(result),
                     color: _atBatPitchColor(result, index),
                     left: 50 + (x - 50) * .28,
-                    top: 64 + (y - 50) * .28
+                    top: 56 + (y - 50) * .28
                 };
             });
+        }
+
+        function _atBatBatterAsset(team) {
+            return ({
+                '삼성': 'assets/atbat-batter-v3.png',
+                'KIA': 'assets/atbat-batter-red-v3.png',
+                'SSG': 'assets/atbat-batter-red-v3.png',
+                'LG': 'assets/atbat-batter-magenta-v3.png',
+                '두산': 'assets/atbat-batter-navy-v3.png',
+                '롯데': 'assets/atbat-batter-navy-v3.png',
+                '한화': 'assets/atbat-batter-orange-v3.png',
+                'KT': 'assets/atbat-batter-black-v3.png',
+                'NC': 'assets/atbat-batter-navy-v3.png',
+                '키움': 'assets/atbat-batter-burgundy-v3.png'
+            })[team] || 'assets/atbat-batter-v3.png';
         }
 
         function _atBatFieldHtml(m, l, batterSide) {
@@ -3159,9 +3183,16 @@
                 return `<path class="trail-glow" d="${path}" stroke="${pitch.color}"></path><path class="trail-core" d="${path}" stroke="${pitch.color}"></path>`;
             }).join('');
             const markerHtml = pitches.map((pitch, index) => `<span class="atbat-pitch-marker ${index === pitches.length - 1 ? 'latest' : ''}" style="left:${pitch.left.toFixed(1)}%;top:${pitch.top.toFixed(1)}%;background:${pitch.color}" title="${pitch.number}구 ${pitch.type} ${pitch.speed} ${pitch.result}">${pitch.number}</span>`).join('');
+            const isTop = String(l.inning || '').includes('초');
+            const offenseTeam = isTop ? m.team1 : m.team2;
+            const sideClass = batterSide === 'left' ? 'bats-left' : 'bats-right';
+            const stadiumImage = _atBatValue(l, ['stadiumImage', 'stadiumImageUrl', 'ballparkImage']) || m.stadiumImage || 'assets/atbat-stadium-v3.png';
+            const teamLogo = teamLogos[offenseTeam] ? `<img class="atbat-batter-team-logo ${sideClass}" src="${teamLogos[offenseTeam]}" alt="" aria-hidden="true">` : '';
             return `<div class="atbat-field" aria-label="타석 시점 투구 위치">
-                <img class="atbat-scene" src="assets/atbat-background-v2.png" alt="" aria-hidden="true">
+                <img class="atbat-scene" src="${_atBatSafeText(stadiumImage)}" alt="" aria-hidden="true">
                 <div class="atbat-field-shade"></div>
+                <div class="atbat-batter-layer ${sideClass}"><img src="${_atBatBatterAsset(offenseTeam)}" alt="" aria-hidden="true"></div>
+                ${teamLogo}
                 ${summary}
                 <svg class="atbat-trajectories" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${trajectoryHtml}</svg>
                 <div class="atbat-zone" aria-label="스트라이크 존"></div>${markerHtml}
