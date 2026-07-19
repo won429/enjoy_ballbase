@@ -1346,9 +1346,27 @@
             let rawLineup = Array.isArray(detail) && detail.length ? detail : (Array.isArray(l[side + 'Lineup']) ? l[side + 'Lineup'] : []);
             let lineup = rawLineup.map((raw, index) => {
                 let player = raw && typeof raw === 'object' ? { ...raw } : { name: raw };
-                player._lineupOrder = _lineupOrderOf(player, index + 1);
+                let explicitOrder = _lineupOrderOf(player, null);
+                player._lineupOrder = explicitOrder || index + 1;
+                player._hasExplicitLineupOrder = Boolean(explicitOrder);
                 if (_isSubstitutionPlayer(raw)) player._isSubstitute = true;
                 return player;
+            });
+            // 일부 경기 데이터는 교체 선수를 LineupDetail에 바로 이어 붙인다.
+            // 같은 타순의 직전 선수를 내보내고, 포지션이 비어 있으면 그 수비 위치를 승계한다.
+            let embeddedActiveSlots = new Map();
+            lineup.forEach((player, index) => {
+                let order = _lineupOrderOf(player, index + 1);
+                let previous = player._hasExplicitLineupOrder ? embeddedActiveSlots.get(order) : lineup[index - 1];
+                if (_isSubstitutionPlayer(player) && previous && previous !== player) {
+                    if (!player._hasExplicitLineupOrder) {
+                        order = _lineupOrderOf(previous, order);
+                        player._lineupOrder = order;
+                    }
+                    if (!player.position) player.position = previous.position || '';
+                    previous._isReplaced = true;
+                }
+                embeddedActiveSlots.set(order, player);
             });
             let canonicalChanges = l[side + 'Substitutions'];
             let changeLists = Array.isArray(canonicalChanges) ? [canonicalChanges] : [
@@ -1360,13 +1378,22 @@
                 let name = _lineupPlayerName(incoming) || change.inName || change.name || change.playerName;
                 if (!name) return;
                 let outgoingName = _lineupPlayerName(change.out || change.outPlayer) || change.outName || '';
-                let outgoing = outgoingName ? lineup.find(player => _lineupPlayerName(player) === outgoingName) : null;
-                let order = _lineupOrderOf(change, _lineupOrderOf(incoming, _lineupOrderOf(outgoing, null)));
-                let alreadyThere = lineup.some(player => _lineupPlayerName(player) === name && (_isSubstitutionPlayer(player) || !order || _lineupOrderOf(player) === order));
-                if (alreadyThere) return;
+                let explicitOrder = _lineupOrderOf(change, _lineupOrderOf(incoming, null));
+                let outgoing = outgoingName ? [...lineup].reverse().find(player => _lineupPlayerName(player) === outgoingName && !player._isReplaced) : null;
+                if (!outgoing && explicitOrder) outgoing = [...lineup].reverse().find(player => _lineupOrderOf(player) === explicitOrder && !player._isReplaced);
+                let order = explicitOrder || _lineupOrderOf(outgoing, null);
+                let alreadyThere = [...lineup].reverse().find(player => _lineupPlayerName(player) === name && !player._isReplaced && (_isSubstitutionPlayer(player) || !order || _lineupOrderOf(player) === order));
+                if (outgoing && outgoing !== alreadyThere) outgoing._isReplaced = true;
+                if (alreadyThere) {
+                    alreadyThere.position = change.position || change.newPosition || alreadyThere.position || (outgoing && outgoing.position) || '';
+                    alreadyThere.role = change.role || change.changeType || change.substitutionType || alreadyThere.role || '교체';
+                    alreadyThere._isSubstitute = true;
+                    if (order) alreadyThere._lineupOrder = order;
+                    return;
+                }
                 let player = incoming && typeof incoming === 'object' ? { ...incoming } : { name };
                 player.name = name;
-                player.position = player.position || change.position || change.newPosition || (outgoing && outgoing.position) || '';
+                player.position = change.position || change.newPosition || player.position || (outgoing && outgoing.position) || '';
                 player.role = player.role || change.role || change.changeType || change.substitutionType || '교체';
                 player._isSubstitute = true;
                 player._lineupOrder = order || lineup.length + 1;
@@ -1378,8 +1405,39 @@
         }
         function _activeBattingLineup(lineup) {
             let slots = new Map();
-            lineup.forEach((player, index) => slots.set(_lineupOrderOf(player, index + 1), player));
+            lineup.forEach((player, index) => {
+                if (!player._isReplaced) slots.set(_lineupOrderOf(player, index + 1), player);
+            });
             return Array.from(slots.entries()).sort((a, b) => a[0] - b[0]).map(entry => entry[1]);
+        }
+        function _normalizeDefensePosition(raw) {
+            let value = String(raw || '').trim().replace(/\s+/g, '');
+            const aliases = {
+                'P': '투수', '투': '투수', 'C': '포수', '포': '포수',
+                '1B': '1루수', '1루': '1루수', '일루수': '1루수',
+                '2B': '2루수', '2루': '2루수', '이루수': '2루수',
+                '3B': '3루수', '3루': '3루수', '삼루수': '3루수',
+                'SS': '유격수', '유격': '유격수',
+                'LF': '좌익수', '좌익': '좌익수',
+                'CF': '중견수', '중견': '중견수',
+                'RF': '우익수', '우익': '우익수',
+                'DH': '지명타자', '지명': '지명타자'
+            };
+            return aliases[value.toUpperCase()] || aliases[value] || value;
+        }
+        function _activeDefenseLineup(lineup) {
+            let activeSlots = new Map();
+            lineup.forEach((player, index) => {
+                if (!player || player._isReplaced) return;
+                activeSlots.set(_lineupOrderOf(player, index + 1), player);
+            });
+            let positions = new Map();
+            activeSlots.forEach(player => {
+                let position = _normalizeDefensePosition(player.position);
+                if (!position || position === '지명타자') return;
+                positions.set(position, { ...player, position });
+            });
+            return Array.from(positions.values());
         }
         function _curBatterName(l, side) {
             let keys = [side + 'CurrentBatter', side + 'Batter', side + 'CurrentBatterDetail', side + 'BatterDetail'];
@@ -2948,6 +3006,7 @@
             const defenseSide = isLive ? (isTop ? 'home' : 'away') : 'home';
             const offenseSide = defenseSide === 'home' ? 'away' : 'home';
             const lineup = _lineupWithSubstitutions(l, defenseSide);
+            const activeDefenseLineup = _activeDefenseLineup(lineup);
             const offenseLineup = _lineupWithSubstitutions(l, offenseSide);
             const activeOffenseLineup = _activeBattingLineup(offenseLineup);
             const currentPitcher = _curPitcherName(l, defenseSide);
@@ -2958,7 +3017,7 @@
             const awayColor = teamHex[m.team1] || '#39424e';
             const homeColor = teamHex[m.team2] || '#39424e';
             const fielders = {};
-            lineup.forEach(player => {
+            activeDefenseLineup.forEach(player => {
                 if (!player || typeof player !== 'object' || !player.position) return;
                 fielders[player.position] = player.name || '-';
             });
