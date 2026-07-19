@@ -165,6 +165,19 @@
         html.light-mode #app-header.home-header-compact #calendar-title { color: #111827 !important; }
         html.light-mode #app-header.home-header-compact #header-popup-text { color: #111827 !important; }
         html.light-mode #app-header.home-header-compact #ctrl-team button { color: #8b95a1 !important; }
+        body[data-theme="all"] #app-header.home-header-compact #ctrl-back button {
+            background: #ffffff !important;
+            color: #111827 !important;
+            border: 1px solid rgba(255,255,255,0.35) !important;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.28) !important;
+        }
+        body[data-theme="all"] #app-header.home-header-compact #ctrl-back button i { color: #111827 !important; }
+        html.light-mode body[data-theme="all"] #app-header.home-header-compact #ctrl-back button {
+            background: #111827 !important;
+            color: #ffffff !important;
+            border-color: #111827 !important;
+        }
+        html.light-mode body[data-theme="all"] #app-header.home-header-compact #ctrl-back button i { color: #ffffff !important; }
         @media (prefers-reduced-motion: reduce) {
             #app-header-shell { transition-duration: 0.01ms !important; }
             #bottom-nav, #bottom-nav .bg-\[\#1C1C1E\], #nav-indicator, #bottom-nav button, #bottom-nav button > div, #bottom-nav button i, #bottom-nav button span { transition-duration: 0.01ms !important; }
@@ -267,9 +280,9 @@
         .game-info-tabs { display: flex; align-items: center; justify-content: center; gap: 7px; padding: 0; margin: 0 0 10px; border: 0; background: transparent; }
         .game-info-tab { flex: 0 0 92px; height: 31px; border-radius: 999px; color: #a1a1aa; background: rgba(255,255,255,0.075); font-size: 10px; font-weight: 900; transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease; }
         .game-info-tab:active { transform: scale(0.97); }
-        .game-info-tab.active { color: #fff; background: #4b91f7; box-shadow: none; }
+        .game-info-tab.active { color: var(--game-info-tab-text, #fff); background: var(--game-info-tab-color, #4b91f7); box-shadow: none; }
         html.light-mode .game-info-tab { color: #64748b; background: rgba(15,23,42,0.07); }
-        html.light-mode .game-info-tab.active { color: #fff; background: #397fe8; box-shadow: none; }
+        html.light-mode .game-info-tab.active { color: var(--game-info-tab-text, #fff); background: var(--game-info-tab-color, #397fe8); box-shadow: none; }
         .broadcast-card { width: calc(100% + 48px); margin: 0 -24px; overflow: hidden; border: 0; border-radius: 0; background: #327e43; box-shadow: none; color: #fff; }
         .broadcast-scoreboard { display: grid; grid-template-columns: 18% 18% 64%; width: calc(100% - 32px); height: 42px; margin: 10px 16px 0; overflow: hidden; border-radius: 8px; background: #123e20; }
         .broadcast-score-team { position: relative; height: 42px; display: grid; grid-template-columns: 18px 22px; align-items: center; justify-content: center; column-gap: 4px; min-width: 0; padding: 0 3px; }
@@ -318,13 +331,15 @@
         .broadcast-player.c { left: 50%; top: 92%; }
         .broadcast-batter, .broadcast-runner { position: absolute; z-index: 8; height: 28px; display: flex; flex-direction: row; align-items: center; transform: translate(-50%, -50%); padding: 0 9px 0 27px; border-radius: 999px; color: #172019; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.18); }
         .broadcast-batter { left: 50%; top: 83%; }
+        .broadcast-batter.bats-left { left: 61%; }
+        .broadcast-batter.bats-right { left: 39%; }
         .broadcast-batter .portrait, .broadcast-runner .portrait { position: absolute; left: -1px; top: 50%; width: 27px; height: 27px; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; transform: translateY(-50%); border: 1.5px solid rgba(255,255,255,0.98); border-radius: 999px; background: #e8ece8; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
         .broadcast-batter .name, .broadcast-runner .name { max-width: 66px; overflow: hidden; color: #172019; font-size: 10px; font-weight: 900; line-height: 1; text-overflow: ellipsis; white-space: nowrap; }
         .broadcast-runner .portrait, .broadcast-runner .name { z-index: 1; }
         .broadcast-runner::after { content: ''; position: absolute; left: 50%; width: 7px; height: 7px; transform: translateX(-50%) rotate(45deg); background: #fff; z-index: 0; }
-        .broadcast-runner.first { left: 74%; top: 59%; }
+        .broadcast-runner.first { left: 74%; top: 63%; }
         .broadcast-runner.second { left: 50%; top: 23%; }
-        .broadcast-runner.third { left: 26%; top: 59%; }
+        .broadcast-runner.third { left: 26%; top: 63%; }
         .broadcast-runner.second::after { bottom: -3px; }
         .broadcast-runner.first::after, .broadcast-runner.third::after { top: -3px; }
         .broadcast-waiting { position: absolute; z-index: 6; left: 16px; bottom: 15px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.18); }
@@ -1379,6 +1394,22 @@
             }
             let globalBatter = _lineupPlayerName(l.currentBatter || l.batter || l.batterDetail);
             return globalBatter && globalBatter !== '-' ? globalBatter : '-';
+        }
+
+        function _batterSideOf(l, side, batterData) {
+            const candidates = [
+                l[side + 'CurrentBatterSide'], l[side + 'BatterSide'],
+                l[side + 'CurrentBatterDetail'], l[side + 'BatterDetail'], batterData
+            ];
+            for (let raw of candidates) {
+                if (raw && typeof raw === 'object') raw = raw.bats || raw.battingSide || raw.batSide || raw.batsThrows || raw.hand || '';
+                const value = String(raw || '').trim().toUpperCase();
+                if (!value) continue;
+                if (value.includes('양타') || value.includes('SWITCH') || value === 'S') return 'switch';
+                if (value.includes('좌타') || value.includes('LEFT') || value === 'L') return 'left';
+                if (value.includes('우타') || value.includes('RIGHT') || value === 'R') return 'right';
+            }
+            return 'unknown';
         }
 
         function _baseRunnerName(l, base, offenseSide) {
@@ -2900,7 +2931,10 @@
                 { id: 'broadcast', label: '중계' },
                 { id: 'record', label: '기록' }
             ];
-            return `<div id="game-info-tabs" class="game-info-tabs" role="tablist" aria-label="경기 정보 메뉴">${tabs.map(tab => {
+            const themedTeam = selectedTeam === 'KIA' || selectedTeam === '삼성' ? selectedTeam : null;
+            const activeColor = themedTeam ? teamHex[themedTeam] : '#ffffff';
+            const activeTextColor = themedTeam ? '#ffffff' : '#111827';
+            return `<div id="game-info-tabs" class="game-info-tabs" role="tablist" aria-label="경기 정보 메뉴" style="--game-info-tab-color:${activeColor};--game-info-tab-text:${activeTextColor}">${tabs.map(tab => {
                 const active = currentGameInfoTab === tab.id;
                 return `<button type="button" class="game-info-tab ${active ? 'active' : ''}" role="tab" aria-selected="${active}" onclick="switchGameInfoTab('${tab.id}')">${tab.label}</button>`;
             }).join('')}</div>`;
@@ -2946,8 +2980,10 @@
             const baseClass = key => l[key] ? 'active' : '';
             const hasFielders = Object.keys(fielders).some(key => key !== '투수');
             const liveBatterName = _curBatterName(l, offenseSide);
-            const batterData = activeOffenseLineup.find(player => _lineupPlayerName(player) === liveBatterName) || activeOffenseLineup[0] || null;
+            const matchedBatter = activeOffenseLineup.find(player => _lineupPlayerName(player) === liveBatterName) || null;
+            const batterData = matchedBatter || (liveBatterName === '-' ? activeOffenseLineup[0] : null) || null;
             const batterName = liveBatterName !== '-' ? liveBatterName : (_lineupPlayerName(batterData) || '타자');
+            const batterSide = _batterSideOf(l, offenseSide, batterData);
             const batterPhoto = playerImages[batterName];
             const batterPortrait = batterPhoto ? `<img src="${batterPhoto}" alt="${batterName}">` : `<i class="fa-solid fa-user text-[15px] text-gray-300 mb-1"></i>`;
             const runnerClasses = { 1: 'first', 2: 'second', 3: 'third' };
@@ -2986,7 +3022,7 @@
                     <img class="broadcast-field-art" src="assets/baseball-field-broadcast.png" alt="" aria-hidden="true">
                     ${playerHtml}
                     ${runnerHtml}
-                    <div class="broadcast-batter"><div class="portrait">${batterPortrait}</div><span class="name">${batterName}</span></div>
+                    <div class="broadcast-batter bats-${batterSide}" aria-label="${batterSide === 'left' ? '좌타자' : batterSide === 'right' ? '우타자' : '타자'} ${batterName}"><div class="portrait">${batterPortrait}</div><span class="name">${batterName}</span></div>
                     ${hasFielders ? '' : `<div class="absolute inset-x-0 top-[42%] z-10 bg-black/45 px-4 py-3 text-center text-[12px] font-bold text-white backdrop-blur-sm">라인업 발표 후 수비 위치가 표시됩니다</div>`}
                     <div class="broadcast-waiting"><strong>대기타석</strong>${waitingPlayers}</div>
                     <div class="broadcast-view-button"><i class="fa-solid fa-baseball"></i><span>타석보기</span></div>
