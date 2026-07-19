@@ -285,8 +285,13 @@
         .broadcast-count-dot { width: 7px; height: 7px; border-radius: 999px; background: #63786a; }
         .broadcast-count-dot.out.on { background: #ff3f35; }
         .broadcast-out-label { color: #ff3f35; font-size: 9px; font-weight: 900; }
-        .broadcast-pitcher-count { display: flex; align-items: center; justify-content: flex-end; max-width: none; overflow: hidden; color: #fff; font-size: 9px; font-weight: 900; line-height: 1; text-overflow: ellipsis; }
-        .broadcast-pitcher-count em { overflow: hidden; margin-right: 3px; color: #83978a; font-style: normal; text-overflow: ellipsis; }
+        .broadcast-matchup { height: 34px; display: grid; grid-template-rows: repeat(2, 1fr); align-content: center; overflow: hidden; }
+        .broadcast-matchup > span { min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 2px; overflow: hidden; color: #fff; font-size: 8px; line-height: 1; }
+        .broadcast-matchup b { flex: 0 0 auto; width: 12px; height: 12px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; color: #102318; font-size: 7px; font-weight: 900; }
+        .broadcast-matchup b.batter { background: #facc15; }
+        .broadcast-matchup b.pitcher { background: #86efac; }
+        .broadcast-matchup em { min-width: 0; overflow: hidden; color: #dce7df; font-style: normal; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+        .broadcast-matchup small { flex: 0 0 auto; color: #83978a; font-size: 7px; font-weight: 800; }
         .broadcast-mini-bases { position: relative; justify-self: center; width: 22px; height: 17px; }
         .broadcast-mini-base { position: absolute; width: 7px; height: 7px; transform: rotate(45deg); background: #587261; }
         .broadcast-mini-base.second { top: 0; left: 8px; }
@@ -319,6 +324,7 @@
         .broadcast-waiting span { display: block; font-size: 10px; font-weight: 700; line-height: 1.58; }
         .broadcast-view-button { position: absolute; z-index: 6; right: 16px; bottom: 15px; width: 60px; height: 58px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border-radius: 9px; color: #24262a; background: #fff; box-shadow: none; font-size: 10px; font-weight: 900; }
         .broadcast-view-button i { font-size: 17px; }
+        .lineup-sub-arrow { color: #22c55e; font-size: 20px; font-weight: 900; line-height: 1; }
         html.light-mode .broadcast-card .text-white { color: #fff !important; }
         html.light-mode .broadcast-card .text-gray-300 { color: #d1d5db !important; }
         html.light-mode .broadcast-card .text-gray-400 { color: #9ca3af !important; }
@@ -1294,6 +1300,76 @@
             if (typeof s === 'string' && s && s !== '-') return s;
             let d = l[side + 'PitcherDetail'];
             return (d && d.name) || (typeof s === 'string' && s ? s : '-');
+        }
+
+        // 실시간 타자/교체 선수 데이터는 관리자 페이지 필드명이 조금 달라도 읽을 수 있게 정규화한다.
+        function _lineupPlayerName(raw) {
+            if (raw && typeof raw === 'object') return raw.name || raw.playerName || raw.inName || (raw.player && raw.player.name) || '';
+            return raw || '';
+        }
+        function _lineupOrderOf(raw, fallback = null) {
+            if (!raw || typeof raw !== 'object') return fallback;
+            let value = raw._lineupOrder ?? raw.battingOrder ?? raw.order ?? raw.slot ?? raw.lineupOrder ?? raw.battingSlot;
+            let number = parseInt(value, 10);
+            return Number.isFinite(number) && number > 0 ? number : fallback;
+        }
+        function _substitutionRoleOf(raw) {
+            if (!raw || typeof raw !== 'object') return '';
+            return raw.role || raw.changeType || raw.substitutionType || raw.entryType || '';
+        }
+        function _isSubstitutionPlayer(raw) {
+            if (!raw || typeof raw !== 'object') return false;
+            if (raw._isSubstitute || raw.isSubstitute || raw.substitute || raw.isReplacement || raw.replacement || raw.entered || raw.changed) return true;
+            let role = _substitutionRoleOf(raw);
+            return ['교체', '대타', '대주자', '수비교체', '투수교체'].includes(role);
+        }
+        function _lineupWithSubstitutions(l, side) {
+            let detail = l[side + 'LineupDetail'];
+            let rawLineup = Array.isArray(detail) && detail.length ? detail : (Array.isArray(l[side + 'Lineup']) ? l[side + 'Lineup'] : []);
+            let lineup = rawLineup.map((raw, index) => {
+                let player = raw && typeof raw === 'object' ? { ...raw } : { name: raw };
+                player._lineupOrder = _lineupOrderOf(player, index + 1);
+                if (_isSubstitutionPlayer(raw)) player._isSubstitute = true;
+                return player;
+            });
+            let changeLists = [
+                l[side + 'Substitutions'], l[side + 'Substitution'], l[side + 'Changes'], l[side + 'Replacements']
+            ].filter(Array.isArray);
+            changeLists.flat().forEach(change => {
+                if (!change) return;
+                let incoming = change.in || change.inPlayer || change.player || change;
+                let name = _lineupPlayerName(incoming) || change.inName || change.name || change.playerName;
+                if (!name) return;
+                let outgoingName = _lineupPlayerName(change.out || change.outPlayer) || change.outName || '';
+                let outgoing = outgoingName ? lineup.find(player => _lineupPlayerName(player) === outgoingName) : null;
+                let order = _lineupOrderOf(change, _lineupOrderOf(incoming, _lineupOrderOf(outgoing, null)));
+                let alreadyThere = lineup.some(player => _lineupPlayerName(player) === name && (_isSubstitutionPlayer(player) || !order || _lineupOrderOf(player) === order));
+                if (alreadyThere) return;
+                let player = incoming && typeof incoming === 'object' ? { ...incoming } : { name };
+                player.name = name;
+                player.position = player.position || change.position || change.newPosition || (outgoing && outgoing.position) || '';
+                player.role = player.role || change.role || change.changeType || change.substitutionType || '교체';
+                player._isSubstitute = true;
+                player._lineupOrder = order || lineup.length + 1;
+                let insertAfter = -1;
+                if (order) lineup.forEach((existing, index) => { if (_lineupOrderOf(existing) === order) insertAfter = index; });
+                lineup.splice(insertAfter >= 0 ? insertAfter + 1 : lineup.length, 0, player);
+            });
+            return lineup;
+        }
+        function _activeBattingLineup(lineup) {
+            let slots = new Map();
+            lineup.forEach((player, index) => slots.set(_lineupOrderOf(player, index + 1), player));
+            return Array.from(slots.entries()).sort((a, b) => a[0] - b[0]).map(entry => entry[1]);
+        }
+        function _curBatterName(l, side) {
+            let keys = [side + 'Batter', side + 'CurrentBatter', side + 'BatterDetail', side + 'CurrentBatterDetail'];
+            for (let key of keys) {
+                let name = _lineupPlayerName(l[key]);
+                if (name && name !== '-') return name;
+            }
+            let globalBatter = _lineupPlayerName(l.currentBatter || l.batter || l.batterDetail);
+            return globalBatter && globalBatter !== '-' ? globalBatter : '-';
         }
 
         // [추가] 선발 투수의 상대 팀 맞대결 전적 + 시즌 전적 (과거 데이터 파일 기반)
@@ -2790,8 +2866,9 @@
             const defenseSide = isLive ? (isTop ? 'home' : 'away') : 'home';
             const defenseTeam = defenseSide === 'home' ? m.team2 : m.team1;
             const offenseSide = defenseSide === 'home' ? 'away' : 'home';
-            const lineup = (l[`${defenseSide}LineupDetail`] && l[`${defenseSide}LineupDetail`].length) ? l[`${defenseSide}LineupDetail`] : (l[`${defenseSide}Lineup`] || []);
-            const offenseLineup = (l[`${offenseSide}LineupDetail`] && l[`${offenseSide}LineupDetail`].length) ? l[`${offenseSide}LineupDetail`] : (l[`${offenseSide}Lineup`] || []);
+            const lineup = _lineupWithSubstitutions(l, defenseSide);
+            const offenseLineup = _lineupWithSubstitutions(l, offenseSide);
+            const activeOffenseLineup = _activeBattingLineup(offenseLineup);
             const currentPitcher = _curPitcherName(l, defenseSide);
             const pitcherDetail = l[`${defenseSide}PitcherDetail`] || l[`${defenseSide}StarterDetail`] || null;
             const pitcherName = currentPitcher !== '-' ? currentPitcher : ((pitcherDetail && pitcherDetail.name) || '-');
@@ -2821,12 +2898,15 @@
             const countDots = (value, max, type) => Array.from({ length: max }, (_, i) => `<span class="broadcast-count-dot ${type} ${i < Number(value || 0) ? 'on' : ''}"></span>`).join('');
             const baseClass = key => l[key] ? 'active' : '';
             const hasFielders = Object.keys(fielders).some(key => key !== '투수');
-            const batterData = offenseLineup[0] || null;
-            const batterName = typeof batterData === 'object' && batterData ? (batterData.name || '타자') : (batterData || '타자');
+            const liveBatterName = _curBatterName(l, offenseSide);
+            const batterData = activeOffenseLineup.find(player => _lineupPlayerName(player) === liveBatterName) || activeOffenseLineup[0] || null;
+            const batterName = liveBatterName !== '-' ? liveBatterName : (_lineupPlayerName(batterData) || '타자');
             const batterPhoto = playerImages[batterName];
             const batterPortrait = batterPhoto ? `<img src="${batterPhoto}" alt="${batterName}">` : `<i class="fa-solid fa-user text-[15px] text-gray-300 mb-1"></i>`;
-            const waitingPlayers = offenseLineup.slice(1, 4).map((player, index) => {
-                const name = typeof player === 'object' && player ? player.name : player;
+            const batterIndex = activeOffenseLineup.findIndex(player => _lineupPlayerName(player) === batterName);
+            const waitingList = activeOffenseLineup.length > 1 ? Array.from({ length: Math.min(3, activeOffenseLineup.length - 1) }, (_, index) => activeOffenseLineup[(Math.max(0, batterIndex) + index + 1) % activeOffenseLineup.length]) : [];
+            const waitingPlayers = waitingList.map((player, index) => {
+                const name = _lineupPlayerName(player);
                 return `<span>${index + 1}. ${name || '-'}</span>`;
             }).join('') || '<span>라인업 발표 전</span>';
             return `<section class="broadcast-card" aria-label="문자 중계">
@@ -2838,7 +2918,10 @@
                             <span>${inningText}</span>
                             <span class="broadcast-mini-bases" aria-label="주자 현황"><i class="broadcast-mini-base second ${baseClass('base2')}"></i><i class="broadcast-mini-base third ${baseClass('base3')}"></i><i class="broadcast-mini-base first ${baseClass('base1')}"></i></span>
                             <span class="broadcast-counts"><b>${Number(l.ball || 0)}B</b><b>${Number(l.strike || 0)}S</b>${countDots(l.out, 2, 'out')}<span class="broadcast-out-label">OUT</span></span>
-                            <span class="broadcast-pitcher-count"><em>${pitcherName !== '-' ? pitcherName : '투수'}</em>${pitchCount ? `${pitchCount}구` : ''}</span>
+                            <span class="broadcast-matchup" aria-label="현재 타자와 투수">
+                                <span title="${offenseSide === 'away' ? m.team1 : m.team2} 공격"><b class="batter">타</b><em>${batterName}</em></span>
+                                <span title="${defenseTeam} 수비"><b class="pitcher">투</b><em>${pitcherName !== '-' ? pitcherName : '투수 미정'}</em>${pitchCount ? `<small>${pitchCount}구</small>` : ''}</span>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -3238,8 +3321,8 @@
 
             let apRaw = l.awayPitcherDetail || l.awayPitcher || '-';
             let hpRaw = l.homePitcherDetail || l.homePitcher || '-';
-            let aLineupSrc = (l.awayLineupDetail && l.awayLineupDetail.length > 0) ? l.awayLineupDetail : (l.awayLineup || []);
-            let hLineupSrc = (l.homeLineupDetail && l.homeLineupDetail.length > 0) ? l.homeLineupDetail : (l.homeLineup || []);
+            let aLineupSrc = _lineupWithSubstitutions(l, 'away');
+            let hLineupSrc = _lineupWithSubstitutions(l, 'home');
 
             if (apRaw === '-' && aLineupSrc.length === 0) {
                 c.innerHTML = sbh + wpb + infoTabs + `<div class="flex flex-col items-center justify-center h-48 text-gray-400 mt-2 gap-3 bg-white/5 rounded-2xl border border-white/5"><i class="fa-solid fa-clipboard-question text-4xl text-gray-500 mb-2"></i><span class="text-lg font-bold text-white tracking-wide">라인업 미발표</span><span class="text-[12px] text-gray-500 text-center">선발 라인업은<br>경기 시작 1~2시간 전에 공개됩니다.</span></div>`;
@@ -3288,23 +3371,23 @@
             let aph = pitcherRow(aStarterRaw, h1, '선발', apRecHtml, true) + (aBullpenOn ? pitcherRow(aCurName, h1, '불펜', '', false) : '');
             let hph = pitcherRow(hStarterRaw, h2, '선발', hpRecHtml, true) + (hBullpenOn ? pitcherRow(hCurName, h2, '불펜', '', false) : '');
             
-            let abh = (aLineupSrc && aLineupSrc.length > 0) ? aLineupSrc.map((pObj, i) => { 
-                let p = typeof pObj === 'object' && pObj !== null ? pObj.name : pObj;
-                let pos = typeof pObj === 'object' && pObj !== null && pObj.position ? pObj.position : '타자';
-                let batRaw = typeof pObj === 'object' && pObj !== null && pObj.batsThrows ? pObj.batsThrows : '';
+            const lineupRows = (source, hex) => (source && source.length > 0) ? source.map((pObj, i) => {
+                let p = _lineupPlayerName(pObj) || '-';
+                let isSub = _isSubstitutionPlayer(pObj);
+                let role = _substitutionRoleOf(pObj);
+                let position = pObj && pObj.position ? pObj.position : '타자';
+                let pos = isSub && role && role !== '교체' ? role : position;
+                let batRaw = pObj && pObj.batsThrows ? pObj.batsThrows : '';
                 let bat = batRaw ? `<span class="text-[9px] font-bold text-gray-500 border border-gray-600/50 rounded-sm px-1 ml-1 leading-none inline-flex items-center justify-center h-[14px] opacity-80 shrink-0">${batRaw}</span>` : '';
-                let hi = playerImages[p], pim = hi ? `<img src="${hi}" class="w-full h-full object-contain object-bottom scale-[1.3] drop-shadow-md origin-bottom">` : `<i class="fa-solid fa-user text-gray-500 text-[16px] mt-1.5"></i>`, pf = hi ? "w-9 h-9 flex items-end justify-center shrink-0" : "w-9 h-9 bg-[#222224] rounded-full flex items-center justify-center overflow-hidden shrink-0 border border-white/10"; 
-                return `<div class="flex items-center gap-2 mb-3.5"><span class="w-[22px] text-center text-[15px] font-black shrink-0" style="color: ${h1}">${i + 1}</span><div class="${pf}">${pim}</div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center gap-x-1"><span class="text-[clamp(11px,3vw,14px)] font-bold text-white whitespace-nowrap tracking-tight shrink">${p}</span>${bat}</div><span class="text-[10px] text-gray-400 whitespace-nowrap mt-0.5">${pos}</span></div></div>`; 
+                let hi = playerImages[p], pim = hi ? `<img src="${hi}" class="w-full h-full object-contain object-bottom scale-[1.3] drop-shadow-md origin-bottom">` : `<i class="fa-solid fa-user text-gray-500 text-[16px] mt-1.5"></i>`;
+                let pf = hi ? 'w-9 h-9 flex items-end justify-center shrink-0' : 'w-9 h-9 bg-[#222224] rounded-full flex items-center justify-center overflow-hidden shrink-0 border border-white/10';
+                let marker = isSub ? '<span class="lineup-sub-arrow">↑</span>' : String(_lineupOrderOf(pObj, i + 1));
+                let markerStyle = isSub ? '' : `color:${hex}`;
+                return `<div class="flex items-center gap-2 mb-3.5"><span class="w-[22px] min-h-[20px] flex items-center justify-center text-center text-[15px] font-black shrink-0" style="${markerStyle}">${marker}</span><div class="${pf}">${pim}</div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center gap-x-1"><span class="text-[clamp(11px,3vw,14px)] font-bold text-white whitespace-nowrap tracking-tight shrink">${p}</span>${bat}</div><span class="text-[10px] text-gray-400 whitespace-nowrap mt-0.5">${pos}</span></div></div>`;
             }).join('') : '<div class="text-center text-xs text-gray-500 py-4">라인업 정보 없음</div>';
-            
-            let hbh = (hLineupSrc && hLineupSrc.length > 0) ? hLineupSrc.map((pObj, i) => { 
-                let p = typeof pObj === 'object' && pObj !== null ? pObj.name : pObj;
-                let pos = typeof pObj === 'object' && pObj !== null && pObj.position ? pObj.position : '타자';
-                let batRaw = typeof pObj === 'object' && pObj !== null && pObj.batsThrows ? pObj.batsThrows : '';
-                let bat = batRaw ? `<span class="text-[9px] font-bold text-gray-500 border border-gray-600/50 rounded-sm px-1 ml-1 leading-none inline-flex items-center justify-center h-[14px] opacity-80 shrink-0">${batRaw}</span>` : '';
-                let hi = playerImages[p], pim = hi ? `<img src="${hi}" class="w-full h-full object-contain object-bottom scale-[1.3] drop-shadow-md origin-bottom">` : `<i class="fa-solid fa-user text-gray-500 text-[16px] mt-1.5"></i>`, pf = hi ? "w-9 h-9 flex items-end justify-center shrink-0" : "w-9 h-9 bg-[#222224] rounded-full flex items-center justify-center overflow-hidden shrink-0 border border-white/10"; 
-                return `<div class="flex items-center gap-2 mb-3.5"><span class="w-[22px] text-center text-[15px] font-black shrink-0" style="color: ${h2}">${i + 1}</span><div class="${pf}">${pim}</div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center gap-x-1"><span class="text-[clamp(11px,3vw,14px)] font-bold text-white whitespace-nowrap tracking-tight shrink">${p}</span>${bat}</div><span class="text-[10px] text-gray-400 whitespace-nowrap mt-0.5">${pos}</span></div></div>`; 
-            }).join('') : '<div class="text-center text-xs text-gray-500 py-4">라인업 정보 없음</div>';
+
+            let abh = lineupRows(aLineupSrc, h1);
+            let hbh = lineupRows(hLineupSrc, h2);
             
             c.innerHTML = sbh + wpb + infoTabs + `<div class="flex w-full pt-1 px-1"><div class="flex-1 flex flex-col pr-2 min-w-0"><div class="flex items-center gap-1.5 mb-3"><div class="w-6 h-6 flex items-center justify-center shrink-0">${lg1}</div><span class="text-[14px] font-bold text-gray-200 truncate">${m.team1}선발</span></div>${aph}<div class="w-full h-px bg-white/5 mb-3.5"></div>${abh}</div><div class="w-px bg-white/10 shrink-0 mx-2 mb-4"></div><div class="flex-1 flex flex-col pl-2 min-w-0"><div class="flex items-center gap-1.5 mb-3"><div class="w-6 h-6 flex items-center justify-center shrink-0">${lg2}</div><span class="text-[14px] font-bold text-gray-200 truncate">${m.team2}선발</span></div>${hph}<div class="w-full h-px bg-white/5 mb-3.5"></div>${hbh}</div></div>`;
         }
