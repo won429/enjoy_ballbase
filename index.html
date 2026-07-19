@@ -1350,6 +1350,7 @@
                 player._lineupOrder = explicitOrder || index + 1;
                 player._hasExplicitLineupOrder = Boolean(explicitOrder);
                 player.position = _normalizeDefensePosition(player.position);
+                player._lineupDisplayPosition = player.position;
                 if (_isSubstitutionPlayer(raw)) player._isSubstitute = true;
                 return player;
             });
@@ -1365,6 +1366,7 @@
                         player._lineupOrder = order;
                     }
                     if (!player.position) player.position = previous.position || '';
+                    if (!player._lineupDisplayPosition) player._lineupDisplayPosition = player.position;
                     previous._isReplaced = true;
                 }
                 embeddedActiveSlots.set(order, player);
@@ -1375,6 +1377,9 @@
             ].filter(Array.isArray);
             changeLists.flat().forEach(change => {
                 if (!change) return;
+                let changeRole = change.role || change.changeType || change.substitutionType || '';
+                // 투수는 별도의 현재 투수 필드로 관리하므로 타자 타순·수비 교체 목록에서는 제외한다.
+                if (changeRole === '투수교체') return;
                 let incoming = change.in || change.inPlayer || change.player || change;
                 let name = _lineupPlayerName(incoming) || change.inName || change.name || change.playerName;
                 if (!name) return;
@@ -1397,6 +1402,7 @@
                 if (outgoing && outgoing !== alreadyThere) outgoing._isReplaced = true;
                 if (alreadyThere) {
                     alreadyThere.position = requestedPosition || _normalizeDefensePosition(alreadyThere.position) || outgoingPosition || '';
+                    if (!alreadyThere._lineupDisplayPosition) alreadyThere._lineupDisplayPosition = alreadyThere.position;
                     alreadyThere.role = change.role || change.changeType || change.substitutionType || alreadyThere.role || '교체';
                     alreadyThere._isSubstitute = true;
                     if (order) alreadyThere._lineupOrder = order;
@@ -1405,6 +1411,7 @@
                 let player = incoming && typeof incoming === 'object' ? { ...incoming } : { name };
                 player.name = name;
                 player.position = requestedPosition || _normalizeDefensePosition(player.position) || outgoingPosition || '';
+                player._lineupDisplayPosition = player.position;
                 player.role = player.role || change.role || change.changeType || change.substitutionType || '교체';
                 player._isSubstitute = true;
                 player._lineupOrder = order || lineup.length + 1;
@@ -1439,7 +1446,14 @@
             // 네이버 문자 중계의 교체 코드: 대/타/주는 공격 역할이고 뒤 문자가 실제 수비 위치다.
             let compact = value.replace(/^(?:대타|대주자|대주|대|타|주)+/, '');
             if (!compact) return '';
-            return aliases[compact.toUpperCase()] || aliases[compact] || compact;
+            let normalized = aliases[compact.toUpperCase()] || aliases[compact];
+            if (normalized) return normalized;
+            // 二유·우중처럼 여러 수비 코드가 이어진 값은 먼저 기록된 위치를 사용한다.
+            for (let token of compact) {
+                let tokenPosition = aliases[token.toUpperCase()] || aliases[token];
+                if (tokenPosition) return tokenPosition;
+            }
+            return compact;
         }
         function _activeDefenseLineup(lineup) {
             let activeSlots = new Map();
@@ -3541,8 +3555,9 @@
                 let p = _lineupPlayerName(pObj) || '-';
                 let isSub = _isSubstitutionPlayer(pObj);
                 let role = _substitutionRoleOf(pObj);
-                let position = pObj && pObj.position ? pObj.position : '타자';
-                let pos = isSub && role && role !== '교체' ? role : position;
+                let position = _normalizeDefensePosition(pObj && (pObj._lineupDisplayPosition || pObj.position));
+                let pos = position || role || '타자';
+                if (isSub && position && role && role !== '교체') pos = `${position} · ${role}`;
                 let batRaw = pObj && pObj.batsThrows ? pObj.batsThrows : '';
                 let bat = batRaw ? `<span class="text-[9px] font-bold text-gray-500 border border-gray-600/50 rounded-sm px-1 ml-1 leading-none inline-flex items-center justify-center h-[14px] opacity-80 shrink-0">${batRaw}</span>` : '';
                 let hi = playerImages[p], pim = hi ? `<img src="${hi}" class="w-full h-full object-contain object-bottom scale-[1.3] drop-shadow-md origin-bottom">` : `<i class="fa-solid fa-user text-gray-500 text-[16px] mt-1.5"></i>`;
