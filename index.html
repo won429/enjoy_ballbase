@@ -363,8 +363,8 @@
         .atbat-zone::after { background: linear-gradient(180deg, transparent 33%, rgba(255,255,255,.36) 33% 34%, transparent 34% 66%, rgba(255,255,255,.36) 66% 67%, transparent 67%); }
         .atbat-trajectories { position: absolute; z-index: 9; inset: 0; width: 100%; height: 100%; pointer-events: none; }
         .atbat-trajectories path { fill: none; stroke-linecap: round; }
-        .atbat-trajectories .trail-glow { stroke-width: 3.4; opacity: .12; }
-        .atbat-trajectories .trail-core { stroke-width: 1.45; opacity: .23; }
+        .atbat-trajectories .trail-glow { stroke-width: 5.2; opacity: .09; }
+        .atbat-trajectories .trail-core { stroke-width: 2.3; opacity: .17; }
         .atbat-pitch-marker { position: absolute; z-index: 11; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border: 2px solid rgba(255,255,255,.94); border-radius: 50%; color: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.25); font-size: 10px; font-weight: 900; }
         .atbat-pitch-marker.latest { width: 27px; height: 27px; box-shadow: 0 0 0 3px rgba(255,255,255,.14), 0 3px 8px rgba(0,0,0,.3); }
         .atbat-batter-layer { position: absolute; z-index: 8; bottom: -35px; height: 340px; width: 213px; pointer-events: none; transform-origin: center bottom; }
@@ -3088,13 +3088,46 @@
             return undefined;
         }
 
+        // 관리자 페이지에서 그대로 저장할 수 있는 타석보기 Firebase 입력 규격.
+        // x/y와 궤적 좌표는 타석보기 화면을 기준으로 한 0~100 퍼센트 값이다.
+        const AT_BAT_FIREBASE_SCHEMA = Object.freeze({
+            parent: 'currentAtBat',
+            pitches: 'pitches',
+            fields: ['pitchNumber', 'pitchType', 'pitchSpeed', 'pitchResult', 'xPercent', 'yPercent'],
+            trajectory: ['startX', 'startY', 'controlX', 'controlY']
+        });
+        window.AT_BAT_FIREBASE_SCHEMA = AT_BAT_FIREBASE_SCHEMA;
+
+        function _atBatPitchList(value) {
+            let pitches = [];
+            if (Array.isArray(value)) pitches = value;
+            else if (value && typeof value === 'object') pitches = Object.values(value);
+            if (!pitches.length) return [];
+            return pitches.map((pitch, index) => {
+                const source = pitch && typeof pitch === 'object' ? pitch : {};
+                const explicitOrder = Number(_atBatValue(source, ['pitchNumber', 'number', 'no', 'order', '순번']));
+                const timestamp = _atBatValue(source, ['timestamp', 'createdAt', 'updatedAt', 'time']);
+                const timestampOrder = timestamp && typeof timestamp === 'object' && Number.isFinite(Number(timestamp.seconds))
+                    ? Number(timestamp.seconds)
+                    : Number(new Date(timestamp).getTime());
+                return {
+                    pitch,
+                    index,
+                    order: Number.isFinite(explicitOrder) && explicitOrder > 0
+                        ? explicitOrder
+                        : (Number.isFinite(timestampOrder) ? timestampOrder : index)
+                };
+            }).sort((a, b) => a.order - b.order || a.index - b.index).slice(-7).map(item => item.pitch);
+        }
+
         function _atBatPitchSource(l) {
             const holders = [l.currentAtBat, l.atBat, l.batterBox, l.plateAppearance, l];
             const listKeys = ['pitches', 'pitchHistory', 'pitchLog', 'atBatPitches', 'recentPitches', '투구목록'];
             for (const holder of holders) {
                 if (!holder || typeof holder !== 'object') continue;
                 for (const key of listKeys) {
-                    if (Array.isArray(holder[key])) return holder[key].slice(-7);
+                    const pitches = _atBatPitchList(holder[key]);
+                    if (pitches.length) return pitches;
                 }
             }
             const latest = l.latestPitch || l.currentPitch || l.lastPitch || l.최근투구 || {
@@ -3143,14 +3176,27 @@
                 const speedNumber = Number(String(speedValue ?? '').replace(/[^0-9.]/g, ''));
                 const result = _atBatValue(pitch, ['pitchResult', 'result', 'call', 'judgement', 'outcome', '판정']) || '';
                 const markerNumber = Number(_atBatValue(pitch, ['pitchNumber', 'number', 'no', '순번'])) || index + 1;
+                const left = 50 + (x - 50) * .42;
+                const top = 56 + (y - 50) * .34;
+                const trajectory = pitch.trajectory && typeof pitch.trajectory === 'object' ? pitch.trajectory : {};
+                const startX = _atBatCoordinate(_atBatValue(trajectory, ['startX', 'x1']) ?? _atBatValue(pitch, ['trajectoryStartX', 'startX']), 50, 'x');
+                const startY = _atBatCoordinate(_atBatValue(trajectory, ['startY', 'y1']) ?? _atBatValue(pitch, ['trajectoryStartY', 'startY']), 43, 'y');
+                const defaultControlX = 50 + (left - 50) * .28 + (index % 2 ? 3.5 : -3.5);
+                const defaultControlY = 39 + index * .8;
+                const controlX = _atBatCoordinate(_atBatValue(trajectory, ['controlX', 'curveX', 'cx']) ?? _atBatValue(pitch, ['trajectoryControlX', 'controlX']), defaultControlX, 'x');
+                const controlY = _atBatCoordinate(_atBatValue(trajectory, ['controlY', 'curveY', 'cy']) ?? _atBatValue(pitch, ['trajectoryControlY', 'controlY']), defaultControlY, 'y');
                 return {
                     number: markerNumber,
                     type: _atBatSafeText(type),
                     speed: Number.isFinite(speedNumber) && speedNumber > 0 ? `${Math.round(speedNumber)}km/h` : '',
                     result: _atBatSafeText(result),
                     color: _atBatPitchColor(result, index),
-                    left: 50 + (x - 50) * .28,
-                    top: 56 + (y - 50) * .28
+                    left,
+                    top,
+                    startX,
+                    startY,
+                    controlX,
+                    controlY
                 };
             });
         }
@@ -3174,12 +3220,10 @@
             const pitches = _atBatPitches(l);
             const latest = pitches[pitches.length - 1];
             const summary = latest
-                ? `<div class="atbat-pitch-summary"><strong>${latest.type}</strong><span>${latest.speed || latest.result || `${latest.number}구`}</span></div>`
+                ? `<div class="atbat-pitch-summary"><strong>${latest.number}구${latest.type}</strong><span>${latest.speed || latest.result}</span></div>`
                 : `<div class="atbat-pitch-summary waiting"><strong>투구 정보 대기중</strong><span></span></div>`;
-            const trajectoryHtml = pitches.map((pitch, index) => {
-                const controlX = 50 + (pitch.left - 50) * .36 + (index % 2 ? 4 : -4);
-                const controlY = 58 + index * .4;
-                const path = `M 50 54 Q ${controlX.toFixed(1)} ${controlY.toFixed(1)} ${pitch.left.toFixed(1)} ${pitch.top.toFixed(1)}`;
+            const trajectoryHtml = pitches.map(pitch => {
+                const path = `M ${pitch.startX.toFixed(1)} ${pitch.startY.toFixed(1)} Q ${pitch.controlX.toFixed(1)} ${pitch.controlY.toFixed(1)} ${pitch.left.toFixed(1)} ${pitch.top.toFixed(1)}`;
                 return `<path class="trail-glow" d="${path}" stroke="${pitch.color}"></path><path class="trail-core" d="${path}" stroke="${pitch.color}"></path>`;
             }).join('');
             const markerHtml = pitches.map((pitch, index) => `<span class="atbat-pitch-marker ${index === pitches.length - 1 ? 'latest' : ''}" style="left:${pitch.left.toFixed(1)}%;top:${pitch.top.toFixed(1)}%;background:${pitch.color}" title="${pitch.number}구 ${pitch.type} ${pitch.speed} ${pitch.result}">${pitch.number}</span>`).join('');
