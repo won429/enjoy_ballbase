@@ -290,6 +290,7 @@
         html.light-mode .game-info-tab.active { color: var(--game-info-tab-text, #fff); background: var(--game-info-tab-color, #397fe8); box-shadow: none; }
         .broadcast-card { width: calc(100% + 48px); margin: 0 -24px; overflow: hidden; border: 0; border-radius: 0; background: #111827; box-shadow: none; color: #fff; }
         .broadcast-card.stadium-card { position: relative; isolation: isolate; }
+        .broadcast-card.runner-card { background: #3a824b; }
         .broadcast-card-stadium { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; object-position: center; }
         .broadcast-scoreboard { position: relative; z-index: 4; display: grid; grid-template-columns: 18% 18% 64%; width: calc(100% - 32px); height: 42px; margin: 10px 16px 0; overflow: hidden; border-radius: 8px; background: rgba(31,41,55,.9); box-shadow: 0 2px 8px rgba(0,0,0,.24); }
         .broadcast-score-team { position: relative; height: 42px; display: grid; grid-template-columns: 18px 22px; align-items: center; justify-content: center; column-gap: 4px; min-width: 0; padding: 0 3px; }
@@ -3397,9 +3398,10 @@
             if (isAtBatViewOpen) {
                 return `<section class="broadcast-card stadium-card" aria-label="타석 중계">${stadiumLayer}${scoreboardHtml}${_atBatFieldHtml(m, l, batterSide)}</section>`;
             }
-            return `<section class="broadcast-card stadium-card" aria-label="문자 중계">
-                ${stadiumLayer}${scoreboardHtml}
+            return `<section class="broadcast-card runner-card" aria-label="문자 중계">
+                ${scoreboardHtml}
                 <div class="broadcast-field">
+                    <img class="broadcast-field-art" src="assets/baseball-field-broadcast.png" alt="" aria-hidden="true">
                     ${playerHtml}
                     ${runnerHtml}
                     <div class="broadcast-batter bats-${batterSide}" aria-label="${batterSide === 'left' ? '좌타자' : batterSide === 'right' ? '우타자' : '타자'} ${batterName}"><div class="portrait">${batterPortrait}</div><span class="name">${batterName}</span></div>
