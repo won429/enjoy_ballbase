@@ -393,6 +393,10 @@
         .atbat-view-button { z-index: 14; right: 14px; bottom: 14px; width: 64px; height: 58px; border-radius: 10px; font-size: 10px; }
         #pitch-location-content .broadcast-card { width: 100%; margin: 0; }
         #pitch-location-content .atbat-view-button { display: none; }
+        .game-record-inning-tabs { display: flex; gap: 6px; margin: 0 -2px 10px; padding: 2px 2px 7px; overflow-x: auto; scrollbar-width: none; }
+        .game-record-inning-tabs::-webkit-scrollbar { display: none; }
+        .game-record-inning-tab { flex: 0 0 48px; height: 30px; border: 1px solid rgba(255,255,255,.08); border-radius: 999px; color: #a1a1aa; background: rgba(255,255,255,.06); font-size: 10px; font-weight: 900; }
+        .game-record-inning-tab.active { border-color: rgba(255,255,255,.75); color: #111827; background: #fff; }
         .game-record-list { display: flex; flex-direction: column; gap: 12px; }
         .game-record-card { overflow: hidden; border: 1px solid rgba(255,255,255,.08); border-radius: 16px; background: rgba(28,28,30,.96); color: #fff; }
         .game-record-head { display: grid; grid-template-columns: 44px minmax(0,1fr) auto; gap: 10px; align-items: center; padding: 13px; }
@@ -404,9 +408,6 @@
         .game-record-location-btn { min-width: 92px; padding: 8px 10px; border: 1px solid rgba(255,255,255,.12); border-radius: 999px; color: #f4f4f5; background: transparent; font-size: 10px; font-weight: 900; }
         .game-record-body { padding: 12px 14px 14px; border-top: 1px solid rgba(255,255,255,.04); background: #242426; }
         .game-record-summary { margin-bottom: 10px; color: #f4f4f5; font-size: 11px; font-weight: 800; line-height: 1.6; white-space: pre-line; }
-        .game-record-winprob { margin: 10px 0; padding: 10px 0; border-top: 1px solid rgba(255,255,255,.08); border-bottom: 1px solid rgba(255,255,255,.08); font-size: 11px; font-weight: 800; }
-        .game-record-winprob b { font-size: 14px; }
-        .game-record-winprob em { color: #ff5548; font-size: 13px; font-style: normal; }
         .game-record-event { padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,.07); color: #f4f4f5; font-size: 11px; font-weight: 800; }
         .game-record-pitch { display: grid; grid-template-columns: 24px 68px minmax(0,1fr); gap: 7px; align-items: center; min-height: 26px; font-size: 10px; }
         .game-record-pitch-number { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: #fff; font-size: 9px; font-weight: 900; }
@@ -947,7 +948,7 @@
             return out;
         }
 
-        let scheduleData = [], rankingData = [], liveDataStore = {}, currentPopupMatchId = null, currentGameInfoTab = 'lineup', isAtBatViewOpen = false, atBatReplaySequence = false, currentTabIndex = 0, watchRecords = [], recordPopupDate = new Date(), currentRecordTeam = null, currentRecordType = null;
+        let scheduleData = [], rankingData = [], liveDataStore = {}, currentPopupMatchId = null, currentGameInfoTab = 'lineup', currentGameRecordInning = 1, isAtBatViewOpen = false, atBatReplaySequence = false, currentTabIndex = 0, watchRecords = [], recordPopupDate = new Date(), currentRecordTeam = null, currentRecordType = null;
         let audioPlayer, currentSongTitle = '', currentSongCover = '', currentPlaylist = [], currentSongIndex = -1, isSeeking = false;
         let fpStartY = 0, fpCurrentY = 0, fpIsDragging = false, currentBanner = 0, totalBanners = 1, bannerInterval, isPlaying = true;
         let isInitialPopupChecked = false, homeHeaderFrame = 0;
@@ -3077,7 +3078,7 @@
             let tempM = scheduleData.find(x => x.id === parseInt(id) || x.id === id);
             if (tempM && tempM.date < todayStr) await fetchPastGame(tempM.date);
 
-            currentPopupMatchId = id; currentGameInfoTab = 'lineup'; isAtBatViewOpen = false; if (navigator.vibrate) navigator.vibrate(5);
+            currentPopupMatchId = id; currentGameInfoTab = 'lineup'; currentGameRecordInning = 1; isAtBatViewOpen = false; if (navigator.vibrate) navigator.vibrate(5);
             const p = document.getElementById('lineup-popup'); p.classList.remove('render-hidden');
             const lc = document.getElementById('lineup-content');
             if (lc) lc.scrollTop = 0;
@@ -3101,8 +3102,14 @@
         function switchGameInfoTab(tab) {
             if (!['lineup', 'broadcast', 'record'].includes(tab) || !currentPopupMatchId) return;
             if (tab === 'broadcast' && currentGameInfoTab !== 'broadcast' && isAtBatViewOpen) atBatReplaySequence = true;
+            if (tab === 'record' && currentGameInfoTab !== 'record') currentGameRecordInning = 1;
             currentGameInfoTab = tab;
             renderPopupContent(currentPopupMatchId);
+        }
+
+        function selectGameRecordInning(inning) {
+            currentGameRecordInning = Math.max(1, Math.min(11, Number(inning) || 1));
+            if (currentPopupMatchId) renderPopupContent(currentPopupMatchId);
         }
 
         function gameInfoTabsHtml() {
@@ -3431,20 +3438,33 @@
 
         function gameRecordHtml(m, l) {
             const batters = _recordBatters(l);
-            if (!batters.length) return `<section class="min-h-[260px] flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-white/5 px-5 text-center"><div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-4"><i class="fa-solid fa-chart-column text-xl text-gray-400"></i></div><span class="text-[16px] font-black text-white">상세 타자 기록 입력 대기중</span><span class="mt-2 text-[10px] text-gray-500">관리자페이지에서 기록을 입력하면 여기에 표시됩니다.</span></section>`;
-            const cards = batters.map((batter, batterIndex) => {
-                const name = _atBatSafeText(_atBatValue(batter, ['name', 'playerName', 'batterName', '선수명']) || '타자');
+            const recordInnings = batters.map(batter => Number(_atBatValue(batter, ['inning', 'inningNumber', '회']) || 1)).filter(Number.isFinite);
+            const gameInning = Number(String(l.inning || '').replace(/[^0-9]/g, '')) || 9;
+            const scoreInningCount = Math.max(
+                Array.isArray(l.awayInning) ? l.awayInning.length : 0,
+                Array.isArray(l.homeInning) ? l.homeInning.length : 0
+            );
+            const maxInning = Math.max(9, Math.min(11, Math.max(gameInning, scoreInningCount, ...recordInnings, 9)));
+            currentGameRecordInning = Math.max(1, Math.min(maxInning, currentGameRecordInning));
+            const inningTabs = Array.from({ length: maxInning }, (_, index) => {
+                const inning = index + 1;
+                return `<button type="button" class="game-record-inning-tab ${inning === currentGameRecordInning ? 'active' : ''}" onclick="selectGameRecordInning(${inning})" aria-pressed="${inning === currentGameRecordInning}">${inning}회</button>`;
+            }).join('');
+            const visibleBatters = batters.map((batter, batterIndex) => ({ batter, batterIndex })).filter(({ batter }) => {
+                const inning = Number(_atBatValue(batter, ['inning', 'inningNumber', '회']) || 1);
+                return inning === currentGameRecordInning;
+            });
+            const cards = visibleBatters.map(({ batter, batterIndex }) => {
+                const rawName = _atBatValue(batter, ['name', 'playerName', 'batterName', '선수명']) || '타자';
+                const name = _atBatSafeText(rawName);
                 const order = _atBatSafeText(_atBatValue(batter, ['battingOrder', 'order', '타순']) || '-');
                 const average = _atBatSafeText(_atBatValue(batter, ['average', 'battingAverage', 'avg', '타율']) || '-');
                 const stat = (keys, fallback = 0) => _atBatSafeText(_atBatValue(batter, keys) ?? fallback);
                 const stats = `타석 ${stat(['plateAppearances','pa','타석'])}　타수 ${stat(['atBats','ab','타수'])}　안타 ${stat(['hits','h','안타'])}　득점 ${stat(['runs','r','득점'])}<br>타점 ${stat(['rbi','타점'])}　홈런 ${stat(['homeRuns','hr','홈런'])}　볼넷 ${stat(['walks','bb','볼넷'])}　피삼진 ${stat(['strikeouts','so','삼진'])}`;
-                const photo = playerImages[String(name).replace(/&[^;]+;/g, '')];
+                const photo = playerImages[rawName];
                 const photoHtml = photo ? `<img src="${photo}" alt="${name}">` : `<i class="fa-solid fa-user text-gray-500"></i>`;
                 const summaryRaw = _atBatValue(batter, ['summary', 'playSummary', 'description', '상황설명']) || '';
                 const summary = Array.isArray(summaryRaw) ? summaryRaw.map(_atBatSafeText).join('\n') : _atBatSafeText(summaryRaw);
-                const winTeam = _atBatSafeText(_atBatValue(batter, ['winProbabilityTeam', 'probabilityTeam', '승리확률팀']) || '승리');
-                const winProbability = _atBatSafeText(_atBatValue(batter, ['winProbability', 'probability', '승리확률']) || '');
-                const winChange = _atBatSafeText(_atBatValue(batter, ['winProbabilityChange', 'probabilityChange', '승리확률변화']) || '');
                 const eventsRaw = _atBatValue(batter, ['events', 'playEvents', 'eventLog', '상황기록']) || [];
                 const events = (Array.isArray(eventsRaw) ? eventsRaw : String(eventsRaw).split('\n')).filter(Boolean).map(event => {
                     const text = typeof event === 'object' ? _atBatValue(event, ['text', 'description', 'event', '내용']) : event;
@@ -3457,11 +3477,11 @@
                     const count = _atBatSafeText(_atBatValue(raw, ['count', 'ballStrikeCount', 'pitchCount', '카운트']) || '');
                     return `<div class="game-record-pitch"><span class="game-record-pitch-number" style="background:${_recordPitchColor(pitch.result)}">${pitch.number}</span><span class="game-record-pitch-result">${pitch.result || '투구'}</span><span class="game-record-pitch-detail">${pitch.speed} ${pitch.type}${count ? `<span class="game-record-pitch-count">| ${count}</span>` : ''}</span></div>`;
                 }).reverse().join('');
-                const winHtml = winProbability ? `<div class="game-record-winprob">${winTeam} 승리 확률 <b>${winProbability}${String(winProbability).includes('%') ? '' : '%'}</b>${winChange ? ` <em>(${String(winChange).startsWith('-') ? '' : '+'}${winChange}${String(winChange).includes('%') ? '' : '%p'})</em>` : ''}</div>` : '';
                 const locationButton = rawPitches.length ? `<button type="button" class="game-record-location-btn" onclick="openPitchLocationModal('${m.id}', ${batterIndex})">투구 위치보기 <i class="fa-solid fa-chevron-right ml-1"></i></button>` : '';
-                return `<article class="game-record-card"><div class="game-record-head"><div class="game-record-photo">${photoHtml}</div><div class="min-w-0"><div><span class="game-record-name">${name}</span><span class="game-record-meta">${order}번타자 · 타율 ${average}</span></div><div class="game-record-stats">${stats}</div></div>${locationButton}</div><div class="game-record-body">${summary ? `<div class="game-record-summary">${summary}</div>` : ''}${winHtml}${events}${pitchRows ? `<div class="space-y-1 pt-2">${pitchRows}</div>` : ''}</div></article>`;
+                return `<article class="game-record-card"><div class="game-record-head"><div class="game-record-photo">${photoHtml}</div><div class="min-w-0"><div><span class="game-record-name">${name}</span><span class="game-record-meta">${order}번타자 · 타율 ${average}</span></div><div class="game-record-stats">${stats}</div></div>${locationButton}</div><div class="game-record-body">${summary ? `<div class="game-record-summary">${summary}</div>` : ''}${events}${pitchRows ? `<div class="space-y-1 pt-2">${pitchRows}</div>` : ''}</div></article>`;
             }).join('');
-            return `<section class="game-record-list">${cards}</section>`;
+            const empty = `<section class="min-h-[220px] flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-white/5 px-5 text-center"><div class="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center mb-3"><i class="fa-solid fa-chart-column text-lg text-gray-400"></i></div><span class="text-[15px] font-black text-white">${currentGameRecordInning}회 상세 기록 입력 대기중</span><span class="mt-2 text-[10px] text-gray-500">관리자페이지에서 이닝을 선택해 기록을 입력하세요.</span></section>`;
+            return `<div class="game-record-inning-tabs" role="tablist" aria-label="이닝별 기록">${inningTabs}</div><section class="game-record-list">${cards || empty}</section>`;
         }
 
         function openPitchLocationModal(matchId, batterIndex) {
