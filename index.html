@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="color-scheme" content="light dark">
     <meta name="referrer" content="no-referrer">
     <title>KBO League Schedule</title>
     <link class="tab-logo" rel="icon" href="logo.png">
@@ -622,6 +623,59 @@
         html.light-mode .banner-card .border-white\/15 { border-color: transparent !important; }
         html.light-mode .banner-card .border-\[rgba\(255\2c 255\2c 255\2c 0\.15\)\] { border-color: transparent !important; }
         html.light-mode body[data-theme="all"] .banner-card .text-point { color: #111827 !important; text-shadow: none; }
+
+        /* 기록/투구 위치: 고정 다크 색상이 라이트 모드 공통 글자색과 충돌하지 않도록 전용 표면을 사용한다. */
+        html { color-scheme: dark; }
+        html.light-mode { color-scheme: light; }
+        html.light-mode .game-record-inning-tab {
+            border-color: #e2e8f0;
+            color: #64748b;
+            background: #f1f5f9;
+        }
+        html.light-mode .game-record-inning-tab.active {
+            border-color: #111827;
+            color: #ffffff;
+            background: #111827;
+            box-shadow: 0 4px 12px rgba(15,23,42,.16);
+        }
+        html.light-mode .game-record-card {
+            border-color: #e2e8f0;
+            background: #ffffff;
+            color: #111827;
+            box-shadow: 0 6px 18px rgba(15,23,42,.07);
+        }
+        html.light-mode .game-record-photo { background: #e8edf4; }
+        html.light-mode .game-record-name { color: #111827; }
+        html.light-mode .game-record-meta { color: #64748b; }
+        html.light-mode .game-record-stats { color: #475569; }
+        html.light-mode .game-record-location-btn {
+            border-color: #cbd5e1;
+            color: #1e293b;
+            background: #f8fafc;
+        }
+        html.light-mode .game-record-body {
+            border-top-color: #e2e8f0;
+            background: #f8fafc;
+        }
+        html.light-mode .game-record-summary,
+        html.light-mode .game-record-event,
+        html.light-mode .game-record-pitch-result { color: #1f2937; }
+        html.light-mode .game-record-event { border-bottom-color: #e2e8f0; }
+        html.light-mode .game-record-pitch-detail { color: #475569; }
+        html.light-mode .game-record-pitch-count { color: #94a3b8; }
+        html.light-mode #pitch-location-modal { background-color: rgba(15,23,42,.62) !important; }
+        html.light-mode #pitch-location-modal > div {
+            border-color: #dbe2ea !important;
+            background: #ffffff !important;
+            box-shadow: 0 24px 70px rgba(15,23,42,.28) !important;
+        }
+        html.light-mode #pitch-location-modal > div > div:first-child { border-bottom-color: #e2e8f0 !important; }
+        html.light-mode #pitch-location-title { color: #111827 !important; }
+        html.light-mode #pitch-location-title + span { color: #64748b !important; }
+        html.light-mode #pitch-location-modal button[aria-label="투구 위치 팝업 닫기"] {
+            color: #334155 !important;
+            background: #f1f5f9 !important;
+        }
     </style>
 </head>
 <body class="w-full h-[100dvh] flex justify-center items-center overflow-hidden app-bg" data-theme="all">
@@ -953,18 +1007,14 @@
         let fpStartY = 0, fpCurrentY = 0, fpIsDragging = false, currentBanner = 0, totalBanners = 1, bannerInterval, isPlaying = true;
         let isInitialPopupChecked = false, homeHeaderFrame = 0;
         
-        function applyTimeBasedTheme() {
-            const currentHour = new Date().getHours();
-            const isDayTime = currentHour >= 5 && currentHour < 20;
-            if (isDayTime) {
-                document.documentElement.classList.add('light-mode');
-            } else {
-                document.documentElement.classList.remove('light-mode');
-            }
+        const deviceThemeMedia = window.matchMedia('(prefers-color-scheme: light)');
+        function applyDeviceTheme(event = deviceThemeMedia) {
+            document.documentElement.classList.toggle('light-mode', event.matches);
         }
-        
-        applyTimeBasedTheme();
-        setInterval(applyTimeBasedTheme, 60000);
+
+        applyDeviceTheme();
+        if (deviceThemeMedia.addEventListener) deviceThemeMedia.addEventListener('change', applyDeviceTheme);
+        else deviceThemeMedia.addListener(applyDeviceTheme);
         
         const TICKET_IMAGE_URL = "https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/dadadada.png"; 
         
