@@ -289,142 +289,22 @@
         .game-info-tab.active { color: var(--game-info-tab-text, #fff); background: var(--game-info-tab-color, #4b91f7); box-shadow: none; }
         html.light-mode .game-info-tab { color: #64748b; background: rgba(15,23,42,0.07); }
         html.light-mode .game-info-tab.active { color: var(--game-info-tab-text, #fff); background: var(--game-info-tab-color, #397fe8); box-shadow: none; }
-        .broadcast-card { width: calc(100% + 48px); margin: 0 -24px; overflow: hidden; border: 0; border-radius: 0; background: #111827; box-shadow: none; color: #fff; }
-        .broadcast-card.stadium-card { position: relative; isolation: isolate; }
-        .broadcast-card.runner-card { background: #3a824b; }
-        .broadcast-card-stadium { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; object-position: center; }
-        .broadcast-scoreboard { position: relative; z-index: 4; display: grid; grid-template-columns: 18% 18% 64%; width: calc(100% - 32px); height: 42px; margin: 10px 16px 0; overflow: hidden; border-radius: 8px; background: rgba(31,41,55,.9); box-shadow: 0 2px 8px rgba(0,0,0,.24); }
-        .broadcast-score-team { position: relative; height: 42px; display: grid; grid-template-columns: 18px 22px; align-items: center; justify-content: center; column-gap: 4px; min-width: 0; padding: 0 3px; }
-        .broadcast-score-team.at-bat::after { content: ''; position: absolute; left: 25%; right: 25%; bottom: 0; height: 2px; background: #fff; }
-        .broadcast-score-team img { width: 17px; height: 17px; display: block; object-fit: contain; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.24)); }
-        .broadcast-score-team strong { display: block; color: #fff; font-size: 18px; font-weight: 900; line-height: 18px; text-align: center; }
-        .broadcast-score-state { height: 42px; min-width: 0; padding: 0 9px; background: rgba(31,41,55,.9); }
-        .broadcast-score-state-top { width: 100%; height: 42px; display: grid; grid-template-columns: 58px 34px minmax(0, 1fr); gap: 8px; align-items: center; color: #fff; font-size: 10px; font-weight: 900; }
-        .broadcast-score-state-top > span { min-width: 0; line-height: 1; white-space: nowrap; }
-        .broadcast-score-state-top > span:first-child { overflow: hidden; text-align: center; text-overflow: ellipsis; }
-        .broadcast-counts { display: flex; align-items: center; justify-content: space-evenly; gap: 5px; color: #fff; line-height: 1; white-space: nowrap; }
-        .broadcast-counts b { color: #fff; font-size: 10px; font-weight: 900; }
-        .broadcast-count-dot { flex: 0 0 auto; width: 7px; height: 7px; border-radius: 999px; background: #63786a; }
-        .broadcast-count-dot.out.on { background: #ff3f35; }
-        .broadcast-out-label { color: #ff3f35; font-size: 9px; font-weight: 900; }
-        .broadcast-mini-bases { position: relative; justify-self: center; width: 26px; height: 20px; }
-        .broadcast-mini-base { position: absolute; width: 8px; height: 8px; transform: rotate(45deg); background: #587261; }
-        .broadcast-mini-base.second { top: 0; left: 9px; }
-        .broadcast-mini-base.third { top: 8px; left: 1px; }
-        .broadcast-mini-base.first { top: 8px; right: 1px; }
-        .broadcast-mini-base.active { background: #fbbf24; box-shadow: 0 0 5px rgba(251,191,36,0.7); }
-        .broadcast-field { position: relative; z-index: 2; height: 300px; overflow: hidden; background: linear-gradient(180deg, rgba(7,18,29,.02), rgba(7,18,29,.1)); }
-        .broadcast-field-art { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; }
-        .broadcast-player { position: absolute; z-index: 5; display: flex; flex-direction: column; align-items: center; transform: translate(-50%, -50%); min-width: 56px; }
-        .broadcast-player .portrait { display: none; }
-        .broadcast-player.p .portrait { width: 32px; height: 32px; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; border: 1.5px solid rgba(255,255,255,0.96); border-radius: 999px; background: rgba(15,23,42,0.78); box-shadow: 0 2px 5px rgba(0,0,0,0.22); }
-        .broadcast-player .portrait img, .broadcast-batter .portrait img, .broadcast-runner .portrait img { width: 100%; height: 100%; object-fit: contain; object-position: bottom; transform: scale(1.14); transform-origin: bottom; }
-        .broadcast-player .name { max-width: 74px; padding: 4px 8px; overflow: hidden; border-radius: 999px; color: #fff; background: rgba(8,52,22,0.94); font-size: 10px; font-weight: 700; line-height: 1; text-overflow: ellipsis; white-space: nowrap; }
-        .broadcast-player.p .name { margin-top: -2px; font-weight: 800; }
-        .broadcast-player.ss .name, .broadcast-player.sb .name, .broadcast-player.tb .name, .broadcast-player.fb .name { background: rgba(91,79,61,0.94); }
-        .broadcast-player.cf { left: 50%; top: 7%; }
-        .broadcast-player.lf { left: 16%; top: 15%; }
-        .broadcast-player.rf { left: 84%; top: 15%; }
-        .broadcast-player.ss { left: 32%; top: 32%; }
-        .broadcast-player.sb { left: 68%; top: 32%; }
-        .broadcast-player.tb { left: 26%; top: 50%; }
-        .broadcast-player.fb { left: 74%; top: 50%; }
-        .broadcast-player.p { left: 50%; top: 55%; }
-        .broadcast-player.c { left: 50%; top: 92%; }
-        .broadcast-batter, .broadcast-runner { position: absolute; z-index: 8; height: 28px; display: flex; flex-direction: row; align-items: center; transform: translate(-50%, -50%); padding: 0 9px 0 27px; border-radius: 999px; color: #172019; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.18); }
-        .broadcast-batter { left: 50%; top: 83%; }
-        .broadcast-batter.bats-left { left: 61%; }
-        .broadcast-batter.bats-right { left: 39%; }
-        .broadcast-batter .portrait, .broadcast-runner .portrait { position: absolute; left: -1px; top: 50%; width: 27px; height: 27px; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; transform: translateY(-50%); border: 1.5px solid rgba(255,255,255,0.98); border-radius: 999px; background: #e8ece8; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-        .broadcast-batter .name, .broadcast-runner .name { max-width: 66px; overflow: hidden; color: #172019; font-size: 10px; font-weight: 900; line-height: 1; text-overflow: ellipsis; white-space: nowrap; }
-        .broadcast-runner .portrait, .broadcast-runner .name { z-index: 1; }
-        .broadcast-runner.first { left: 74%; top: 63%; }
-        .broadcast-runner.second { left: 50%; top: 23%; }
-        .broadcast-runner.third { left: 26%; top: 63%; }
-        .broadcast-waiting { position: absolute; z-index: 6; left: 16px; bottom: 15px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.18); }
-        .broadcast-waiting strong { display: block; margin-bottom: 5px; color: rgba(185,233,196,0.55); font-size: 10px; font-weight: 900; }
-        .broadcast-waiting span { display: block; font-size: 10px; font-weight: 700; line-height: 1.58; }
-        .broadcast-view-button { position: absolute; z-index: 6; right: 16px; bottom: 15px; width: 60px; height: 58px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border-radius: 9px; color: #24262a; background: #fff; box-shadow: none; font-size: 10px; font-weight: 900; }
-        .broadcast-view-button i { font-size: 17px; }
-        .broadcast-view-button { border: 0; cursor: pointer; transition: transform 0.18s ease, box-shadow 0.18s ease; }
-        .broadcast-view-button:active { transform: scale(0.96); }
-
-        /* 타석 시점 — 기본 중계 필드와 같은 높이를 유지한다. */
-        .atbat-score-state-top { grid-template-columns: 42px 27px minmax(83px, 1fr) minmax(54px, .76fr); gap: 4px; }
-        .atbat-pitcher-status { overflow: hidden; color: rgba(255,255,255,.72); font-size: 8px; font-style: normal; font-weight: 700; text-align: right; text-overflow: ellipsis; }
-        .atbat-pitcher-status b { color: #fff; font-size: 9px; font-weight: 900; }
-        .atbat-field { position: relative; z-index: 2; height: 300px; overflow: hidden; isolation: isolate; background: transparent; }
-        .atbat-scene { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; object-position: 50% 50%; }
-        .atbat-field-shade { position: absolute; z-index: 2; inset: 0; background: linear-gradient(180deg, rgba(9,31,55,.02) 0%, transparent 58%, rgba(5,18,30,.08) 100%); pointer-events: none; }
-        .atbat-pitch-summary { position: absolute; z-index: 12; top: 18px; left: 50%; min-width: 74px; max-width: 114px; transform: translateX(-50%); padding: 6px 9px; border-radius: 8px; color: #fff; background: rgba(47,65,84,.82); box-shadow: 0 5px 14px rgba(0,0,0,.18); -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px); text-align: center; }
-        .atbat-pitch-summary strong { display: block; overflow: hidden; font-size: 11px; line-height: 1.15; text-overflow: ellipsis; white-space: nowrap; }
-        .atbat-pitch-summary span { display: block; margin-top: 2px; font-size: 9px; font-weight: 800; }
-        .atbat-pitch-summary.waiting strong { color: rgba(255,255,255,.92); font-size: 9px; }
-        .atbat-pitch-summary.waiting span { display: none; }
-        .atbat-zone { position: absolute; z-index: 10; left: 50%; top: 56%; width: 68px; height: 86px; transform: translate(-50%, -50%); border: 1px solid rgba(255,255,255,.54); background: rgba(30,45,57,.12); box-shadow: 0 0 0 1px rgba(15,23,42,.08); }
-        .atbat-zone::before, .atbat-zone::after { content: ''; position: absolute; inset: 0; pointer-events: none; }
-        .atbat-zone::before { background: linear-gradient(90deg, transparent 33%, rgba(255,255,255,.36) 33% 34%, transparent 34% 66%, rgba(255,255,255,.36) 66% 67%, transparent 67%); }
-        .atbat-zone::after { background: linear-gradient(180deg, transparent 33%, rgba(255,255,255,.36) 33% 34%, transparent 34% 66%, rgba(255,255,255,.36) 66% 67%, transparent 67%); }
-        .atbat-trajectories { position: absolute; z-index: 9; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-        .atbat-trajectories path { fill: none; stroke-linecap: round; }
-        .atbat-trajectories .trail-glow { stroke-width: 5.2; opacity: .09; }
-        .atbat-trajectories .trail-core { stroke-width: 2.3; opacity: .17; }
-        .atbat-trajectories path.motion { stroke-dasharray: 1; stroke-dashoffset: 1; animation: atbat-trail-arrive .62s cubic-bezier(.2,.7,.2,1) var(--pitch-delay, .08s) forwards; }
-        .atbat-flight-ball { fill: #fff; stroke: rgba(185,28,28,.9); stroke-width: .22; filter: drop-shadow(0 0 1.2px rgba(0,0,0,.65)); }
-        .atbat-pitch-marker { position: absolute; z-index: 11; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border: 1.5px solid rgba(255,255,255,.94); border-radius: 50%; color: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.26); font-size: 8px; font-weight: 900; }
-        .atbat-pitch-marker.latest { width: 21px; height: 21px; box-shadow: 0 0 0 2px rgba(255,255,255,.14), 0 2px 6px rgba(0,0,0,.3); font-size: 9px; }
-        .atbat-pitch-marker.motion { opacity: 0; animation: atbat-marker-arrive .2s cubic-bezier(.2,.9,.3,1.35) calc(var(--pitch-delay, .08s) + .64s) forwards; }
-        @keyframes atbat-trail-arrive { to { stroke-dashoffset: 0; } }
-        @keyframes atbat-marker-arrive {
-            from { opacity: 0; transform: translate(-50%, -50%) scale(.35); }
-            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            .atbat-trajectories path.motion { animation: none; stroke-dashoffset: 0; }
-            .atbat-flight-ball { display: none; }
-            .atbat-pitch-marker.motion { opacity: 1; animation: none; }
-        }
-        .atbat-batter-layer { position: absolute; z-index: 8; bottom: -35px; height: 340px; width: 213px; pointer-events: none; transform-origin: center bottom; }
-        .atbat-batter-layer.bats-right { left: -7px; }
-        .atbat-batter-layer.bats-left { right: -7px; transform: scaleX(-1); }
-        .atbat-batter-layer img { width: 100%; height: 100%; display: block; object-fit: contain; filter: drop-shadow(0 5px 5px rgba(0,0,0,.3)); }
-        .atbat-batter-team-logo { position: absolute; z-index: 9; top: 87px; width: 21px; height: 21px; object-fit: contain; filter: drop-shadow(0 1px 2px rgba(0,0,0,.35)); pointer-events: none; }
-        .atbat-batter-team-logo.bats-right { left: 79px; }
-        .atbat-batter-team-logo.bats-left { right: 79px; }
-        .atbat-view-button { z-index: 14; right: 14px; bottom: 14px; width: 64px; height: 58px; border-radius: 10px; font-size: 10px; }
-        #pitch-location-content .broadcast-card { width: 100%; margin: 0; }
-        #pitch-location-content .atbat-view-button { display: none; }
         .game-record-inning-tabs { display: flex; gap: 6px; margin: 0 -2px 10px; padding: 2px 2px 7px; overflow-x: auto; scrollbar-width: none; }
         .game-record-inning-tabs::-webkit-scrollbar { display: none; }
         .game-record-inning-tab { flex: 0 0 48px; height: 30px; border: 1px solid rgba(255,255,255,.08); border-radius: 999px; color: #a1a1aa; background: rgba(255,255,255,.06); font-size: 10px; font-weight: 900; }
         .game-record-inning-tab.active { border-color: rgba(255,255,255,.75); color: #111827; background: #fff; }
         .game-record-list { display: flex; flex-direction: column; gap: 12px; }
         .game-record-card { overflow: hidden; border: 1px solid rgba(255,255,255,.08); border-radius: 16px; background: rgba(28,28,30,.96); color: #fff; }
-        .game-record-head { display: grid; grid-template-columns: 44px minmax(0,1fr) auto; gap: 10px; align-items: center; padding: 13px; }
+        .game-record-head { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 10px; align-items: center; padding: 13px; }
         .game-record-photo { width: 44px; height: 44px; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; border-radius: 50%; background: #252938; }
         .game-record-photo img { width: 100%; height: 100%; object-fit: contain; object-position: bottom; transform: scale(1.08); transform-origin: bottom; }
         .game-record-name { font-size: 15px; font-weight: 900; }
         .game-record-meta { margin-left: 5px; color: #a1a1aa; font-size: 10px; font-weight: 700; }
         .game-record-stats { margin-top: 5px; color: #d4d4d8; font-size: 9px; font-weight: 700; line-height: 1.5; }
-        .game-record-location-btn { min-width: 92px; padding: 8px 10px; border: 1px solid rgba(255,255,255,.12); border-radius: 999px; color: #f4f4f5; background: transparent; font-size: 10px; font-weight: 900; }
         .game-record-body { padding: 12px 14px 14px; border-top: 1px solid rgba(255,255,255,.04); background: #242426; }
         .game-record-summary { margin-bottom: 10px; color: #f4f4f5; font-size: 11px; font-weight: 800; line-height: 1.6; white-space: pre-line; }
         .game-record-event { padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,.07); color: #f4f4f5; font-size: 11px; font-weight: 800; }
-        .game-record-pitch { display: grid; grid-template-columns: 24px 68px minmax(0,1fr); gap: 7px; align-items: center; min-height: 26px; font-size: 10px; }
-        .game-record-pitch-number { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: #fff; font-size: 9px; font-weight: 900; }
-        .game-record-pitch-result { color: #f4f4f5; font-weight: 900; }
-        .game-record-pitch-detail { color: #d4d4d8; font-weight: 800; }
-        .game-record-pitch-count { margin-left: 5px; color: #71717a; }
-        .atbat-runner-icon { width: 25px; height: 20px; display: block; }
-        .atbat-runner-icon svg { width: 100%; height: 100%; display: block; }
-        @media (max-width: 360px) {
-            .atbat-score-state-top { grid-template-columns: 37px 24px minmax(77px, 1fr); }
-            .atbat-pitcher-status { display: none; }
-        }
         .lineup-sub-arrow { color: #22c55e; font-size: 20px; font-weight: 900; line-height: 1; }
-        html.light-mode .broadcast-card .text-white { color: #fff !important; }
-        html.light-mode .broadcast-card .text-gray-300 { color: #d1d5db !important; }
-        html.light-mode .broadcast-card .text-gray-400 { color: #9ca3af !important; }
         /* 요정/응원가 탭에서 '전체' 버튼 완전히 접기 (살짝 보이던 문제 수정) */
         #ctrl-team button.btn-collapse { width: 0 !important; min-width: 0 !important; max-width: 0 !important; padding-left: 0 !important; padding-right: 0 !important; }
         /* [추가] 홈 Now Brief 피드 카드 (라이트/다크 모두 대응) */
@@ -522,7 +402,7 @@
         html.light-mode .bg-gray-500\/10, html.light-mode .bg-gray-500\/5 { background-color: rgba(75,85,99,0.05) !important; }
         html.light-mode .text-green-500, html.light-mode .border-green-500, html.light-mode .text-green-500\/80, html.light-mode .border-green-500\/80 { color: #10b981 !important; border-color: #10b981 !important; opacity: 1 !important; }
         html.light-mode .bg-green-500\/10, html.light-mode .bg-green-500\/5 { background-color: rgba(16,185,129,0.05) !important; }
-        /* [수정점] 라이트 모드에서 밝은 배경 위 승/패 표기(연한 빨강/파랑)가 잘 안 보이는 문제 보정 */
+        /* 라이트 모드에서 밝은 배경 위 승/패 표기(연한 빨강/파랑)가 잘 보이도록 보정 */
         html.light-mode .text-\[\#f87171\] { color: #dc2626 !important; }
         html.light-mode .text-\[\#60a5fa\] { color: #2563eb !important; }
         html.light-mode .banner-card .text-\[\#f87171\] { color: #f87171 !important; }
@@ -624,7 +504,7 @@
         html.light-mode .banner-card .border-\[rgba\(255\2c 255\2c 255\2c 0\.15\)\] { border-color: transparent !important; }
         html.light-mode body[data-theme="all"] .banner-card .text-point { color: #111827 !important; text-shadow: none; }
 
-        /* 기록/투구 위치: 고정 다크 색상이 라이트 모드 공통 글자색과 충돌하지 않도록 전용 표면을 사용한다. */
+        /* 기록 카드: 라이트 모드에서는 밝은 표면과 선명한 글자색을 사용한다. */
         html { color-scheme: dark; }
         html.light-mode { color-scheme: light; }
         html.light-mode .game-record-inning-tab {
@@ -648,34 +528,13 @@
         html.light-mode .game-record-name { color: #111827; }
         html.light-mode .game-record-meta { color: #64748b; }
         html.light-mode .game-record-stats { color: #475569; }
-        html.light-mode .game-record-location-btn {
-            border-color: #cbd5e1;
-            color: #1e293b;
-            background: #f8fafc;
-        }
         html.light-mode .game-record-body {
             border-top-color: #e2e8f0;
             background: #f8fafc;
         }
         html.light-mode .game-record-summary,
-        html.light-mode .game-record-event,
-        html.light-mode .game-record-pitch-result { color: #1f2937; }
+        html.light-mode .game-record-event { color: #1f2937; }
         html.light-mode .game-record-event { border-bottom-color: #e2e8f0; }
-        html.light-mode .game-record-pitch-detail { color: #475569; }
-        html.light-mode .game-record-pitch-count { color: #94a3b8; }
-        html.light-mode #pitch-location-modal { background-color: rgba(15,23,42,.62) !important; }
-        html.light-mode #pitch-location-modal > div {
-            border-color: #dbe2ea !important;
-            background: #ffffff !important;
-            box-shadow: 0 24px 70px rgba(15,23,42,.28) !important;
-        }
-        html.light-mode #pitch-location-modal > div > div:first-child { border-bottom-color: #e2e8f0 !important; }
-        html.light-mode #pitch-location-title { color: #111827 !important; }
-        html.light-mode #pitch-location-title + span { color: #64748b !important; }
-        html.light-mode #pitch-location-modal button[aria-label="투구 위치 팝업 닫기"] {
-            color: #334155 !important;
-            background: #f1f5f9 !important;
-        }
     </style>
 </head>
 <body class="w-full h-[100dvh] flex justify-center items-center overflow-hidden app-bg" data-theme="all">
@@ -852,16 +711,6 @@
             </footer>
         </div>
 
-        <div id="pitch-location-modal" class="absolute inset-0 z-[90] hidden items-center justify-center bg-black/75 p-4 backdrop-blur-sm" onclick="if(event.target===this) closePitchLocationModal()">
-            <div class="w-full max-w-[430px] overflow-hidden rounded-2xl border border-white/15 bg-[#161719] shadow-2xl">
-                <div class="flex items-center justify-between border-b border-white/10 px-4 py-3">
-                    <div><strong id="pitch-location-title" class="block text-[14px] font-black text-white">투구 위치</strong><span class="text-[9px] text-gray-500">타석보기 투구 궤적</span></div>
-                    <button type="button" onclick="closePitchLocationModal()" aria-label="투구 위치 팝업 닫기" class="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <div id="pitch-location-content"></div>
-            </div>
-        </div>
-
         <div id="mini-player" onclick="openFullPlayer()" class="absolute bottom-[104px] left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-[380px] bg-[#1C1C1E] rounded-2xl p-2 pl-2.5 pr-2.5 flex items-center justify-between transition-all duration-300 translate-y-[150%] opacity-0 pointer-events-none overflow-hidden cursor-pointer">
             <div class="flex items-center gap-3 overflow-hidden flex-1 min-w-0">
                 <div class="mp-cover-bg w-[44px] h-[44px] rounded-xl flex items-center justify-center shrink-0 overflow-hidden p-1.5">
@@ -1002,7 +851,7 @@
             return out;
         }
 
-        let scheduleData = [], rankingData = [], liveDataStore = {}, currentPopupMatchId = null, currentGameInfoTab = 'lineup', currentGameRecordInning = 1, isAtBatViewOpen = false, atBatReplaySequence = false, currentTabIndex = 0, watchRecords = [], recordPopupDate = new Date(), currentRecordTeam = null, currentRecordType = null;
+        let scheduleData = [], rankingData = [], liveDataStore = {}, currentPopupMatchId = null, currentGameInfoTab = 'lineup', currentGameRecordInning = 1, currentTabIndex = 0, watchRecords = [], recordPopupDate = new Date(), currentRecordTeam = null, currentRecordType = null;
         let audioPlayer, currentSongTitle = '', currentSongCover = '', currentPlaylist = [], currentSongIndex = -1, isSeeking = false;
         let fpStartY = 0, fpCurrentY = 0, fpIsDragging = false, currentBanner = 0, totalBanners = 1, bannerInterval, isPlaying = true;
         let isInitialPopupChecked = false, homeHeaderFrame = 0;
@@ -3128,7 +2977,7 @@
             let tempM = scheduleData.find(x => x.id === parseInt(id) || x.id === id);
             if (tempM && tempM.date < todayStr) await fetchPastGame(tempM.date);
 
-            currentPopupMatchId = id; currentGameInfoTab = 'lineup'; currentGameRecordInning = 1; isAtBatViewOpen = false; if (navigator.vibrate) navigator.vibrate(5);
+            currentPopupMatchId = id; currentGameInfoTab = 'lineup'; currentGameRecordInning = 1; if (navigator.vibrate) navigator.vibrate(5);
             const p = document.getElementById('lineup-popup'); p.classList.remove('render-hidden');
             const lc = document.getElementById('lineup-content');
             if (lc) lc.scrollTop = 0;
@@ -3141,8 +2990,7 @@
         function closeLineupPopup() {
             const p = document.getElementById('lineup-popup');
             if (p && !p.classList.contains('render-hidden')) {
-                closePitchLocationModal();
-                currentPopupMatchId = null; isAtBatViewOpen = false; p.classList.add('render-hidden'); updateHeaderCtrlForPopup(false);
+                currentPopupMatchId = null; p.classList.add('render-hidden'); updateHeaderCtrlForPopup(false);
                 const l = document.getElementById('lineup-content');
                 if (l) l.classList.remove('render-hidden', 'hidden');
                 requestAnimationFrame(updateHomeHeaderMorph);
@@ -3150,8 +2998,7 @@
         }
 
         function switchGameInfoTab(tab) {
-            if (!['lineup', 'broadcast', 'record'].includes(tab) || !currentPopupMatchId) return;
-            if (tab === 'broadcast' && currentGameInfoTab !== 'broadcast' && isAtBatViewOpen) atBatReplaySequence = true;
+            if (!['lineup', 'record'].includes(tab) || !currentPopupMatchId) return;
             if (tab === 'record' && currentGameInfoTab !== 'record') currentGameRecordInning = 1;
             currentGameInfoTab = tab;
             renderPopupContent(currentPopupMatchId);
@@ -3165,7 +3012,6 @@
         function gameInfoTabsHtml() {
             const tabs = [
                 { id: 'lineup', label: '라인업' },
-                { id: 'broadcast', label: '중계' },
                 { id: 'record', label: '기록' }
             ];
             const themedTeam = selectedTeam === 'KIA' || selectedTeam === '삼성' ? selectedTeam : null;
@@ -3177,19 +3023,11 @@
             }).join('')}</div>`;
         }
 
-        function toggleAtBatView(open) {
-            const nextOpen = typeof open === 'boolean' ? open : !isAtBatViewOpen;
-            if (nextOpen && !isAtBatViewOpen) atBatReplaySequence = true;
-            isAtBatViewOpen = nextOpen;
-            if (navigator.vibrate) navigator.vibrate(5);
-            if (currentPopupMatchId) renderPopupContent(currentPopupMatchId);
-        }
-
-        function _atBatSafeText(value) {
+        function _recordSafeText(value) {
             return String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
         }
 
-        function _atBatValue(source, keys) {
+        function _recordValue(source, keys) {
             if (!source || typeof source !== 'object') return undefined;
             for (const key of keys) {
                 if (source[key] !== undefined && source[key] !== null && source[key] !== '') return source[key];
@@ -3197,298 +3035,14 @@
             return undefined;
         }
 
-        // 관리자 페이지에서 그대로 저장할 수 있는 타석보기 Firebase 입력 규격.
-        // x/y와 궤적 좌표는 타석보기 화면을 기준으로 한 0~100 퍼센트 값이다.
-        const AT_BAT_FIREBASE_SCHEMA = Object.freeze({
-            parent: 'currentAtBat',
-            pitches: 'pitches',
-            fields: ['pitchNumber', 'pitchType', 'pitchSpeed', 'pitchResult', 'xPercent', 'yPercent'],
-            trajectory: ['startX', 'startY', 'controlX', 'controlY']
-        });
-        window.AT_BAT_FIREBASE_SCHEMA = AT_BAT_FIREBASE_SCHEMA;
-
-        function _atBatPitchList(value) {
-            let pitches = [];
-            if (Array.isArray(value)) pitches = value;
-            else if (value && typeof value === 'object') pitches = Object.values(value);
-            if (!pitches.length) return [];
-            return pitches.map((pitch, index) => {
-                const source = pitch && typeof pitch === 'object' ? pitch : {};
-                const explicitOrder = Number(_atBatValue(source, ['pitchNumber', 'number', 'no', 'order', '순번']));
-                const timestamp = _atBatValue(source, ['timestamp', 'createdAt', 'updatedAt', 'time']);
-                const timestampOrder = timestamp && typeof timestamp === 'object' && Number.isFinite(Number(timestamp.seconds))
-                    ? Number(timestamp.seconds)
-                    : Number(new Date(timestamp).getTime());
-                return {
-                    pitch,
-                    index,
-                    order: Number.isFinite(explicitOrder) && explicitOrder > 0
-                        ? explicitOrder
-                        : (Number.isFinite(timestampOrder) ? timestampOrder : index)
-                };
-            }).sort((a, b) => a.order - b.order || a.index - b.index).slice(-7).map(item => item.pitch);
-        }
-
-        function _atBatPitchSource(l) {
-            const holders = [l.currentAtBat, l.atBat, l.batterBox, l.plateAppearance, l];
-            const listKeys = ['pitches', 'pitchHistory', 'pitchLog', 'atBatPitches', 'recentPitches', '투구목록'];
-            for (const holder of holders) {
-                if (!holder || typeof holder !== 'object') continue;
-                for (const key of listKeys) {
-                    const pitches = _atBatPitchList(holder[key]);
-                    if (pitches.length) return pitches;
-                }
-            }
-            const latest = l.latestPitch || l.currentPitch || l.lastPitch || l.최근투구 || {
-                pitchType: _atBatValue(l, ['pitchType', 'ballType', 'pitchName', '구종']),
-                speed: _atBatValue(l, ['pitchSpeed', 'velocity', 'speed', '구속']),
-                result: _atBatValue(l, ['pitchResult', 'result', 'call', '판정']),
-                x: _atBatValue(l, ['pitchX', 'locationX', 'zoneX']),
-                y: _atBatValue(l, ['pitchY', 'locationY', 'zoneY']),
-                zone: _atBatValue(l, ['pitchZone', 'zone'])
-            };
-            return _atBatValue(latest, ['pitchType', 'ballType', 'pitchName', 'type', '구종', 'speed', 'velocity', 'pitchSpeed', '구속']) !== undefined ? [latest] : [];
-        }
-
-        function _atBatCoordinate(value, fallback, axis) {
-            let number = Number(value);
-            if (!Number.isFinite(number)) return fallback;
-            if (number >= 0 && number <= 1) return number * 100;
-            if (number >= 0 && number <= 100) return number;
-            if (number >= -3 && number <= 3) return Math.max(0, Math.min(100, 50 + number * (axis === 'x' ? 16 : 14)));
-            return fallback;
-        }
-
-        function _atBatPitchColor(result, index) {
-            const value = String(result || '').toLowerCase();
-            if (value.includes('볼') || value.includes('ball')) return '#f5b82e';
-            if (value.includes('인플레이') || value.includes('안타') || value.includes('홈런') || value.includes('out') || value.includes('hit') || value.includes('play')) return '#16a34a';
-            if (value.includes('스트라이크') || value.includes('헛스윙') || value.includes('파울') || value.includes('strike') || value.includes('swing') || value.includes('foul')) return '#1477c9';
-            return ['#f5b82e', '#f5b82e', '#16a34a', '#1477c9'][index % 4];
-        }
-
-        function _atBatPitches(l) {
-            const fallbackPoints = [[32, 47], [68, 46], [88, 22], [52, 36], [43, 62], [61, 68], [25, 76]];
-            return _atBatPitchSource(l).map((raw, index) => {
-                const pitch = raw && typeof raw === 'object' ? raw : { pitchType: raw };
-                const location = pitch.location && typeof pitch.location === 'object' ? pitch.location : {};
-                const zone = Number(_atBatValue(pitch, ['zone', 'pitchZone', 'zoneNumber', '코스']));
-                const zoneColumn = zone >= 1 && zone <= 9 ? (zone - 1) % 3 : -1;
-                const zoneRow = zone >= 1 && zone <= 9 ? Math.floor((zone - 1) / 3) : -1;
-                const fallback = fallbackPoints[index % fallbackPoints.length];
-                const rawX = _atBatValue(pitch, ['xPercent', 'pitchXPercent', 'x', 'pitchX', 'locationX', 'zoneX', 'px']) ?? _atBatValue(location, ['xPercent', 'x', 'horizontal']);
-                const rawY = _atBatValue(pitch, ['yPercent', 'pitchYPercent', 'y', 'pitchY', 'locationY', 'zoneY', 'py']) ?? _atBatValue(location, ['yPercent', 'y', 'vertical']);
-                const x = zoneColumn >= 0 ? 26 + zoneColumn * 24 : _atBatCoordinate(rawX, fallback[0], 'x');
-                const y = zoneRow >= 0 ? 26 + zoneRow * 24 : _atBatCoordinate(rawY, fallback[1], 'y');
-                const type = _atBatValue(pitch, ['pitchType', 'ballType', 'pitchName', 'type', 'kind', '구종']) || '투구';
-                const speedValue = _atBatValue(pitch, ['pitchSpeed', 'velocity', 'speed', 'kmh', '구속']);
-                const speedNumber = Number(String(speedValue ?? '').replace(/[^0-9.]/g, ''));
-                const result = _atBatValue(pitch, ['pitchResult', 'result', 'call', 'judgement', 'outcome', '판정']) || '';
-                const markerNumber = Number(_atBatValue(pitch, ['pitchNumber', 'number', 'no', '순번'])) || index + 1;
-                const left = 50 + (x - 50) * .42;
-                const top = 56 + (y - 50) * .34;
-                const trajectory = pitch.trajectory && typeof pitch.trajectory === 'object' ? pitch.trajectory : {};
-                const startX = _atBatCoordinate(_atBatValue(trajectory, ['startX', 'x1']) ?? _atBatValue(pitch, ['trajectoryStartX', 'startX']), 50, 'x');
-                const startY = _atBatCoordinate(_atBatValue(trajectory, ['startY', 'y1']) ?? _atBatValue(pitch, ['trajectoryStartY', 'startY']), 43, 'y');
-                const defaultControlX = 50 + (left - 50) * .28 + (index % 2 ? 3.5 : -3.5);
-                const defaultControlY = 39 + index * .8;
-                const controlX = _atBatCoordinate(_atBatValue(trajectory, ['controlX', 'curveX', 'cx']) ?? _atBatValue(pitch, ['trajectoryControlX', 'controlX']), defaultControlX, 'x');
-                const controlY = _atBatCoordinate(_atBatValue(trajectory, ['controlY', 'curveY', 'cy']) ?? _atBatValue(pitch, ['trajectoryControlY', 'controlY']), defaultControlY, 'y');
-                return {
-                    number: markerNumber,
-                    type: _atBatSafeText(type),
-                    speed: Number.isFinite(speedNumber) && speedNumber > 0 ? `${Math.round(speedNumber)}km/h` : '',
-                    result: _atBatSafeText(result),
-                    color: _atBatPitchColor(result, index),
-                    left,
-                    top,
-                    startX,
-                    startY,
-                    controlX,
-                    controlY
-                };
-            });
-        }
-
-        function _atBatBatterAsset(team) {
-            return ({
-                '삼성': 'assets/atbat-batter-v3.png',
-                'KIA': 'assets/atbat-batter-red-v3.png',
-                'SSG': 'assets/atbat-batter-red-v3.png',
-                'LG': 'assets/atbat-batter-magenta-v3.png',
-                '두산': 'assets/atbat-batter-navy-v3.png',
-                '롯데': 'assets/atbat-batter-navy-v3.png',
-                '한화': 'assets/atbat-batter-orange-v3.png',
-                'KT': 'assets/atbat-batter-black-v3.png',
-                'NC': 'assets/atbat-batter-navy-v3.png',
-                '키움': 'assets/atbat-batter-burgundy-v3.png'
-            })[team] || 'assets/atbat-batter-v3.png';
-        }
-
-        function _stadiumAsset(m, l = {}) {
-            const override = _atBatValue(l, ['stadiumImage', 'stadiumImageUrl', 'ballparkImage']) || m.stadiumImage;
-            if (override) return override;
-            const stadium = String(m.stadium || l.stadium || '').replace(/\s+/g, '');
-            if (stadium.includes('고척')) return 'assets/stadium-gocheok-v1.png';
-            if (stadium.includes('잠실')) return 'assets/stadium-jamsil-v1.png';
-            if (stadium.includes('광주') || stadium.includes('챔피언스') || stadium.includes('챔필')) return 'assets/stadium-gwangju-v1.png';
-            if (stadium.includes('수원') || stadium.includes('위즈파크')) return 'assets/stadium-suwon-v1.png';
-            if (stadium.includes('부산') || stadium.includes('사직')) return 'assets/stadium-busan-v1.png';
-            return 'assets/atbat-stadium-v3.png';
-        }
-
-        function _atBatFieldHtml(m, l, batterSide, forceReplay = false) {
-            const pitches = _atBatPitches(l);
-            const latest = pitches[pitches.length - 1];
-            const replayAll = forceReplay || atBatReplaySequence;
-            const summary = latest
-                ? `<div class="atbat-pitch-summary"><strong>${latest.number}구${latest.type}</strong><span>${latest.speed || latest.result}</span></div>`
-                : `<div class="atbat-pitch-summary waiting"><strong>투구 정보 대기중</strong><span></span></div>`;
-            const trajectoryHtml = pitches.map((pitch, index) => {
-                const isLatestPitch = index === pitches.length - 1;
-                const shouldAnimate = replayAll || isLatestPitch;
-                const delay = replayAll ? .08 + index * .72 : .08;
-                const path = `M ${pitch.startX.toFixed(1)} ${pitch.startY.toFixed(1)} Q ${pitch.controlX.toFixed(1)} ${pitch.controlY.toFixed(1)} ${pitch.left.toFixed(1)} ${pitch.top.toFixed(1)}`;
-                const trailClass = shouldAnimate ? ' motion' : '';
-                const trailStyle = shouldAnimate ? ` style="--pitch-delay:${delay.toFixed(2)}s"` : '';
-                const flightBall = shouldAnimate ? `<ellipse class="atbat-flight-ball" cx="0" cy="0" rx=".9" ry="1.25" opacity="0"><animateMotion path="${path}" dur=".7s" begin="${delay.toFixed(2)}s" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines=".2 .72 .22 1"></animateMotion><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.08;.84;1" dur=".7s" begin="${delay.toFixed(2)}s" fill="freeze"></animate></ellipse>` : '';
-                return `<path class="trail-glow${trailClass}"${trailStyle} pathLength="1" d="${path}" stroke="${pitch.color}"></path><path class="trail-core${trailClass}"${trailStyle} pathLength="1" d="${path}" stroke="${pitch.color}"></path>${flightBall}`;
-            }).join('');
-            const markerHtml = pitches.map((pitch, index) => {
-                const isLatestPitch = index === pitches.length - 1;
-                const shouldAnimate = replayAll || isLatestPitch;
-                const delay = replayAll ? .08 + index * .72 : .08;
-                return `<span class="atbat-pitch-marker ${isLatestPitch ? 'latest' : ''} ${shouldAnimate ? 'motion' : ''}" style="left:${pitch.left.toFixed(1)}%;top:${pitch.top.toFixed(1)}%;background:${pitch.color};--pitch-delay:${delay.toFixed(2)}s" title="${pitch.number}구 ${pitch.type} ${pitch.speed} ${pitch.result}">${pitch.number}</span>`;
-            }).join('');
-            const isTop = String(l.inning || '').includes('초');
-            const offenseTeam = isTop ? m.team1 : m.team2;
-            const sideClass = batterSide === 'left' ? 'bats-left' : 'bats-right';
-            const teamLogo = teamLogos[offenseTeam] ? `<img class="atbat-batter-team-logo ${sideClass}" src="${teamLogos[offenseTeam]}" alt="" aria-hidden="true">` : '';
-            return `<div class="atbat-field" aria-label="타석 시점 투구 위치">
-                <div class="atbat-field-shade"></div>
-                <div class="atbat-batter-layer ${sideClass}"><img src="${_atBatBatterAsset(offenseTeam)}" alt="" aria-hidden="true"></div>
-                ${teamLogo}
-                ${summary}
-                <svg class="atbat-trajectories" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${trajectoryHtml}</svg>
-                <div class="atbat-zone" aria-label="스트라이크 존"></div>${markerHtml}
-                <button type="button" class="broadcast-view-button atbat-view-button" onclick="toggleAtBatView(false)" aria-label="주루 화면 보기"><span class="atbat-runner-icon" aria-hidden="true"><svg viewBox="0 0 30 24"><path d="M3 9.5C5.8 3.8 10 2 15 2s9.2 1.8 12 7.5c-1.8 5.2-7.1 7.6-12 12.2C10.1 17.1 4.8 14.7 3 9.5Z" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linejoin="round"/><path d="M7 9.4c2.1-2.8 4.7-4.1 8-4.1s5.9 1.3 8 4.1" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span><span>주루보기</span></button>
-            </div>`;
-        }
-
-        function gameBroadcastHtml(m, l) {
-            const isLive = l.gameStatus === '경기중';
-            const inningText = isLive && l.inning ? l.inning : (l.gameStatus === '종료' ? '경기 종료' : '경기 전');
-            const isTop = String(l.inning || '').includes('초');
-            const defenseSide = isLive ? (isTop ? 'home' : 'away') : 'home';
-            const offenseSide = defenseSide === 'home' ? 'away' : 'home';
-            const lineup = _lineupWithSubstitutions(l, defenseSide);
-            const activeDefenseLineup = _activeDefenseLineup(lineup);
-            const offenseLineup = _lineupWithSubstitutions(l, offenseSide);
-            const activeOffenseLineup = _activeBattingLineup(offenseLineup);
-            const currentPitcher = _curPitcherName(l, defenseSide);
-            const pitcherDetail = l[`${defenseSide}PitcherDetail`] || l[`${defenseSide}StarterDetail`] || null;
-            const pitcherName = currentPitcher !== '-' ? currentPitcher : ((pitcherDetail && pitcherDetail.name) || '-');
-            const awayScore = l.awayScore ?? '-';
-            const homeScore = l.homeScore ?? '-';
-            const awayColor = teamHex[m.team1] || '#39424e';
-            const homeColor = teamHex[m.team2] || '#39424e';
-            const fielders = {};
-            activeDefenseLineup.forEach(player => {
-                if (!player || typeof player !== 'object' || !player.position) return;
-                fielders[player.position] = player.name || '-';
-            });
-            fielders['투수'] = pitcherName;
-            const positions = [
-                ['중견수', 'cf'], ['좌익수', 'lf'], ['우익수', 'rf'], ['유격수', 'ss'], ['2루수', 'sb'],
-                ['3루수', 'tb'], ['1루수', 'fb'], ['투수', 'p'], ['포수', 'c']
-            ];
-            const playerHtml = positions.map(([position, cls]) => {
-                const name = fielders[position] || '-';
-                const photo = playerImages[name];
-                const portrait = photo
-                    ? `<img src="${photo}" alt="${name}">`
-                    : `<i class="fa-solid fa-user text-[14px] text-gray-300 mb-1"></i>`;
-                return `<div class="broadcast-player ${cls}"><div class="portrait">${portrait}</div><span class="name" title="${position} ${name}">${name === '-' ? position : name}</span></div>`;
-            }).join('');
-            const countDots = (value, max, type) => Array.from({ length: max }, (_, i) => `<span class="broadcast-count-dot ${type} ${i < Number(value || 0) ? 'on' : ''}"></span>`).join('');
-            const baseClass = key => l[key] ? 'active' : '';
-            const hasFielders = Object.keys(fielders).some(key => key !== '투수');
-            const liveBatterName = _curBatterName(l, offenseSide);
-            const matchedBatter = activeOffenseLineup.find(player => _lineupPlayerName(player) === liveBatterName) || null;
-            const batterData = matchedBatter || (liveBatterName === '-' ? activeOffenseLineup[0] : null) || null;
-            const batterName = liveBatterName !== '-' ? liveBatterName : (_lineupPlayerName(batterData) || '타자');
-            const batterSide = _batterSideOf(l, offenseSide, batterData);
-            const batterPhoto = playerImages[batterName];
-            const batterPortrait = batterPhoto ? `<img src="${batterPhoto}" alt="${batterName}">` : `<i class="fa-solid fa-user text-[15px] text-gray-300 mb-1"></i>`;
-            const runnerClasses = { 1: 'first', 2: 'second', 3: 'third' };
-            const runnerHtml = [1, 2, 3].filter(base => Boolean(l[`base${base}`])).map(base => {
-                const savedName = _baseRunnerName(l, base, offenseSide);
-                const runnerName = savedName !== '-' ? savedName : `${base}루 주자`;
-                const runnerPhoto = playerImages[runnerName];
-                const runnerPortrait = runnerPhoto
-                    ? `<img src="${runnerPhoto}" alt="${runnerName}">`
-                    : `<i class="fa-solid fa-user text-[11px] text-gray-500 mb-1"></i>`;
-                return `<div class="broadcast-runner ${runnerClasses[base]}" aria-label="${base}루 주자 ${runnerName}"><div class="portrait">${runnerPortrait}</div><span class="name">${runnerName}</span></div>`;
-            }).join('');
-            const batterIndex = activeOffenseLineup.findIndex(player => _lineupPlayerName(player) === batterName);
-            const waitingList = activeOffenseLineup.length > 1 ? Array.from({ length: Math.min(3, activeOffenseLineup.length - 1) }, (_, index) => activeOffenseLineup[(Math.max(0, batterIndex) + index + 1) % activeOffenseLineup.length]) : [];
-            const waitingPlayers = waitingList.map((player, index) => {
-                const name = _lineupPlayerName(player);
-                return `<span>${index + 1}. ${name || '-'}</span>`;
-            }).join('') || '<span>라인업 발표 전</span>';
-            const pitcherCount = l[`${defenseSide}PitcherCount`] || l.pitcherCount || l.pitchCount || 0;
-            const pitcherCountNumber = parseInt(String(pitcherCount).replace(/[^0-9]/g, ''), 10) || 0;
-            const stadiumImage = _stadiumAsset(m, l);
-            const stadiumLayer = `<img class="broadcast-card-stadium" src="${_atBatSafeText(stadiumImage)}" alt="" aria-hidden="true">`;
-            const scoreboardHtml = `<div class="broadcast-scoreboard">
-                    <div class="broadcast-score-team ${offenseSide === 'away' ? 'at-bat' : ''}" style="background:${awayColor}"><img src="${teamLogos[m.team1]}" alt="${m.team1}"><strong>${awayScore}</strong></div>
-                    <div class="broadcast-score-team ${offenseSide === 'home' ? 'at-bat' : ''}" style="background:${homeColor}"><img src="${teamLogos[m.team2]}" alt="${m.team2}"><strong>${homeScore}</strong></div>
-                    <div class="broadcast-score-state">
-                        <div class="broadcast-score-state-top ${isAtBatViewOpen ? 'atbat-score-state-top' : ''}">
-                            <span>${inningText}</span>
-                            <span class="broadcast-mini-bases" aria-label="주자 현황"><i class="broadcast-mini-base second ${baseClass('base2')}"></i><i class="broadcast-mini-base third ${baseClass('base3')}"></i><i class="broadcast-mini-base first ${baseClass('base1')}"></i></span>
-                            <span class="broadcast-counts"><b>${Number(l.ball || 0)}B</b><b>${Number(l.strike || 0)}S</b>${countDots(l.out, 2, 'out')}<span class="broadcast-out-label">OUT</span></span>
-                            ${isAtBatViewOpen ? `<em class="atbat-pitcher-status" title="${_atBatSafeText(pitcherName)}">${_atBatSafeText(pitcherName)} <b>${pitcherCountNumber}구</b></em>` : ''}
-                        </div>
-                    </div>
-                </div>`;
-            if (isAtBatViewOpen) {
-                return `<section class="broadcast-card stadium-card" aria-label="타석 중계">${stadiumLayer}${scoreboardHtml}${_atBatFieldHtml(m, l, batterSide)}</section>`;
-            }
-            return `<section class="broadcast-card runner-card" aria-label="문자 중계">
-                ${scoreboardHtml}
-                <div class="broadcast-field">
-                    <img class="broadcast-field-art" src="assets/baseball-field-broadcast.png" alt="" aria-hidden="true">
-                    ${playerHtml}
-                    ${runnerHtml}
-                    <div class="broadcast-batter bats-${batterSide}" aria-label="${batterSide === 'left' ? '좌타자' : batterSide === 'right' ? '우타자' : '타자'} ${batterName}"><div class="portrait">${batterPortrait}</div><span class="name">${batterName}</span></div>
-                    ${hasFielders ? '' : `<div class="absolute inset-x-0 top-[42%] z-10 bg-black/45 px-4 py-3 text-center text-[12px] font-bold text-white backdrop-blur-sm">라인업 발표 후 수비 위치가 표시됩니다</div>`}
-                    <div class="broadcast-waiting"><strong>대기타석</strong>${waitingPlayers}</div>
-                    <button type="button" class="broadcast-view-button" onclick="toggleAtBatView(true)" aria-label="타석 화면 보기"><i class="fa-solid fa-baseball"></i><span>타석보기</span></button>
-                </div>
-            </section>`;
-        }
-
         function _recordBatters(l) {
             const raw = l.recordBatters || l.batterRecords || l.hitterRecords || l.타자기록 || [];
             return Array.isArray(raw) ? raw : (raw && typeof raw === 'object' ? Object.values(raw) : []);
         }
 
-        function _recordPitches(batter) {
-            const raw = batter.pitches || batter.pitchHistory || batter.atBatPitches || batter.투구목록 || [];
-            return Array.isArray(raw) ? raw : (raw && typeof raw === 'object' ? Object.values(raw) : []);
-        }
-
-        function _recordPitchColor(result) {
-            const value = String(result || '').toLowerCase();
-            if (value.includes('볼') || value.includes('ball')) return '#00c66a';
-            if (value.includes('스트라이크') || value.includes('헛스윙') || value.includes('파울') || value.includes('strike')) return '#ff9f0a';
-            return '#4b91f7';
-        }
-
         function gameRecordHtml(m, l) {
             const batters = _recordBatters(l);
-            const recordInnings = batters.map(batter => Number(_atBatValue(batter, ['inning', 'inningNumber', '회']) || 1)).filter(Number.isFinite);
+            const recordInnings = batters.map(batter => Number(_recordValue(batter, ['inning', 'inningNumber', '회']) || 1)).filter(Number.isFinite);
             const gameInning = Number(String(l.inning || '').replace(/[^0-9]/g, '')) || 9;
             const scoreInningCount = Math.max(
                 Array.isArray(l.awayInning) ? l.awayInning.length : 0,
@@ -3500,65 +3054,30 @@
                 const inning = index + 1;
                 return `<button type="button" class="game-record-inning-tab ${inning === currentGameRecordInning ? 'active' : ''}" onclick="selectGameRecordInning(${inning})" aria-pressed="${inning === currentGameRecordInning}">${inning}회</button>`;
             }).join('');
-            const visibleBatters = batters.map((batter, batterIndex) => ({ batter, batterIndex })).filter(({ batter }) => {
-                const inning = Number(_atBatValue(batter, ['inning', 'inningNumber', '회']) || 1);
+            const visibleBatters = batters.filter(batter => {
+                const inning = Number(_recordValue(batter, ['inning', 'inningNumber', '회']) || 1);
                 return inning === currentGameRecordInning;
             });
-            const cards = visibleBatters.map(({ batter, batterIndex }) => {
-                const rawName = _atBatValue(batter, ['name', 'playerName', 'batterName', '선수명']) || '타자';
-                const name = _atBatSafeText(rawName);
-                const order = _atBatSafeText(_atBatValue(batter, ['battingOrder', 'order', '타순']) || '-');
-                const average = _atBatSafeText(_atBatValue(batter, ['average', 'battingAverage', 'avg', '타율']) || '-');
-                const stat = (keys, fallback = 0) => _atBatSafeText(_atBatValue(batter, keys) ?? fallback);
+            const cards = visibleBatters.map(batter => {
+                const rawName = _recordValue(batter, ['name', 'playerName', 'batterName', '선수명']) || '타자';
+                const name = _recordSafeText(rawName);
+                const order = _recordSafeText(_recordValue(batter, ['battingOrder', 'order', '타순']) || '-');
+                const average = _recordSafeText(_recordValue(batter, ['average', 'battingAverage', 'avg', '타율']) || '-');
+                const stat = (keys, fallback = 0) => _recordSafeText(_recordValue(batter, keys) ?? fallback);
                 const stats = `타석 ${stat(['plateAppearances','pa','타석'])}　타수 ${stat(['atBats','ab','타수'])}　안타 ${stat(['hits','h','안타'])}　득점 ${stat(['runs','r','득점'])}<br>타점 ${stat(['rbi','타점'])}　홈런 ${stat(['homeRuns','hr','홈런'])}　볼넷 ${stat(['walks','bb','볼넷'])}　피삼진 ${stat(['strikeouts','so','삼진'])}`;
                 const photo = playerImages[rawName];
                 const photoHtml = photo ? `<img src="${photo}" alt="${name}">` : `<i class="fa-solid fa-user text-gray-500"></i>`;
-                const summaryRaw = _atBatValue(batter, ['summary', 'playSummary', 'description', '상황설명']) || '';
-                const summary = Array.isArray(summaryRaw) ? summaryRaw.map(_atBatSafeText).join('\n') : _atBatSafeText(summaryRaw);
-                const eventsRaw = _atBatValue(batter, ['events', 'playEvents', 'eventLog', '상황기록']) || [];
+                const summaryRaw = _recordValue(batter, ['summary', 'playSummary', 'description', '상황설명']) || '';
+                const summary = Array.isArray(summaryRaw) ? summaryRaw.map(_recordSafeText).join('\n') : _recordSafeText(summaryRaw);
+                const eventsRaw = _recordValue(batter, ['events', 'playEvents', 'eventLog', '상황기록']) || [];
                 const events = (Array.isArray(eventsRaw) ? eventsRaw : String(eventsRaw).split('\n')).filter(Boolean).map(event => {
-                    const text = typeof event === 'object' ? _atBatValue(event, ['text', 'description', 'event', '내용']) : event;
-                    return text ? `<div class="game-record-event">${_atBatSafeText(text)}</div>` : '';
+                    const text = typeof event === 'object' ? _recordValue(event, ['text', 'description', 'event', '내용']) : event;
+                    return text ? `<div class="game-record-event">${_recordSafeText(text)}</div>` : '';
                 }).join('');
-                const rawPitches = _recordPitches(batter);
-                const parsedPitches = _atBatPitches({ currentAtBat: { pitches: rawPitches } });
-                const pitchRows = parsedPitches.map((pitch, index) => {
-                    const raw = rawPitches[index] && typeof rawPitches[index] === 'object' ? rawPitches[index] : {};
-                    const count = _atBatSafeText(_atBatValue(raw, ['count', 'ballStrikeCount', 'pitchCount', '카운트']) || '');
-                    return `<div class="game-record-pitch"><span class="game-record-pitch-number" style="background:${_recordPitchColor(pitch.result)}">${pitch.number}</span><span class="game-record-pitch-result">${pitch.result || '투구'}</span><span class="game-record-pitch-detail">${pitch.speed} ${pitch.type}${count ? `<span class="game-record-pitch-count">| ${count}</span>` : ''}</span></div>`;
-                }).reverse().join('');
-                const locationButton = rawPitches.length ? `<button type="button" class="game-record-location-btn" onclick="openPitchLocationModal('${m.id}', ${batterIndex})">투구 위치보기 <i class="fa-solid fa-chevron-right ml-1"></i></button>` : '';
-                return `<article class="game-record-card"><div class="game-record-head"><div class="game-record-photo">${photoHtml}</div><div class="min-w-0"><div><span class="game-record-name">${name}</span><span class="game-record-meta">${order}번타자 · 타율 ${average}</span></div><div class="game-record-stats">${stats}</div></div>${locationButton}</div><div class="game-record-body">${summary ? `<div class="game-record-summary">${summary}</div>` : ''}${events}${pitchRows ? `<div class="space-y-1 pt-2">${pitchRows}</div>` : ''}</div></article>`;
+                return `<article class="game-record-card"><div class="game-record-head"><div class="game-record-photo">${photoHtml}</div><div class="min-w-0"><div><span class="game-record-name">${name}</span><span class="game-record-meta">${order}번타자 · 타율 ${average}</span></div><div class="game-record-stats">${stats}</div></div></div><div class="game-record-body">${summary ? `<div class="game-record-summary">${summary}</div>` : ''}${events}</div></article>`;
             }).join('');
             const empty = `<section class="min-h-[220px] flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-white/5 px-5 text-center"><div class="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center mb-3"><i class="fa-solid fa-chart-column text-lg text-gray-400"></i></div><span class="text-[15px] font-black text-white">${currentGameRecordInning}회 상세 기록 입력 대기중</span><span class="mt-2 text-[10px] text-gray-500">관리자페이지에서 이닝을 선택해 기록을 입력하세요.</span></section>`;
             return `<div class="game-record-inning-tabs" role="tablist" aria-label="이닝별 기록">${inningTabs}</div><section class="game-record-list">${cards || empty}</section>`;
-        }
-
-        function openPitchLocationModal(matchId, batterIndex) {
-            const m = scheduleData.find(item => item.id === parseInt(matchId) || String(item.id) === String(matchId));
-            const l = liveDataStore[matchId] || liveDataStore[m?.id] || {};
-            const batter = _recordBatters(l)[batterIndex];
-            if (!m || !batter) return;
-            const pitches = _recordPitches(batter);
-            const teamSide = String(_atBatValue(batter, ['teamSide', 'side', '공격팀']) || '').toLowerCase();
-            const inning = teamSide === 'away' || teamSide.includes('원정') ? '1회초' : (teamSide === 'home' || teamSide.includes('홈') ? '1회말' : (l.inning || '1회말'));
-            const batterSideRaw = String(_atBatValue(batter, ['batterSide', 'bats', '타석']) || '우타').toLowerCase();
-            const batterSide = batterSideRaw.includes('좌') || batterSideRaw === 'l' || batterSideRaw.includes('left') ? 'left' : 'right';
-            const previewLive = { ...l, inning, currentAtBat: { ...(l.currentAtBat || {}), pitches }, pitches };
-            const stadiumImage = _stadiumAsset(m, previewLive);
-            document.getElementById('pitch-location-title').textContent = `${_atBatValue(batter, ['name', 'playerName', 'batterName', '선수명']) || '타자'} 투구 위치`;
-            document.getElementById('pitch-location-content').innerHTML = `<section class="broadcast-card stadium-card" aria-label="투구 위치 타석보기"><img class="broadcast-card-stadium" src="${_atBatSafeText(stadiumImage)}" alt="" aria-hidden="true">${_atBatFieldHtml(m, previewLive, batterSide, true)}</section>`;
-            const modal = document.getElementById('pitch-location-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closePitchLocationModal() {
-            const modal = document.getElementById('pitch-location-modal');
-            if (!modal) return;
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.getElementById('pitch-location-content').innerHTML = '';
         }
 
         function renderPopupContent(id) {
@@ -3933,11 +3452,6 @@
             let wpb = isClassic ? '' : winProbBarHtml(m, l);
             const infoTabs = gameInfoTabsHtml();
 
-            if (currentGameInfoTab === 'broadcast') {
-                c.innerHTML = sbh + wpb + infoTabs + gameBroadcastHtml(m, l);
-                atBatReplaySequence = false;
-                return;
-            }
             if (currentGameInfoTab === 'record') {
                 c.innerHTML = sbh + wpb + infoTabs + gameRecordHtml(m, l);
                 return;
