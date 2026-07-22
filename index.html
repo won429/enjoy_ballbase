@@ -323,6 +323,15 @@
         .recent-form-streak.win { color: #4ade80; }
         .recent-form-streak.loss { color: #fb7185; }
         .recent-form-streak.draw { color: #cbd5e1; }
+        .recent-form-row { display: grid; grid-template-columns: 32px 46px 58px minmax(0, 1fr); column-gap: 8px; align-items: center; }
+        .recent-form-logo { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+        .recent-form-logo img { width: 28px; height: 28px; object-fit: contain; }
+        .recent-form-team, .recent-form-streak { min-width: 0; white-space: nowrap; text-align: left; }
+        .recent-form-results { justify-self: end; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+        .recent-form-results::-webkit-scrollbar { display: none; }
+        .scoreboard-rheb-panel { width: 88px !important; min-width: 88px; font-variant-numeric: tabular-nums; }
+        .scoreboard-rheb-panel > div { display: grid !important; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 !important; width: 100%; }
+        .scoreboard-rheb-panel > div > div { width: auto !important; min-width: 0; text-align: center; }
         html.light-mode .recent-form-results { background: rgba(15,23,42,0.035); border-color: rgba(15,23,42,0.06); }
         html.light-mode .recent-form-result.win, html.light-mode .recent-form-streak.win { color: #15803d; }
         html.light-mode .recent-form-result.loss, html.light-mode .recent-form-streak.loss { color: #be123c; }
@@ -465,12 +474,24 @@
             filter: saturate(0.82) contrast(0.92) !important;
             mix-blend-mode: multiply !important;
         }
+        .banner-team-watermark, .scoreboard-team-watermark { object-fit: contain; object-position: center; }
         html.light-mode .scoreboard-surface .text-white,
         html.light-mode .scoreboard-surface .text-\[\#FFFFFF\] { color: #111827 !important; }
         html.light-mode .scoreboard-surface .text-gray-200 { color: #374151 !important; }
         html.light-mode .scoreboard-surface .text-gray-300 { color: #4b5563 !important; }
         html.light-mode .scoreboard-surface .text-gray-400 { color: #6b7280 !important; }
         html.light-mode .scoreboard-surface .text-gray-500 { color: #8b95a1 !important; }
+        .scoreboard-batter-label { color: #6ee7b7; }
+        .scoreboard-batter-average { color: #d1d5db; }
+        .scoreboard-pitch-icon { color: #d1d5db; }
+        html.light-mode .scoreboard-surface .scoreboard-batter-label,
+        html.light-mode .banner-card .scoreboard-batter-label { color: #047857 !important; text-shadow: none !important; }
+        html.light-mode .scoreboard-surface .scoreboard-batter-average,
+        html.light-mode .banner-card .scoreboard-batter-average { color: #475569 !important; text-shadow: none !important; }
+        html.light-mode .scoreboard-surface .scoreboard-pitch-count,
+        html.light-mode .banner-card .scoreboard-pitch-count { opacity: 1 !important; }
+        html.light-mode .scoreboard-surface .scoreboard-pitch-icon,
+        html.light-mode .banner-card .scoreboard-pitch-icon { color: #334155 !important; filter: drop-shadow(0 1px 0 rgba(255,255,255,0.9)); }
         html.light-mode .scoreboard-surface .bg-\[\#111113\]\/90,
         html.light-mode .scoreboard-surface .bg-\[\#0d0d0e\],
         html.light-mode .scoreboard-surface .bg-\[rgba\(0\2c 0\2c 0\2c 0\.4\)\] {
@@ -1144,10 +1165,11 @@
                 s[home].results.push(hWin ? 'W' : aWin ? 'L' : 'D');
                 s[away].results.push(aWin ? 'W' : hWin ? 'L' : 'D');
                 s[home].dates.push(m.date); s[away].dates.push(m.date);
-                s[home].h2h[away] = s[home].h2h[away] || { w: 0, l: 0 };
-                s[away].h2h[home] = s[away].h2h[home] || { w: 0, l: 0 };
+                s[home].h2h[away] = s[home].h2h[away] || { w: 0, l: 0, d: 0 };
+                s[away].h2h[home] = s[away].h2h[home] || { w: 0, l: 0, d: 0 };
                 if (hWin) { s[home].h2h[away].w++; s[away].h2h[home].l++; }
                 else if (aWin) { s[away].h2h[home].w++; s[home].h2h[away].l++; }
+                else { s[home].h2h[away].d++; s[away].h2h[home].d++; }
             });
             teamStats = s;
         }
@@ -1211,10 +1233,59 @@
             for (let i = 0; i < s.results.length; i++) { if (s.dates[i] && s.dates[i] >= cs) { if (s.results[i] === 'W') w++; else if (s.results[i] === 'L') l++; } }
             return (w + l) === 0 ? 0.5 : w / (w + l);
         }
-        function _teamH2H(home, away) { let s = teamStats[home]; if (s && s.h2h && s.h2h[away]) { let x = s.h2h[away]; return { hw: x.w, aw: x.l, n: x.w + x.l }; } return { hw: 0, aw: 0, n: 0 }; }
+        function _teamH2H(home, away) { let s = teamStats[home]; if (s && s.h2h && s.h2h[away]) { let x = s.h2h[away]; return { hw: x.w, aw: x.l, d: x.d || 0, n: x.w + x.l }; } return { hw: 0, aw: 0, d: 0, n: 0 }; }
         function _normCdf(z) { let t = 1 / (1 + 0.2316419 * Math.abs(z)); let d = 0.3989423 * Math.exp(-z * z / 2); let p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274)))); return z > 0 ? 1 - p : p; }
 
-        // 전적(상대전적·최근 흐름·홈 이점) + 현재 점수차 + 경기 진행도(흐름)를 종합한 홈/원정 승리 확률(%)
+        function _probabilityClamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
+        function _probabilityPitcherName(l, side) {
+            return _pitcherName(l[side + 'StarterDetail'] || l[side + 'Starter'] || l[side + 'PitcherDetail'] || l[side + 'Pitcher']);
+        }
+        function _pitcherProbabilityStrength(l, side, team, opp) {
+            const record = pitcherRecords(_probabilityPitcherName(l, side), team, opp);
+            const seasonGames = record.seasonW + record.seasonL;
+            const vsGames = record.vsW + record.vsL;
+            const seasonRate = seasonGames ? record.seasonW / seasonGames : 0.5;
+            const vsRate = vsGames ? record.vsW / vsGames : 0.5;
+            return (seasonRate - 0.5) * 0.28 + (vsRate - 0.5) * 0.12 * Math.min(1, vsGames / 3);
+        }
+        function _latestRecordedHomeProbability(m, l) {
+            let selected = null, selectedRelay = -1;
+            for (const batter of _recordBatters(l)) {
+                const probability = Number(_recordValue(batter, ['winProbability', 'winningProbability', '승리확률']));
+                const team = String(_recordValue(batter, ['winProbabilityTeam', 'probabilityTeam', '승리확률팀']) || '');
+                if (!Number.isFinite(probability) || probability < 0 || probability > 100 || (team !== m.team1 && team !== m.team2)) continue;
+                const relay = Number(_recordValue(batter, ['relayNo', 'sequence', 'seq']) || 0);
+                if (selected === null || relay > selectedRelay) {
+                    selected = team === m.team2 ? probability / 100 : 1 - probability / 100;
+                    selectedRelay = relay;
+                }
+            }
+            return selected;
+        }
+        function _liveSituationLead(l, lead, isTop) {
+            const number = key => Number(l[key] || 0);
+            const statLead = _probabilityClamp(
+                (number('homeHit') - number('awayHit')) * 0.035 +
+                (number('awayError') - number('homeError')) * 0.07 +
+                (number('homeBase') - number('awayBase')) * 0.025,
+                -0.5, 0.5
+            );
+            const outs = _probabilityClamp(number('out'), 0, 3);
+            const outFactor = [1, 0.68, 0.34, 0][outs];
+            const runnerValue = (l.base1 ? 0.30 : 0) + (l.base2 ? 0.50 : 0) + (l.base3 ? 0.72 : 0);
+            const countValue = _probabilityClamp((number('ball') - number('strike')) * 0.04, -0.08, 0.12);
+            const offenseSide = isTop ? 'away' : 'home';
+            const batterName = _curBatterName(l, offenseSide);
+            const averageRaw = _batterAverageOf(l, offenseSide, batterName);
+            const average = averageRaw === '' ? NaN : Number(averageRaw);
+            const batterValue = Number.isFinite(average) ? _probabilityClamp((average - 0.25) * 0.9, -0.14, 0.16) : 0;
+            const defendingPitchCount = number(isTop ? 'homePitcherCount' : 'awayPitcherCount');
+            const fatigueValue = _probabilityClamp((defendingPitchCount - 75) / 100, 0, 0.35);
+            const offenseThreat = (runnerValue + countValue + batterValue + fatigueValue) * outFactor;
+            return lead + statLead + (isTop ? -offenseThreat : offenseThreat);
+        }
+
+        // 전적·최근 흐름·상대전적·선발 + 실시간 점수/이닝/주자/카운트/타자/투구 기록을 종합한 승리 확률(%)
         function winProbability(m, l) {
             const sig = x => 1 / (1 + Math.exp(-x));
             const home = m.team2, away = m.team1;
@@ -1224,6 +1295,7 @@
             if (h.n > 0) logit += ((h.hw / h.n) - 0.5) * 0.7 * Math.min(1, h.n / 6); // 시즌 상대전적
             logit += (_teamForm(home) - _teamForm(away)) * 0.55; // 최근 10경기 흐름
             logit += (_teamFormWeek(home) - _teamFormWeek(away)) * 0.5; // 최근 1주일(7일) 흐름
+            logit += _pitcherProbabilityStrength(l, 'home', home, away) - _pitcherProbabilityStrength(l, 'away', away, home); // JS 기록의 선발 시즌/상대 승패
             let pre = Math.max(0.1, Math.min(0.9, sig(logit)));
 
             let status = l.gameStatus;
@@ -1245,9 +1317,12 @@
             let progress = Math.max(0, Math.min(1, elapsed / 9));
             if (innNum > 9) { progress = 1; remInn = 0.5; } // 연장
             let sigma = 1.6 * Math.sqrt(remInn);
-            let inGame = _normCdf(lead / sigma);
+            let situationLead = _liveSituationLead(l, lead, isTop);
+            let inGame = _normCdf(situationLead / sigma);
             let w = Math.pow(progress, 0.65); // 경기가 진행될수록 현재 점수(흐름)에 더 가중
             let hp = (1 - w) * pre + w * inGame;
+            const recordedHomeProbability = _latestRecordedHomeProbability(m, l);
+            if (recordedHomeProbability !== null) hp = hp * 0.65 + recordedHomeProbability * 0.35; // 기록 탭의 최신 타석 승리확률 반영
             hp = Math.max(0.02, Math.min(0.98, hp));
             let hpI = Math.round(hp * 100);
             return { home: hpI, away: 100 - hpI };
@@ -1474,6 +1549,20 @@
             return globalBatter && globalBatter !== '-' ? globalBatter : '-';
         }
 
+        function _batterAverageOf(l, side, batterName) {
+            let selected = null, selectedRelay = -1;
+            for (const batter of _recordBatters(l)) {
+                if (_lineupPlayerName(batter) !== batterName) continue;
+                const teamSide = String(_recordValue(batter, ['teamSide', 'side', '팀구분']) || '').toLowerCase();
+                if (teamSide && teamSide !== side) continue;
+                const average = _recordValue(batter, ['average', 'battingAverage', 'avg', '타율']);
+                if (average === undefined) continue;
+                const relay = Number(_recordValue(batter, ['relayNo', 'sequence', 'seq']) || 0);
+                if (selected === null || relay > selectedRelay) { selected = average; selectedRelay = relay; }
+            }
+            return selected === null ? '' : _recordSafeText(selected);
+        }
+
         function _batterSideOf(l, side, batterData) {
             const candidates = [
                 l[side + 'CurrentBatterSide'], l[side + 'BatterSide'],
@@ -1523,11 +1612,15 @@
             if (homePitcher === '-') homePitcher = '투수 미정';
             if (awayBatter === '-') awayBatter = '타자 미정';
             if (homeBatter === '-') homeBatter = '타자 미정';
+            const awayAverage = _batterAverageOf(l, 'away', awayBatter);
+            const homeAverage = _batterAverageOf(l, 'home', homeBatter);
+            const awayAverageHtml = awayAverage ? `<span class="scoreboard-batter-average text-[9px] font-black ml-1 whitespace-nowrap">타율 ${awayAverage}</span>` : '';
+            const homeAverageHtml = homeAverage ? `<span class="scoreboard-batter-average text-[9px] font-black ml-1 whitespace-nowrap">타율 ${homeAverage}</span>` : '';
 
-            const awayPitcherHtml = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate">P.${awayPitcher}</span><div class="flex items-center gap-1 opacity-80 shrink-0"><i class="fa-solid fa-baseball text-[9px] text-[#d1d5db]"></i><span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md">${awayPitchCount}</span></div>`;
-            const homePitcherHtml = `<div class="flex items-center gap-1 opacity-80 shrink-0"><span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md">${homePitchCount}</span><i class="fa-solid fa-baseball text-[9px] text-[#d1d5db]"></i></div><span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate text-right">P.${homePitcher}</span>`;
-            const awayBatterHtml = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate"><span class="text-[#6ee7b7] font-black">타.</span>${awayBatter}</span>`;
-            const homeBatterHtml = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate text-right"><span class="text-[#6ee7b7] font-black">타.</span>${homeBatter}</span>`;
+            const awayPitcherHtml = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate">P.${awayPitcher}</span><div class="scoreboard-pitch-count flex items-center gap-1 opacity-80 shrink-0"><i class="scoreboard-pitch-icon fa-solid fa-baseball text-[10px]"></i><span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md">${awayPitchCount}</span></div>`;
+            const homePitcherHtml = `<div class="scoreboard-pitch-count flex items-center gap-1 opacity-80 shrink-0"><span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md">${homePitchCount}</span><i class="scoreboard-pitch-icon fa-solid fa-baseball text-[10px]"></i></div><span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate text-right">P.${homePitcher}</span>`;
+            const awayBatterHtml = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate"><span class="scoreboard-batter-label font-black">타.</span>${awayBatter}${awayAverageHtml}</span>`;
+            const homeBatterHtml = `<span class="text-[11px] font-bold text-[#FFFFFF] drop-shadow-md tracking-tight truncate text-right"><span class="scoreboard-batter-label font-black">타.</span>${homeBatter}${homeAverageHtml}</span>`;
 
             return isTop
                 ? { away: awayBatterHtml, home: homePitcherHtml }
@@ -2090,9 +2183,7 @@
             if (isAll) {
                 cards.push(homeCardPostseasonForecast());
             } else {
-                cards.push(homeCardHeatmap());
                 cards.push(homeCardFortune());
-                cards.push(homeCardRivalBoard());
             }
             cards.push(homeCardRecentForm());
             c.innerHTML = `<div class="flex flex-col gap-5">${cards.filter(Boolean).join('')}</div>`;
@@ -2225,7 +2316,7 @@
         function homeCardGameBrief() {
             let hx = (selectedTeam === 'KIA' || selectedTeam === '삼성') ? teamHex[selectedTeam] : null;
             let head = _cardHead('fa-location-dot', '경기 브리핑', `<span id="home-game-matchup" class="text-[10px] text-gray-500 font-bold"></span>`, hx, teamDarkHex[selectedTeam]);
-            return `<div id="home-game-brief" class="px-0.5 hidden"><div>${head}<div id="home-game-venue-line" class="text-[18px] font-black text-white leading-snug tracking-tight"></div><div class="flex items-end justify-between gap-4 mt-3"><div class="min-w-0 flex-1"><div class="flex items-center gap-1.5 mb-0.5"><i class="fa-solid fa-tv text-point text-[10px]"></i><span class="text-[10px] text-gray-500 font-bold">중계 방송사</span></div><div id="home-game-broadcaster" class="text-[15px] text-gray-300 font-extrabold truncate"></div></div><div class="home-chip rounded-full px-2.5 py-1.5 flex items-center gap-1.5 shrink-0"><i class="fa-regular fa-clock text-point text-[10px]"></i><span id="home-game-time" class="text-[11px] text-gray-300 font-black"></span></div></div></div></div>`;
+            return `<div id="home-game-brief" class="px-0.5 hidden"><div>${head}<div id="home-game-venue-line" class="text-[18px] font-black text-white leading-snug tracking-tight"></div><div class="flex items-center gap-1.5 mt-2"><i class="fa-solid fa-shield-halved text-point text-[10px]"></i><span id="home-game-h2h" class="text-[11px] text-gray-400 font-bold"></span></div><div class="flex items-end justify-between gap-4 mt-3"><div class="min-w-0 flex-1"><div class="flex items-center gap-1.5 mb-0.5"><i class="fa-solid fa-tv text-point text-[10px]"></i><span class="text-[10px] text-gray-500 font-bold">중계 방송사</span></div><div id="home-game-broadcaster" class="text-[15px] text-gray-300 font-extrabold truncate"></div></div><div class="home-chip rounded-full px-2.5 py-1.5 flex items-center gap-1.5 shrink-0"><i class="fa-regular fa-clock text-point text-[10px]"></i><span id="home-game-time" class="text-[11px] text-gray-300 font-black"></span></div></div></div></div>`;
         }
         function briefInsightLine(isTeam, todayGames) {
             const rk = (rankingData && rankingData.length) ? rankingData : (computeRankingFromHistory() || []);
@@ -2437,7 +2528,7 @@
                     let tx = x === 'W' ? '승' : (x === 'L' ? '패' : '무');
                     return `<span class="recent-form-result ${resultClass}" title="${tx}" aria-label="${tx}">${tx}</span>`;
                 }).join('') || '<span class="text-[10px] text-gray-400 px-1.5">기록 없음</span>';
-                return `<div class="flex items-center gap-2.5 py-1.5"><img src="${teamLogos[t]}" alt="${t} 로고" class="w-7 h-7 object-contain shrink-0"><div class="flex items-baseline gap-1.5 min-w-0 flex-1"><span class="text-[14px] font-black text-white shrink-0">${t}</span><span class="recent-form-streak ${streakClass} text-[11px] font-black truncate">${streakText}</span></div><div class="recent-form-results flex items-center gap-0.5 rounded-lg p-0.5 shrink-0" aria-label="${t} 최근 ${last5.length}경기">${results}</div></div>`;
+                return `<div class="recent-form-row py-1.5"><div class="recent-form-logo"><img src="${teamLogos[t]}" alt="${t} 로고"></div><span class="recent-form-team text-[14px] font-black text-white">${t}</span><span class="recent-form-streak ${streakClass} text-[11px] font-black">${streakText}</span><div class="recent-form-results flex items-center gap-0.5 rounded-lg p-0.5" aria-label="${t} 최근 ${last5.length}경기">${results}</div></div>`;
             }).join('<div class="h-px bg-white/5"></div>');
             let isTeam = (selectedTeam === 'KIA' || selectedTeam === '삼성');
             let head = isTeam ? _cardHead('fa-chart-line', '최근 승패 흐름', '', teamHex[selectedTeam], teamDarkHex[selectedTeam]) : _cardHead('fa-chart-line', '최근 승패 흐름', `<span class="text-[10px] text-gray-400">최근 5경기</span>`);
@@ -2725,6 +2816,7 @@
                 brief.classList.toggle('hidden', !card);
                 const matchup = document.getElementById('home-game-matchup');
                 const venueLine = document.getElementById('home-game-venue-line');
+                const h2hLine = document.getElementById('home-game-h2h');
                 const broadcaster = document.getElementById('home-game-broadcaster');
                 const gameTime = document.getElementById('home-game-time');
                 const team1 = card?.dataset.team1 || '';
@@ -2736,6 +2828,13 @@
                     venueLine.textContent = opponent
                         ? `이번 ${opponent}전은 ${stadium}에서 열려요`
                         : `${teamAnd(team1)} ${team2}의 경기는 ${stadium}에서 열려요`;
+                }
+                if (h2hLine) {
+                    const team = selectedTeam === team1 || selectedTeam === team2 ? selectedTeam : team1;
+                    const opponent = team === team1 ? team2 : team1;
+                    const h2h = _teamH2H(team, opponent);
+                    const drawText = h2h.d ? ` ${h2h.d}무` : '';
+                    h2hLine.textContent = team && opponent ? `상대팀 ${opponent} · 시즌 상대전적 ${h2h.hw}승 ${h2h.aw}패${drawText}` : '';
                 }
                 if (broadcaster) broadcaster.textContent = card?.dataset.broadcaster || '중계 정보 미정';
                 if (gameTime) gameTime.textContent = card?.dataset.gameTime || '시간 미정';
@@ -2873,13 +2972,27 @@
 
                         let outDotsHtml = ''; for(let i=1; i<=2; i++) outDotsHtml += `<div class="w-1.5 h-1.5 rounded-full ${i <= oCount ? 'bg-[#ef4444] shadow-[0_0_3px_#ef4444]' : 'bg-[#4b5563]'}"></div>`;
 
-                        let currentInnInt = parseInt(innNum) || 1, aInnings = l.awayInning || [], hInnings = l.homeInning || [], aInningsHtml = '', hInningsHtml = '';
-                        for (let i = 1; i <= 9; i++) {
+                        let currentInnInt = parseInt(innNum) || 1, aInnings = l.awayInning || [], hInnings = l.homeInning || [];
+                        let maxInning = Math.max(9, aInnings.length, hInnings.length, currentInnInt);
+                        let isExtra = maxInning > 9, inningHeaderHtml = '', aInningsHtml = '', hInningsHtml = '';
+                        for (let i = 1; i <= maxInning; i++) {
                             let aVal = aInnings[i-1] !== undefined ? aInnings[i-1] : '-', hVal = hInnings[i-1] !== undefined ? hInnings[i-1] : '-';
-                            let isCurA = (i === currentInnInt && isTop), isCurH = (i === currentInnInt && !isTop);
-                            aInningsHtml += isCurA ? `<div class="relative inline-block w-full"><span class="relative z-10 text-white font-bold">${aVal}</span><div class="absolute -bottom-[2px] left-1/2 -translate-x-1/2 w-[10px] h-[1.5px] bg-[#6ee7b7]"></div></div>` : `<div>${aVal}</div>`;
-                            hInningsHtml += isCurH ? `<div class="relative inline-block w-full"><span class="relative z-10 text-white font-bold">${hVal}</span><div class="absolute -bottom-[2px] left-1/2 -translate-x-1/2 w-[10px] h-[1.5px] bg-[#6ee7b7]"></div></div>` : `<div>${hVal}</div>`;
+                            let isCurA = (i === currentInnInt && isTop && l.gameStatus === '경기중'), isCurH = (i === currentInnInt && !isTop && l.gameStatus === '경기중');
+                            let aFormatted = isCurA ? `<div class="relative inline-block"><span class="relative z-10 text-white font-bold">${aVal}</span><div class="absolute -bottom-[2px] left-1/2 -translate-x-1/2 w-[10px] h-[1.5px] bg-[#6ee7b7]"></div></div>` : aVal;
+                            let hFormatted = isCurH ? `<div class="relative inline-block"><span class="relative z-10 text-white font-bold">${hVal}</span><div class="absolute -bottom-[2px] left-1/2 -translate-x-1/2 w-[10px] h-[1.5px] bg-[#6ee7b7]"></div></div>` : hVal;
+                            if (isExtra) {
+                                inningHeaderHtml += `<div class="w-[20px] text-center shrink-0">${i}</div>`;
+                                aInningsHtml += `<div class="w-[20px] text-center shrink-0">${aFormatted}</div>`;
+                                hInningsHtml += `<div class="w-[20px] text-center shrink-0">${hFormatted}</div>`;
+                            } else {
+                                inningHeaderHtml += `<div>${i}</div>`;
+                                aInningsHtml += `<div>${aFormatted}</div>`;
+                                hInningsHtml += `<div>${hFormatted}</div>`;
+                            }
                         }
+                        let bannerTableWrapperClass = isExtra ? 'scoreboard-innings-scroll min-w-0 flex-1 overflow-x-auto scrollbar-hide ml-1' : 'min-w-0 flex-1 ml-1';
+                        let bannerTableInnerClass = isExtra ? 'flex flex-col min-w-max gap-y-1.5 pr-3' : 'flex flex-col gap-y-1.5 w-full pr-2';
+                        let bannerRowClass = isExtra ? 'flex gap-1.5 justify-start' : 'grid grid-cols-9 text-center';
                         
                         let aHit = l.awayHit || '0', aErr = l.awayError || '0', aBase = l.awayBase || '0', hHit = l.homeHit || '0', hErr = l.homeError || '0', hBase = l.homeBase || '0';
                         let aPitcherArea = '', hPitcherArea = '', inningArea = '', centerArea = '';
@@ -2907,7 +3020,7 @@
                         let centerDalLogo1 = isDalBanner ? `<img src="${dalImg}" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 opacity-[0.12] pointer-events-none object-contain z-10">` : '';
 
                         div.className = 'min-w-full shrink-0 snap-center transition-transform duration-300 active:scale-[0.98] py-1 flex flex-col'; div.style.cssText = 'border-top: none !important; border-bottom: none !important;';
-                        div.innerHTML = `<div class="banner-card w-full relative overflow-hidden shadow-2xl flex flex-col border-y border-white/15" style="${bgStyle} --banner-away-soft:${h1}24; --banner-home-soft:${h2}24;">${dalBadge}${centerDalLogo1}<img src="${bgImg1}" class="banner-team-watermark absolute -left-6 top-[24%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><img src="${bgImg2}" class="banner-team-watermark absolute -right-6 top-[24%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><div class="flex justify-between items-center px-5 py-2 relative z-10 h-[62px]"><div class="flex items-center gap-3 w-[36%]"><span class="text-[26px] font-black text-[#FFFFFF] tracking-tighter drop-shadow-md">${m.team1}</span><span class="text-[34px] font-black text-[#FFFFFF] drop-shadow-md ml-auto leading-none">${aScore}</span></div><div class="flex flex-col items-center justify-center w-[28%] mt-0.5">${inningArea}</div><div class="flex items-center gap-3 w-[36%]"><span class="text-[34px] font-black text-[#FFFFFF] drop-shadow-md mr-auto leading-none">${hScore}</span><span class="text-[26px] font-black text-[#FFFFFF] tracking-tighter drop-shadow-md">${m.team2}</span></div></div><div class="w-full h-px bg-[rgba(255,255,255,0.3)] relative z-10"></div><div class="flex justify-between items-center bg-[rgba(0,0,0,0.4)] relative z-10 h-[28px]"><div class="flex items-center gap-2.5 w-[36%] pl-5">${aPitcherArea}</div><div class="flex items-center justify-center bg-[#0d0d0e] h-full w-[28%]" style="border-left: 1px solid rgba(255,255,255,0.2); border-right: 1px solid rgba(255,255,255,0.2);">${centerArea}</div><div class="flex items-center justify-end gap-2.5 w-[36%] pr-5">${hPitcherArea}</div></div><div class="w-full bg-[#111113]/90 flex flex-col pt-1.5 pb-2 px-3 relative z-10 border-t border-[rgba(255,255,255,0.15)] backdrop-blur-md"><div class="grid grid-cols-[42px_1fr_75px] gap-2 w-full text-[10px] font-bold text-center"><div class="text-gray-400 text-left pl-2">팀명</div><div class="grid grid-cols-9 text-gray-400"><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div></div><div class="grid grid-cols-4 text-[#60A5FA]"><div class="font-black">R</div><div>H</div><div>E</div><div>B</div></div><div class="text-white text-left pl-2 truncate mt-1">${m.team1}</div><div class="grid grid-cols-9 text-gray-300 mt-1">${aInningsHtml}</div><div class="grid grid-cols-4 mt-1"><div class="text-white font-black">${aScore}</div><div class="text-gray-400">${aHit}</div><div class="text-gray-400">${aErr}</div><div class="text-gray-400">${aBase}</div></div><div class="text-white text-left pl-2 truncate mt-0.5">${m.team2}</div><div class="grid grid-cols-9 text-gray-300 mt-0.5">${hInningsHtml}</div><div class="grid grid-cols-4 mt-0.5"><div class="text-white font-black">${hScore}</div><div class="text-gray-400">${hHit}</div><div class="text-gray-400">${hErr}</div><div class="text-gray-400">${hBase}</div></div></div></div>${(() => { let b = winProbBarMini(m, l); return b ? `<div class="relative z-10 w-full bg-[#111113]/90 backdrop-blur-md px-3 pt-1 pb-2.5"><div class="text-[9px] font-bold text-white/70 mb-1 px-0.5">실시간 승리 확률 <span class="text-white/50">with 엔조이 비서실장</span></div>${b}</div>` : ''; })()}</div>${bottomInfoHtml}`;
+                        div.innerHTML = `<div class="banner-card w-full relative overflow-hidden shadow-2xl flex flex-col border-y border-white/15" style="${bgStyle} --banner-away-soft:${h1}24; --banner-home-soft:${h2}24;">${dalBadge}${centerDalLogo1}<img src="${bgImg1}" class="banner-team-watermark absolute -left-6 top-[24%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><img src="${bgImg2}" class="banner-team-watermark absolute -right-6 top-[24%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><div class="flex justify-between items-center px-5 py-2 relative z-10 h-[62px]"><div class="flex items-center gap-3 w-[36%]"><span class="text-[26px] font-black text-[#FFFFFF] tracking-tighter drop-shadow-md">${m.team1}</span><span class="text-[34px] font-black text-[#FFFFFF] drop-shadow-md ml-auto leading-none">${aScore}</span></div><div class="flex flex-col items-center justify-center w-[28%] mt-0.5">${inningArea}</div><div class="flex items-center gap-3 w-[36%]"><span class="text-[34px] font-black text-[#FFFFFF] drop-shadow-md mr-auto leading-none">${hScore}</span><span class="text-[26px] font-black text-[#FFFFFF] tracking-tighter drop-shadow-md">${m.team2}</span></div></div><div class="w-full h-px bg-[rgba(255,255,255,0.3)] relative z-10"></div><div class="flex justify-between items-center bg-[rgba(0,0,0,0.4)] relative z-10 h-[28px]"><div class="flex items-center gap-2.5 w-[36%] pl-5">${aPitcherArea}</div><div class="flex items-center justify-center bg-[#0d0d0e] h-full w-[28%]" style="border-left: 1px solid rgba(255,255,255,0.2); border-right: 1px solid rgba(255,255,255,0.2);">${centerArea}</div><div class="flex items-center justify-end gap-2.5 w-[36%] pr-5">${hPitcherArea}</div></div><div class="w-full bg-[#111113]/90 flex flex-col pt-1.5 pb-2 px-3 relative z-10 border-t border-[rgba(255,255,255,0.15)] backdrop-blur-md"><div class="flex w-full text-[10px] font-bold items-center"><div class="flex flex-col w-[42px] shrink-0 text-left pl-2 gap-y-1.5"><div class="text-gray-400">팀명</div><div class="text-white truncate mt-0.5">${m.team1}</div><div class="text-white truncate mt-0.5">${m.team2}</div></div><div class="${bannerTableWrapperClass}" data-current-inning="${currentInnInt}"><div class="${bannerTableInnerClass}"><div class="${bannerRowClass} text-gray-400">${inningHeaderHtml}</div><div class="${bannerRowClass} text-gray-300 mt-0.5">${aInningsHtml}</div><div class="${bannerRowClass} text-gray-300 mt-0.5">${hInningsHtml}</div></div></div><div class="scoreboard-rheb-panel flex flex-col shrink-0 gap-y-1.5 px-1 text-center" style="border-left:1px solid rgba(255,255,255,0.1)"><div class="text-[#60A5FA]"><div class="font-black">R</div><div>H</div><div>E</div><div>B</div></div><div class="mt-0.5"><div class="text-white font-black">${aScore}</div><div class="text-gray-400">${aHit}</div><div class="text-gray-400">${aErr}</div><div class="text-gray-400">${aBase}</div></div><div class="mt-0.5"><div class="text-white font-black">${hScore}</div><div class="text-gray-400">${hHit}</div><div class="text-gray-400">${hErr}</div><div class="text-gray-400">${hBase}</div></div></div></div></div>${(() => { let b = winProbBarMini(m, l); return b ? `<div class="relative z-10 w-full bg-[#111113]/90 backdrop-blur-md px-3 pt-1 pb-2.5"><div class="text-[9px] font-bold text-white/70 mb-1 px-0.5">실시간 승리 확률 <span class="text-white/50">with 엔조이 비서실장</span></div>${b}</div>` : ''; })()}</div>${bottomInfoHtml}`;
                     } else {
                         let apRaw = l.awayPitcherDetail || l.awayPitcher || '-';
                         let hpRaw = l.homePitcherDetail || l.homePitcher || '-';
@@ -2961,11 +3074,16 @@
                             let wpBand = (wpb && !iC) ? `<div class="relative z-10 w-full bg-[#111113]/90 backdrop-blur-md px-3 pt-1.5 pb-2.5 border-t border-[rgba(255,255,255,0.15)]"><div class="text-[9px] font-bold text-white/70 mb-1.5 px-0.5">예상 승리 확률 <span class="text-white/50">with 엔조이 비서실장</span></div>${wpb}</div>` : '';
                             let cancelOverlay = iC ? `<div class="absolute inset-0 z-20 pointer-events-none" style="background:rgba(110,110,120,0.18)"></div>${bigStamp('우천취소', STAMP_HEX.CANCEL)}` : '';
                             let bottomInfoHtml = '';
-                            div.innerHTML = `<div class="banner-card w-full relative overflow-hidden shadow-2xl flex flex-col border-y border-white/15" style="${bgStylePre} --banner-away-soft:${h1}24; --banner-home-soft:${h2}24;">${dalBadge}${centerDalLogo2}<img src="${smImg1}" class="banner-team-watermark absolute -left-6 top-[24%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><img src="${smImg2}" class="banner-team-watermark absolute -right-6 top-[24%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><div class="flex justify-between items-center px-5 py-2 relative z-10 h-[62px]"><div class="flex items-center gap-2 w-[36%]"><span class="text-[24px] font-black text-white tracking-tighter drop-shadow-md">${m.team1}</span>${r1Num ? `<span class="text-[12px] font-bold text-gray-200 ml-auto">${r1Num}위</span>` : ''}</div><div class="flex flex-col items-center justify-center w-[28%]">${preCenter}</div><div class="flex items-center gap-2 w-[36%] justify-end">${r2Num ? `<span class="text-[12px] font-bold text-gray-200 mr-auto">${r2Num}위</span>` : ''}<span class="text-[24px] font-black text-white tracking-tighter drop-shadow-md">${m.team2}</span></div></div><div class="w-full h-px bg-[rgba(255,255,255,0.3)] relative z-10"></div><div class="flex justify-between items-center bg-[rgba(0,0,0,0.4)] relative z-10 h-[28px]"><div class="flex items-center gap-2 w-[36%] pl-5">${aPit}</div><div class="flex items-center justify-center bg-[#0d0d0e] h-full w-[28%]" style="border-left: 1px solid rgba(255,255,255,0.2); border-right: 1px solid rgba(255,255,255,0.2);"><span class="text-[11px] font-black text-gray-400 italic tracking-tighter">VS</span></div><div class="flex items-center justify-end gap-2 w-[36%] pr-5">${hPit}</div></div><div class="w-full bg-[#111113]/90 flex flex-col pt-1.5 pb-2 px-3 relative z-10 border-t border-[rgba(255,255,255,0.15)] backdrop-blur-md"><div class="grid grid-cols-[42px_1fr_75px] gap-2 w-full text-[10px] font-bold text-center"><div class="text-gray-400 text-left pl-2">팀명</div><div class="grid grid-cols-9 text-gray-400"><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div></div><div class="grid grid-cols-4 text-[#60A5FA]"><div class="font-black">R</div><div>H</div><div>E</div><div>B</div></div><div class="text-white text-left pl-2 truncate mt-1">${m.team1}</div><div class="grid grid-cols-9 text-gray-500 mt-1">${dash9}</div><div class="grid grid-cols-4 text-gray-500 mt-1"><div>-</div><div>-</div><div>-</div><div>-</div></div><div class="text-white text-left pl-2 truncate mt-0.5">${m.team2}</div><div class="grid grid-cols-9 text-gray-500 mt-0.5">${dash9}</div><div class="grid grid-cols-4 text-gray-500 mt-0.5"><div>-</div><div>-</div><div>-</div><div>-</div></div></div></div>${wpBand}${cancelOverlay}</div>${bottomInfoHtml}`;
+                            div.innerHTML = `<div class="banner-card w-full relative overflow-hidden shadow-2xl flex flex-col border-y border-white/15" style="${bgStylePre} --banner-away-soft:${h1}24; --banner-home-soft:${h2}24;">${dalBadge}${centerDalLogo2}<img src="${smImg1}" class="banner-team-watermark absolute -left-6 top-[24%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><img src="${smImg2}" class="banner-team-watermark absolute -right-6 top-[24%] -translate-y-1/2 w-32 h-32 opacity-15 grayscale mix-blend-overlay pointer-events-none scale-110"><div class="flex justify-between items-center px-5 py-2 relative z-10 h-[62px]"><div class="flex items-center gap-2 w-[36%]"><span class="text-[24px] font-black text-white tracking-tighter drop-shadow-md">${m.team1}</span>${r1Num ? `<span class="text-[12px] font-bold text-gray-200 ml-auto">${r1Num}위</span>` : ''}</div><div class="flex flex-col items-center justify-center w-[28%]">${preCenter}</div><div class="flex items-center gap-2 w-[36%] justify-end">${r2Num ? `<span class="text-[12px] font-bold text-gray-200 mr-auto">${r2Num}위</span>` : ''}<span class="text-[24px] font-black text-white tracking-tighter drop-shadow-md">${m.team2}</span></div></div><div class="w-full h-px bg-[rgba(255,255,255,0.3)] relative z-10"></div><div class="flex justify-between items-center bg-[rgba(0,0,0,0.4)] relative z-10 h-[28px]"><div class="flex items-center gap-2 w-[36%] pl-5">${aPit}</div><div class="flex items-center justify-center bg-[#0d0d0e] h-full w-[28%]" style="border-left: 1px solid rgba(255,255,255,0.2); border-right: 1px solid rgba(255,255,255,0.2);"><span class="text-[11px] font-black text-gray-400 italic tracking-tighter">VS</span></div><div class="flex items-center justify-end gap-2 w-[36%] pr-5">${hPit}</div></div><div class="w-full bg-[#111113]/90 flex flex-col pt-1.5 pb-2 px-3 relative z-10 border-t border-[rgba(255,255,255,0.15)] backdrop-blur-md"><div class="grid grid-cols-[42px_minmax(0,1fr)_88px] gap-1 w-full text-[10px] font-bold text-center"><div class="text-gray-400 text-left pl-2">팀명</div><div class="grid grid-cols-9 text-gray-400"><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div></div><div class="grid grid-cols-4 text-[#60A5FA] tabular-nums"><div class="font-black">R</div><div>H</div><div>E</div><div>B</div></div><div class="text-white text-left pl-2 truncate mt-1">${m.team1}</div><div class="grid grid-cols-9 text-gray-500 mt-1">${dash9}</div><div class="grid grid-cols-4 text-gray-500 mt-1 tabular-nums"><div>-</div><div>-</div><div>-</div><div>-</div></div><div class="text-white text-left pl-2 truncate mt-0.5">${m.team2}</div><div class="grid grid-cols-9 text-gray-500 mt-0.5">${dash9}</div><div class="grid grid-cols-4 text-gray-500 mt-0.5 tabular-nums"><div>-</div><div>-</div><div>-</div><div>-</div></div></div></div>${wpBand}${cancelOverlay}</div>${bottomInfoHtml}`;
                         }
                     }
                 }
                 div.classList.add('cursor-pointer'); div.onclick = () => openLineupPopup(m.id); c.appendChild(div);
+            });
+            requestAnimationFrame(() => {
+                c.querySelectorAll('.scoreboard-innings-scroll').forEach(table => {
+                    if (Number(table.dataset.currentInning || 0) > 9) table.scrollLeft = table.scrollWidth;
+                });
             });
             
             totalBanners = c.children.length; const dc = document.getElementById('banner-dots-container'), pb = document.getElementById('btn-banner-play');
@@ -3262,7 +3380,7 @@
                                 </div>
                             </div>
                             
-                            <div class="flex flex-col w-[60px] shrink-0 gap-y-1.5 pl-1 text-center" style="border-left: 1px solid rgba(255,255,255,0.1);">
+                            <div class="scoreboard-rheb-panel flex flex-col shrink-0 gap-y-1.5 px-1 text-center" style="border-left: 1px solid rgba(255,255,255,0.1);">
                                 <div class="flex gap-1 text-[#60A5FA] justify-center"><div class="font-black w-[12px]">R</div><div class="w-[12px]">H</div><div class="w-[12px]">E</div><div class="w-[12px]">B</div></div>
                                 <div class="flex gap-1 mt-0.5 justify-center"><div class="text-white font-black w-[12px]">${aScoreBanner}</div><div class="text-gray-400 w-[12px]">${aHit}</div><div class="text-gray-400 w-[12px]">${aErr}</div><div class="text-gray-400 w-[12px]">${aBase}</div></div>
                                 <div class="flex gap-1 mt-0.5 justify-center"><div class="text-white font-black w-[12px]">${hScoreBanner}</div><div class="text-gray-400 w-[12px]">${hHit}</div><div class="text-gray-400 w-[12px]">${hErr}</div><div class="text-gray-400 w-[12px]">${hBase}</div></div>
@@ -3450,7 +3568,7 @@
                                 </div>
                             </div>
                             
-                            <div class="flex flex-col w-[60px] shrink-0 gap-y-1.5 pl-1 text-center" style="border-left: 1px solid rgba(255,255,255,0.1);">
+                            <div class="scoreboard-rheb-panel flex flex-col shrink-0 gap-y-1.5 px-1 text-center" style="border-left: 1px solid rgba(255,255,255,0.1);">
                                 <div class="flex gap-1 text-[#60A5FA] justify-center"><div class="font-black w-[12px]">R</div><div class="w-[12px]">H</div><div class="w-[12px]">E</div><div class="w-[12px]">B</div></div>
                                 <div class="flex gap-1 mt-0.5 justify-center"><div class="text-white font-black w-[12px]">${aScoreBanner}</div><div class="text-gray-400 w-[12px]">${aHit}</div><div class="text-gray-400 w-[12px]">${aErr}</div><div class="text-gray-400 w-[12px]">${aBase}</div></div>
                                 <div class="flex gap-1 mt-0.5 justify-center"><div class="text-white font-black w-[12px]">${hScoreBanner}</div><div class="text-gray-400 w-[12px]">${hHit}</div><div class="text-gray-400 w-[12px]">${hErr}</div><div class="text-gray-400 w-[12px]">${hBase}</div></div>
