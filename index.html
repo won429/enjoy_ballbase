@@ -617,6 +617,51 @@
         html.light-mode .game-record-summary,
         html.light-mode .game-record-event { color: #1f2937; }
         html.light-mode .game-record-event { border-bottom-color: #e2e8f0; }
+
+        /* 실제 배경 명도에 맞춰 전경색을 선택한다. 중첩 표면은 가장 가까운 표면의 변수를 상속한다. */
+        .auto-contrast-surface[data-auto-contrast="light-text"] {
+            --adaptive-primary: #f8fafc;
+            --adaptive-secondary: #cbd5e1;
+            --adaptive-muted: #94a3b8;
+        }
+        .auto-contrast-surface[data-auto-contrast="dark-text"] {
+            --adaptive-primary: #172033;
+            --adaptive-secondary: #475569;
+            --adaptive-muted: #64748b;
+        }
+        .auto-contrast-surface { color: var(--adaptive-primary); }
+        .auto-contrast-surface .text-white,
+        .auto-contrast-surface .text-\[\#FFFFFF\],
+        .auto-contrast-surface .text-gray-100,
+        .auto-contrast-surface .text-gray-200 { color: var(--adaptive-primary) !important; }
+        .auto-contrast-surface .text-gray-300,
+        .auto-contrast-surface .text-gray-400,
+        .auto-contrast-surface .text-white\/80,
+        .auto-contrast-surface .text-white\/70 { color: var(--adaptive-secondary) !important; }
+        .auto-contrast-surface .text-gray-500,
+        .auto-contrast-surface .text-gray-600,
+        .auto-contrast-surface .text-white\/60,
+        .auto-contrast-surface .text-white\/50 { color: var(--adaptive-muted) !important; }
+        .auto-contrast-surface .home-feature-title,
+        .auto-contrast-surface .brief-venue-title,
+        .auto-contrast-surface .brief-meta-value,
+        .auto-contrast-surface .fortune-copy,
+        .auto-contrast-surface .schedule-section-title strong,
+        .auto-contrast-surface .expected-starter-name,
+        .auto-contrast-surface .game-record-name,
+        .auto-contrast-surface .game-record-summary,
+        .auto-contrast-surface .game-record-event { color: var(--adaptive-primary) !important; }
+        .auto-contrast-surface .brief-h2h,
+        .auto-contrast-surface .brief-meta-label,
+        .auto-contrast-surface .fortune-caption,
+        .auto-contrast-surface .schedule-section-title small,
+        .auto-contrast-surface .schedule-section-badge,
+        .auto-contrast-surface .expected-starter-team,
+        .auto-contrast-surface .expected-starter-label,
+        .auto-contrast-surface .expected-starter-record,
+        .auto-contrast-surface .expected-starter-note,
+        .auto-contrast-surface .game-record-meta,
+        .auto-contrast-surface .game-record-stats { color: var(--adaptive-muted) !important; }
     </style>
 </head>
 <body class="w-full h-[100dvh] flex justify-center items-center overflow-hidden app-bg" data-theme="all">
@@ -936,16 +981,102 @@
         let scheduleData = [], rankingData = [], liveDataStore = {}, currentPopupMatchId = null, currentGameInfoTab = 'lineup', currentGameRecordInning = 1, currentTabIndex = 0, watchRecords = [], recordPopupDate = new Date(), currentRecordTeam = null, currentRecordType = null;
         let audioPlayer, currentSongTitle = '', currentSongCover = '', currentPlaylist = [], currentSongIndex = -1, isSeeking = false;
         let fpStartY = 0, fpCurrentY = 0, fpIsDragging = false, currentBanner = 0, totalBanners = 1, bannerInterval, isPlaying = true;
-        let isInitialPopupChecked = false, homeHeaderFrame = 0;
+        let isInitialPopupChecked = false, homeHeaderFrame = 0, adaptiveContrastFrame = 0, adaptiveContrastObserver = null;
         
         const deviceThemeMedia = window.matchMedia('(prefers-color-scheme: light)');
         function applyDeviceTheme(event = deviceThemeMedia) {
             document.documentElement.classList.toggle('light-mode', event.matches);
+            requestAdaptiveContrastSync();
         }
 
         applyDeviceTheme();
         if (deviceThemeMedia.addEventListener) deviceThemeMedia.addEventListener('change', applyDeviceTheme);
         else deviceThemeMedia.addListener(applyDeviceTheme);
+
+        function _adaptiveRgb(value) {
+            const match = String(value || '').match(/rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:\s*[,/]\s*([\d.]+))?\s*\)/i);
+            if (match) return { r: Number(match[1]), g: Number(match[2]), b: Number(match[3]), a: match[4] === undefined ? 1 : Number(match[4]) };
+            const srgb = String(value || '').match(/color\(srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+))?\)/i);
+            if (!srgb) return null;
+            return { r: Number(srgb[1]) * 255, g: Number(srgb[2]) * 255, b: Number(srgb[3]) * 255, a: srgb[4] === undefined ? 1 : Number(srgb[4]) };
+        }
+
+        function _adaptiveBlend(foreground, background) {
+            if (!foreground) return background;
+            const alpha = Math.max(0, Math.min(1, Number(foreground.a ?? 1)));
+            return {
+                r: foreground.r * alpha + background.r * (1 - alpha),
+                g: foreground.g * alpha + background.g * (1 - alpha),
+                b: foreground.b * alpha + background.b * (1 - alpha),
+                a: 1
+            };
+        }
+
+        function _adaptiveGradientColor(backgroundImage) {
+            if (!backgroundImage || backgroundImage === 'none') return null;
+            const colors = String(backgroundImage).match(/rgba?\([^)]*\)|color\(srgb[^)]*\)/gi) || [];
+            const parsed = colors.map(_adaptiveRgb).filter(Boolean);
+            if (!parsed.length) return null;
+            const total = parsed.reduce((sum, color) => ({ r: sum.r + color.r, g: sum.g + color.g, b: sum.b + color.b, a: sum.a + color.a }), { r: 0, g: 0, b: 0, a: 0 });
+            return { r: total.r / parsed.length, g: total.g / parsed.length, b: total.b / parsed.length, a: total.a / parsed.length };
+        }
+
+        function _adaptiveEffectiveBackground(element, cache) {
+            if (!element || element.nodeType !== 1) return document.documentElement.classList.contains('light-mode') ? { r: 255, g: 255, b: 255, a: 1 } : { r: 3, g: 3, b: 3, a: 1 };
+            if (cache.has(element)) return cache.get(element);
+            const parent = _adaptiveEffectiveBackground(element.parentElement, cache);
+            const style = getComputedStyle(element);
+            let result = _adaptiveBlend(_adaptiveRgb(style.backgroundColor), parent);
+            const gradient = _adaptiveGradientColor(style.backgroundImage);
+            if (gradient) result = _adaptiveBlend(gradient, result);
+            cache.set(element, result);
+            return result;
+        }
+
+        function _adaptiveLuminance(color) {
+            const linear = channel => {
+                const value = channel / 255;
+                return value <= 0.04045 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
+            };
+            return 0.2126 * linear(color.r) + 0.7152 * linear(color.g) + 0.0722 * linear(color.b);
+        }
+
+        function syncAdaptiveContrast() {
+            adaptiveContrastFrame = 0;
+            const root = document.getElementById('mobile-wrapper');
+            if (!root) return;
+            const selectors = [
+                '#app-header-shell', '#calendar-screen', '#winrate-screen', '#ranking-screen', '#cheer-screen', '#lineup-content',
+                '#brief-header', '.home-feature-card', '.schedule-shell', '.schedule-game-card', '.schedule-empty-state', '.calendar-day',
+                '.game-record-card', '.game-record-body', '.expected-starter-preview', '.banner-card', '.scoreboard-surface', '.bn-card',
+                '#mini-player', '#full-player', '#bottom-nav > div', '#record-popup', '#bottom-sheet', '.bg-point', '.game-info-tab.active', '.recent-form-result'
+            ].join(',');
+            const cache = new WeakMap();
+            root.querySelectorAll(selectors).forEach(element => {
+                const background = _adaptiveEffectiveBackground(element, cache);
+                const luminance = _adaptiveLuminance(background);
+                const whiteContrast = 1.05 / (luminance + 0.05);
+                const darkLuminance = _adaptiveLuminance({ r: 23, g: 32, b: 51 });
+                const darkContrast = (Math.max(luminance, darkLuminance) + 0.05) / (Math.min(luminance, darkLuminance) + 0.05);
+                element.classList.add('auto-contrast-surface');
+                element.dataset.autoContrast = whiteContrast >= darkContrast ? 'light-text' : 'dark-text';
+            });
+        }
+
+        function requestAdaptiveContrastSync() {
+            if (adaptiveContrastFrame || typeof requestAnimationFrame !== 'function') return;
+            adaptiveContrastFrame = requestAnimationFrame(syncAdaptiveContrast);
+        }
+
+        function initAdaptiveContrast() {
+            const root = document.getElementById('mobile-wrapper');
+            if (!root) return;
+            requestAdaptiveContrastSync();
+            if (adaptiveContrastObserver) adaptiveContrastObserver.disconnect();
+            adaptiveContrastObserver = new MutationObserver(requestAdaptiveContrastSync);
+            adaptiveContrastObserver.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'data-theme'] });
+            window.addEventListener('resize', requestAdaptiveContrastSync, { passive: true });
+        }
         
         const TICKET_IMAGE_URL = "https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/dadadada.png"; 
         
@@ -4255,6 +4386,7 @@
         // [수정점] 데이터 동기화 및 앱 최초 실행 동기화 보강
         window.addEventListener('DOMContentLoaded', () => {
             initHomeHeaderMorph();
+            initAdaptiveContrast();
             if (window.KBO_HISTORY_2026 && window.KBO_HISTORY_2026.gamesByDate) {
                 Object.values(window.KBO_HISTORY_2026.gamesByDate).forEach(dayGames => {
                     dayGames.forEach(g => {
