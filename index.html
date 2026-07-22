@@ -1172,7 +1172,15 @@
                 if (res.length) {
                     let j = res.length - 1;
                     while (j >= 0 && res[j] === 'D') j--;
-                    if (j >= 0) { let t = res[j], c = 0; while (j >= 0 && res[j] === t) { c++; j--; } streak = c + (t === 'W' ? '승' : '패'); }
+                    if (j >= 0) {
+                        let t = res[j], c = 0;
+                        while (j >= 0) {
+                            if (res[j] === 'D') { j--; continue; }
+                            if (res[j] !== t) break;
+                            c++; j--;
+                        }
+                        streak = c + (t === 'W' ? '승' : '패');
+                    }
                 }
                 return {
                     rank: String(i + 1), team: r.team, w: r.w, d: r.d, l: r.l,
@@ -2687,9 +2695,10 @@
                     for (let m of tm) {
                         let l = liveDataStore[m.id], a = Number(l.awayScore || 0), h_ = Number(l.homeScore || 0);
                         let iW = (m.team1 === t.team && a > h_) || (m.team2 === t.team && h_ > a), iL = (m.team1 === t.team && a < h_) || (m.team2 === t.team && h_ < a), r = iW ? '승' : iL ? '패' : '무';
+                        if (r === '무') continue;
                         if (!sty) { sty = r; sc = 1; } else if (sty === r) sc++; else break;
                     }
-                    st = sc + sty;
+                    if (sty) st = sc + sty;
                 } else if (t.streak && t.streak !== '-') st = String(t.streak);
                 
                 let cl = st.includes('승') ? 'text-[#EA0029]' : st.includes('패') ? 'text-[#074CA1]' : 'text-gray-400';
@@ -2999,7 +3008,13 @@
 
         function switchGameInfoTab(tab) {
             if (!['lineup', 'record'].includes(tab) || !currentPopupMatchId) return;
-            if (tab === 'record' && currentGameInfoTab !== 'record') currentGameRecordInning = 1;
+            if (tab === 'record' && currentGameInfoTab !== 'record') {
+                const live = liveDataStore[currentPopupMatchId] || {};
+                const liveInning = Number(String(live.inning || '').replace(/[^0-9]/g, ''));
+                currentGameRecordInning = Number.isFinite(liveInning) && liveInning > 0
+                    ? Math.max(1, Math.min(11, liveInning))
+                    : 1;
+            }
             currentGameInfoTab = tab;
             renderPopupContent(currentPopupMatchId);
         }
@@ -3454,6 +3469,11 @@
 
             if (currentGameInfoTab === 'record') {
                 c.innerHTML = sbh + wpb + infoTabs + gameRecordHtml(m, l);
+                requestAnimationFrame(() => {
+                    const activeInning = c.querySelector('.game-record-inning-tab.active');
+                    const inningTabs = activeInning && activeInning.parentElement;
+                    if (inningTabs) inningTabs.scrollLeft = activeInning.offsetLeft - (inningTabs.clientWidth - activeInning.clientWidth) / 2;
+                });
                 return;
             }
 
