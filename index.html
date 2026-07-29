@@ -1360,6 +1360,7 @@
         const KBO_TEAMS = ['LG','두산','KIA','삼성','SSG','롯데','한화','KT','NC','키움'];
         const CLASSIC_SERIES_DATES = new Set(['2026-05-22', '2026-05-23', '2026-05-24', '2026-07-16', '2026-07-17', '2026-07-18', '2026-07-19']);
         let teamStats = {};
+        let postseasonProjectionCache = null;
 
         function isMatchup(m, a, b) {
             return m && ((m.team1 === a && m.team2 === b) || (m.team1 === b && m.team2 === a));
@@ -1391,7 +1392,11 @@
         // 완료된 경기들로부터 팀별 전적/최근 흐름/상대전적을 집계한다. (과거 데이터 파일 기반)
         function buildTeamStats() {
             const s = {};
-            KBO_TEAMS.forEach(t => s[t] = { w: 0, l: 0, d: 0, results: [], dates: [], h2h: {} });
+            KBO_TEAMS.forEach(t => s[t] = {
+                w: 0, l: 0, d: 0, results: [], dates: [], h2h: {},
+                runsFor: 0, runsAgainst: 0,
+                home: { w: 0, l: 0, d: 0 }, away: { w: 0, l: 0, d: 0 }
+            });
             let finished = scheduleData.filter(m => {
                 let l = liveDataStore[m.id];
                 if (!l || l.gameStatus !== '종료') return false;
@@ -1404,18 +1409,33 @@
                 let away = m.team1, home = m.team2;
                 if (!s[home] || !s[away]) return;
                 let a = parseInt(l.awayScore || 0), h = parseInt(l.homeScore || 0);
+                if (!Number.isFinite(a) || !Number.isFinite(h)) return;
                 let hWin = h > a, aWin = a > h;
-                if (hWin) { s[home].w++; s[away].l++; } else if (aWin) { s[away].w++; s[home].l++; } else { s[home].d++; s[away].d++; }
+                s[home].runsFor += h; s[home].runsAgainst += a;
+                s[away].runsFor += a; s[away].runsAgainst += h;
+                if (hWin) {
+                    s[home].w++; s[away].l++;
+                    s[home].home.w++; s[away].away.l++;
+                } else if (aWin) {
+                    s[away].w++; s[home].l++;
+                    s[away].away.w++; s[home].home.l++;
+                } else {
+                    s[home].d++; s[away].d++;
+                    s[home].home.d++; s[away].away.d++;
+                }
                 s[home].results.push(hWin ? 'W' : aWin ? 'L' : 'D');
                 s[away].results.push(aWin ? 'W' : hWin ? 'L' : 'D');
                 s[home].dates.push(m.date); s[away].dates.push(m.date);
-                s[home].h2h[away] = s[home].h2h[away] || { w: 0, l: 0, d: 0 };
-                s[away].h2h[home] = s[away].h2h[home] || { w: 0, l: 0, d: 0 };
+                s[home].h2h[away] = s[home].h2h[away] || { w: 0, l: 0, d: 0, rf: 0, ra: 0 };
+                s[away].h2h[home] = s[away].h2h[home] || { w: 0, l: 0, d: 0, rf: 0, ra: 0 };
+                s[home].h2h[away].rf += h; s[home].h2h[away].ra += a;
+                s[away].h2h[home].rf += a; s[away].h2h[home].ra += h;
                 if (hWin) { s[home].h2h[away].w++; s[away].h2h[home].l++; }
                 else if (aWin) { s[away].h2h[home].w++; s[home].h2h[away].l++; }
                 else { s[home].h2h[away].d++; s[away].h2h[home].d++; }
             });
             teamStats = s;
+            postseasonProjectionCache = null;
         }
 
         // 집계된 전적으로 정규리그 순위표를 만든다. (firestore 대신 js 파일 기반으로 변동)
@@ -2058,7 +2078,7 @@
             } catch(e) {} finally { fetchingDates.delete(dateStr); }
         }
 
-        async function pollLiveToday() {
+        async function pollLiveToday(shouldRender = true) {
             try {
                 let data = null;
                 try { data = await _fsGetDoc('live/today'); }
@@ -2076,12 +2096,14 @@
                     // [추가] 새로 종료된 경기를 반영해 순위표/승리 확률 재계산
                     refreshRankingFromHistory();
 
-                    if (currentTabIndex === 0) renderCalendar();
-                    if (currentPopupMatchId) renderPopupContent(currentPopupMatchId);
-                    renderBanners(); renderLineupCheerSongs();
-                    if (currentTabIndex === 1) renderWinRate();
-                    if (currentTabIndex === 2) renderRanking();
-                    checkInitialSamsungPopup();
+                    if (shouldRender) {
+                        if (currentTabIndex === 0) renderCalendar();
+                        if (currentPopupMatchId) renderPopupContent(currentPopupMatchId);
+                        renderBanners(); renderLineupCheerSongs();
+                        if (currentTabIndex === 1) renderWinRate();
+                        if (currentTabIndex === 2) renderRanking();
+                        checkInitialSamsungPopup();
+                    }
 
                     if (data.allDone === true) { if (livePollingInterval) clearInterval(livePollingInterval); }
                 }
@@ -2093,15 +2115,20 @@
                 try {
                     // [수정점] 데이터 로딩 속도 개선:
                     //  · 순위는 과거 데이터(js 파일)로 계산하므로 firestore 순위 조회 round-trip 제거
-                    //  · 관전기록 / 이번 달 일정 / 오늘 라이브를 순차가 아닌 '동시(병렬)'로 가져옴
+                    //  · 관전기록 / 잔여 시즌 일정 / 오늘 라이브를 순차가 아닌 '동시(병렬)'로 가져옴
+                    const currentSeasonMonth = Number(todayStr.slice(5, 7));
+                    const remainingScheduleLoads = [];
+                    for (let month = Math.max(3, currentSeasonMonth); month <= 10; month++) {
+                        remainingScheduleLoads.push(fetchMonthSchedule(2026, month));
+                    }
                     await Promise.all([
                         _fsListDocs("watch_records")
                             .then(docs => { watchRecords = docs; })
                             .catch(() => db.collection("watch_records").get()
                                 .then(wSnap => { watchRecords = []; wSnap.forEach(d => watchRecords.push(d.data())); })
                                 .catch(e => console.error(e))),
-                        fetchMonthSchedule(currentDate.getFullYear(), currentDate.getMonth() + 1),
-                        pollLiveToday()
+                        ...remainingScheduleLoads,
+                        pollLiveToday(false)
                     ]);
 
                     livePollingInterval = setInterval(pollLiveToday, 30000);
@@ -2112,6 +2139,8 @@
                     if (currentTabIndex === 2) renderRanking();
                     if (currentTabIndex === 1) renderWinRate();
                     if (currentTabIndex === 0) { renderCalendar(); renderBanners(); }
+                    renderLineupCheerSongs();
+                    checkInitialSamsungPopup();
                 } catch (e) { console.error("Fetch Error:", e); } finally { hideLoader(); }
             })();
         }
@@ -2789,36 +2818,365 @@
             const n = parseInt(String((row || {}).rank || '').replace('T', ''), 10);
             return Number.isFinite(n) ? n : fallback;
         }
-        function postseasonProjectionRows() {
-            const needsHistoryRefresh = window.KBO_HISTORY_2026 && (!rankingData || !rankingData.some(r => Number(r.w || 0) + Number(r.l || 0) + Number(r.d || 0) > 0));
-            if (needsHistoryRefresh) refreshRankingFromHistory();
-            const src = (rankingData && rankingData.length) ? rankingData : (computeRankingFromHistory() || []);
-            let rows = src.filter(r => r && KBO_TEAMS.includes(r.team)).map((r, idx) => {
-                const w = Number(r.w || 0), l = Number(r.l || 0), d = Number(r.d || 0);
-                let wr = Number(r.winRate);
-                if (!Number.isFinite(wr)) wr = (w + l) > 0 ? w / (w + l) : 0;
-                return { ...r, rankNum: _rankNum(r, idx + 1), w, l, d, gp: w + l + d, wr };
-            }).sort((a, b) => a.rankNum - b.rankNum || b.wr - a.wr);
-            if (!rows.some(r => r.gp > 0)) return [];
-            const fifth = rows[4], sixth = rows[5];
-            return rows.map(r => {
-                const form = _teamForm(r.team);
-                let gap = 0;
-                if (r.rankNum <= 5 && sixth) gap = ((r.w - sixth.w) + (sixth.l - r.l)) / 2;
-                if (r.rankNum > 5 && fifth) gap = ((fifth.w - r.w) + (r.l - fifth.l)) / 2;
-                gap = Math.max(0, gap);
-                let pct = r.rankNum <= 5
-                    ? 62 + (6 - r.rankNum) * 5 + Math.min(20, gap * 4) + (r.wr - 0.5) * 45 + (form - 0.5) * 20
-                    : 44 - (r.rankNum - 6) * 7 - Math.min(28, gap * 4) + (r.wr - 0.5) * 45 + (form - 0.5) * 20;
-                if (r.rankNum === 1) pct = Math.max(pct, 86);
-                pct = Math.max(4, Math.min(97, Math.round(pct)));
-                let label = pct >= 78 ? '안정권' : pct >= 60 ? '유력' : pct >= 42 ? '경합' : pct >= 22 ? '추격' : '험난';
-                return { ...r, pct, label, gap };
+
+        // ── 가을야구 진출 확률 모델 ────────────────────────────────────────────────
+        // KBO 정규시즌: 팀당 144경기, 상대 팀당 16경기. 아직 편성되지 않은 잔여 경기는
+        // 상대전적이 16경기가 되도록 보완하고 홈/원정 수가 최대한 균형을 이루게 배치한다.
+        const POSTSEASON_SIMULATION_RUNS = 8000;
+        const KBO_PREVIOUS_SEASON_RANK = {
+            'LG': 1, '한화': 2, 'SSG': 3, '삼성': 4, 'NC': 5,
+            'KT': 6, '롯데': 7, 'KIA': 8, '두산': 9, '키움': 10
+        };
+        // 공식 부상자/엔트리 데이터가 연결되면 팀 전력에 더할 수 있는 수동 보정값.
+        // 예: -0.03은 중립 구장에서의 팀 승률을 약 3%p 낮춘다. 확인되지 않은 부상은 추정하지 않는다.
+        const POSTSEASON_ROSTER_ADJUSTMENT = Object.freeze({
+            'LG': 0, '두산': 0, 'KIA': 0, '삼성': 0, 'SSG': 0,
+            '롯데': 0, '한화': 0, 'KT': 0, 'NC': 0, '키움': 0
+        });
+        function _forecastClamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        function _forecastLogit(p) {
+            const x = _forecastClamp(p, 0.001, 0.999);
+            return Math.log(x / (1 - x));
+        }
+
+        function _forecastLogistic(x) {
+            return 1 / (1 + Math.exp(-x));
+        }
+
+        function _forecastSeed(text) {
+            let h = 2166136261;
+            for (let i = 0; i < text.length; i++) {
+                h ^= text.charCodeAt(i);
+                h = Math.imul(h, 16777619);
+            }
+            return h >>> 0;
+        }
+
+        function _forecastRng(seed) {
+            let a = seed >>> 0;
+            return function () {
+                a |= 0;
+                a = (a + 0x6D2B79F5) | 0;
+                let t = Math.imul(a ^ (a >>> 15), 1 | a);
+                t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+                return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+            };
+        }
+
+        function _forecastNormal(rng) {
+            const u = Math.max(1e-9, rng());
+            const v = Math.max(1e-9, rng());
+            return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+        }
+
+        function _forecastIsCanceled(game, live) {
+            const text = [
+                game && game.gameStatus, game && game.inning,
+                live && live.gameStatus, live && live.inning
+            ].filter(Boolean).join(' ');
+            return /취소|우취|노게임/.test(text);
+        }
+
+        function _buildPostseasonRemainingSchedule() {
+            const teamIndex = Object.fromEntries(KBO_TEAMS.map((team, idx) => [team, idx]));
+            const pairPlayed = new Uint8Array(KBO_TEAMS.length * KBO_TEAMS.length);
+            const pairHomeGames = new Uint8Array(KBO_TEAMS.length * KBO_TEAMS.length);
+            const seenFinished = new Set();
+
+            scheduleData.forEach(game => {
+                const live = liveDataStore[game.id] || game;
+                const away = game.team1 || game.awayTeam;
+                const home = game.team2 || game.homeTeam;
+                if (teamIndex[away] === undefined || teamIndex[home] === undefined) return;
+                if (!live || live.gameStatus !== '종료' || _forecastIsCanceled(game, live)) return;
+                const key = String(game.id || `${game.date}-${away}-${home}`);
+                if (seenFinished.has(key)) return;
+                seenFinished.add(key);
+                const a = teamIndex[away], h = teamIndex[home];
+                pairPlayed[a * 10 + h]++; pairPlayed[h * 10 + a]++;
+                pairHomeGames[h * 10 + a]++;
             });
+
+            const games = [];
+            let knownGames = 0;
+            const seenFuture = new Set();
+            const futureGames = scheduleData.filter(game => {
+                const live = liveDataStore[game.id] || game;
+                const away = game.team1 || game.awayTeam;
+                const home = game.team2 || game.homeTeam;
+                if (teamIndex[away] === undefined || teamIndex[home] === undefined) return false;
+                if (!game.date || game.date < todayStr || _forecastIsCanceled(game, live)) return false;
+                return !live || live.gameStatus !== '종료';
+            }).sort((a, b) => a.date.localeCompare(b.date) || (a.time || '').localeCompare(b.time || ''));
+
+            futureGames.forEach(game => {
+                const away = game.team1 || game.awayTeam;
+                const home = game.team2 || game.homeTeam;
+                const a = teamIndex[away], h = teamIndex[home];
+                const key = String(game.id || `${game.date}-${away}-${home}`);
+                if (seenFuture.has(key) || pairPlayed[a * 10 + h] >= 16) return;
+                seenFuture.add(key);
+                games.push([a, h]);
+                pairPlayed[a * 10 + h]++; pairPlayed[h * 10 + a]++;
+                pairHomeGames[h * 10 + a]++;
+                knownGames++;
+            });
+
+            for (let i = 0; i < KBO_TEAMS.length; i++) {
+                for (let j = i + 1; j < KBO_TEAMS.length; j++) {
+                    while (pairPlayed[i * 10 + j] < 16) {
+                        const iHome = pairHomeGames[i * 10 + j];
+                        const jHome = pairHomeGames[j * 10 + i];
+                        const home = iHome <= jHome ? i : j;
+                        const away = home === i ? j : i;
+                        games.push([away, home]);
+                        pairPlayed[i * 10 + j]++; pairPlayed[j * 10 + i]++;
+                        pairHomeGames[home * 10 + away]++;
+                    }
+                }
+            }
+
+            return { games, knownGames, inferredGames: games.length - knownGames };
+        }
+
+        function _postseasonModelInputs() {
+            const rows = KBO_TEAMS.map((team, idx) => {
+                const st = teamStats[team] || {};
+                const w = Number(st.w || 0), l = Number(st.l || 0), d = Number(st.d || 0);
+                const gp = w + l + d;
+                // 전년도 순위를 약한 사전분포로 사용하되, 시즌 경기가 쌓일수록 영향은 빠르게 줄인다.
+                const previousRank = Number(KBO_PREVIOUS_SEASON_RANK[team] || 5.5);
+                const previousSeasonPrior = 0.5 + (5.5 - previousRank) * 0.012;
+                const recordStrength = (w + previousSeasonPrior * 24) / (w + l + 24);
+                const rf = Number(st.runsFor || 0), ra = Number(st.runsAgainst || 0);
+                const pythRaw = (rf + ra) > 0
+                    ? Math.pow(rf, 1.83) / (Math.pow(rf, 1.83) + Math.pow(ra, 1.83))
+                    : 0.5;
+                const pythStrength = (pythRaw * gp + previousSeasonPrior * 18) / Math.max(1, gp + 18);
+                const recent = (st.results || []).slice(-10);
+                const recentW = recent.filter(x => x === 'W').length;
+                const recentL = recent.filter(x => x === 'L').length;
+                const recentStrength = (recentW + 3) / (recentW + recentL + 6);
+                const baseStrength = _forecastClamp(
+                    recordStrength * 0.47 + pythStrength * 0.43 + recentStrength * 0.10
+                    + Number(POSTSEASON_ROSTER_ADJUSTMENT[team] || 0),
+                    0.25, 0.75
+                );
+                return { idx, team, w, l, d, gp, rf, ra, baseStrength, recentW, recentL };
+            });
+
+            const totalRuns = rows.reduce((sum, row) => sum + row.rf, 0);
+            const totalTeamGames = rows.reduce((sum, row) => sum + row.gp, 0);
+            const leagueRuns = totalTeamGames > 0 ? totalRuns / totalTeamGames : 4.8;
+            rows.forEach(row => {
+                const rpg = row.gp > 0 ? row.rf / row.gp : leagueRuns;
+                const rapg = row.gp > 0 ? row.ra / row.gp : leagueRuns;
+                row.offense = _forecastClamp((rpg * row.gp + leagueRuns * 30) / Math.max(1, leagueRuns * (row.gp + 30)), 0.72, 1.28);
+                row.runsAllowed = _forecastClamp((rapg * row.gp + leagueRuns * 30) / Math.max(1, leagueRuns * (row.gp + 30)), 0.72, 1.28);
+                const effectiveGames = Math.max(20, (row.w + row.l) * 0.72);
+                row.strengthSd = Math.sqrt(row.baseStrength * (1 - row.baseStrength) / (effectiveGames + 1)) * 0.72;
+            });
+
+            const totalHomeWins = KBO_TEAMS.reduce((sum, team) => sum + Number((teamStats[team].home || {}).w || 0), 0);
+            const totalAwayWins = KBO_TEAMS.reduce((sum, team) => sum + Number((teamStats[team].away || {}).w || 0), 0);
+            const decided = totalHomeWins + totalAwayWins;
+            const homeWinRate = (totalHomeWins + 106) / Math.max(1, decided + 200); // 53% 사전값으로 소표본 안정화
+            const drawGames = rows.reduce((sum, row) => sum + row.d, 0) / 2;
+            const completedGames = totalTeamGames / 2;
+            const drawRate = _forecastClamp((drawGames + 4) / Math.max(1, completedGames + 160), 0.012, 0.045);
+            return {
+                rows,
+                leagueRuns,
+                homeLogOdds: _forecastLogit(homeWinRate),
+                drawRate,
+                completedGames
+            };
+        }
+
+        function _postseasonCurrentOrder(inputs) {
+            return inputs.rows.slice().sort((a, b) => {
+                const aDecided = a.w + a.l, bDecided = b.w + b.l;
+                const aWr = aDecided ? a.w / aDecided : 0;
+                const bWr = bDecided ? b.w / bDecided : 0;
+                return bWr - aWr || b.w - a.w || a.l - b.l
+                    || KBO_PREVIOUS_SEASON_RANK[a.team] - KBO_PREVIOUS_SEASON_RANK[b.team];
+            });
+        }
+
+        function postseasonProjectionRows() {
+            if (postseasonProjectionCache) return postseasonProjectionCache.rows;
+            if (!teamStats || !Object.keys(teamStats).length) buildTeamStats();
+            const inputs = _postseasonModelInputs();
+            if (!inputs.rows.some(row => row.gp > 0)) return [];
+
+            const remaining = _buildPostseasonRemainingSchedule();
+            const currentOrder = _postseasonCurrentOrder(inputs);
+            const teamCount = KBO_TEAMS.length;
+            const baseWins = new Uint16Array(teamCount);
+            const baseLosses = new Uint16Array(teamCount);
+            const baseH2HWins = new Uint16Array(teamCount * teamCount);
+            const baseH2HRuns = new Float64Array(teamCount * teamCount);
+            inputs.rows.forEach(row => {
+                baseWins[row.idx] = row.w;
+                baseLosses[row.idx] = row.l;
+                const h2h = teamStats[row.team].h2h || {};
+                KBO_TEAMS.forEach((opponent, opponentIdx) => {
+                    const record = h2h[opponent] || {};
+                    baseH2HWins[row.idx * teamCount + opponentIdx] = Number(record.w || 0);
+                    baseH2HRuns[row.idx * teamCount + opponentIdx] = Number(record.rf || 0);
+                });
+            });
+
+            const snapshotKey = inputs.rows.map(row =>
+                `${row.team}:${row.w}-${row.d}-${row.l}:${row.rf}-${row.ra}`
+            ).join('|') + `|${remaining.games.length}|${remaining.knownGames}`;
+            const rng = _forecastRng(_forecastSeed(snapshotKey));
+            const qualificationCount = new Uint32Array(teamCount);
+            const rankTotal = new Uint32Array(teamCount);
+            const simulations = POSTSEASON_SIMULATION_RUNS;
+
+            for (let simulation = 0; simulation < simulations; simulation++) {
+                const strengths = new Float64Array(teamCount);
+                const wins = new Uint16Array(baseWins);
+                const losses = new Uint16Array(baseLosses);
+                const h2hWins = new Uint16Array(baseH2HWins);
+                const h2hRuns = new Float64Array(baseH2HRuns);
+                inputs.rows.forEach(row => {
+                    strengths[row.idx] = _forecastClamp(
+                        row.baseStrength + _forecastNormal(rng) * row.strengthSd,
+                        0.22, 0.78
+                    );
+                });
+
+                remaining.games.forEach(game => {
+                    const away = game[0], home = game[1];
+                    const awayRow = inputs.rows[away], homeRow = inputs.rows[home];
+                    const pHome = _forecastLogistic(
+                        _forecastLogit(strengths[home]) - _forecastLogit(strengths[away])
+                        + inputs.homeLogOdds
+                    );
+                    const expectedAwayRuns = inputs.leagueRuns * awayRow.offense * homeRow.runsAllowed * 0.985;
+                    const expectedHomeRuns = inputs.leagueRuns * homeRow.offense * awayRow.runsAllowed * 1.015;
+                    h2hRuns[away * teamCount + home] += expectedAwayRuns;
+                    h2hRuns[home * teamCount + away] += expectedHomeRuns;
+
+                    if (rng() < inputs.drawRate) return;
+                    if (rng() < pHome) {
+                        wins[home]++; losses[away]++;
+                        h2hWins[home * teamCount + away]++;
+                    } else {
+                        wins[away]++; losses[home]++;
+                        h2hWins[away * teamCount + home]++;
+                    }
+                });
+
+                let order = Array.from({ length: teamCount }, (_, idx) => idx).sort((a, b) => {
+                    const aDecided = wins[a] + losses[a], bDecided = wins[b] + losses[b];
+                    return wins[b] * aDecided - wins[a] * bDecided;
+                });
+
+                for (let start = 0; start < order.length;) {
+                    let end = start + 1;
+                    const first = order[start];
+                    while (end < order.length) {
+                        const next = order[end];
+                        if (wins[first] * (wins[next] + losses[next]) !== wins[next] * (wins[first] + losses[first])) break;
+                        end++;
+                    }
+                    if (end - start > 1) {
+                        const tied = order.slice(start, end);
+                        if (tied.length === 2 && (start === 0 || start === 4)) {
+                            const a = tied[0], b = tied[1];
+                            const pA = _forecastLogistic(_forecastLogit(strengths[a]) - _forecastLogit(strengths[b]));
+                            if (rng() >= pA) tied.reverse(); // 1위/5위 두 팀 동률 시 순위결정전
+                        } else {
+                            tied.sort((a, b) => {
+                                let aWins = 0, bWins = 0, aRuns = 0, bRuns = 0;
+                                tied.forEach(other => {
+                                    if (other !== a) {
+                                        aWins += h2hWins[a * teamCount + other];
+                                        aRuns += h2hRuns[a * teamCount + other];
+                                    }
+                                    if (other !== b) {
+                                        bWins += h2hWins[b * teamCount + other];
+                                        bRuns += h2hRuns[b * teamCount + other];
+                                    }
+                                });
+                                // 두 팀 동률도 상대전적 → 다득점 → 전년도 순위 순으로 정렬한다.
+                                if (tied.length === 2) {
+                                    aWins = h2hWins[a * teamCount + b];
+                                    bWins = h2hWins[b * teamCount + a];
+                                    aRuns = h2hRuns[a * teamCount + b];
+                                    bRuns = h2hRuns[b * teamCount + a];
+                                }
+                                return bWins - aWins || bRuns - aRuns
+                                    || KBO_PREVIOUS_SEASON_RANK[KBO_TEAMS[a]] - KBO_PREVIOUS_SEASON_RANK[KBO_TEAMS[b]];
+                            });
+                        }
+                        order.splice(start, tied.length, ...tied);
+                    }
+                    start = end;
+                }
+
+                order.forEach((teamIdx, rankIdx) => {
+                    rankTotal[teamIdx] += rankIdx + 1;
+                    if (rankIdx < 5) qualificationCount[teamIdx]++;
+                });
+            }
+
+            // 소수점 첫째 자리 반올림 후에도 5개 진출권의 합이 정확히 500.0%가 되도록 최대잔여법 적용.
+            const rawTenths = Array.from(qualificationCount, count => count * 1000 / simulations);
+            const displayTenths = rawTenths.map(value => Math.floor(value));
+            let unitsToDistribute = 5000 - displayTenths.reduce((sum, value) => sum + value, 0);
+            rawTenths.map((value, idx) => ({ idx, fraction: value - Math.floor(value) }))
+                .sort((a, b) => b.fraction - a.fraction)
+                .slice(0, unitsToDistribute)
+                .forEach(item => displayTenths[item.idx]++);
+
+            const fifth = currentOrder[4], sixth = currentOrder[5];
+            const cutoffGap = fifth && sixth
+                ? Math.max(0, ((fifth.w - sixth.w) + (sixth.l - fifth.l)) / 2)
+                : 0;
+            const output = currentOrder.map((row, rankIdx) => {
+                const pct = displayTenths[row.idx] / 10;
+                const label = pct >= 90 ? '안정권' : pct >= 70 ? '유력'
+                    : pct >= 40 ? '경합' : pct >= 15 ? '추격' : '험난';
+                return {
+                    ...row,
+                    rankNum: rankIdx + 1,
+                    winRate: (row.w + row.l) ? (row.w / (row.w + row.l)).toFixed(3) : '0.000',
+                    pct,
+                    label,
+                    expectedRank: rankTotal[row.idx] / simulations,
+                    gap: rankIdx === 5 ? cutoffGap : 0
+                };
+            });
+            const latestCompletedDate = scheduleData.reduce((latest, game) => {
+                const live = liveDataStore[game.id] || game;
+                if (!game.date || !live || live.gameStatus !== '종료' || _forecastIsCanceled(game, live)) return latest;
+                return game.date > latest ? game.date : latest;
+            }, '');
+            const meta = {
+                simulations,
+                remainingGames: remaining.games.length,
+                knownGames: remaining.knownGames,
+                inferredGames: remaining.inferredGames,
+                completedGames: inputs.completedGames,
+                asOf: latestCompletedDate || (window.KBO_HISTORY_2026 && window.KBO_HISTORY_2026.to) || todayStr,
+                probabilityTotal: output.reduce((sum, row) => sum + row.pct, 0)
+            };
+            postseasonProjectionCache = { rows: output, meta };
+            window.__postseasonForecast = postseasonProjectionCache;
+            return output;
         }
         function homeCardPostseasonForecast() {
             const rows = postseasonProjectionRows();
             if (!rows.length) return '';
+            const meta = postseasonProjectionCache && postseasonProjectionCache.meta;
+            const formatPct = value => Number(value).toFixed(1);
             const forecastRows = rows.slice(0, 6).map((r, idx) => {
                 const teamColorStyle = _teamAccentStyle(r.team);
                 const badgeCls = r.rankNum <= 3 ? 'text-[#111827] bg-white' : 'text-white bg-white/10';
@@ -2829,19 +3187,27 @@
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center justify-between gap-2 mb-1">
                             <span class="text-[13px] font-black text-white truncate">${r.team}</span>
-                            <span class="team-accent text-[11px] font-black" style="${teamColorStyle}">${r.pct}% · ${r.label}</span>
+                            <span class="team-accent text-[11px] font-black" style="${teamColorStyle}">${formatPct(r.pct)}% · ${r.label}</span>
                         </div>
                         <div class="h-1.5 rounded-full overflow-hidden bg-white/10"><div class="team-accent-fill h-full rounded-full" style="width:${r.pct}%;${teamColorStyle}"></div></div>
                     </div>
                 </div>`;
             }).join('');
-            const rest = rows.slice(6).map(r => `${r.rankNum}위 ${r.team} ${r.pct}%`).join(' · ');
+            const rest = rows.slice(6).map(r => `${r.rankNum}위 ${r.team} ${formatPct(r.pct)}%`).join(' · ');
             const fifth = rows[4], sixth = rows[5];
             const boundary = fifth && sixth
-                ? `<div class="text-[11px] text-gray-300 font-bold pt-2.5 mt-2 border-t border-white/5">5위 ${fifth.team} · 6위 ${sixth.team}의 경계선은 ${Math.max(0, sixth.gap).toFixed(1).replace('.0','')}경기 차</div>`
+                ? `<div class="text-[11px] text-gray-300 font-bold pt-2.5 mt-2 border-t border-white/5">5위 ${fifth.team} ${formatPct(fifth.pct)}% · 6위 ${sixth.team} ${formatPct(sixth.pct)}% <span class="text-gray-500">(${Math.max(0, sixth.gap).toFixed(1).replace('.0','')}경기 차)</span></div>`
                 : '';
             const restLine = rest ? `<div class="text-[10.5px] text-gray-400 font-bold leading-relaxed mt-2">${rest}</div>` : '';
-            return `<div class="px-0.5"><div>${_cardHead('fa-ranking-star', '가을야구 예상도', `<span class="text-[10px] text-gray-400">순위+결과 기반</span>`)}<div class="flex flex-col">${forecastRows}</div>${restLine}${boundary}</div></div>`;
+            const scheduleNote = meta
+                ? `잔여 ${meta.remainingGames}경기 중 실제 편성 ${meta.knownGames} · 미편성 보완 ${meta.inferredGames}`
+                : '';
+            const modelNote = meta
+                ? `<div class="mt-2.5 rounded-xl bg-white/[0.035] border border-white/5 px-3 py-2 text-[9.5px] leading-relaxed text-gray-400 font-bold">전년도 순위·시즌 승률·최근 10경기·득실점·홈/원정·잔여 대진 반영<br>${scheduleNote} · 확률 합계 ${meta.probabilityTotal.toFixed(1)}%</div>`
+                : '';
+            const asOfLabel = meta && meta.asOf ? meta.asOf.slice(5).replace('-', '.') + ' 기준 · ' : '';
+            const simulationLabel = meta ? `${asOfLabel}${meta.simulations.toLocaleString()}회 시뮬레이션` : '시뮬레이션';
+            return `<div class="px-0.5"><div>${_cardHead('fa-ranking-star', '가을야구 예상도', `<span class="text-[10px] text-gray-400">${simulationLabel}</span>`)}<div class="flex flex-col">${forecastRows}</div>${restLine}${boundary}${modelNote}</div></div>`;
         }
         // 4) 최근 승패 흐름
         function homeCardRecentForm() {
