@@ -36,7 +36,7 @@
             --text-2: rgba(255, 255, 255, 0.62);
             --text-3: rgba(255, 255, 255, 0.38);
             --player-bar: #1A1A1C;
-            --nav-h: 60px;
+            --nav-h: 66px;
             --bar-h: 56px;
         }
         body[data-theme="KIA"]  { --point: #EA0029; --point-soft: rgba(234, 0, 41, 0.22); }
@@ -375,10 +375,12 @@
             height: calc(var(--nav-h) + env(safe-area-inset-bottom));
             background: var(--bg);
         }
-        #tabbar button { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; color: var(--text-3); transition: color .2s ease; }
-        #tabbar button i { font-size: 18px; }
-        #tabbar button span { font-size: 11px; font-weight: 700; }
+        #tabbar button { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; color: #8A8A8E; transition: color .2s ease, transform .15s ease; }
+        #tabbar button:active { transform: scale(0.94); }
+        #tabbar .tb-ico { display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; }
+        #tabbar button > span:last-child { font-size: 12px; font-weight: 700; letter-spacing: -0.04em; }
         #tabbar button.on { color: #fff; }
+        #tabbar button.on > span:last-child { font-weight: 800; }
 
         /* ── 시트/모달 공통 ────────────────────────────────────── */
         .sheet-mask { position: absolute; inset: 0; z-index: 110; display: none; background: rgba(0,0,0,0.62); backdrop-filter: blur(2px); }
@@ -799,10 +801,49 @@
 
     <!-- ── 하단 탭 ────────────────────────────────────────── -->
     <nav id="tabbar">
-        <button class="on" onclick="switchTab(0)"><i class="fa-solid fa-house"></i><span>홈</span></button>
-        <button onclick="switchTab(1)"><i class="fa-solid fa-table-cells-large"></i><span>둘러보기</span></button>
-        <button onclick="switchTab(2)"><i class="fa-solid fa-magnifying-glass"></i><span>검색</span></button>
-        <button onclick="switchTab(3)"><i class="fa-solid fa-bars-staggered"></i><span>보관함</span></button>
+        <button class="on" onclick="switchTab(0)">
+            <span class="tb-ico">
+                <!-- 홈: 집 모양 실루엣 + 가운데 물결 -->
+                <svg viewBox="0 0 26 26" width="26" height="26" aria-hidden="true">
+                    <path fill="currentColor" d="M3.3 12.2c0-.75.33-1.46.9-1.94l7.9-6.62a2.95 2.95 0 0 1 3.8 0l7.9 6.62c.57.48.9 1.19.9 1.94v8c0 1.34-1.09 2.43-2.43 2.43H5.73A2.43 2.43 0 0 1 3.3 20.2z"/>
+                    <path fill="none" stroke="var(--bg)" stroke-width="3" stroke-linecap="round" d="M5.5 17C7.4 13.6 11.1 13.6 13 17s6.1 3.4 7.5 0"/>
+                </svg>
+            </span>
+            <span>홈</span>
+        </button>
+        <button onclick="switchTab(1)">
+            <span class="tb-ico">
+                <!-- 둘러보기: 사각 3 + 원 1 -->
+                <svg viewBox="0 0 26 26" width="26" height="26" aria-hidden="true">
+                    <rect x="3.4" y="3.4" width="8.4" height="8.4" rx="2" fill="currentColor"/>
+                    <rect x="14.2" y="3.4" width="8.4" height="8.4" rx="2" fill="currentColor"/>
+                    <rect x="3.4" y="14.2" width="8.4" height="8.4" rx="2" fill="currentColor"/>
+                    <circle cx="18.4" cy="18.4" r="4.2" fill="currentColor"/>
+                </svg>
+            </span>
+            <span>둘러보기</span>
+        </button>
+        <button onclick="switchTab(2)">
+            <span class="tb-ico">
+                <!-- 검색: 돋보기 -->
+                <svg viewBox="0 0 26 26" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round">
+                    <circle cx="11.3" cy="11.3" r="7.6"/>
+                    <path d="M16.9 16.9l5.4 5.4"/>
+                </svg>
+            </span>
+            <span>검색</span>
+        </button>
+        <button onclick="switchTab(3)">
+            <span class="tb-ico">
+                <!-- 보관함: 쌓아 놓은 층 -->
+                <svg viewBox="0 0 26 26" width="26" height="26" aria-hidden="true">
+                    <path fill="currentColor" d="M5.2 10.6l3.1-4.3c.28-.39.73-.62 1.21-.62h6.98c.48 0 .93.23 1.21.62l3.1 4.3z"/>
+                    <rect x="5" y="12.4" width="16" height="2.9" rx="1.45" fill="currentColor"/>
+                    <rect x="5" y="17.1" width="16" height="2.9" rx="1.45" fill="currentColor"/>
+                </svg>
+            </span>
+            <span>보관함</span>
+        </button>
     </nav>
 
     <!-- ── 시트 ───────────────────────────────────────────── -->
