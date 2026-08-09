@@ -361,12 +361,12 @@
         #tabbar button.on { color: #fff; }
 
         /* ── 시트/모달 공통 ────────────────────────────────────── */
-        .sheet-mask { position: absolute; inset: 0; z-index: 80; display: none; background: rgba(0,0,0,0.62); backdrop-filter: blur(2px); }
+        .sheet-mask { position: absolute; inset: 0; z-index: 110; display: none; background: rgba(0,0,0,0.62); backdrop-filter: blur(2px); }
         .sheet-mask.on { display: block; }
         .sheet {
             position: absolute;
             left: 0; right: 0; bottom: 0;
-            z-index: 90;
+            z-index: 115;
             max-height: 74%;
             display: flex;
             flex-direction: column;
@@ -384,6 +384,7 @@
         .sheet-body { overflow-y: auto; padding: 0 8px 18px; }
         .set-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 12px; border-radius: 10px; }
         .set-row:active { background: rgba(255,255,255,0.05); }
+        .set-row > span:first-child { flex: 1; min-width: 0; text-align: left; }
         .set-row strong { display: block; font-size: 14px; font-weight: 700; }
         .set-row small { display: block; margin-top: 3px; font-size: 11.5px; font-weight: 500; color: var(--text-2); }
         .set-val { font-size: 12.5px; font-weight: 800; color: var(--point); white-space: nowrap; }
@@ -393,46 +394,97 @@
             position: absolute;
             inset: 0;
             z-index: 100;
-            display: flex;
-            flex-direction: column;
-            padding: 8px 26px 26px;
-            padding-top: calc(8px + env(safe-area-inset-top));
-            padding-bottom: calc(26px + env(safe-area-inset-bottom));
-            background: #0B0B0D;
+            overflow: hidden;
+            background: #10141B;
             transform: translateY(100%);
-            transition: transform .3s cubic-bezier(0.2, 0.9, 0.2, 1);
+            transition: transform .32s cubic-bezier(0.2, 0.9, 0.2, 1);
             pointer-events: none;
         }
         #full-player.on { transform: translateY(0); pointer-events: auto; }
-        .fp-top { display: flex; align-items: center; justify-content: space-between; flex: 0 0 auto; height: 44px; margin: 0 -8px; }
-        .fp-top button { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: rgba(255,255,255,0.75); }
-        .fp-main { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .fp-art { width: 78%; max-width: 300px; aspect-ratio: 1/1; margin-bottom: 34px; border-radius: 14px; overflow: hidden; background: #17171A; display: flex; align-items: center; justify-content: center; box-shadow: 0 18px 46px rgba(0,0,0,0.55); }
+
+        /* 앨범 아트에서 뽑아낸 배경 앰비언스 */
+        #fp-bg { position: absolute; inset: -18%; z-index: 0; }
+        #fp-bg img { width: 100%; height: 100%; object-fit: cover; filter: blur(58px) saturate(180%) brightness(0.8); opacity: 0.55; }
+        #fp-veil {
+            position: absolute; inset: 0; z-index: 1;
+            background:
+                radial-gradient(120% 62% at 50% 0%, color-mix(in srgb, var(--point) 20%, transparent) 0%, transparent 62%),
+                linear-gradient(180deg, rgba(18,23,32,0.62) 0%, rgba(15,19,27,0.86) 46%, #0B0E14 100%);
+        }
+        .fp-inner {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 0 21px 18px;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: calc(18px + env(safe-area-inset-bottom));
+        }
+
+        .fp-top { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; height: 56px; margin: 0 -10px; }
+        .fp-top button { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #fff; transition: transform .15s ease, opacity .2s ease; }
+        .fp-top button:active { transform: scale(0.88); }
+        .fp-top button.dim { color: rgba(255,255,255,0.42); }
+        .fp-top .fp-spacer { flex: 1; }
+
+        .fp-art { width: 82%; max-width: 330px; aspect-ratio: 1/1; margin: 8px auto 0; border-radius: 10px; overflow: hidden; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; box-shadow: 0 14px 40px rgba(0,0,0,0.45); }
         .fp-art img { width: 100%; height: 100%; object-fit: contain; padding: 34px; }
-        .fp-art img.portrait { object-fit: cover; object-position: top; transform: scale(1.1); padding: 0; }
-        #fp-title { width: 100%; font-size: 22px; font-weight: 800; text-align: center; letter-spacing: -0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        #fp-artist { width: 100%; margin-top: 7px; font-size: 14px; font-weight: 500; color: var(--text-2); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .fp-seek { width: 100%; margin-top: 30px; }
-        .fp-track { position: relative; height: 4px; border-radius: 999px; background: rgba(255,255,255,0.14); }
+        .fp-art img.portrait { object-fit: cover; object-position: top; transform: scale(1.08); padding: 0; }
+
+        .fp-lyric { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; padding: 16px 6px; text-align: center; }
+        #fp-lyric-1 { font-size: 18px; font-weight: 800; letter-spacing: -0.035em; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+        #fp-lyric-2 { font-size: 18px; font-weight: 700; letter-spacing: -0.035em; color: rgba(255,255,255,0.44); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+
+        .fp-meta { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; margin-top: 4px; }
+        .fp-meta-text { flex: 1; min-width: 0; }
+        #fp-title { font-size: 25px; font-weight: 800; letter-spacing: -0.045em; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        #fp-artist { margin-top: 5px; font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.5); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .fp-meta button { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; font-size: 21px; color: #fff; transition: transform .15s ease, color .2s ease; }
+        .fp-meta button:active { transform: scale(0.86); }
+        #fp-fav.on { color: var(--point); }
+
+        .fp-seek { flex: 0 0 auto; margin-top: 24px; }
+        .fp-track { position: relative; height: 3px; border-radius: 999px; background: rgba(255,255,255,0.2); }
         .fp-fill { position: absolute; left: 0; top: 0; height: 100%; width: 0; border-radius: 999px; background: var(--point); }
-        .fp-seek input { position: absolute; left: 0; top: -14px; width: 100%; height: 32px; opacity: 0; -webkit-appearance: none; appearance: none; background: none; }
-        .fp-time { display: flex; justify-content: space-between; margin-top: 9px; font-size: 11.5px; font-weight: 600; color: var(--text-3); font-variant-numeric: tabular-nums; }
-        .fp-ctrl { display: flex; align-items: center; justify-content: center; gap: 40px; margin-top: 26px; }
-        .fp-ctrl button { display: flex; align-items: center; justify-content: center; font-size: 26px; color: #fff; transition: transform .15s ease; }
+        .fp-seek input { position: absolute; left: 0; top: -15px; width: 100%; height: 33px; opacity: 0; -webkit-appearance: none; appearance: none; background: none; }
+        .fp-time { display: flex; justify-content: space-between; margin-top: 10px; font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+        #fp-cur { color: var(--point); }
+        #fp-dur { color: rgba(255,255,255,0.5); }
+
+        .fp-ctrl { display: flex; align-items: center; justify-content: space-between; flex: 0 0 auto; margin-top: 22px; padding: 0 2px; }
+        .fp-ctrl button { display: flex; align-items: center; justify-content: center; color: #fff; transition: transform .15s ease, color .2s ease; }
         .fp-ctrl button:active { transform: scale(0.9); }
-        .fp-ctrl .fp-play { width: 66px; height: 66px; border-radius: 999px; background: #fff; color: #111; font-size: 25px; }
-        .fp-extra { display: flex; align-items: center; justify-content: center; gap: 46px; margin-top: 26px; }
-        .fp-extra button { position: relative; font-size: 15px; color: rgba(255,255,255,0.4); transition: color .2s ease, transform .15s ease; }
-        .fp-extra button.on { color: var(--point); }
-        .fp-extra button:active { transform: scale(0.88); }
-        .fp-extra b { position: absolute; top: -5px; right: -9px; font-size: 8.5px; font-weight: 900; }
+        .fp-ctrl .fp-side { position: relative; width: 44px; height: 44px; font-size: 21px; color: rgba(255,255,255,0.92); }
+        .fp-ctrl .fp-side.on { color: var(--point); }
+        .fp-ctrl .fp-side b { position: absolute; top: 4px; right: 4px; font-size: 9px; font-weight: 900; }
+        .fp-ctrl .fp-step { width: 56px; height: 56px; font-size: 27px; }
+        .fp-ctrl .fp-play { width: 68px; height: 68px; font-size: 40px; }
+
+        .fp-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex: 0 0 auto; margin-top: 22px; }
+        .fp-eq { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border: 1.6px solid rgba(255,255,255,0.55); border-radius: 10px; color: #fff; font-size: 12.5px; font-weight: 900; letter-spacing: 0; transition: transform .15s ease, border-color .2s ease, color .2s ease; }
+        .fp-eq:active { transform: scale(0.92); }
+        .fp-eq.on { border-color: var(--point); color: var(--point); }
+        .fp-pills { display: flex; align-items: center; gap: 10px; }
+        .fp-pill { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 16px; border: 1.4px solid rgba(255,255,255,0.34); border-radius: 999px; color: #fff; font-size: 13.5px; font-weight: 700; white-space: nowrap; transition: transform .15s ease, background-color .2s ease; }
+        .fp-pill:active { transform: scale(0.95); background: rgba(255,255,255,0.1); }
+        .fp-queue-btn { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; color: #fff; transition: transform .15s ease; }
+        .fp-queue-btn:active { transform: scale(0.88); }
+
+        .eq-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; width: 100%; padding: 14px 12px; border-radius: 10px; }
+        .eq-row:active { background: rgba(255,255,255,0.05); }
+        .eq-row > span:first-child { flex: 1; min-width: 0; text-align: left; }
+        .eq-row strong { display: block; font-size: 14px; font-weight: 700; }
+        .eq-row small { display: block; margin-top: 3px; font-size: 11.5px; font-weight: 500; color: var(--text-2); }
+        .eq-row .set-val { color: var(--point); }
+
 
         /* ── 토스트 ───────────────────────────────────────────── */
         #toast {
             position: absolute;
             left: 50%;
             bottom: calc(var(--nav-h) + var(--bar-h) + 22px);
-            z-index: 120;
+            z-index: 130;
             transform: translate(-50%, 10px);
             padding: 11px 18px;
             border-radius: 999px;
@@ -640,6 +692,18 @@
         <div class="sheet-body" id="setting-list"></div>
     </div>
 
+    <div class="sheet" id="sheet-eq">
+        <div class="sheet-grab"></div>
+        <div class="sheet-head"><strong>이퀄라이저</strong><button onclick="closeSheet()">닫기</button></div>
+        <div class="sheet-body" id="eq-list"></div>
+    </div>
+
+    <div class="sheet" id="sheet-more">
+        <div class="sheet-grab"></div>
+        <div class="sheet-head"><strong id="more-title">곡 정보</strong><button onclick="closeSheet()">닫기</button></div>
+        <div class="sheet-body" id="more-list"></div>
+    </div>
+
     <div class="sheet" id="sheet-notice">
         <div class="sheet-grab"></div>
         <div class="sheet-head"><strong>안내</strong><button onclick="closeSheet()">닫기</button></div>
@@ -648,30 +712,77 @@
 
     <!-- ── 전체 플레이어 ──────────────────────────────────── -->
     <div id="full-player">
-        <div class="fp-top">
-            <button onclick="closePlayer()" aria-label="닫기"><i class="fa-solid fa-chevron-down"></i></button>
-            <button onclick="openSheet('queue')" aria-label="재생목록"><i class="fa-solid fa-bars-staggered"></i></button>
-        </div>
-        <div class="fp-main">
+        <div id="fp-bg"><img id="fp-bg-img" src="" alt=""></div>
+        <div id="fp-veil"></div>
+        <div class="fp-inner">
+            <div class="fp-top">
+                <button onclick="openSheet('setting')" aria-label="재생목록 설정">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M3 6h13M3 11h9M3 16h6"/>
+                        <circle cx="17.4" cy="16.6" r="3"/>
+                        <path d="M17.4 12.7v-.9M17.4 21.4v-.9M21.3 16.6h-.9M14.4 16.6h-.9M20.2 13.8l-.7.7M15.3 18.7l-.7.7M20.2 19.4l-.7-.7M15.3 14.5l-.7-.7"/>
+                    </svg>
+                </button>
+                <button class="dim" onclick="openSheet('notice')" aria-label="재생 안내">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <circle cx="12" cy="12" r="2.1" fill="currentColor" stroke="none"/>
+                        <path d="M8.4 8.4A5 5 0 0 0 8.4 15.6"/>
+                        <path d="M15.6 8.4A5 5 0 0 1 15.6 15.6"/>
+                        <path d="M5.6 5.6A9 9 0 0 0 5.6 18.4"/>
+                        <path d="M18.4 5.6A9 9 0 0 1 18.4 18.4"/>
+                    </svg>
+                </button>
+                <span class="fp-spacer"></span>
+                <button onclick="closePlayer()" aria-label="닫기"><i class="fa-solid fa-chevron-down" style="font-size:20px"></i></button>
+            </div>
+
             <div class="fp-art"><img id="fp-art" src="" alt=""></div>
-            <div id="fp-title">곡을 선택해 주세요</div>
-            <div id="fp-artist">KBO 응원가</div>
+
+            <div class="fp-lyric">
+                <div id="fp-lyric-1">응원가를 선택해 주세요</div>
+                <div id="fp-lyric-2">목록에서 곡을 눌러 재생합니다</div>
+            </div>
+
+            <div class="fp-meta">
+                <div class="fp-meta-text">
+                    <div id="fp-title">곡을 선택해 주세요</div>
+                    <div id="fp-artist">KBO 응원가</div>
+                </div>
+                <button id="fp-fav" onclick="favCurrent()" aria-label="좋아요"><i class="fa-regular fa-heart"></i></button>
+                <button onclick="openSheet('more')" aria-label="더보기"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+            </div>
+
             <div class="fp-seek">
                 <div class="fp-track">
                     <div class="fp-fill" id="fp-fill"></div>
                     <input id="fp-range" type="range" min="0" max="100" value="0">
                 </div>
-                <div class="fp-time"><span id="fp-cur">0:00</span><span id="fp-dur">0:00</span></div>
+                <div class="fp-time"><span id="fp-cur">00:00</span><span id="fp-dur">00:00</span></div>
             </div>
+
             <div class="fp-ctrl">
-                <button onclick="prevSong()" aria-label="이전"><i class="fa-solid fa-backward-step"></i></button>
+                <button class="fp-side" id="fp-repeat" onclick="toggleRepeat()" aria-label="반복"><i class="fa-solid fa-repeat"></i><b id="fp-repeat-1" style="display:none">1</b></button>
+                <button class="fp-step" onclick="prevSong()" aria-label="이전"><i class="fa-solid fa-backward-step"></i></button>
                 <button class="fp-play" onclick="togglePlay()" aria-label="재생"><i id="fp-play" class="fa-solid fa-play"></i></button>
-                <button onclick="nextSong()" aria-label="다음"><i class="fa-solid fa-forward-step"></i></button>
+                <button class="fp-step" onclick="nextSong()" aria-label="다음"><i class="fa-solid fa-forward-step"></i></button>
+                <button class="fp-side" id="fp-shuffle" onclick="toggleShuffle()" aria-label="셔플"><i class="fa-solid fa-shuffle"></i></button>
             </div>
-            <div class="fp-extra">
-                <button id="fp-shuffle" onclick="toggleShuffle()" aria-label="셔플"><i class="fa-solid fa-shuffle"></i></button>
-                <button id="fp-fav" onclick="favCurrent()" aria-label="좋아요"><i class="fa-regular fa-heart"></i></button>
-                <button id="fp-repeat" onclick="toggleRepeat()" aria-label="반복"><i class="fa-solid fa-repeat"></i><b id="fp-repeat-1" style="display:none">1</b></button>
+
+            <div class="fp-bottom">
+                <button class="fp-eq" id="fp-eq-btn" onclick="openSheet('eq')" aria-label="이퀄라이저">EQ</button>
+                <div class="fp-pills">
+                    <button class="fp-pill" onclick="playSimilar()">유사곡</button>
+                    <button class="fp-pill" onclick="playQuickPick()">
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M12 1.8l2.3 7.9 7.9 2.3-7.9 2.3-2.3 7.9-2.3-7.9L1.8 12l7.9-2.3z"/></svg>
+                        빠른 선곡
+                    </button>
+                </div>
+                <button class="fp-queue-btn" onclick="openSheet('queue')" aria-label="재생목록">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M3 6h18M3 11.5h18M3 17h9"/>
+                        <path d="M15.6 13.6v7l5.4-3.5z" fill="currentColor" stroke="none"/>
+                    </svg>
+                </button>
             </div>
         </div>
     </div>
@@ -834,7 +945,7 @@ function shuffled(arr) {
     for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
     return a;
 }
-const fmtTime = s => isNaN(s) ? '0:00' : `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+const fmtTime = s => isNaN(s) ? '00:00' : `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
 /* ── 곡 리스트 렌더 ────────────────────────────────────────── */
 const lists = {};
@@ -912,8 +1023,10 @@ function play(song) {
     const art = $('fp-art');
     art.onerror = () => coverFallback(art, song.team);
     art.src = song.cover; art.className = song.portrait ? 'portrait' : '';
+    $('fp-bg-img').src = song.cover;
     $('fp-title').textContent = song.label;
     $('fp-artist').textContent = cur.artist;
+    paintLyric(song);
     $('fp-fill').style.width = '0%'; $('fp-range').value = 0;
     document.documentElement.style.setProperty('--progress', '0%');
 
@@ -986,7 +1099,7 @@ window.appPrevMusic = prevSong;
 function initAudio() {
     audio = $('audio');
     const fill = $('fp-fill'), range = $('fp-range'), curT = $('fp-cur'), durT = $('fp-dur');
-    const remain = () => audio.duration ? '-' + fmtTime(Math.max(0, audio.duration - audio.currentTime)) : '0:00';
+    const total = () => audio.duration ? fmtTime(audio.duration) : '00:00';
 
     audio.addEventListener('play', () => { isPlaying = true; paintPlay(); syncRows(); toAndroid('PLAYING'); });
     audio.addEventListener('pause', () => { isPlaying = false; paintPlay(); syncRows(); toAndroid('PAUSED'); });
@@ -997,9 +1110,9 @@ function initAudio() {
         range.value = p;
         document.documentElement.style.setProperty('--progress', p + '%');
         curT.textContent = fmtTime(audio.currentTime);
-        durT.textContent = remain();
+        durT.textContent = total();
     });
-    audio.addEventListener('loadedmetadata', () => { durT.textContent = remain(); });
+    audio.addEventListener('loadedmetadata', () => { durT.textContent = total(); });
     audio.addEventListener('ended', () => {
         if (repeatMode === 'one') { audio.currentTime = 0; audio.play(); return; }
         if (repeatMode === 'off' && !shuffleOn && qIndex === queue.length - 1) { isPlaying = false; paintPlay(); syncRows(); return; }
@@ -1010,7 +1123,7 @@ function initAudio() {
         const t = (e.target.value / 100) * (audio.duration || 0);
         fill.style.width = e.target.value + '%';
         curT.textContent = fmtTime(t);
-        if (audio.duration) durT.textContent = '-' + fmtTime(Math.max(0, audio.duration - t));
+        durT.textContent = total();
     });
     range.addEventListener('change', e => { seeking = false; if (audio.duration) audio.currentTime = (e.target.value / 100) * audio.duration; });
 }
@@ -1262,6 +1375,105 @@ function openList(kind, a, b) {
 function closeList() { $('list-view').classList.remove('on'); listState = null; }
 function playListView(shuffle) { playSongs(lists['lv-list'] || [], shuffle); }
 
+/* ── 가사 슬롯 ─────────────────────────────────────────────── */
+// 응원가 가사는 구단 자산이라 기본 제공하지 않는다.
+// LYRICS[곡 url] = ['첫 줄', '둘째 줄'] 형태로 채우면 그대로 표시된다.
+const LYRICS = {};
+function paintLyric(song) {
+    const l = LYRICS[song.url];
+    if (l && l.length) {
+        $('fp-lyric-1').textContent = l[0] || '';
+        $('fp-lyric-2').textContent = l[1] || '';
+        return;
+    }
+    $('fp-lyric-1').textContent = `${TEAM_FULL[song.team] || song.team} ${song.catName}`;
+    $('fp-lyric-2').textContent = song.player ? `${song.player} 선수` : '다 함께 목청껏 불러요';
+}
+
+/* ── 유사곡 / 빠른 선곡 ────────────────────────────────────── */
+function playSimilar() {
+    const s = byUrl(cur.url);
+    if (!s) { toast('재생 중인 응원가가 없습니다'); return; }
+    const rest = songsOf(s.team, s.cat).filter(x => x.url !== s.url);
+    if (!rest.length) { toast('비슷한 응원가가 없습니다'); return; }
+    playSongs([s, ...rest], false);
+    toast(`${s.catName} 유사곡으로 이어 재생합니다`);
+}
+function playQuickPick() {
+    const s = byUrl(cur.url);
+    const pool = songsOf(s ? s.team : team, null);
+    if (!pool.length) { toast('재생할 곡이 없습니다.'); return; }
+    playSongs(shuffled(pool), false);
+    toast('빠른 선곡으로 재생목록을 만들었어요');
+}
+
+/* ── 이퀄라이저(Web Audio) ─────────────────────────────────── */
+// 기본값에서는 오디오 그래프를 만들지 않는다. 프리셋을 고른 순간에만 연결해
+// 웹뷰 등 지원이 불안정한 환경에서 기본 재생 경로를 건드리지 않도록 한다.
+const EQ_PRESETS = {
+    flat:   { name: '기본',      desc: '원음 그대로',            gains: [0, 0, 0] },
+    bass:   { name: '저음 강화', desc: '북소리와 베이스를 두껍게', gains: [7, 0, -1] },
+    vocal:  { name: '보컬 강조', desc: '응원 구호가 또렷하게',    gains: [-2, 5, 1] },
+    treble: { name: '고음 강조', desc: '트럼펫과 함성을 밝게',    gains: [0, 0, 6] }
+};
+let audioCtx = null, eqBands = null, eqPreset = 'flat';
+function ensureEQ() {
+    if (eqBands) return true;
+    try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC || !audio) return false;
+        audioCtx = new AC();
+        const src = audioCtx.createMediaElementSource(audio);
+        const low = audioCtx.createBiquadFilter(); low.type = 'lowshelf'; low.frequency.value = 220;
+        const mid = audioCtx.createBiquadFilter(); mid.type = 'peaking'; mid.frequency.value = 1200; mid.Q.value = 1;
+        const high = audioCtx.createBiquadFilter(); high.type = 'highshelf'; high.frequency.value = 4500;
+        src.connect(low); low.connect(mid); mid.connect(high); high.connect(audioCtx.destination);
+        eqBands = [low, mid, high];
+        return true;
+    } catch (e) { audioCtx = null; eqBands = null; return false; }
+}
+function setEQ(key) {
+    if (!EQ_PRESETS[key]) return;
+    if (key !== 'flat' || eqBands) {
+        if (!ensureEQ()) { toast('이 환경에서는 이퀄라이저를 사용할 수 없어요'); return; }
+    }
+    eqPreset = key;
+    if (eqBands) EQ_PRESETS[key].gains.forEach((g, i) => { eqBands[i].gain.value = g; });
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    $('fp-eq-btn').classList.toggle('on', key !== 'flat');
+    renderEQ();
+    toast(`${EQ_PRESETS[key].name} 적용`);
+}
+function renderEQ() {
+    $('eq-list').innerHTML = Object.keys(EQ_PRESETS).map(k => `
+        <button class="eq-row" onclick="setEQ('${k}')">
+            <span><strong>${esc(EQ_PRESETS[k].name)}</strong><small>${esc(EQ_PRESETS[k].desc)}</small></span>
+            ${eqPreset === k ? '<span class="set-val"><i class="fa-solid fa-check"></i></span>' : ''}
+        </button>`).join('');
+}
+
+/* ── 곡 더보기 ─────────────────────────────────────────────── */
+function renderMore() {
+    const s = byUrl(cur.url);
+    if (!s) { $('more-title').textContent = '곡 정보'; $('more-list').innerHTML = `<div class="empty">재생 중인 응원가가 없습니다.</div>`; return; }
+    $('more-title').textContent = s.label;
+    $('more-list').innerHTML = `
+        <button class="set-row" style="width:100%" onclick="favCurrent(); renderMore();">
+            <span><strong>${isFav(s.url) ? '좋아요 해제' : '좋아요'}</strong><small>보관함에 담아 두고 바로 듣기</small></span>
+            <span class="set-val"><i class="fa-${isFav(s.url) ? 'solid' : 'regular'} fa-heart"></i></span>
+        </button>
+        <button class="set-row" style="width:100%" onclick="closeSheet(); playSimilar();">
+            <span><strong>유사곡 재생</strong><small>${esc(s.team)} ${esc(s.catName)} 이어 듣기</small></span>
+            <span class="set-val"><i class="fa-solid fa-play"></i></span>
+        </button>
+        <button class="set-row" style="width:100%" onclick="closeSheet(); openList('cat','${esc(s.team)}','${s.cat}');">
+            <span><strong>${esc(s.catName)} 전체 보기</strong><small>${songsOf(s.team, s.cat).length}곡</small></span>
+            <span class="set-val"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
+        <div class="set-row"><span><strong>구단</strong><small>${esc(TEAM_FULL[s.team] || s.team)}</small></span></div>
+        <div class="set-row"><span><strong>분류</strong><small>${esc(s.catName)}${s.player ? ' · ' + esc(s.player) : ''}</small></span></div>`;
+}
+
 /* ── 시트 ──────────────────────────────────────────────────── */
 let openedSheet = null;
 function openSheet(name) {
@@ -1269,6 +1481,8 @@ function openSheet(name) {
     if (name === 'team') renderTeamSheet();
     if (name === 'setting') renderSetting();
     if (name === 'notice') { renderNotice(); $('notice-dot').style.display = 'none'; localStorage.setItem('cheer_notice_seen', '1'); }
+    if (name === 'eq') renderEQ();
+    if (name === 'more') renderMore();
     openedSheet = $('sheet-' + name);
     $('sheet-mask').classList.add('on');
     openedSheet.classList.add('on');
