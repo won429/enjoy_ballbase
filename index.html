@@ -499,6 +499,120 @@
         .eq-row .set-val { color: var(--point); }
 
 
+
+        /* ── 재생목록 전체 화면 ────────────────────────────────── */
+        #queue-view {
+            position: absolute;
+            inset: 0;
+            z-index: 108;
+            display: flex;
+            flex-direction: column;
+            background: #050506;
+            transform: translateY(100%);
+            transition: transform .3s cubic-bezier(0.2, 0.9, 0.2, 1);
+            pointer-events: none;
+        }
+        #queue-view.on { transform: translateY(0); pointer-events: auto; }
+
+        .qv-top { display: flex; align-items: center; flex: 0 0 auto; height: 56px; padding: 0 10px; padding-top: env(safe-area-inset-top); height: calc(56px + env(safe-area-inset-top)); }
+        .qv-top button { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #fff; transition: transform .15s ease; }
+        .qv-top button:active { transform: scale(0.88); }
+        .qv-top .sp { flex: 1; }
+
+        .qv-tabs { display: flex; align-items: flex-end; gap: 22px; flex: 0 0 auto; height: 46px; padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .qv-tab { position: relative; height: 100%; padding-bottom: 8px; font-size: 20px; font-weight: 800; letter-spacing: -0.04em; color: rgba(255,255,255,0.36); transition: color .2s ease; }
+        .qv-tab.on { color: #fff; }
+        .qv-tab.on::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; border-radius: 3px 3px 0 0; background: var(--point); }
+        .qv-tabs .sp { flex: 1; }
+        .qv-tabs .qv-act { display: flex; align-items: center; gap: 14px; padding-bottom: 9px; }
+        .qv-tabs .qv-act button { display: flex; align-items: center; justify-content: center; color: #fff; font-size: 15px; font-weight: 700; transition: transform .15s ease, color .2s ease; }
+        .qv-tabs .qv-act button:active { transform: scale(0.92); }
+        .qv-tabs .qv-act button.on { color: var(--point); }
+
+        .qv-tools { display: flex; align-items: center; gap: 14px; flex: 0 0 auto; height: 50px; padding: 0 20px; }
+        .qv-tools > button { display: flex; align-items: center; gap: 6px; color: #fff; font-size: 15px; font-weight: 700; transition: transform .15s ease, color .2s ease; }
+        .qv-tools > button:active { transform: scale(0.93); }
+        .qv-tools > button.icon { width: 30px; height: 30px; justify-content: center; font-size: 19px; }
+        .qv-tools > button.on { color: var(--point); }
+        .qv-tools .sp { flex: 1; }
+
+        .qv-search { display: none; align-items: center; gap: 9px; flex: 0 0 auto; height: 40px; margin: 0 16px 8px; padding: 0 13px; border-radius: 10px; background: #17171A; }
+        .qv-search.on { display: flex; }
+        .qv-search i { font-size: 13px; color: var(--text-3); }
+        .qv-search input { flex: 1; min-width: 0; height: 100%; background: none; border: 0; outline: none; color: #fff; font-family: inherit; font-size: 14px; font-weight: 700; }
+        .qv-search input::placeholder { color: var(--text-3); font-weight: 600; }
+
+        .qv-body { flex: 1; min-height: 0; padding: 8px 14px 20px; }
+
+        .qv-group { border-radius: 12px; background: #131315; overflow: hidden; margin-bottom: 12px; }
+        .qv-group-head { display: flex; align-items: center; gap: 12px; padding: 18px 16px 14px; }
+        .qv-group-head strong { flex: 1; min-width: 0; font-size: 16.5px; font-weight: 700; letter-spacing: -0.035em; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .qv-group-head strong b { font-weight: 900; }
+        .qv-group-head button { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.8); transition: transform .2s ease; }
+        .qv-group-head button:active { transform: scale(0.88); }
+        .qv-group.fold .qv-group-list { display: none; }
+        .qv-group.fold .qv-fold-ico { transform: rotate(180deg); }
+        .qv-group-list { padding: 0 6px 8px; }
+
+        .qv-row { display: flex; align-items: center; gap: 13px; padding: 8px 10px; border-radius: 10px; cursor: pointer; transition: background-color .18s ease; }
+        .qv-row:active { background: rgba(255,255,255,0.06); }
+        .qv-check { flex: 0 0 22px; width: 22px; height: 22px; display: none; align-items: center; justify-content: center; border: 1.6px solid rgba(255,255,255,0.32); border-radius: 999px; font-size: 10px; color: transparent; }
+        .qv-edit .qv-check { display: flex; }
+        .qv-row.sel .qv-check { border-color: var(--point); background: var(--point); color: #fff; }
+        .qv-thumb { display: flex; flex: 0 0 52px; width: 52px; height: 52px; border-radius: 6px; overflow: hidden; background: #1D1D20; display: flex; align-items: center; justify-content: center; padding: 5px; }
+        .qv-thumb img { width: 100%; height: 100%; object-fit: contain; }
+        .qv-thumb img.portrait { object-fit: cover; object-position: top; transform: scale(1.1); padding: 0; }
+        .qv-main { display: block; flex: 1; min-width: 0; }
+        .qv-title { display: block; font-size: 16.5px; font-weight: 700; letter-spacing: -0.03em; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .qv-artist { display: block; margin-top: 4px; font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.42); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .qv-row.playing .qv-title { color: var(--point); }
+        .qv-kebab { flex: 0 0 30px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: rgba(255,255,255,0.5); }
+        .qv-kebab:active { color: #fff; }
+
+        .qv-fab {
+            position: absolute;
+            right: 16px;
+            bottom: calc(var(--bar-h) + 18px + env(safe-area-inset-bottom));
+            z-index: 4;
+            width: 54px; height: 54px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 999px;
+            background: #23232A;
+            color: var(--point);
+            box-shadow: 0 8px 22px rgba(0,0,0,0.5);
+            transition: transform .15s ease;
+        }
+        .qv-fab:active { transform: scale(0.9); }
+        .qv-fab.hide { display: none; }
+        .qv-fab-spark { position: absolute; top: 12px; right: 11px; }
+
+        .qv-editbar {
+            position: absolute;
+            left: 0; right: 0;
+            bottom: calc(var(--bar-h) + env(safe-area-inset-bottom));
+            z-index: 5;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: #17171A;
+            border-top: 1px solid rgba(255,255,255,0.07);
+        }
+        .qv-editbar.on { display: flex; }
+        .qv-editbar button { flex: 1; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.09); color: #fff; font-size: 13.5px; font-weight: 800; }
+        .qv-editbar button.warn { background: var(--point); }
+
+        .qv-bar { position: relative; display: flex; align-items: center; gap: 4px; flex: 0 0 auto; height: var(--bar-h); padding: 0 12px; padding-bottom: env(safe-area-inset-bottom); height: calc(var(--bar-h) + env(safe-area-inset-bottom)); background: #050506; border-top: 1px solid rgba(255,255,255,0.06); }
+        .qv-bar::before { content: ''; position: absolute; left: 0; top: 0; height: 2px; width: var(--progress, 0%); background: var(--point); transition: width .25s linear; }
+        .qv-bar button { flex: 1; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; transition: transform .15s ease, color .2s ease; }
+        .qv-bar button:active { transform: scale(0.9); }
+        .qv-bar button.side { font-size: 17px; color: rgba(255,255,255,0.85); }
+        .qv-bar button.side.on { color: var(--point); }
+        .qv-bar button.play { font-size: 23px; }
+        .qv-bar .qv-bar-art { flex: 0 0 42px; width: 42px; height: 42px; margin-left: 6px; border-radius: 7px; overflow: hidden; background: #1D1D20; display: flex; align-items: center; justify-content: center; padding: 4px; }
+        .qv-bar .qv-bar-art img { width: 100%; height: 100%; object-fit: contain; }
+        .qv-bar .qv-bar-art img.portrait { object-fit: cover; object-position: top; transform: scale(1.1); padding: 0; }
+
         /* ── 토스트 ───────────────────────────────────────────── */
         #toast {
             position: absolute;
@@ -679,7 +793,7 @@
             <button onclick="prevSong()" aria-label="이전"><i class="fa-solid fa-backward-step"></i></button>
             <button class="play" onclick="togglePlay()" aria-label="재생"><i id="pb-play" class="fa-solid fa-play"></i></button>
             <button onclick="nextSong()" aria-label="다음"><i class="fa-solid fa-forward-step"></i></button>
-            <button onclick="openSheet('queue')" aria-label="재생목록"><i class="fa-solid fa-bars-staggered"></i></button>
+            <button onclick="openQueue()" aria-label="재생목록"><i class="fa-solid fa-bars-staggered"></i></button>
         </div>
     </div>
 
@@ -693,12 +807,6 @@
 
     <!-- ── 시트 ───────────────────────────────────────────── -->
     <div class="sheet-mask" id="sheet-mask" onclick="closeSheet()"></div>
-
-    <div class="sheet" id="sheet-queue">
-        <div class="sheet-grab"></div>
-        <div class="sheet-head"><strong>재생목록</strong><button onclick="closeSheet()">닫기</button></div>
-        <div class="sheet-body"><div id="queue-list" class="song-list"></div></div>
-    </div>
 
     <div class="sheet" id="sheet-team">
         <div class="sheet-grab"></div>
@@ -728,6 +836,71 @@
         <div class="sheet-grab"></div>
         <div class="sheet-head"><strong>안내</strong><button onclick="closeSheet()">닫기</button></div>
         <div class="sheet-body" id="notice-body" style="padding:0 20px 26px"></div>
+    </div>
+
+    <!-- ── 재생목록 (전체 화면) ───────────────────────────── -->
+    <div id="queue-view">
+        <div class="qv-top">
+            <button onclick="openSheet('setting')" aria-label="재생목록 설정">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M3 6h13M3 11h9M3 16h6"/>
+                    <circle cx="17.4" cy="16.6" r="3"/>
+                    <path d="M17.4 12.7v-.9M17.4 21.4v-.9M21.3 16.6h-.9M14.4 16.6h-.9M20.2 13.8l-.7.7M15.3 18.7l-.7.7M20.2 19.4l-.7-.7M15.3 14.5l-.7-.7"/>
+                </svg>
+            </button>
+            <span class="sp"></span>
+            <button onclick="closeQueue()" aria-label="닫기"><i class="fa-solid fa-chevron-down" style="font-size:20px"></i></button>
+        </div>
+
+        <div class="qv-tabs">
+            <button class="qv-tab on" id="qv-tab-0" onclick="setQueueTab(0)">재생목록</button>
+            <button class="qv-tab" id="qv-tab-1" onclick="setQueueTab(1)">빠른선곡</button>
+            <span class="sp"></span>
+            <div class="qv-act">
+                <button onclick="saveQueueToLibrary()" aria-label="보관함에 저장">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6.5 18.5A4.2 4.2 0 0 1 6 10.1a5.6 5.6 0 0 1 10.8-1.6 4.6 4.6 0 0 1 .8 9"/>
+                        <path d="M12 21v-8M9 15.4l3-3 3 3"/>
+                    </svg>
+                </button>
+                <button id="qv-edit-btn" onclick="toggleQueueEdit()">편집</button>
+            </div>
+        </div>
+
+        <div class="qv-tools">
+            <button class="icon" onclick="toggleQueueSearch()" aria-label="재생목록 검색"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button class="icon" onclick="addTeamToQueue()" aria-label="곡 추가"><i class="fa-solid fa-plus"></i></button>
+            <span class="sp"></span>
+            <button id="qv-select-btn" onclick="toggleQueueEdit()"><i class="fa-solid fa-check" style="font-size:14px"></i>선택곡</button>
+            <button id="qv-fold-btn" onclick="toggleQueueFold()">그룹 접기</button>
+        </div>
+
+        <div class="qv-search" id="qv-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input id="qv-q" type="search" autocomplete="off" placeholder="재생목록에서 찾기">
+        </div>
+
+        <div class="qv-body scroll-y no-bar" id="qv-body"></div>
+
+        <button class="qv-fab" id="qv-fab" onclick="cleanQueue()" aria-label="재생목록 정리">
+            <i class="fa-solid fa-broom" style="font-size:19px"></i>
+            <svg class="qv-fab-spark" viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><path d="M12 1.8l2.3 7.9 7.9 2.3-7.9 2.3-2.3 7.9-2.3-7.9L1.8 12l7.9-2.3z"/></svg>
+        </button>
+
+        <div class="qv-editbar" id="qv-editbar">
+            <button onclick="selectAllQueue()">전체 선택</button>
+            <button class="warn" onclick="removeSelected()">선택 삭제</button>
+            <button onclick="toggleQueueEdit()">완료</button>
+        </div>
+
+        <div class="qv-bar">
+            <button class="side" id="qv-repeat" onclick="toggleRepeat()" aria-label="반복"><i class="fa-solid fa-repeat"></i></button>
+            <button onclick="prevSong()" aria-label="이전"><i class="fa-solid fa-backward-step"></i></button>
+            <button class="play" onclick="togglePlay()" aria-label="재생"><i id="qv-play" class="fa-solid fa-play"></i></button>
+            <button onclick="nextSong()" aria-label="다음"><i class="fa-solid fa-forward-step"></i></button>
+            <button class="side" id="qv-shuffle" onclick="toggleShuffle()" aria-label="셔플"><i class="fa-solid fa-shuffle"></i></button>
+            <span class="qv-bar-art" onclick="closeQueue()"><img id="qv-bar-img" src="" alt=""></span>
+        </div>
     </div>
 
     <!-- ── 전체 플레이어 ──────────────────────────────────── -->
@@ -797,7 +970,7 @@
                         빠른 선곡
                     </button>
                 </div>
-                <button class="fp-queue-btn" onclick="openSheet('queue')" aria-label="재생목록">
+                <button class="fp-queue-btn" onclick="openQueue()" aria-label="재생목록">
                     <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                         <path d="M3 6h18M3 11.5h18M3 17h9"/>
                         <path d="M15.6 13.6v7l5.4-3.5z" fill="currentColor" stroke="none"/>
@@ -991,8 +1164,10 @@ function songRow(s, i, listId, opt) {
         + `<button class="song-fav${isFav(s.url) ? ' on' : ''}" data-fav="${esc(s.url)}" aria-label="좋아요"><i class="fa-${isFav(s.url) ? 'solid' : 'regular'} fa-heart"></i></button>`
         + `</div>`;
 }
+const listLabels = {};
 function renderList(id, songs, opt = {}) {
     lists[id] = songs;
+    if (opt.label) listLabels[id] = opt.label;
     const el = $(id);
     if (!el) return;
     el.innerHTML = songs.length
@@ -1017,20 +1192,26 @@ document.addEventListener('click', e => {
 
 /* ── 재생 엔진 ─────────────────────────────────────────────── */
 let audio = null;
-let queue = [], qIndex = -1, isPlaying = false, seeking = false;
+let queue = [], qIndex = -1, isPlaying = false, seeking = false, queueLabel = '재생목록';
 let shuffleOn = false, repeatMode = 'all';
 let cur = { url: '', label: '', artist: '', cover: '', portrait: false };
 
+const DEFAULT_LIST_LABELS = {
+    'quick': '빠른 선곡', 'home-song-list': '홈 응원가', 'search-list': '검색 결과',
+    'lib-fav': '좋아요한 응원가', 'lib-recent': '최근 들은 응원가', 'lv-list': '응원가 목록'
+};
 function playFrom(listId, i) {
     const list = lists[listId] || [];
     if (!list[i]) return;
     queue = list.slice(); qIndex = i;
+    queueLabel = listLabels[listId] || DEFAULT_LIST_LABELS[listId] || '재생목록';
     play(queue[i]);
 }
-function playSongs(songs, shuffle) {
+function playSongs(songs, shuffle, label) {
     if (!songs || !songs.length) { toast('재생할 곡이 없습니다.'); return; }
     queue = shuffle ? shuffled(songs) : songs.slice();
     qIndex = 0;
+    queueLabel = label || queueLabel || '재생목록';
     play(queue[0]);
 }
 function play(song) {
@@ -1060,14 +1241,20 @@ function play(song) {
     $('fp-fill').style.width = '0%'; $('fp-range').value = 0;
     document.documentElement.style.setProperty('--progress', '0%');
 
+    const qArt = $('qv-bar-img');
+    qArt.onerror = () => coverFallback(qArt, song.team);
+    qArt.src = song.cover; qArt.className = song.portrait ? 'portrait' : '';
+
     pushRecent(song.url);
     syncRows();
+    if (queueOpen) renderQueue();
     if (tabIndex === 3) renderLibrary();
     mediaSession(song);
 }
 function paintPlay() {
     $('pb-play').className = `fa-solid fa-${isPlaying ? 'pause' : 'play'}`;
     $('fp-play').className = `fa-solid fa-${isPlaying ? 'pause' : 'play'}`;
+    $('qv-play').className = `fa-solid fa-${isPlaying ? 'pause' : 'play'}`;
     document.querySelectorAll('.pb-ctrl button').forEach(b => b.classList.toggle('live', Boolean(cur.url)));
 }
 function togglePlay() {
@@ -1089,11 +1276,13 @@ function prevSong() {
 function toggleShuffle() {
     shuffleOn = !shuffleOn;
     $('fp-shuffle').classList.toggle('on', shuffleOn);
+    $('qv-shuffle').classList.toggle('on', shuffleOn);
     toast(shuffleOn ? '셔플 재생 켜짐' : '셔플 재생 꺼짐');
 }
 function toggleRepeat() {
     repeatMode = repeatMode === 'all' ? 'one' : (repeatMode === 'one' ? 'off' : 'all');
     $('fp-repeat').classList.toggle('on', repeatMode !== 'off');
+    $('qv-repeat').classList.toggle('on', repeatMode !== 'off');
     $('fp-repeat-1').style.display = repeatMode === 'one' ? 'block' : 'none';
     toast(repeatMode === 'all' ? '전체 반복' : repeatMode === 'one' ? '한 곡 반복' : '반복 없음');
 }
@@ -1195,15 +1384,15 @@ function heroDecks() {
     const decks = [];
     const info = lineupInfo(team === 'all' ? 'KIA' : team);
     if (info.songs && info.songs.length) {
-        decks.push({ title: `오늘 라인업 순서대로\n이어 부르는 응원가`, tone: TEAM_TONE[info.team], songs: info.songs, open: () => openList('lineup', info.team) });
+        decks.push({ label: `${info.team} 오늘 라인업`, title: `오늘 라인업 순서대로\n이어 부르는 응원가`, tone: TEAM_TONE[info.team], songs: info.songs, open: () => openList('lineup', info.team) });
     }
     const teams = team === 'all' ? TEAM_NAMES.filter(hasSongs) : [team];
     teams.forEach(t => {
-        decks.push({ title: `${t} 구단 응원가\n다 같이 목청껏`, tone: TEAM_TONE[t], songs: songsOf(t, 'team'), open: () => openList('cat', t, 'team') });
-        decks.push({ title: `${t} 선수 응원가\n타석마다 한 곡씩`, tone: shade(TEAM_TONE[t], 0.8), songs: songsOf(t, 'player'), open: () => openList('cat', t, 'player') });
+        decks.push({ label: `${t} 구단 응원가`, title: `${t} 구단 응원가\n다 같이 목청껏`, tone: TEAM_TONE[t], songs: songsOf(t, 'team'), open: () => openList('cat', t, 'team') });
+        decks.push({ label: `${t} 선수 응원가`, title: `${t} 선수 응원가\n타석마다 한 곡씩`, tone: shade(TEAM_TONE[t], 0.8), songs: songsOf(t, 'player'), open: () => openList('cat', t, 'player') });
     });
-    decks.push({ title: `등장곡 모음\n타석에 들어설 때`, tone: '#8A6111', songs: songsOf(team, 'entrance'), open: () => openList('cat', team, 'entrance') });
-    decks.push({ title: `안타·아웃송\n분위기 끌어올리기`, tone: '#4C2A86', songs: songsOf(team, 'hitout'), open: () => openList('cat', team, 'hitout') });
+    decks.push({ label: `${team === 'all' ? '전체' : team} 등장곡`, title: `등장곡 모음\n타석에 들어설 때`, tone: '#8A6111', songs: songsOf(team, 'entrance'), open: () => openList('cat', team, 'entrance') });
+    decks.push({ label: `${team === 'all' ? '전체' : team} 안타·아웃송`, title: `안타·아웃송\n분위기 끌어올리기`, tone: '#4C2A86', songs: songsOf(team, 'hitout'), open: () => openList('cat', team, 'hitout') });
     return decks.filter(d => d.songs.length);
 }
 
@@ -1246,6 +1435,7 @@ function renderHome() {
 
     const quick = shuffled(songsOf(team, null)).slice(0, 8);
     lists['quick'] = quick;
+    listLabels['quick'] = `${team === 'all' ? '전체' : team} 빠른 선곡`;
     $('quick-grid').innerHTML = quick.map((s, i) => `
         <button class="quick-cell" data-list="quick" data-i="${i}">
             <span class="quick-cover">${coverImg(s)}</span>
@@ -1264,7 +1454,7 @@ function renderHome() {
     $('home-song-tabs').innerHTML = tabs.map(t => `<button class="sec-tab${t.id === homeSongTab ? ' on' : ''}" data-songtab="${t.id}">${esc(t.name)}</button>`).join('');
 
     const songs = team === 'all' ? songsOf(homeSongTab === 'all' ? 'all' : homeSongTab, null) : songsOf(team, homeSongTab);
-    renderList('home-song-list', songs.slice(0, 8), { empty: '등록된 응원가가 없습니다.' });
+    renderList('home-song-list', songs.slice(0, 8), { label: team === 'all' ? `${homeSongTab === 'all' ? '전체' : homeSongTab} 응원가` : `${team} ${CAT_NAME[homeSongTab] || '응원가'}`, empty: '등록된 응원가가 없습니다.' });
     $('home-song-more').onclick = () => {
         if (team === 'all') openList('team', homeSongTab === 'all' ? 'all' : homeSongTab);
         else openList('cat', team, homeSongTab);
@@ -1291,7 +1481,7 @@ function renderHomeLineup() {
 /* 히어로 카드 클릭(카드 본문=목록 열기 / 재생 버튼=바로 재생) */
 document.addEventListener('click', e => {
     const p = e.target.closest('[data-heroplay]');
-    if (p) { e.stopPropagation(); const d = heroList[Number(p.dataset.heroplay)]; if (d) playSongs(d.songs, false); return; }
+    if (p) { e.stopPropagation(); const d = heroList[Number(p.dataset.heroplay)]; if (d) playSongs(d.songs, false, d.label); return; }
     const c = e.target.closest('[data-hero]');
     if (c) { const d = heroList[Number(c.dataset.hero)]; if (d) d.open(); return; }
     const t = e.target.closest('[data-songtab]');
@@ -1355,8 +1545,8 @@ function runSearch(q) {
     $('search-idle').style.display = 'none';
     $('search-result').style.display = '';
     $('search-count').textContent = `${hits.length}곡`;
-    renderList('search-list', hits, { empty: '검색 결과가 없습니다.\n다른 이름으로 찾아보세요.', emptyIcon: 'fa-magnifying-glass' });
-    $('search-play-all').onclick = () => playSongs(hits, false);
+    renderList('search-list', hits, { label: `'${query}' 검색 결과`, empty: '검색 결과가 없습니다.\n다른 이름으로 찾아보세요.', emptyIcon: 'fa-magnifying-glass' });
+    $('search-play-all').onclick = () => playSongs(hits, false, `'${query}' 검색 결과`);
 }
 function saveQuery(q) {
     if (!q) return;
@@ -1373,8 +1563,8 @@ document.addEventListener('click', e => {
 
 /* ── 보관함 ────────────────────────────────────────────────── */
 function renderLibrary() {
-    renderList('lib-fav', favorites.map(byUrl).filter(Boolean).slice(0, 6), { empty: '아직 좋아요한 응원가가 없어요.\n곡 오른쪽 하트를 눌러보세요.', emptyIcon: 'fa-heart' });
-    renderList('lib-recent', recents.map(byUrl).filter(Boolean).slice(0, 6), { empty: '최근 들은 응원가가 없습니다.', emptyIcon: 'fa-clock-rotate-left' });
+    renderList('lib-fav', favorites.map(byUrl).filter(Boolean).slice(0, 6), { label: '좋아요한 응원가', empty: '아직 좋아요한 응원가가 없어요.\n곡 오른쪽 하트를 눌러보세요.', emptyIcon: 'fa-heart' });
+    renderList('lib-recent', recents.map(byUrl).filter(Boolean).slice(0, 6), { label: '최근 들은 응원가', empty: '최근 들은 응원가가 없습니다.', emptyIcon: 'fa-clock-rotate-left' });
 }
 
 /* ── 목록 상세 ─────────────────────────────────────────────── */
@@ -1416,6 +1606,7 @@ function openList(kind, a, b) {
     $('lv-sub').textContent = sub;
     const soonTeam = (kind === 'cat' || kind === 'team') && a !== 'all' && !hasSongs(a);
     renderList('lv-list', songs, {
+        label: title.replace('\n', ' '),
         empty: soonTeam ? soonText(a) : (kind === 'lineup' ? '라인업이 발표되면 자동으로 채워집니다.' : '표시할 응원가가 없습니다.'),
         badge: kind === 'lineup' ? (s => s.order) : null,
         artist: kind === 'lineup' ? (s => s.catName) : null
@@ -1423,7 +1614,7 @@ function openList(kind, a, b) {
     $('list-view').classList.add('on');
 }
 function closeList() { $('list-view').classList.remove('on'); listState = null; }
-function playListView(shuffle) { playSongs(lists['lv-list'] || [], shuffle); }
+function playListView(shuffle) { playSongs(lists['lv-list'] || [], shuffle, listLabels['lv-list']); }
 
 /* ── 가사 슬롯 ─────────────────────────────────────────────── */
 // 응원가 가사는 구단 자산이라 기본 제공하지 않는다.
@@ -1446,14 +1637,14 @@ function playSimilar() {
     if (!s) { toast('재생 중인 응원가가 없습니다'); return; }
     const rest = songsOf(s.team, s.cat).filter(x => x.url !== s.url);
     if (!rest.length) { toast('비슷한 응원가가 없습니다'); return; }
-    playSongs([s, ...rest], false);
+    playSongs([s, ...rest], false, `${s.team} ${s.catName}`);
     toast(`${s.catName} 유사곡으로 이어 재생합니다`);
 }
 function playQuickPick() {
     const s = byUrl(cur.url);
     const pool = songsOf(s ? s.team : team, null);
     if (!pool.length) { toast('재생할 곡이 없습니다.'); return; }
-    playSongs(shuffled(pool), false);
+    playSongs(shuffled(pool), false, `${(s ? s.team : team) === 'all' ? '전체' : (s ? s.team : team)} 빠른 선곡`);
     toast('빠른 선곡으로 재생목록을 만들었어요');
 }
 
@@ -1524,10 +1715,186 @@ function renderMore() {
         <div class="set-row"><span><strong>분류</strong><small>${esc(s.catName)}${s.player ? ' · ' + esc(s.player) : ''}</small></span></div>`;
 }
 
+/* ── 재생목록 전체 화면 ────────────────────────────────────── */
+let queueOpen = false, queueTab = 0, queueEdit = false, queueFold = false;
+let queueQuery = '', quickPickList = [], queueSel = new Set();
+
+function openQueue() {
+    queueOpen = true;
+    queueSel.clear();
+    if (queueEdit) toggleQueueEdit();
+    renderQueue();
+    $('queue-view').classList.add('on');
+}
+function closeQueue() {
+    queueOpen = false;
+    $('queue-view').classList.remove('on');
+}
+function setQueueTab(i) {
+    queueTab = i;
+    queueSel.clear();
+    if (i === 1 && !quickPickList.length) refreshQuickPick();
+    $('qv-tab-0').classList.toggle('on', i === 0);
+    $('qv-tab-1').classList.toggle('on', i === 1);
+    renderQueue();
+}
+function refreshQuickPick() {
+    quickPickList = shuffled(songsOf(team, null)).slice(0, 20);
+}
+
+function toggleQueueEdit() {
+    queueEdit = !queueEdit;
+    queueSel.clear();
+    $('qv-body').classList.toggle('qv-edit', queueEdit);
+    $('qv-editbar').classList.toggle('on', queueEdit);
+    $('qv-fab').classList.toggle('hide', queueEdit);
+    $('qv-edit-btn').classList.toggle('on', queueEdit);
+    $('qv-select-btn').classList.toggle('on', queueEdit);
+    $('qv-edit-btn').textContent = queueEdit ? '완료' : '편집';
+    renderQueue();
+}
+function toggleQueueFold() {
+    queueFold = !queueFold;
+    $('qv-fold-btn').textContent = queueFold ? '그룹 펼치기' : '그룹 접기';
+    renderQueue();
+}
+function toggleQueueSearch() {
+    const box = $('qv-search');
+    const on = !box.classList.contains('on');
+    box.classList.toggle('on', on);
+    if (on) $('qv-q').focus();
+    else { $('qv-q').value = ''; queueQuery = ''; renderQueue(); }
+}
+
+function currentQueueSongs() {
+    const base = queueTab === 0 ? queue : quickPickList;
+    if (!queueQuery) return base;
+    const k = queueQuery.toLowerCase();
+    return base.filter(s => `${s.label} ${s.title} ${s.player} ${s.team}`.toLowerCase().includes(k));
+}
+
+function qvRow(s, i) {
+    const playing = queueTab === 0 && cur.url === s.url;
+    const sel = queueSel.has(i);
+    return `<div class="qv-row${playing ? ' playing' : ''}${sel ? ' sel' : ''}" data-qi="${i}">
+        <span class="qv-check"><i class="fa-solid fa-check"></i></span>
+        <span class="qv-thumb">${coverImg(s)}</span>
+        <span class="qv-main">
+            <span class="qv-title">${esc(s.label)}</span>
+            <span class="qv-artist">${esc(TEAM_FULL[s.team] || s.team)}</span>
+        </span>
+        <span class="qv-kebab" data-qmore="${i}"><i class="fa-solid fa-ellipsis-vertical"></i></span>
+    </div>`;
+}
+
+function renderQueue() {
+    const songs = currentQueueSongs();
+    const body = $('qv-body');
+    if (!songs.length) {
+        body.innerHTML = `<div class="empty"><i class="fa-solid fa-list"></i>${
+            queueQuery ? '검색 결과가 없습니다.' : (queueTab === 0 ? '재생목록이 비었습니다.\n응원가를 선택해 주세요.' : '추천할 응원가가 없습니다.')}</div>`;
+        return;
+    }
+    const parts = (queueTab === 0 ? queueLabel : `${team === 'all' ? '전체' : team} 빠른선곡`).trim().split(' ');
+    const title = parts.length > 1
+        ? `<b>${esc(parts[0])}</b> ${esc(parts.slice(1).join(' '))}`
+        : `<b>${esc(parts[0])}</b>`;
+    body.innerHTML = `<div class="qv-group${queueFold ? ' fold' : ''}">
+        <div class="qv-group-head">
+            <strong>${title}</strong>
+            <button onclick="${queueTab === 0 ? 'replayQueue()' : 'playSongs(quickPickList,false,\'빠른 선곡\')'}" aria-label="처음부터 재생">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                    <path d="M20.5 12a8.5 8.5 0 1 1-2.6-6.1"/><path d="M20.6 3.6v4.6h-4.6"/>
+                    <path d="M10.4 9.2v5.6l4.6-2.8z" fill="currentColor" stroke="none"/>
+                </svg>
+            </button>
+            <button class="qv-fold-ico" onclick="toggleQueueFold()" aria-label="접기"><i class="fa-solid fa-chevron-up"></i></button>
+        </div>
+        <div class="qv-group-list">${songs.map((s, i) => qvRow(s, i)).join('')}</div>
+    </div>`;
+    body.classList.toggle('qv-edit', queueEdit);
+}
+
+function replayQueue() {
+    if (!queue.length) { toast('재생목록이 비었습니다.'); return; }
+    qIndex = 0; play(queue[0]);
+}
+
+/* 행 탭 — 편집 모드에서는 선택, 평소에는 재생 */
+document.addEventListener('click', e => {
+    const more = e.target.closest('[data-qmore]');
+    if (more) {
+        e.stopPropagation();
+        const s = currentQueueSongs()[Number(more.dataset.qmore)];
+        if (s) { cur.url = cur.url || s.url; openSheet('more'); }
+        return;
+    }
+    const row = e.target.closest('[data-qi]');
+    if (!row) return;
+    const i = Number(row.dataset.qi);
+    if (queueEdit) {
+        if (queueSel.has(i)) queueSel.delete(i); else queueSel.add(i);
+        row.classList.toggle('sel', queueSel.has(i));
+        return;
+    }
+    const songs = currentQueueSongs();
+    if (!songs[i]) return;
+    if (queueTab === 0 && !queueQuery) { qIndex = i; play(queue[i]); }
+    else { playSongs(songs, false, queueTab === 0 ? queueLabel : '빠른 선곡'); qIndex = i; play(songs[i]); }
+});
+
+function selectAllQueue() {
+    const n = currentQueueSongs().length;
+    if (queueSel.size === n) queueSel.clear();
+    else for (let i = 0; i < n; i++) queueSel.add(i);
+    renderQueue();
+}
+function removeSelected() {
+    if (!queueSel.size) { toast('선택한 곡이 없습니다.'); return; }
+    if (queueTab === 1) { quickPickList = quickPickList.filter((_, i) => !queueSel.has(i)); }
+    else {
+        const keepUrl = queue[qIndex] ? queue[qIndex].url : null;
+        const shown = currentQueueSongs();
+        const drop = new Set([...queueSel].map(i => shown[i] && shown[i].url).filter(Boolean));
+        queue = queue.filter(s => !drop.has(s.url));
+        qIndex = Math.max(0, queue.findIndex(s => s.url === keepUrl));
+    }
+    toast(`${queueSel.size}곡을 재생목록에서 뺐어요`);
+    queueSel.clear();
+    renderQueue();
+}
+function cleanQueue() {
+    if (queueTab === 1) { refreshQuickPick(); renderQueue(); toast('빠른선곡을 새로 뽑았어요'); return; }
+    const before = queue.length;
+    const seen = new Set();
+    const keepUrl = queue[qIndex] ? queue[qIndex].url : null;
+    queue = queue.filter(s => (seen.has(s.url) ? false : (seen.add(s.url), true)));
+    qIndex = Math.max(0, queue.findIndex(s => s.url === keepUrl));
+    renderQueue();
+    toast(before === queue.length ? '정리할 중복 곡이 없어요' : `중복 ${before - queue.length}곡을 정리했어요`);
+}
+function addTeamToQueue() {
+    const pool = songsOf(team, null).filter(s => !queue.some(q => q.url === s.url));
+    if (!pool.length) { toast('추가할 새 곡이 없습니다.'); return; }
+    queue = queue.concat(pool);
+    if (qIndex === -1) { qIndex = 0; play(queue[0]); }
+    renderQueue();
+    toast(`${pool.length}곡을 재생목록에 담았어요`);
+}
+function saveQueueToLibrary() {
+    const src = currentQueueSongs();
+    if (!src.length) { toast('저장할 곡이 없습니다.'); return; }
+    let n = 0;
+    src.forEach(s => { if (!isFav(s.url)) { favorites.unshift(s.url); n++; } });
+    write(K_FAV, favorites);
+    renderQueue();
+    if (tabIndex === 3) renderLibrary();
+    toast(n ? `${n}곡을 보관함에 저장했어요` : '이미 모두 보관함에 있어요');
+}
+
 /* ── 시트 ──────────────────────────────────────────────────── */
 let openedSheet = null;
 function openSheet(name) {
-    if (name === 'queue') renderQueue();
     if (name === 'team') renderTeamSheet();
     if (name === 'setting') renderSetting();
     if (name === 'notice') { renderNotice(); $('notice-dot').style.display = 'none'; localStorage.setItem('cheer_notice_seen', '1'); }
@@ -1541,9 +1908,6 @@ function closeSheet() {
     $('sheet-mask').classList.remove('on');
     if (openedSheet) openedSheet.classList.remove('on');
     openedSheet = null;
-}
-function renderQueue() {
-    renderList('queue-list', queue, { empty: '재생목록이 비었습니다.\n응원가를 선택해 주세요.', emptyIcon: 'fa-list' });
 }
 function renderTeamSheet() {
     const opts = [...TEAMS.map(t => ({ id: t.name, name: t.full, logo: t.logo, n: songsOf(t.name, null).length })),
@@ -1666,6 +2030,8 @@ window.addEventListener('DOMContentLoaded', () => {
     $('chip-team').textContent = team === 'all' ? '전체' : team;
     $('fp-shuffle').classList.toggle('on', shuffleOn);
     $('fp-repeat').classList.toggle('on', repeatMode !== 'off');
+    $('qv-shuffle').classList.toggle('on', shuffleOn);
+    $('qv-repeat').classList.toggle('on', repeatMode !== 'off');
     if (localStorage.getItem('cheer_notice_seen')) $('notice-dot').style.display = 'none';
 
     const q = $('q');
@@ -1673,6 +2039,9 @@ window.addEventListener('DOMContentLoaded', () => {
     q.addEventListener('change', e => saveQuery(e.target.value.trim()));
     q.addEventListener('keydown', e => { if (e.key === 'Enter') { saveQuery(q.value.trim()); q.blur(); } });
     $('q-clear').addEventListener('click', () => { q.value = ''; runSearch(''); q.focus(); });
+
+    const qq = $('qv-q');
+    qq.addEventListener('input', e => { queueQuery = e.target.value.trim(); renderQueue(); });
 
     renderHome();
     paintPlay();
