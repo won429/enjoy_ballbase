@@ -383,22 +383,29 @@
         #tabbar button.on > span:last-child { font-weight: 800; }
 
         /* ── 시트/모달 공통 ────────────────────────────────────── */
-        .sheet-mask { position: absolute; inset: 0; z-index: 110; display: none; background: rgba(0,0,0,0.62); backdrop-filter: blur(2px); }
+        .sheet-mask { position: fixed; inset: 0; z-index: 110; display: none; background: rgba(0,0,0,0.62); backdrop-filter: blur(2px); }
         .sheet-mask.on { display: block; }
         .sheet {
-            position: absolute;
-            left: 0; right: 0; bottom: 0;
+            /* 뷰포트 하단에 고정 — #app 기준 절대배치는 일부 환경에서 위치가 어긋난다 */
+            position: fixed;
+            left: 50%;
+            bottom: 0;
+            width: 100%;
+            max-width: 430px;
             z-index: 115;
-            max-height: 74%;
+            max-height: 74dvh;
             display: flex;
             flex-direction: column;
             border-radius: 18px 18px 0 0;
             background: #121214;
-            transform: translateY(102%);
-            transition: transform .3s cubic-bezier(0.2, 0.9, 0.2, 1);
+            /* 닫힌 시트는 아래로 밀고 투명 처리 — 높이가 낮은 시트가 화면에 걸리지 않도록 */
+            transform: translate(-50%, 102%);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform .3s cubic-bezier(0.2, 0.9, 0.2, 1), opacity .22s ease;
             padding-bottom: env(safe-area-inset-bottom);
         }
-        .sheet.on { transform: translateY(0); }
+        .sheet.on { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
         .sheet-grab { width: 38px; height: 4px; margin: 10px auto 4px; border-radius: 999px; background: rgba(255,255,255,0.2); }
         .sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 18px 12px; }
         .sheet-head strong { font-size: 15px; font-weight: 800; }
@@ -501,6 +508,32 @@
         .eq-row .set-val { color: var(--point); }
 
 
+
+
+        /* ── 내 재생목록 ───────────────────────────────────────── */
+        .pl-list { display: flex; flex-direction: column; gap: 8px; padding: 0 18px; }
+        .pl-row { display: flex; align-items: center; gap: 12px; padding: 9px 10px; border-radius: 12px; background: var(--surface); cursor: pointer; transition: background-color .18s ease, transform .15s ease; }
+        .pl-row:active { background: var(--surface-2); transform: scale(0.985); }
+        .pl-cover { position: relative; flex: 0 0 48px; width: 48px; height: 48px; border-radius: 8px; overflow: hidden; background: #0f0f11; display: flex; align-items: center; justify-content: center; padding: 5px; }
+        .pl-cover img { width: 100%; height: 100%; object-fit: contain; }
+        .pl-cover img.portrait { object-fit: cover; object-position: top; transform: scale(1.1); padding: 0; }
+        .pl-cover i { font-size: 16px; color: var(--point); }
+        .pl-main { display: block; flex: 1; min-width: 0; }
+        .pl-main strong { display: block; font-size: 15px; font-weight: 800; letter-spacing: -0.03em; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pl-main small { display: block; margin-top: 3px; font-size: 12px; font-weight: 600; color: var(--text-2); }
+        .pl-kebab { flex: 0 0 32px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: rgba(255,255,255,0.45); }
+        .pl-kebab:active { color: #fff; }
+        .pl-new { display: flex; align-items: center; justify-content: center; gap: 8px; height: 48px; border-radius: 12px; border: 1.4px dashed rgba(255,255,255,0.22); color: var(--text-2); font-size: 13.5px; font-weight: 800; transition: color .2s ease, border-color .2s ease; }
+        .pl-new:active { color: #fff; border-color: rgba(255,255,255,0.45); }
+
+        .prompt-input { width: 100%; height: 46px; padding: 0 14px; border-radius: 11px; border: 1.5px solid rgba(255,255,255,0.14); background: #17171A; color: #fff; font-family: inherit; font-size: 15px; font-weight: 700; outline: none; }
+        .prompt-input:focus { border-color: var(--point); }
+        .prompt-input::placeholder { color: var(--text-3); font-weight: 600; }
+        .prompt-actions { display: flex; gap: 8px; margin-top: 14px; }
+        .prompt-actions .btn-pill { flex: 1; height: 44px; }
+
+        .song-remove { flex: 0 0 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 15px; color: rgba(255,255,255,0.42); transition: color .2s ease, transform .15s ease; }
+        .song-remove:active { color: var(--point); transform: scale(0.85); }
 
         /* ── 재생목록 전체 화면 ────────────────────────────────── */
         #queue-view {
@@ -752,6 +785,10 @@
     <main id="screen-library" class="screen">
         <div class="screen-body scroll-y no-bar">
             <section class="sec">
+                <div class="sec-head"><div class="sec-title"><h2>내 재생목록</h2></div><button class="sec-more" onclick="promptNewPlaylist()">새로 만들기</button></div>
+                <div id="lib-playlists" class="pl-list"></div>
+            </section>
+            <section class="sec">
                 <div class="sec-head"><div class="sec-title"><h2>좋아요한 응원가</h2></div><button class="sec-more" onclick="openList('fav')">전체보기</button></div>
                 <div id="lib-fav" class="song-list"></div>
             </section>
@@ -767,6 +804,7 @@
         <div class="lv-head">
             <button onclick="closeList()" aria-label="뒤로"><i class="fa-solid fa-arrow-left"></i></button>
             <span id="lv-topname"></span>
+            <button id="lv-more" onclick="openSheet('plmenu')" aria-label="재생목록 관리" style="display:none"><i class="fa-solid fa-ellipsis-vertical"></i></button>
         </div>
         <div class="screen-body scroll-y no-bar">
             <div class="lv-hero" id="lv-hero">
@@ -861,6 +899,30 @@
         <div class="sheet-body" id="setting-list"></div>
     </div>
 
+    <div class="sheet" id="sheet-prompt">
+        <div class="sheet-grab"></div>
+        <div class="sheet-head"><strong id="prompt-title">새 재생목록</strong><button onclick="closeSheet()">닫기</button></div>
+        <div class="sheet-body" style="padding:0 18px 22px">
+            <input id="prompt-input" class="prompt-input" maxlength="30" autocomplete="off" placeholder="재생목록 이름">
+            <div class="prompt-actions">
+                <button class="btn-pill btn-ghost" onclick="closeSheet()">취소</button>
+                <button class="btn-pill btn-solid" id="prompt-ok">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="sheet" id="sheet-addto">
+        <div class="sheet-grab"></div>
+        <div class="sheet-head"><strong id="addto-title">재생목록에 추가</strong><button onclick="closeSheet()">닫기</button></div>
+        <div class="sheet-body" id="addto-list"></div>
+    </div>
+
+    <div class="sheet" id="sheet-plmenu">
+        <div class="sheet-grab"></div>
+        <div class="sheet-head"><strong id="plmenu-title">재생목록</strong><button onclick="closeSheet()">닫기</button></div>
+        <div class="sheet-body" id="plmenu-list"></div>
+    </div>
+
     <div class="sheet" id="sheet-eq">
         <div class="sheet-grab"></div>
         <div class="sheet-head"><strong>이퀄라이저</strong><button onclick="closeSheet()">닫기</button></div>
@@ -898,7 +960,7 @@
             <button class="qv-tab" id="qv-tab-1" onclick="setQueueTab(1)">빠른선곡</button>
             <span class="sp"></span>
             <div class="qv-act">
-                <button onclick="saveQueueToLibrary()" aria-label="보관함에 저장">
+                <button onclick="saveQueueAsPlaylist()" aria-label="내 재생목록으로 저장">
                     <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M6.5 18.5A4.2 4.2 0 0 1 6 10.1a5.6 5.6 0 0 1 10.8-1.6 4.6 4.6 0 0 1 .8 9"/>
                         <path d="M12 21v-8M9 15.4l3-3 3 3"/>
@@ -930,7 +992,8 @@
 
         <div class="qv-editbar" id="qv-editbar">
             <button onclick="selectAllQueue()">전체 선택</button>
-            <button class="warn" onclick="removeSelected()">선택 삭제</button>
+            <button onclick="addSelectedToPlaylist()">담기</button>
+            <button class="warn" onclick="removeSelected()">삭제</button>
             <button onclick="toggleQueueEdit()">완료</button>
         </div>
 
@@ -983,7 +1046,7 @@
                     <div id="fp-artist">KBO 응원가</div>
                 </div>
                 <button id="fp-fav" onclick="favCurrent()" aria-label="좋아요"><i class="fa-regular fa-heart"></i></button>
-                <button onclick="openSheet('more')" aria-label="더보기"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                <button onclick="openMore(null)" aria-label="더보기"><i class="fa-solid fa-ellipsis-vertical"></i></button>
             </div>
 
             <div class="fp-seek">
@@ -1202,7 +1265,9 @@ function songRow(s, i, listId, opt) {
         + `<div class="song-idx${/^\d+$/.test(num) ? '' : ' is-text'}" data-num="${esc(num)}" data-url="${esc(s.url)}">${inner}</div>`
         + `<div class="song-cover">${coverImg(s)}</div>`
         + `<div class="song-main"><div class="song-title">${esc(s.label)}</div><div class="song-artist">${esc(artist)}</div></div>`
-        + `<button class="song-fav${isFav(s.url) ? ' on' : ''}" data-fav="${esc(s.url)}" aria-label="좋아요"><i class="fa-${isFav(s.url) ? 'solid' : 'regular'} fa-heart"></i></button>`
+        + (opt.removeFrom
+            ? `<button class="song-remove" data-plremove="${esc(s.url)}" data-plid="${opt.removeFrom}" aria-label="빼기"><i class="fa-solid fa-minus"></i></button>`
+            : `<button class="song-fav${isFav(s.url) ? ' on' : ''}" data-fav="${esc(s.url)}" aria-label="좋아요"><i class="fa-${isFav(s.url) ? 'solid' : 'regular'} fa-heart"></i></button>`)
         + `</div>`;
 }
 const listLabels = {};
@@ -1604,9 +1669,199 @@ document.addEventListener('click', e => {
 
 /* ── 보관함 ────────────────────────────────────────────────── */
 function renderLibrary() {
+    renderPlaylistCards();
     renderList('lib-fav', favorites.map(byUrl).filter(Boolean).slice(0, 6), { label: '좋아요한 응원가', empty: '아직 좋아요한 응원가가 없어요.\n곡 오른쪽 하트를 눌러보세요.', emptyIcon: 'fa-heart' });
     renderList('lib-recent', recents.map(byUrl).filter(Boolean).slice(0, 6), { label: '최근 들은 응원가', empty: '최근 들은 응원가가 없습니다.', emptyIcon: 'fa-clock-rotate-left' });
 }
+
+/* ── 내 재생목록 (기기 저장) ───────────────────────────────── */
+const K_PL = 'cheer_playlists_v1';
+let playlists = [];
+
+function loadPlaylists() {
+    try {
+        const v = JSON.parse(localStorage.getItem(K_PL) || '[]');
+        playlists = Array.isArray(v) ? v.filter(p => p && p.id && typeof p.name === 'string') : [];
+        playlists.forEach(p => { if (!Array.isArray(p.urls)) p.urls = []; });
+    } catch (e) { playlists = []; }
+}
+const savePlaylists = () => write(K_PL, playlists);
+const plById = id => playlists.find(p => p.id === id) || null;
+const plSongs = pl => (pl ? pl.urls.map(byUrl).filter(Boolean) : []);
+
+function createPlaylist(name, urls) {
+    const pl = {
+        id: 'pl_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        name: (name || '').trim() || '새 재생목록',
+        urls: Array.from(new Set(urls || [])),
+        createdAt: Date.now(), updatedAt: Date.now()
+    };
+    playlists.unshift(pl);
+    savePlaylists();
+    return pl;
+}
+function renamePlaylist(id, name) {
+    const pl = plById(id); if (!pl) return;
+    pl.name = (name || '').trim() || pl.name;
+    pl.updatedAt = Date.now();
+    savePlaylists();
+}
+function deletePlaylist(id) {
+    playlists = playlists.filter(p => p.id !== id);
+    savePlaylists();
+}
+function addToPlaylist(id, urls) {
+    const pl = plById(id); if (!pl) return 0;
+    const before = pl.urls.length;
+    urls.forEach(u => { if (u && !pl.urls.includes(u)) pl.urls.push(u); });
+    pl.updatedAt = Date.now();
+    savePlaylists();
+    return pl.urls.length - before;
+}
+function removeFromPlaylist(id, url) {
+    const pl = plById(id); if (!pl) return;
+    pl.urls = pl.urls.filter(u => u !== url);
+    pl.updatedAt = Date.now();
+    savePlaylists();
+}
+
+/* 이름 입력 시트 */
+let promptOk = null;
+function openPrompt(opt) {
+    $('prompt-title').textContent = opt.title || '이름 입력';
+    const input = $('prompt-input');
+    input.value = opt.value || '';
+    input.placeholder = opt.placeholder || '이름';
+    promptOk = opt.onOk || null;
+    openSheet('prompt');
+    setTimeout(() => { input.focus(); input.select(); }, 260);
+}
+function submitPrompt() {
+    const v = $('prompt-input').value.trim();
+    if (!v) { toast('이름을 입력해 주세요'); return; }
+    const fn = promptOk; promptOk = null;
+    closeSheet();
+    if (fn) fn(v);
+}
+function promptNewPlaylist(urls, afterName) {
+    openPrompt({
+        title: '새 재생목록',
+        placeholder: '예) 직관 갈 때 듣는 응원가',
+        onOk: name => {
+            const pl = createPlaylist(name, urls || []);
+            renderLibrary();
+            toast(urls && urls.length ? `'${pl.name}'에 ${pl.urls.length}곡을 담았어요` : `'${pl.name}'을 만들었어요`);
+            if (afterName) afterName(pl);
+        }
+    });
+}
+
+/* 재생목록에 담기 시트 */
+let addToUrls = [];
+function openAddTo(urls, label) {
+    addToUrls = (urls || []).filter(Boolean);
+    if (!addToUrls.length) { toast('담을 곡이 없습니다.'); return; }
+    $('addto-title').textContent = label ? `${label} 담기` : '재생목록에 추가';
+    openSheet('addto');
+}
+function renderAddTo() {
+    const n = addToUrls.length;
+    $('addto-list').innerHTML =
+        `<button class="set-row" style="width:100%" onclick="closeSheet(); promptNewPlaylist(addToUrls.slice());">
+            <span><strong>새 재생목록 만들기</strong><small>${n}곡을 담아 새로 만듭니다</small></span>
+            <span class="set-val"><i class="fa-solid fa-plus"></i></span>
+        </button>`
+        + (playlists.length
+            ? playlists.map(pl => {
+                const have = addToUrls.filter(u => pl.urls.includes(u)).length;
+                return `<button class="set-row" style="width:100%" onclick="doAddTo('${pl.id}')">
+                    <span><strong>${esc(pl.name)}</strong><small>${pl.urls.length}곡${have ? ` · ${have}곡 이미 있음` : ''}</small></span>
+                    <span class="set-val"><i class="fa-solid fa-chevron-right"></i></span>
+                </button>`;
+              }).join('')
+            : `<div class="empty" style="padding:22px 12px">아직 만든 재생목록이 없습니다.</div>`);
+}
+function doAddTo(id) {
+    const added = addToPlaylist(id, addToUrls);
+    const pl = plById(id);
+    closeSheet();
+    renderLibrary();
+    if (listState && listState.kind === 'playlist' && listState.a === id) openList('playlist', id);
+    toast(added ? `'${pl.name}'에 ${added}곡을 담았어요` : '이미 모두 담겨 있어요');
+}
+
+/* 재생목록 관리 시트 */
+function renderPlMenu() {
+    const pl = plById(plMenuId);
+    if (!pl) { $('plmenu-list').innerHTML = `<div class="empty">재생목록을 찾을 수 없습니다.</div>`; return; }
+    $('plmenu-title').textContent = pl.name;
+    $('plmenu-list').innerHTML = `
+        <button class="set-row" style="width:100%" onclick="closeSheet(); playSongs(plSongs(plById('${pl.id}')), false, plById('${pl.id}').name);">
+            <span><strong>전체 재생</strong><small>${pl.urls.length}곡</small></span>
+            <span class="set-val"><i class="fa-solid fa-play"></i></span>
+        </button>
+        <button class="set-row" style="width:100%" onclick="closeSheet(); playSongs(plSongs(plById('${pl.id}')), true, plById('${pl.id}').name);">
+            <span><strong>셔플 재생</strong><small>무작위 순서로 듣기</small></span>
+            <span class="set-val"><i class="fa-solid fa-shuffle"></i></span>
+        </button>
+        <button class="set-row" style="width:100%" onclick="closeSheet(); openPrompt({title:'이름 변경', value: plById('${pl.id}').name, onOk: n => { renamePlaylist('${pl.id}', n); renderLibrary(); if (listState && listState.kind==='playlist') openList('playlist','${pl.id}'); toast('이름을 바꿨어요'); }});">
+            <span><strong>이름 변경</strong><small>${esc(pl.name)}</small></span>
+            <span class="set-val"><i class="fa-solid fa-pen"></i></span>
+        </button>
+        <button class="set-row" style="width:100%" onclick="confirmDeletePlaylist('${pl.id}')">
+            <span><strong>재생목록 삭제</strong><small>담긴 곡은 사라지지 않습니다</small></span>
+            <span class="set-val">삭제</span>
+        </button>`;
+}
+let plMenuId = null;
+function openPlMenu(id) { plMenuId = id; openSheet('plmenu'); }
+function confirmDeletePlaylist(id) {
+    const pl = plById(id); if (!pl) return;
+    openPrompt({
+        title: '삭제하려면 이름을 입력하세요',
+        value: '',
+        placeholder: pl.name,
+        onOk: v => {
+            if (v.trim() !== pl.name) { toast('이름이 달라 삭제하지 않았어요'); return; }
+            deletePlaylist(id);
+            if (listState && listState.kind === 'playlist' && listState.a === id) closeList();
+            renderLibrary();
+            toast(`'${pl.name}'을 삭제했어요`);
+        }
+    });
+}
+
+/* 보관함의 재생목록 카드 */
+function renderPlaylistCards() {
+    const box = $('lib-playlists');
+    if (!box) return;
+    box.innerHTML = playlists.map(pl => {
+        const first = plSongs(pl)[0];
+        const cover = first
+            ? `<img src="${esc(first.cover)}" class="${first.portrait ? 'portrait' : ''}" loading="lazy" alt="" onerror="coverFallback(this, '${first.team}')">`
+            : `<i class="fa-solid fa-music"></i>`;
+        return `<div class="pl-row" onclick="openList('playlist','${pl.id}')">
+            <span class="pl-cover">${cover}</span>
+            <span class="pl-main"><strong>${esc(pl.name)}</strong><small>${pl.urls.length}곡</small></span>
+            <span class="pl-kebab" data-plmenu="${pl.id}"><i class="fa-solid fa-ellipsis-vertical"></i></span>
+        </div>`;
+    }).join('') + `<button class="pl-new" onclick="promptNewPlaylist()"><i class="fa-solid fa-plus"></i>새 재생목록 만들기</button>`;
+}
+
+/* 카드의 ⋮ / 목록에서 곡 빼기 */
+document.addEventListener('click', e => {
+    const k = e.target.closest('[data-plmenu]');
+    if (k) { e.stopPropagation(); openPlMenu(k.dataset.plmenu); return; }
+    const rm = e.target.closest('[data-plremove]');
+    if (rm) {
+        e.stopPropagation(); e.preventDefault();
+        const id = rm.dataset.plid, url = rm.dataset.plremove;
+        removeFromPlaylist(id, url);
+        openList('playlist', id);
+        renderLibrary();
+        toast('재생목록에서 뺐어요');
+    }
+});
 
 /* ── 목록 상세 ─────────────────────────────────────────────── */
 let listState = null;
@@ -1638,6 +1893,13 @@ function openList(kind, a, b) {
     } else if (kind === 'recent') {
         songs = recents.map(byUrl).filter(Boolean);
         title = '최근 들은\n응원가'; sub = `${songs.length}곡`;
+    } else if (kind === 'playlist') {
+        const pl = plById(a);
+        if (!pl) { toast('재생목록을 찾을 수 없습니다.'); return; }
+        songs = plSongs(pl);
+        title = pl.name; sub = `${songs.length}곡 · 이 기기에 저장됨`;
+        tone = TEAM_TONE[team] || '#2B2B31';
+        logo = songs[0] ? TEAM_LOGO[songs[0].team] : APP_LOGO;
     }
     listState = { kind, a, b, songs };
     $('lv-topname').textContent = title.replace('\n', ' ');
@@ -1646,9 +1908,12 @@ function openList(kind, a, b) {
     $('lv-title').textContent = title;
     $('lv-sub').textContent = sub;
     const soonTeam = (kind === 'cat' || kind === 'team') && a !== 'all' && !hasSongs(a);
+    const lvMore = $('lv-more');
+    if (lvMore) { lvMore.style.display = kind === 'playlist' ? 'flex' : 'none'; if (kind === 'playlist') plMenuId = a; }
     renderList('lv-list', songs, {
+        removeFrom: kind === 'playlist' ? a : null,
         label: title.replace('\n', ' '),
-        empty: soonTeam ? soonText(a) : (kind === 'lineup' ? '라인업이 발표되면 자동으로 채워집니다.' : '표시할 응원가가 없습니다.'),
+        empty: soonTeam ? soonText(a) : (kind === 'lineup' ? '라인업이 발표되면 자동으로 채워집니다.' : (kind === 'playlist' ? '아직 담은 곡이 없습니다.\n곡의 ⋮ 에서 재생목록에 추가해 보세요.' : '표시할 응원가가 없습니다.')),
         badge: kind === 'lineup' ? (s => s.order) : null,
         artist: kind === 'lineup' ? (s => s.catName) : null
     });
@@ -1673,6 +1938,13 @@ function paintLyric(song) {
 }
 
 /* ── 유사곡 / 빠른 선곡 ────────────────────────────────────── */
+function playSimilarOf(url) {
+    const s = byUrl(url);
+    if (!s) { toast('곡을 찾을 수 없습니다'); return; }
+    const rest = songsOf(s.team, s.cat).filter(x => x.url !== s.url);
+    playSongs([s, ...rest], false, `${s.team} ${s.catName}`);
+    toast(`${s.catName} 유사곡으로 이어 재생합니다`);
+}
 function playSimilar() {
     const s = byUrl(cur.url);
     if (!s) { toast('재생 중인 응원가가 없습니다'); return; }
@@ -1735,16 +2007,22 @@ function renderEQ() {
 }
 
 /* ── 곡 더보기 ─────────────────────────────────────────────── */
+let moreTarget = null;
+function openMore(song) { moreTarget = song || byUrl(cur.url); openSheet('more'); }
 function renderMore() {
-    const s = byUrl(cur.url);
+    const s = moreTarget || byUrl(cur.url);
     if (!s) { $('more-title').textContent = '곡 정보'; $('more-list').innerHTML = `<div class="empty">재생 중인 응원가가 없습니다.</div>`; return; }
     $('more-title').textContent = s.label;
     $('more-list').innerHTML = `
-        <button class="set-row" style="width:100%" onclick="favCurrent(); renderMore();">
+        <button class="set-row" style="width:100%" onclick="closeSheet(); openAddTo(['${esc(s.url)}'], '${esc(s.label)}');">
+            <span><strong>재생목록에 추가</strong><small>내가 만든 재생목록에 담기</small></span>
+            <span class="set-val"><i class="fa-solid fa-plus"></i></span>
+        </button>
+        <button class="set-row" style="width:100%" onclick="toggleFav('${esc(s.url)}'); renderMore();">
             <span><strong>${isFav(s.url) ? '좋아요 해제' : '좋아요'}</strong><small>보관함에 담아 두고 바로 듣기</small></span>
             <span class="set-val"><i class="fa-${isFav(s.url) ? 'solid' : 'regular'} fa-heart"></i></span>
         </button>
-        <button class="set-row" style="width:100%" onclick="closeSheet(); playSimilar();">
+        <button class="set-row" style="width:100%" onclick="closeSheet(); playSimilarOf('${esc(s.url)}');">
             <span><strong>유사곡 재생</strong><small>${esc(s.team)} ${esc(s.catName)} 이어 듣기</small></span>
             <span class="set-val"><i class="fa-solid fa-play"></i></span>
         </button>
@@ -1867,7 +2145,7 @@ document.addEventListener('click', e => {
     if (more) {
         e.stopPropagation();
         const s = currentQueueSongs()[Number(more.dataset.qmore)];
-        if (s) { cur.url = cur.url || s.url; openSheet('more'); }
+        if (s) openMore(s);
         return;
     }
     const row = e.target.closest('[data-qi]');
@@ -1884,6 +2162,11 @@ document.addEventListener('click', e => {
     else { playSongs(songs, false, queueTab === 0 ? queueLabel : '빠른 선곡'); qIndex = i; play(songs[i]); }
 });
 
+function addSelectedToPlaylist() {
+    if (!queueSel.size) { toast('선택한 곡이 없습니다.'); return; }
+    const shown = currentQueueSongs();
+    openAddTo([...queueSel].map(i => shown[i] && shown[i].url).filter(Boolean), `${queueSel.size}곡`);
+}
 function selectAllQueue() {
     const n = currentQueueSongs().length;
     if (queueSel.size === n) queueSel.clear();
@@ -1922,6 +2205,11 @@ function addTeamToQueue() {
     renderQueue();
     toast(`${pool.length}곡을 재생목록에 담았어요`);
 }
+function saveQueueAsPlaylist() {
+    const src = currentQueueSongs();
+    if (!src.length) { toast('저장할 곡이 없습니다.'); return; }
+    promptNewPlaylist(src.map(x => x.url));
+}
 function saveQueueToLibrary() {
     const src = currentQueueSongs();
     if (!src.length) { toast('저장할 곡이 없습니다.'); return; }
@@ -1941,6 +2229,8 @@ function openSheet(name) {
     if (name === 'notice') { renderNotice(); $('notice-dot').style.display = 'none'; localStorage.setItem('cheer_notice_seen', '1'); }
     if (name === 'eq') renderEQ();
     if (name === 'more') renderMore();
+    if (name === 'addto') renderAddTo();
+    if (name === 'plmenu') renderPlMenu();
     openedSheet = $('sheet-' + name);
     $('sheet-mask').classList.add('on');
     openedSheet.classList.add('on');
@@ -2064,6 +2354,7 @@ async function syncLineup() {
 /* ── 시작 ──────────────────────────────────────────────────── */
 window.addEventListener('DOMContentLoaded', () => {
     readStore();
+    loadPlaylists();
     buildIndex();
     initAudio();
 
@@ -2080,6 +2371,9 @@ window.addEventListener('DOMContentLoaded', () => {
     q.addEventListener('change', e => saveQuery(e.target.value.trim()));
     q.addEventListener('keydown', e => { if (e.key === 'Enter') { saveQuery(q.value.trim()); q.blur(); } });
     $('q-clear').addEventListener('click', () => { q.value = ''; runSearch(''); q.focus(); });
+
+    $('prompt-ok').addEventListener('click', submitPrompt);
+    $('prompt-input').addEventListener('keydown', e => { if (e.key === 'Enter') submitPrompt(); });
 
     const qq = $('qv-q');
     qq.addEventListener('input', e => { queueQuery = e.target.value.trim(); renderQueue(); });
