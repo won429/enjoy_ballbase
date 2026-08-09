@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="players.js"></script>
     <script src="kia_songs.js"></script>
+    <script src="cheer_songs.js"></script>
     <style>
         @font-face { font-family: 'KBO-Dia-Gothic'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/KBO-Dia-Gothic_light.woff') format('woff'); font-weight: 300; font-style: normal; font-display: swap; }
         @font-face { font-family: 'KBO-Dia-Gothic'; src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/KBO-Dia-Gothic_medium.woff') format('woff'); font-weight: 500; font-style: normal; font-display: swap; }
@@ -40,6 +41,14 @@
         }
         body[data-theme="KIA"]  { --point: #EA0029; --point-soft: rgba(234, 0, 41, 0.22); }
         body[data-theme="삼성"] { --point: #2F7BE0; --point-soft: rgba(47, 123, 224, 0.22); }
+        body[data-theme="LG"]   { --point: #E4376E; --point-soft: rgba(228, 55, 110, 0.22); }
+        body[data-theme="두산"] { --point: #4C6EF5; --point-soft: rgba(76, 110, 245, 0.22); }
+        body[data-theme="KT"]   { --point: #E8112D; --point-soft: rgba(232, 17, 45, 0.22); }
+        body[data-theme="SSG"]  { --point: #E63950; --point-soft: rgba(230, 57, 80, 0.22); }
+        body[data-theme="롯데"] { --point: #3B6FD4; --point-soft: rgba(59, 111, 212, 0.22); }
+        body[data-theme="한화"] { --point: #FF7A1A; --point-soft: rgba(255, 122, 26, 0.22); }
+        body[data-theme="NC"]   { --point: #4A78C0; --point-soft: rgba(74, 120, 192, 0.22); }
+        body[data-theme="키움"] { --point: #C23A6B; --point-soft: rgba(194, 58, 107, 0.22); }
         body[data-theme="all"]  { --point: #6E8BFF; --point-soft: rgba(110, 139, 255, 0.22); }
 
         body {
@@ -181,6 +190,9 @@
             transition: transform .15s ease;
         }
         .hero-play:active { transform: scale(0.92); }
+        .hero-card.hero-soon { height: auto; min-height: 172px; justify-content: flex-start; gap: 14px; }
+        .hero-soon-desc { font-size: 13px; font-weight: 600; line-height: 1.65; color: rgba(255,255,255,0.72); }
+        .hero-soon-cta { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; font-size: 12.5px; font-weight: 800; color: #fff; }
         .hero-dots { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 14px; }
         .hero-dot { width: 6px; height: 6px; border-radius: 999px; background: rgba(255,255,255,0.22); transition: background-color .25s ease, width .25s ease; }
         .hero-dot.on { width: 16px; background: #fff; }
@@ -263,6 +275,14 @@
         .browse-big strong { display: block; font-size: 18px; font-weight: 800; letter-spacing: -0.04em; color: #fff; }
         .browse-big small { display: block; margin-top: 5px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.66); }
         .browse-big img { position: absolute; right: 14px; bottom: -12px; width: 88px; height: 88px; object-fit: contain; opacity: 0.28; }
+        .team-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 9px; }
+        .team-cell { position: relative; display: flex; align-items: center; gap: 11px; height: 72px; padding: 0 13px; border-radius: 13px; overflow: hidden; text-align: left; transition: transform .15s ease; }
+        .team-cell:active { transform: scale(0.975); }
+        .team-cell.soon { opacity: 0.62; }
+        .team-cell img { width: 34px; height: 34px; flex: 0 0 34px; object-fit: contain; }
+        .team-cell-main { min-width: 0; }
+        .team-cell strong { display: block; font-size: 13px; font-weight: 800; letter-spacing: -0.04em; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .team-cell small { display: block; margin-top: 3px; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.62); }
         .browse-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 9px; }
         .browse-cell { display: flex; flex-direction: column; align-items: flex-start; gap: 9px; height: 96px; padding: 15px 15px; border-radius: 14px; background: var(--surface); text-align: left; transition: background-color .18s ease, transform .15s ease; }
         .browse-cell:active { background: var(--surface-2); transform: scale(0.985); }
@@ -530,7 +550,7 @@
                 <div id="hero-dots" class="hero-dots"></div>
             </section>
 
-            <section class="sec">
+            <section class="sec" id="sec-quick">
                 <div class="sec-head"><div class="sec-title"><h2>빠른 선곡</h2></div></div>
                 <div id="quick-grid" class="quick-grid no-bar"></div>
             </section>
@@ -556,7 +576,7 @@
                 <div id="home-lineup"></div>
             </section>
 
-            <section class="sec">
+            <section class="sec" id="sec-songs">
                 <div class="sec-head">
                     <div class="sec-title">
                         <h2>응원가</h2>
@@ -824,13 +844,23 @@ async function fsDoc(path) {
 }
 
 /* ── 상수 ──────────────────────────────────────────────────── */
-const TEAM_IDS = { 'KIA': 'kia', '삼성': 'samsung' };
-const TEAM_LOGO = {
-    'KIA': 'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/kia_logoo.png',
-    '삼성': 'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/samsung_logo.png'
-};
-const TEAM_FULL = { 'KIA': 'KIA 타이거즈', '삼성': '삼성 라이온즈' };
-const TEAM_TONE = { 'KIA': '#B0122B', '삼성': '#1D4E96' };
+const TEAMS = [
+    { name: 'KIA',  id: 'kia',    full: 'KIA 타이거즈',   logo: 'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/kia_logoo.png',    tone: '#B0122B' },
+    { name: '삼성', id: 'samsung', full: '삼성 라이온즈',  logo: 'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/samsung_logo.png', tone: '#1D4E96' },
+    { name: 'LG',   id: 'lg',      full: 'LG 트윈스',      logo: 'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/lgtwins.png',      tone: '#A31049' },
+    { name: '두산', id: 'doosan',  full: '두산 베어스',    logo: 'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/doosa.png',        tone: '#1E2A6B' },
+    { name: 'KT',   id: 'kt',      full: 'KT 위즈',        logo: 'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/kt_logo.png',      tone: '#2E3238' },
+    { name: 'SSG',  id: 'ssg',     full: 'SSG 랜더스',     logo: 'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/ssglan.png',       tone: '#A00E24' },
+    { name: '롯데', id: 'lotte',   full: '롯데 자이언츠',  logo: 'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/lotteegi.png',     tone: '#10305E' },
+    { name: '한화', id: 'hanwha',  full: '한화 이글스',    logo: 'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/hanwha_logo.png',  tone: '#B34500' },
+    { name: 'NC',   id: 'nc',      full: 'NC 다이노스',    logo: 'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/ncdin.png',        tone: '#24406B' },
+    { name: '키움', id: 'kiwoom',  full: '키움 히어로즈',  logo: 'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/kiwoom.png',       tone: '#6B1230' }
+];
+const TEAM_NAMES = TEAMS.map(t => t.name);
+const TEAM_IDS  = TEAMS.reduce((a, t) => ({ ...a, [t.name]: t.id }), {});
+const TEAM_LOGO = TEAMS.reduce((a, t) => ({ ...a, [t.name]: t.logo }), {});
+const TEAM_FULL = TEAMS.reduce((a, t) => ({ ...a, [t.name]: t.full }), {});
+const TEAM_TONE = TEAMS.reduce((a, t) => ({ ...a, [t.name]: t.tone }), {});
 const APP_LOGO = 'https://cdn.jsdelivr.net/gh/won429/enjoy_ballbase@main/logo.png';
 
 const CATS = [
@@ -844,15 +874,13 @@ const CAT_NAME = CATS.reduce((a, c) => ({ ...a, [c.id]: c.name }), {});
 if (typeof playerImages === 'undefined') window.playerImages = {};
 if (typeof kiaCheerData === 'undefined') window.kiaCheerData = { team: [], player: [], entrance: [], hitout: [] };
 
-const cheerData = {
-    kia: kiaCheerData,
-    samsung: {
-        team: [ {url:'samsung/samsung_lineup.mp3', title:'삼성 라인업송', label:'라인업송'}, {url:'samsung/samsung_eldorado.mp3', title:'삼성 엘도라도', label:'엘도라도'}, {url:'samsung/samsung_jijunghae.mp3', title:'삼성 지중해', label:'지중해'} ],
-        player: [ {url:'samsung/samsung_gu_jawook.mp3', title:'삼성 구자욱', label:'구자욱'}, {url:'samsung/samsung_gu_jawook_moonlight.mp3', title:'삼성 구자욱(달빛소년)', label:'구자욱(달빛소년)'}, {url:'samsung/samsung_choi_hyoungwoo.mp3', title:'삼성 최형우', label:'최형우'}, {url:'samsung/samsung_diaz.mp3', title:'삼성 디아즈', label:'디아즈'}, {url:'samsung/samsung_lee_jaehyun.mp3', title:'삼성 이재현', label:'이재현'}, {url:'samsung/samsung_kim_hyunjun.mp3', title:'삼성 김현준', label:'김현준'}, {url:'samsung/samsung_kim_sungyoon.mp3', title:'삼성 김성윤', label:'김성윤'}, {url:'samsung/samsung_kim_jichan.mp3', title:'삼성 김지찬', label:'김지찬'}, {url:'samsung/samsung_kang_minho.mp3', title:'삼성 강민호', label:'강민호'}, {url:'samsung/samsung_shim_jaehun.mp3', title:'삼성 심재훈', label:'심재훈'}, {url:'samsung/samsung_kim_jaesung.mp3', title:'삼성 김재성', label:'김재성'}, {url:'samsung/samsung_ryu_jihyuk.mp3', title:'삼성 류지혁', label:'류지혁'}, {url:'samsung/samsung_lee_byunghun.mp3', title:'삼성 이병헌', label:'이병헌'}, {url:'samsung/samsung_lee_sunggyu1.mp3', title:'삼성 이성규1', label:'이성규1'}, {url:'samsung/samsung_lee_sunggyu2.mp3', title:'삼성 이성규2', label:'이성규2'}, {url:'samsung/samsung_kim_youngwoong.mp3', title:'삼성 김영웅', label:'김영웅'}, {url:'samsung/samsung_kim_taehun.mp3', title:'삼성 김태훈', label:'김태훈'}, {url:'samsung/samsung_lee_haeseung.mp3', title:'삼성 이해승', label:'이해승'}, {url:'samsung/samsung_park_seunggyu.mp3', title:'삼성 박승규', label:'박승규'}, {url:'samsung/samsung_park_byungho.mp3', title:'삼성 박병호', label:'박병호'}, {url:'samsung/samsung_yoon_jungbin.mp3', title:'삼성 윤정빈', label:'윤정빈'}, {url:'samsung/samsung_kim_heongon.mp3', title:'삼성 김헌곤', label:'김헌곤'}, {url:'samsung/samsung_yang_woohyun.mp3', title:'삼성 양우현', label:'양우현'}, {url:'samsung/samsung_jeon_byungwoo.mp3', title:'삼성 전병우', label:'전병우'}, {url:'samsung/samsung_kim_taegun.mp3', title:'삼성 김태군', label:'김태군'}, {url:'samsung/samsung_park_sehyuk.mp3', title:'삼성 박세혁', label:'박세혁'} ],
-        entrance: [ {url:'samsung/samsung_gu_jawook_entrance.mp3', title:'삼성 구자욱 등장곡', label:'구자욱 등장곡'}, {url:'samsung/samsung_choi_hyoungwoo_entrance.mp3', title:'삼성 최형우 등장곡', label:'최형우 등장곡'}, {url:'samsung/samsung_diaz_entrance.mp3', title:'삼성 디아즈 등장곡', label:'디아즈 등장곡'}, {url:'samsung/samsung_lee_jaehyun_entrance.mp3', title:'삼성 이재현 등장곡', label:'이재현 등장곡'}, {url:'samsung/samsung_kim_hyunjun_entrance.mp3', title:'삼성 김현준 등장곡', label:'김현준 등장곡'}, {url:'samsung/samsung_kim_sungyoon_entrance.mp3', title:'삼성 김성윤 등장곡', label:'김성윤 등장곡'}, {url:'samsung/samsung_kim_jichan_entrance.mp3', title:'삼성 김지찬 등장곡', label:'김지찬 등장곡'}, {url:'samsung/samsung_kang_minho_entrance.mp3', title:'삼성 강민호 등장곡', label:'강민호 등장곡'}, {url:'samsung/samsung_shim_jaehun_entrance.mp3', title:'삼성 심재훈 등장곡', label:'심재훈 등장곡'}, {url:'samsung/samsung_kim_jaesung_entrance.mp3', title:'삼성 김재성 등장곡', label:'김재성 등장곡'}, {url:'samsung/samsung_ryu_jihyuk_entrance.mp3', title:'삼성 류지혁 등장곡', label:'류지혁 등장곡'}, {url:'samsung/samsung_lee_byunghun_entrance.mp3', title:'삼성 이병헌 등장곡', label:'이병헌 등장곡'}, {url:'samsung/samsung_lee_sunggyu_entrance.mp3', title:'삼성 이성규 등장곡', label:'이성규 등장곡'}, {url:'samsung/samsung_kim_youngwoong_entrance.mp3', title:'삼성 김영웅 등장곡', label:'김영웅 등장곡'}, {url:'samsung/samsung_kim_taehun_entrance.mp3', title:'삼성 김태훈 등장곡', label:'김태훈 등장곡'}, {url:'samsung/samsung_lee_haeseung_entrance.mp3', title:'삼성 이해승 등장곡', label:'이해승 등장곡'}, {url:'samsung/samsung_park_seunggyu_entrance.mp3', title:'삼성 박승규 등장곡', label:'박승규 등장곡'}, {url:'samsung/samsung_park_byungho_entrance.mp3', title:'삼성 박병호 등장곡', label:'박병호 등장곡'}, {url:'samsung/samsung_yoon_jungbin_entrance.mp3', title:'삼성 윤정빈 등장곡', label:'윤정빈 등장곡'}, {url:'samsung/samsung_kim_heongon_entrance.mp3', title:'삼성 김헌곤 등장곡', label:'김헌곤 등장곡'}, {url:'samsung/samsung_yang_woohyun_entrance.mp3', title:'삼성 양우현 등장곡', label:'양우현 등장곡'}, {url:'samsung/samsung_jeon_byungwoo_entrance.mp3', title:'삼성 전병우 등장곡', label:'전병우 등장곡'}, {url:'samsung/samsung_kim_taegun_entrance.mp3', title:'삼성 김태군 등장곡', label:'김태군 등장곡'}, {url:'samsung/samsung_park_sehyuk_entrance.mp3', title:'삼성 박세혁 등장곡', label:'박세혁 등장곡'} ],
-        hitout: [ {url:'samsung/gajagaja.mp3', title:'삼성 안타송(가자가자)', label:'안타송(가자가자)'}, {url:'samsung/samsung_out_rumble.mp3', title:'삼성 2026 아웃송(럼블)', label:'2026 아웃송(럼블)'}, {url:'samsung/samsung_out_destiny.mp3', title:'삼성 2026 아웃송(운명)', label:'2026 아웃송(운명)'}, {url:'samsung/samsung_out_eulssu.mp3', title:'삼성 2026 아웃송(얼쑤)', label:'2026 아웃송(얼쑤)'}, {url:'samsung/samsung_out_march.mp3', title:'삼성 2026 아웃송(March)', label:'2026 아웃송(March)'}, {url:'samsung/samsung_out_wait.mp3', title:'삼성 2025 아웃송(WAIT)', label:'2025 아웃송(WAIT)'}, {url:'samsung/samsung_out_ratata.mp3', title:'삼성 2025 아웃송(RATATA)', label:'2025 아웃송(RATATA)'}, {url:'samsung/samsung_out_cheerup.mp3', title:'삼성 2025 아웃송(Cheer Up)', label:'2025 아웃송(Cheer Up)'} ]
-    }
-};
+// KIA는 kia_songs.js, 나머지 구단은 cheer_songs.js 에서 불러온다.
+if (typeof cheerSongs === 'undefined') window.cheerSongs = {};
+const EMPTY_TEAM = { team: [], player: [], entrance: [], hitout: [] };
+const cheerData = TEAMS.reduce((acc, t) => {
+    acc[t.id] = (t.id === 'kia' ? kiaCheerData : cheerSongs[t.id]) || EMPTY_TEAM;
+    return acc;
+}, {});
 
 /* ── 곡 인덱스 ─────────────────────────────────────────────── */
 let SONGS = [];
@@ -864,7 +892,7 @@ function findPlayer(text) {
 }
 function buildIndex() {
     SONGS = [];
-    for (const team of Object.keys(TEAM_IDS)) {
+    for (const team of TEAM_NAMES) {
         const tid = TEAM_IDS[team];
         for (const cat of CATS) {
             const list = (cheerData[tid] && cheerData[tid][cat.id]) || [];
@@ -882,6 +910,8 @@ function buildIndex() {
 }
 const byUrl = url => SONGS.find(s => s.url === url) || null;
 const songsOf = (team, cat) => SONGS.filter(s => (!team || team === 'all' || s.team === team) && (!cat || s.cat === cat));
+const hasSongs = t => SONGS.some(s => s.team === t);
+const soonText = t => `${TEAM_FULL[t] || t} 응원가는 준비 중입니다.\n음원이 추가되면 바로 이용할 수 있어요.`;
 
 /* ── 저장소 ────────────────────────────────────────────────── */
 const K_FAV = 'cheer_favorites_v1', K_RECENT = 'cheer_recents_v1', K_QUERY = 'cheer_queries_v1', K_TEAM = 'kbo_selected_team';
@@ -1167,7 +1197,7 @@ function heroDecks() {
     if (info.songs && info.songs.length) {
         decks.push({ title: `오늘 라인업 순서대로\n이어 부르는 응원가`, tone: TEAM_TONE[info.team], songs: info.songs, open: () => openList('lineup', info.team) });
     }
-    const teams = team === 'all' ? ['KIA', '삼성'] : [team];
+    const teams = team === 'all' ? TEAM_NAMES.filter(hasSongs) : [team];
     teams.forEach(t => {
         decks.push({ title: `${t} 구단 응원가\n다 같이 목청껏`, tone: TEAM_TONE[t], songs: songsOf(t, 'team'), open: () => openList('cat', t, 'team') });
         decks.push({ title: `${t} 선수 응원가\n타석마다 한 곡씩`, tone: shade(TEAM_TONE[t], 0.8), songs: songsOf(t, 'player'), open: () => openList('cat', t, 'player') });
@@ -1181,6 +1211,22 @@ let heroList = [];
 function renderHome() {
     heroList = heroDecks();
     const rail = $('hero-rail');
+    // 음원이 아직 없는 구단을 고른 경우 — 안내만 보여주고 목록은 비운다
+    if (!heroList.length) {
+        rail.innerHTML = `<button class="hero-card hero-soon" style="${cardBg(TEAM_TONE[team] || '#2B2B31')}" onclick="switchTab(1)">
+            <div class="hero-title">${esc(team === 'all' ? '등록된 응원가가\n아직 없습니다' : TEAM_FULL[team] + ' 응원가는\n준비 중입니다')}</div>
+            <div class="hero-soon-desc">음원이 추가되면 바로 이용할 수 있어요.<br>다른 구단을 둘러보시겠어요?</div>
+            <span class="hero-soon-cta">둘러보기 <i class="fa-solid fa-chevron-right" style="font-size:10px"></i></span>
+        </button>`;
+        $('hero-dots').innerHTML = '';
+        lists['quick'] = [];
+        $('sec-quick').style.display = 'none';
+        $('sec-songs').style.display = 'none';
+        renderHomeLineup();
+        return;
+    }
+    $('sec-quick').style.display = '';
+    $('sec-songs').style.display = '';
     rail.innerHTML = heroList.map((d, i) => `
         <button class="hero-card" style="${cardBg(d.tone)}" data-hero="${i}">
             <div class="hero-title">${esc(d.title)}</div>
@@ -1227,7 +1273,8 @@ function renderHome() {
 
 function renderHomeLineup() {
     const box = $('home-lineup');
-    const teams = team === 'all' ? ['KIA', '삼성'] : [team];
+    const teams = team === 'all' ? TEAM_NAMES.filter(hasSongs) : [team];
+    if (!teams.length) { box.innerHTML = `<div class="browse-wrap"><div class="empty"><i class="fa-solid fa-list-ol"></i>${esc(soonText(team))}</div></div>`; return; }
     box.innerHTML = `<div class="browse-wrap">` + teams.map(t => {
         const info = lineupInfo(t);
         const ready = Boolean(info.songs && info.songs.length);
@@ -1258,14 +1305,16 @@ $('hero-rail').addEventListener('scroll', () => {
 
 /* ── 둘러보기 ──────────────────────────────────────────────── */
 function renderBrowse() {
-    $('browse-teams').innerHTML = ['KIA', '삼성'].map(t => `
-        <button class="browse-big" style="${cardBg(TEAM_TONE[t])}" onclick="openList('team','${t}')">
-            <span>
+    $('browse-teams').innerHTML = `<div class="team-grid">` + TEAM_NAMES.map(t => {
+        const n = songsOf(t, null).length;
+        return `<button class="team-cell${n ? '' : ' soon'}" style="${cardBg(TEAM_TONE[t])}" onclick="openList('team','${t}')">
+            <img src="${TEAM_LOGO[t]}" alt="" onerror="this.style.visibility='hidden'">
+            <span class="team-cell-main">
                 <strong>${esc(TEAM_FULL[t])}</strong>
-                <small>응원가 ${songsOf(t, null).length}곡</small>
+                <small>${n ? n + '곡' : '준비 중'}</small>
             </span>
-            <img src="${TEAM_LOGO[t]}" alt="">
-        </button>`).join('');
+        </button>`;
+    }).join('') + `</div>`;
 
     $('browse-cats').innerHTML = CATS.map(c => `
         <button class="browse-cell" onclick="openList('cat','${team}','${c.id}')">
@@ -1274,7 +1323,7 @@ function renderBrowse() {
             <small>${songsOf(team, c.id).length}곡</small>
         </button>`).join('');
 
-    const teams = team === 'all' ? ['KIA', '삼성'] : [team];
+    const teams = team === 'all' ? TEAM_NAMES.filter(hasSongs) : [team];
     $('browse-more').innerHTML = teams.map(t => {
         const info = lineupInfo(t);
         const ready = Boolean(info.songs && info.songs.length);
@@ -1365,8 +1414,9 @@ function openList(kind, a, b) {
     $('lv-hero-img').src = logo;
     $('lv-title').textContent = title;
     $('lv-sub').textContent = sub;
+    const soonTeam = (kind === 'cat' || kind === 'team') && a !== 'all' && !hasSongs(a);
     renderList('lv-list', songs, {
-        empty: kind === 'lineup' ? '라인업이 발표되면 자동으로 채워집니다.' : '표시할 응원가가 없습니다.',
+        empty: soonTeam ? soonText(a) : (kind === 'lineup' ? '라인업이 발표되면 자동으로 채워집니다.' : '표시할 응원가가 없습니다.'),
         badge: kind === 'lineup' ? (s => s.order) : null,
         artist: kind === 'lineup' ? (s => s.catName) : null
     });
@@ -1496,12 +1546,13 @@ function renderQueue() {
     renderList('queue-list', queue, { empty: '재생목록이 비었습니다.\n응원가를 선택해 주세요.', emptyIcon: 'fa-list' });
 }
 function renderTeamSheet() {
-    const opts = [{ id: 'KIA', name: 'KIA 타이거즈', logo: TEAM_LOGO['KIA'] }, { id: '삼성', name: '삼성 라이온즈', logo: TEAM_LOGO['삼성'] }, { id: 'all', name: '전체 구단', logo: APP_LOGO }];
+    const opts = [...TEAMS.map(t => ({ id: t.name, name: t.full, logo: t.logo, n: songsOf(t.name, null).length })),
+                  { id: 'all', name: '전체 구단', logo: APP_LOGO, n: SONGS.length }];
     $('team-list').innerHTML = opts.map(o => `
         <button class="set-row" style="width:100%" onclick="setTeam('${o.id}')">
-            <span style="display:flex;align-items:center;gap:12px">
-                <img src="${o.logo}" style="width:32px;height:32px;object-fit:contain" alt="">
-                <strong>${esc(o.name)}</strong>
+            <span style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
+                <img src="${o.logo}" style="width:30px;height:30px;object-fit:contain;flex:0 0 30px" alt="" onerror="this.style.visibility='hidden'">
+                <span style="min-width:0"><strong>${esc(o.name)}</strong><small>${o.n ? o.n + '곡' : '음원 준비 중'}</small></span>
             </span>
             ${team === o.id ? '<span class="set-val"><i class="fa-solid fa-check"></i></span>' : ''}
         </button>`).join('');
