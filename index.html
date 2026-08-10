@@ -398,8 +398,6 @@
         .btn-pill:active { transform: scale(0.96); }
         .btn-solid { background: #fff; color: #111; }
         .btn-ghost { background: rgba(255,255,255,0.14); color: #fff; }
-        /* 컬러 카드 밖(시트 등)에서는 테마 색을 따른다 */
-        .sheet .btn-ghost { background: var(--press); color: var(--text); }
 
         /* ── 하단 플레이어 바 ──────────────────────────────────── */
         #player-bar {
@@ -562,41 +560,66 @@
         .lib-plrow-play:active { transform: scale(0.88); }
         .lib-plrow-del { flex: 0 0 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 17px; color: var(--text-3); }
 
-        /* ── 시트/모달 공통 ────────────────────────────────────── */
-        .sheet-mask { position: fixed; inset: 0; z-index: 110; display: none; background: var(--overlay); backdrop-filter: blur(2px); }
-        .sheet-mask.on { display: block; }
-        .sheet {
-            /* 뷰포트 하단에 고정 — #app 기준 절대배치는 일부 환경에서 위치가 어긋난다 */
+        /* ── 전체 화면 페이지 (예전 바텀시트 대체) ─────────────── */
+        #page {
             position: fixed;
+            top: 0; bottom: 0;
             left: 50%;
-            bottom: 0;
             width: 100%;
             max-width: 430px;
-            z-index: 115;
-            max-height: 74dvh;
+            z-index: 120;
             display: flex;
             flex-direction: column;
-            border-radius: 18px 18px 0 0;
-            background: var(--sheet-bg);
-            /* 닫힌 시트는 아래로 밀고 투명 처리 — 높이가 낮은 시트가 화면에 걸리지 않도록 */
-            transform: translate(-50%, 102%);
+            background: var(--bg);
+            transform: translate(-50%, 100%);
             opacity: 0;
             pointer-events: none;
-            transition: transform .3s cubic-bezier(0.2, 0.9, 0.2, 1), opacity .22s ease;
-            padding-bottom: env(safe-area-inset-bottom);
+            transition: transform .28s cubic-bezier(0.2, 0.9, 0.2, 1), opacity .2s ease;
         }
-        .sheet.on { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
-        .sheet-grab { width: 38px; height: 4px; margin: 10px auto 4px; border-radius: 999px; background: var(--line-strong); }
-        .sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 18px 12px; }
-        .sheet-head strong { font-size: 15px; font-weight: 800; }
-        .sheet-head button { font-size: 12.5px; font-weight: 700; color: var(--text-2); }
-        .sheet-body { overflow-y: auto; padding: 0 8px 18px; }
-        .set-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 12px; border-radius: 10px; }
+        #page.on { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
+        .page-top { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; height: 60px; padding: 0 8px; padding-top: env(safe-area-inset-top); height: calc(60px + env(safe-area-inset-top)); }
+        .page-top button { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 19px; color: var(--text); }
+        .page-top button:active { transform: scale(0.9); }
+        .page-top h2 { flex: 1; min-width: 0; margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -0.04em; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .page-body { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 8px 28px; }
+
+        .set-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 15px 12px; border-radius: 10px; }
         .set-row:active { background: var(--press); }
         .set-row > span:first-child { flex: 1; min-width: 0; text-align: left; }
-        .set-row strong { display: block; font-size: 14px; font-weight: 700; }
-        .set-row small { display: block; margin-top: 3px; font-size: 11.5px; font-weight: 500; color: var(--text-2); }
-        .set-val { font-size: 12.5px; font-weight: 800; color: var(--point); white-space: nowrap; }
+        .set-row strong { display: block; font-size: 15px; font-weight: 700; color: var(--text); }
+        .set-row small { display: block; margin-top: 4px; font-size: 12.5px; font-weight: 500; color: var(--text-2); }
+        .set-val { font-size: 13px; font-weight: 800; color: var(--point); white-space: nowrap; }
+
+        /* ── 팝오버 (구단 선택 · 정렬) ─────────────────────────── */
+        #pop-mask { position: fixed; inset: 0; z-index: 124; display: none; }
+        #pop-mask.on { display: block; }
+        #pop {
+            position: fixed;
+            z-index: 125;
+            min-width: 208px;
+            max-width: 290px;
+            max-height: 68dvh;
+            overflow-y: auto;
+            padding: 6px;
+            border-radius: 15px;
+            background: var(--sheet-bg);
+            border: 1px solid var(--line);
+            box-shadow: 0 18px 44px rgba(0,0,0,0.30), 0 2px 8px rgba(0,0,0,0.12);
+            opacity: 0;
+            transform: scale(0.94);
+            pointer-events: none;
+            transition: opacity .16s ease, transform .16s cubic-bezier(0.2, 0.9, 0.2, 1);
+        }
+        #pop.on { opacity: 1; transform: scale(1); pointer-events: auto; }
+        #pop::-webkit-scrollbar { display: none; }
+        .pop-row { display: flex; align-items: center; gap: 11px; width: 100%; padding: 11px 12px; border-radius: 10px; text-align: left; }
+        .pop-row:active { background: var(--press); }
+        .pop-row img { flex: 0 0 26px; width: 26px; height: 26px; object-fit: contain; }
+        .pop-row-main { flex: 1; min-width: 0; }
+        .pop-row strong { display: block; font-size: 14.5px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pop-row small { display: block; margin-top: 2px; font-size: 11.5px; font-weight: 600; color: var(--text-2); }
+        .pop-row i.chk { flex: 0 0 auto; font-size: 12px; color: var(--point); }
+        .pop-row.on strong { color: var(--point); font-weight: 800; }
 
         /* ── 전체 플레이어 ─────────────────────────────────────── */
         #full-player {
@@ -709,7 +732,7 @@
         .pl-new { display: flex; align-items: center; justify-content: center; gap: 8px; height: 48px; border-radius: 12px; border: 1.4px dashed var(--line-strong); color: var(--text-2); font-size: 13.5px; font-weight: 800; transition: color .2s ease, border-color .2s ease; }
         .pl-new:active { color: var(--text); border-color: var(--text-3); }
 
-        .prompt-input { width: 100%; height: 46px; padding: 0 14px; border-radius: 11px; border: 1.5px solid var(--line-strong); background: var(--input-bg); color: var(--text); font-family: inherit; font-size: 15px; font-weight: 700; outline: none; }
+        .prompt-input { width: 100%; margin-top: 6px; height: 46px; padding: 0 14px; border-radius: 11px; border: 1.5px solid var(--line-strong); background: var(--input-bg); color: var(--text); font-family: inherit; font-size: 15px; font-weight: 700; outline: none; }
         .prompt-input:focus { border-color: var(--point); }
         .prompt-input::placeholder { color: var(--text-3); font-weight: 600; }
         .prompt-actions { display: flex; gap: 8px; margin-top: 14px; }
@@ -737,7 +760,7 @@
             z-index: 108;
             display: flex;
             flex-direction: column;
-            background: #050506;
+            background: var(--bg);
             transform: translate(-50%, 100%);
             transition: transform .3s cubic-bezier(0.2, 0.9, 0.2, 1);
             pointer-events: none;
@@ -745,59 +768,59 @@
         #queue-view.on { transform: translate(-50%, 0); pointer-events: auto; }
 
         .qv-top { display: flex; align-items: center; flex: 0 0 auto; height: 56px; padding: 0 10px; padding-top: env(safe-area-inset-top); height: calc(56px + env(safe-area-inset-top)); }
-        .qv-top button { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #fff; transition: transform .15s ease; }
+        .qv-top button { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: var(--text); transition: transform .15s ease; }
         .qv-top button:active { transform: scale(0.88); }
         .qv-top .sp { flex: 1; }
 
-        .qv-tabs { display: flex; align-items: flex-end; gap: 22px; flex: 0 0 auto; height: 46px; padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
-        .qv-tab { position: relative; height: 100%; padding-bottom: 8px; font-size: 20px; font-weight: 800; letter-spacing: -0.04em; color: rgba(255,255,255,0.36); transition: color .2s ease; }
-        .qv-tab.on { color: #fff; }
+        .qv-tabs { display: flex; align-items: flex-end; gap: 22px; flex: 0 0 auto; height: 46px; padding: 0 20px; border-bottom: 1px solid var(--line); }
+        .qv-tab { position: relative; height: 100%; padding-bottom: 8px; font-size: 20px; font-weight: 800; letter-spacing: -0.04em; color: var(--text-3); transition: color .2s ease; }
+        .qv-tab.on { color: var(--text); }
         .qv-tab.on::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; border-radius: 3px 3px 0 0; background: var(--point); }
         .qv-tabs .sp { flex: 1; }
         .qv-tabs .qv-act { display: flex; align-items: center; gap: 14px; padding-bottom: 9px; }
-        .qv-tabs .qv-act button { display: flex; align-items: center; justify-content: center; color: #fff; font-size: 15px; font-weight: 700; transition: transform .15s ease, color .2s ease; }
+        .qv-tabs .qv-act button { display: flex; align-items: center; justify-content: center; color: var(--text); font-size: 15px; font-weight: 700; transition: transform .15s ease, color .2s ease; }
         .qv-tabs .qv-act button:active { transform: scale(0.92); }
         .qv-tabs .qv-act button.on { color: var(--point); }
 
         .qv-tools { display: flex; align-items: center; gap: 14px; flex: 0 0 auto; height: 50px; padding: 0 20px; }
-        .qv-tools > button { display: flex; align-items: center; gap: 6px; color: #fff; font-size: 15px; font-weight: 700; transition: transform .15s ease, color .2s ease; }
+        .qv-tools > button { display: flex; align-items: center; gap: 6px; color: var(--text); font-size: 15px; font-weight: 700; transition: transform .15s ease, color .2s ease; }
         .qv-tools > button:active { transform: scale(0.93); }
         .qv-tools > button.icon { width: 30px; height: 30px; justify-content: center; font-size: 19px; }
         .qv-tools > button.on { color: var(--point); }
         .qv-tools .sp { flex: 1; }
 
-        .qv-search { display: none; align-items: center; gap: 9px; flex: 0 0 auto; height: 40px; margin: 0 16px 8px; padding: 0 13px; border-radius: 10px; background: #17171A; }
+        .qv-search { display: none; align-items: center; gap: 9px; flex: 0 0 auto; height: 40px; margin: 0 16px 8px; padding: 0 13px; border-radius: 10px; background: var(--input-bg); }
         .qv-search.on { display: flex; }
         .qv-search i { font-size: 13px; color: var(--text-3); }
-        .qv-search input { flex: 1; min-width: 0; height: 100%; background: none; border: 0; outline: none; color: #fff; font-family: inherit; font-size: 14px; font-weight: 700; }
+        .qv-search input { flex: 1; min-width: 0; height: 100%; background: none; border: 0; outline: none; color: var(--text); font-family: inherit; font-size: 14px; font-weight: 700; }
         .qv-search input::placeholder { color: var(--text-3); font-weight: 600; }
 
         .qv-body { flex: 1; min-height: 0; padding: 8px 14px 20px; }
 
-        .qv-group { border-radius: 12px; background: #131315; overflow: hidden; margin-bottom: 12px; }
+        .qv-group { border-radius: 12px; background: var(--surface); overflow: hidden; margin-bottom: 12px; }
         .qv-group-head { display: flex; align-items: center; gap: 12px; padding: 18px 16px 14px; }
-        .qv-group-head strong { flex: 1; min-width: 0; font-size: 16.5px; font-weight: 700; letter-spacing: -0.035em; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .qv-group-head strong { flex: 1; min-width: 0; font-size: 16.5px; font-weight: 700; letter-spacing: -0.035em; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .qv-group-head strong b { font-weight: 900; }
-        .qv-group-head button { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.8); transition: transform .2s ease; }
+        .qv-group-head button { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--text); transition: transform .2s ease; }
         .qv-group-head button:active { transform: scale(0.88); }
         .qv-group.fold .qv-group-list { display: none; }
         .qv-group.fold .qv-fold-ico { transform: rotate(180deg); }
         .qv-group-list { padding: 0 6px 8px; }
 
         .qv-row { display: flex; align-items: center; gap: 13px; padding: 8px 10px; border-radius: 10px; cursor: pointer; transition: background-color .18s ease; }
-        .qv-row:active { background: rgba(255,255,255,0.06); }
-        .qv-check { flex: 0 0 22px; width: 22px; height: 22px; display: none; align-items: center; justify-content: center; border: 1.6px solid rgba(255,255,255,0.32); border-radius: 999px; font-size: 10px; color: transparent; }
+        .qv-row:active { background: var(--press); }
+        .qv-check { flex: 0 0 22px; width: 22px; height: 22px; display: none; align-items: center; justify-content: center; border: 1.6px solid var(--line-strong); border-radius: 999px; font-size: 10px; color: transparent; }
         .qv-edit .qv-check { display: flex; }
-        .qv-row.sel .qv-check { border-color: var(--point); background: var(--point); color: #fff; }
-        .qv-thumb { display: flex; flex: 0 0 52px; width: 52px; height: 52px; border-radius: 6px; overflow: hidden; background: #1D1D20; display: flex; align-items: center; justify-content: center; padding: 5px; }
+        .qv-row.sel .qv-check { border-color: var(--point); background: var(--point); color: var(--text); }
+        .qv-thumb { display: flex; flex: 0 0 52px; width: 52px; height: 52px; border-radius: 6px; overflow: hidden; background: var(--cover-bg); display: flex; align-items: center; justify-content: center; padding: 5px; }
         .qv-thumb img { width: 100%; height: 100%; object-fit: contain; }
         .qv-thumb img.portrait { object-fit: cover; object-position: top; transform: scale(1.1); padding: 0; }
         .qv-main { display: block; flex: 1; min-width: 0; }
-        .qv-title { display: block; font-size: 16.5px; font-weight: 700; letter-spacing: -0.03em; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .qv-artist { display: block; margin-top: 4px; font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.42); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .qv-title { display: block; font-size: 16.5px; font-weight: 700; letter-spacing: -0.03em; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .qv-artist { display: block; margin-top: 4px; font-size: 14px; font-weight: 500; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .qv-row.playing .qv-title { color: var(--point); }
-        .qv-kebab { flex: 0 0 30px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: rgba(255,255,255,0.5); }
-        .qv-kebab:active { color: #fff; }
+        .qv-kebab { flex: 0 0 30px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--text-3); }
+        .qv-kebab:active { color: var(--text); }
 
         .qv-fab {
             position: absolute;
@@ -807,9 +830,9 @@
             width: 54px; height: 54px;
             display: flex; align-items: center; justify-content: center;
             border-radius: 999px;
-            background: #23232A;
+            background: var(--surface-2);
             color: var(--point);
-            box-shadow: 0 8px 22px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 22px var(--overlay);
             transition: transform .15s ease;
         }
         .qv-fab:active { transform: scale(0.9); }
@@ -825,21 +848,21 @@
             align-items: center;
             gap: 8px;
             padding: 10px 14px;
-            background: #17171A;
-            border-top: 1px solid rgba(255,255,255,0.07);
+            background: var(--input-bg);
+            border-top: 1px solid var(--line);
         }
         .qv-editbar.on { display: flex; }
-        .qv-editbar button { flex: 1; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.09); color: #fff; font-size: 13.5px; font-weight: 800; }
+        .qv-editbar button { flex: 1; height: 40px; border-radius: 10px; background: var(--press); color: var(--text); font-size: 13.5px; font-weight: 800; }
         .qv-editbar button.warn { background: var(--point); }
 
-        .qv-bar { position: relative; display: flex; align-items: center; gap: 4px; flex: 0 0 auto; height: var(--bar-h); padding: 0 12px; padding-bottom: env(safe-area-inset-bottom); height: calc(var(--bar-h) + env(safe-area-inset-bottom)); background: #050506; border-top: 1px solid rgba(255,255,255,0.06); }
+        .qv-bar { position: relative; display: flex; align-items: center; gap: 4px; flex: 0 0 auto; height: var(--bar-h); padding: 0 12px; padding-bottom: env(safe-area-inset-bottom); height: calc(var(--bar-h) + env(safe-area-inset-bottom)); background: var(--bg); border-top: 1px solid var(--press); }
         .qv-bar::before { content: ''; position: absolute; left: 0; top: 0; height: 2px; width: var(--progress, 0%); background: var(--point); transition: width .25s linear; }
-        .qv-bar button { flex: 1; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; transition: transform .15s ease, color .2s ease; }
+        .qv-bar button { flex: 1; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--text); transition: transform .15s ease, color .2s ease; }
         .qv-bar button:active { transform: scale(0.9); }
-        .qv-bar button.side { font-size: 17px; color: rgba(255,255,255,0.85); }
+        .qv-bar button.side { font-size: 17px; color: var(--text); }
         .qv-bar button.side.on { color: var(--point); }
         .qv-bar button.play { font-size: 23px; }
-        .qv-bar .qv-bar-art { flex: 0 0 42px; width: 42px; height: 42px; margin-left: 6px; border-radius: 7px; overflow: hidden; background: #1D1D20; display: flex; align-items: center; justify-content: center; padding: 4px; }
+        .qv-bar .qv-bar-art { flex: 0 0 42px; width: 42px; height: 42px; margin-left: 6px; border-radius: 7px; overflow: hidden; background: var(--cover-bg); display: flex; align-items: center; justify-content: center; padding: 4px; }
         .qv-bar .qv-bar-art img { width: 100%; height: 100%; object-fit: contain; }
         .qv-bar .qv-bar-art img.portrait { object-fit: cover; object-position: top; transform: scale(1.1); padding: 0; }
 
@@ -1073,61 +1096,18 @@
     </nav>
 
     <!-- ── 시트 ───────────────────────────────────────────── -->
-    <div class="sheet-mask" id="sheet-mask" onclick="closeSheet()"></div>
-
-    <div class="sheet" id="sheet-team">
-        <div class="sheet-grab"></div>
-        <div class="sheet-head"><strong>응원할 구단</strong><button onclick="closeSheet()">닫기</button></div>
-        <div class="sheet-body" id="team-list"></div>
-    </div>
-
-    <div class="sheet" id="sheet-setting">
-        <div class="sheet-grab"></div>
-        <div class="sheet-head"><strong>설정</strong><button onclick="closeSheet()">닫기</button></div>
-        <div class="sheet-body" id="setting-list"></div>
-    </div>
-
-    <div class="sheet" id="sheet-prompt">
-        <div class="sheet-grab"></div>
-        <div class="sheet-head"><strong id="prompt-title">새 재생목록</strong><button onclick="closeSheet()">닫기</button></div>
-        <div class="sheet-body" style="padding:0 18px 22px">
-            <input id="prompt-input" class="prompt-input" maxlength="30" autocomplete="off" placeholder="재생목록 이름">
-            <div class="prompt-actions">
-                <button class="btn-pill btn-ghost" onclick="closeSheet()">취소</button>
-                <button class="btn-pill btn-solid" id="prompt-ok">확인</button>
-            </div>
+    <!-- ── 전체 화면 페이지 (설정·안내·사운드·더보기 등) ──── -->
+    <div id="page">
+        <div class="page-top">
+            <button onclick="pageBack()" aria-label="뒤로"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2 id="page-title"></h2>
         </div>
+        <div class="page-body no-bar" id="page-body"></div>
     </div>
 
-    <div class="sheet" id="sheet-addto">
-        <div class="sheet-grab"></div>
-        <div class="sheet-head"><strong id="addto-title">재생목록에 추가</strong><button onclick="closeSheet()">닫기</button></div>
-        <div class="sheet-body" id="addto-list"></div>
-    </div>
-
-    <div class="sheet" id="sheet-plmenu">
-        <div class="sheet-grab"></div>
-        <div class="sheet-head"><strong id="plmenu-title">재생목록</strong><button onclick="closeSheet()">닫기</button></div>
-        <div class="sheet-body" id="plmenu-list"></div>
-    </div>
-
-    <div class="sheet" id="sheet-eq">
-        <div class="sheet-grab"></div>
-        <div class="sheet-head"><strong>이퀄라이저</strong><button onclick="closeSheet()">닫기</button></div>
-        <div class="sheet-body" id="eq-list"></div>
-    </div>
-
-    <div class="sheet" id="sheet-more">
-        <div class="sheet-grab"></div>
-        <div class="sheet-head"><strong id="more-title">곡 정보</strong><button onclick="closeSheet()">닫기</button></div>
-        <div class="sheet-body" id="more-list"></div>
-    </div>
-
-    <div class="sheet" id="sheet-notice">
-        <div class="sheet-grab"></div>
-        <div class="sheet-head"><strong>안내</strong><button onclick="closeSheet()">닫기</button></div>
-        <div class="sheet-body" id="notice-body" style="padding:0 20px 26px"></div>
-    </div>
+    <!-- ── 팝오버 (구단 선택 · 정렬) ───────────────────────── -->
+    <div id="pop-mask" onclick="closePop()"></div>
+    <div id="pop"></div>
 
     <!-- ── 재생목록 (전체 화면) ───────────────────────────── -->
     <div id="queue-view">
@@ -1210,18 +1190,6 @@
         <button class="ple-bottom off" id="ple-del" onclick="deletePlEditSelected()">
             <i class="fa-regular fa-trash-can"></i><span>삭제</span>
         </button>
-    </div>
-
-    <div class="sheet" id="sheet-theme">
-        <div class="sheet-grab"></div>
-        <div class="sheet-head"><strong>화면 테마</strong><button onclick="closeSheet()">닫기</button></div>
-        <div class="sheet-body" id="theme-list"></div>
-    </div>
-
-    <div class="sheet" id="sheet-sort">
-        <div class="sheet-grab"></div>
-        <div class="sheet-head"><strong>정렬 기준</strong><button onclick="closeSheet()">닫기</button></div>
-        <div class="sheet-body" id="sort-list"></div>
     </div>
 
     <!-- ── 전체 플레이어 ──────────────────────────────────── -->
@@ -1681,7 +1649,7 @@ function setTeam(t) {
     localStorage.setItem(K_TEAM, t);
     document.body.dataset.theme = t;
     $('chip-team').textContent = t === 'all' ? '전체' : t;
-    closeSheet();
+    closePop();
     renderTab();
     toast(t === 'all' ? '전체 구단 응원가를 봅니다' : `${TEAM_FULL[t]} 응원가를 봅니다`);
 }
@@ -1940,17 +1908,29 @@ function removeFromPlaylist(id, url) {
 
 /* 이름 입력 시트 */
 let promptOk = null;
+let promptOpt = {};
 function openPrompt(opt) {
-    $('prompt-title').textContent = opt.title || '이름 입력';
-    const input = $('prompt-input');
-    input.value = opt.value || '';
-    input.placeholder = opt.placeholder || '이름';
-    promptOk = opt.onOk || null;
+    promptOpt = opt || {};
+    promptOk = promptOpt.onOk || null;
     openSheet('prompt');
-    setTimeout(() => { input.focus(); input.select(); }, 260);
+    setTimeout(() => { const i = $('prompt-input'); if (i) { i.focus(); i.select(); } }, 300);
+}
+function renderPromptPage() {
+    if (!$('prompt-body')) return;
+    $('page-title').textContent = promptOpt.title || '이름 입력';
+    $('prompt-body').innerHTML = `
+        <input id="prompt-input" class="prompt-input" maxlength="30" autocomplete="off"
+               value="${esc(promptOpt.value || '')}" placeholder="${esc(promptOpt.placeholder || '이름')}">
+        <div class="prompt-actions">
+            <button class="btn-pill btn-ghost" onclick="pageBack()">취소</button>
+            <button class="btn-pill btn-solid" onclick="submitPrompt()">확인</button>
+        </div>`;
+    const i = $('prompt-input');
+    i.addEventListener('keydown', e => { if (e.key === 'Enter') submitPrompt(); });
 }
 function submitPrompt() {
-    const v = $('prompt-input').value.trim();
+    const el = $('prompt-input');
+    const v = el ? el.value.trim() : '';
     if (!v) { toast('이름을 입력해 주세요'); return; }
     const fn = promptOk; promptOk = null;
     closeSheet();
@@ -1970,14 +1950,15 @@ function promptNewPlaylist(urls, afterName) {
 }
 
 /* 재생목록에 담기 시트 */
-let addToUrls = [];
+let addToUrls = [], addToLabel = '';
 function openAddTo(urls, label) {
     addToUrls = (urls || []).filter(Boolean);
     if (!addToUrls.length) { toast('담을 곡이 없습니다.'); return; }
-    $('addto-title').textContent = label ? `${label} 담기` : '재생목록에 추가';
+    addToLabel = label || '';
     openSheet('addto');
 }
 function renderAddTo() {
+    if (!$('addto-list')) return;
     const n = addToUrls.length;
     $('addto-list').innerHTML =
         `<button class="set-row" style="width:100%" onclick="closeSheet(); promptNewPlaylist(addToUrls.slice());">
@@ -2005,9 +1986,9 @@ function doAddTo(id) {
 
 /* 재생목록 관리 시트 */
 function renderPlMenu() {
+    if (!$('plmenu-list')) return;
     const pl = plById(plMenuId);
     if (!pl) { $('plmenu-list').innerHTML = `<div class="empty">재생목록을 찾을 수 없습니다.</div>`; return; }
-    $('plmenu-title').textContent = pl.name;
     $('plmenu-list').innerHTML = `
         <button class="set-row" style="width:100%" onclick="closeSheet(); playSongs(plSongs(plById('${pl.id}')), false, plById('${pl.id}').name);">
             <span><strong>전체 재생</strong><small>${pl.urls.length}곡</small></span>
@@ -2291,6 +2272,7 @@ function setSoundMode(key) {
 function setEqTab(t) { eqTab = t; renderEQ(); }
 
 function renderEQ() {
+    if (!$('eq-list')) return;
     const head = `<div class="eq-tabs">
         <button class="eq-tab${eqTab === 'eq' ? ' on' : ''}" onclick="setEqTab('eq')">이퀄라이저</button>
         <button class="eq-tab${eqTab === 'mode' ? ' on' : ''}" onclick="setEqTab('mode')">음장 모드</button>
@@ -2325,9 +2307,9 @@ function renderEQ() {
 let moreTarget = null;
 function openMore(song) { moreTarget = song || byUrl(cur.url); openSheet('more'); }
 function renderMore() {
+    if (!$('more-list')) return;
     const s = moreTarget || byUrl(cur.url);
-    if (!s) { $('more-title').textContent = '곡 정보'; $('more-list').innerHTML = `<div class="empty">재생 중인 응원가가 없습니다.</div>`; return; }
-    $('more-title').textContent = s.label;
+    if (!s) { $('more-list').innerHTML = `<div class="empty">재생 중인 응원가가 없습니다.</div>`; return; }
     $('more-list').innerHTML = `
         <button class="set-row" style="width:100%" onclick="closeSheet(); openAddTo(['${esc(s.url)}'], '${esc(s.label)}');">
             <span><strong>재생목록에 추가</strong><small>내가 만든 재생목록에 담기</small></span>
@@ -2536,38 +2518,88 @@ function saveQueueToLibrary() {
     toast(n ? `${n}곡을 보관함에 저장했어요` : '이미 모두 보관함에 있어요');
 }
 
-/* ── 시트 ──────────────────────────────────────────────────── */
-let openedSheet = null;
+/* ── 전체 화면 페이지 / 팝오버 ─────────────────────────────── */
+const PAGES = {
+    setting: { title: '설정',            slot: 'setting-list', render: () => renderSetting() },
+    theme:   { title: '화면 테마',       slot: 'theme-list',   render: () => renderThemeSheet() },
+    notice:  { title: '안내',            slot: 'notice-body',  render: () => renderNotice(), pad: true },
+    eq:      { title: '사운드',          slot: 'eq-list',      render: () => renderEQ() },
+    more:    { title: '곡 더보기',       slot: 'more-list',    render: () => renderMore() },
+    addto:   { title: '재생목록에 추가', slot: 'addto-list',   render: () => renderAddTo() },
+    plmenu:  { title: '재생목록',        slot: 'plmenu-list',  render: () => renderPlMenu() },
+    prompt:  { title: '이름 입력',       slot: 'prompt-body',  render: () => renderPromptPage(), pad: true }
+};
+let pageStack = [];
+
+// 기존 호출부를 그대로 두기 위해 이름은 openSheet 로 유지한다
 function openSheet(name) {
-    if (name === 'team') renderTeamSheet();
-    if (name === 'setting') renderSetting();
-    if (name === 'notice') { renderNotice(); $('notice-dot').style.display = 'none'; localStorage.setItem('cheer_notice_seen', '1'); }
-    if (name === 'eq') renderEQ();
-    if (name === 'more') renderMore();
-    if (name === 'addto') renderAddTo();
-    if (name === 'plmenu') renderPlMenu();
-    if (name === 'sort') renderSortSheet();
-    if (name === 'theme') renderThemeSheet();
-    openedSheet = $('sheet-' + name);
-    $('sheet-mask').classList.add('on');
-    openedSheet.classList.add('on');
+    if (name === 'team') { openTeamPop(); return; }
+    if (name === 'sort') { openSortPop(); return; }
+    const cfg = PAGES[name];
+    if (!cfg) return;
+    if (name === 'notice') { $('notice-dot').style.display = 'none'; try { localStorage.setItem('cheer_notice_seen', '1'); } catch (e) {} }
+    if (pageStack[pageStack.length - 1] !== name) pageStack.push(name);
+    showPage();
+}
+function showPage() {
+    const name = pageStack[pageStack.length - 1];
+    const cfg = PAGES[name];
+    if (!cfg) return;
+    $('page-title').textContent = cfg.title;
+    $('page-body').innerHTML = `<div id="${cfg.slot}"${cfg.pad ? ' style="padding:6px 14px 20px"' : ''}></div>`;
+    cfg.render();
+    if (name === 'more' && moreTarget) $('page-title').textContent = moreTarget.label;
+    if (name === 'addto' && addToLabel) $('page-title').textContent = `${addToLabel} 담기`;
+    if (name === 'plmenu' && plById(plMenuId)) $('page-title').textContent = plById(plMenuId).name;
+    $('page').classList.add('on');
+}
+function pageBack() {
+    pageStack.pop();
+    if (pageStack.length) showPage();
+    else closeSheet();
 }
 function closeSheet() {
-    $('sheet-mask').classList.remove('on');
-    if (openedSheet) openedSheet.classList.remove('on');
-    openedSheet = null;
+    pageStack = [];
+    $('page').classList.remove('on');
+    closePop();
 }
-function renderTeamSheet() {
+
+/* 팝오버 — 누른 버튼 아래에 붙여서 연다 */
+function openPop(anchor, html) {
+    const pop = $('pop');
+    pop.innerHTML = html;
+    $('pop-mask').classList.add('on');
+    pop.classList.add('on');
+    const a = anchor.getBoundingClientRect();
+    pop.style.left = '0px'; pop.style.top = '0px';
+    const w = pop.offsetWidth, h = pop.offsetHeight;
+    let left = Math.min(Math.max(8, a.left), window.innerWidth - w - 8);
+    let top = a.bottom + 8;
+    if (top + h > window.innerHeight - 8) top = Math.max(8, a.top - h - 8);
+    pop.style.left = left + 'px';
+    pop.style.top = top + 'px';
+    pop.style.transformOrigin = `${Math.min(Math.max(12, a.left + a.width / 2 - left), w - 12)}px top`;
+}
+function closePop() {
+    $('pop').classList.remove('on');
+    $('pop-mask').classList.remove('on');
+}
+function openTeamPop() {
     const opts = [...TEAMS.map(t => ({ id: t.name, name: t.full, logo: t.logo, n: songsOf(t.name, null).length })),
                   { id: 'all', name: '전체 구단', logo: APP_LOGO, n: SONGS.length }];
-    $('team-list').innerHTML = opts.map(o => `
-        <button class="set-row" style="width:100%" onclick="setTeam('${o.id}')">
-            <span style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
-                <img src="${o.logo}" style="width:30px;height:30px;object-fit:contain;flex:0 0 30px" alt="" onerror="this.style.visibility='hidden'">
-                <span style="min-width:0"><strong>${esc(o.name)}</strong><small>${o.n ? o.n + '곡' : '음원 준비 중'}</small></span>
-            </span>
-            ${team === o.id ? '<span class="set-val"><i class="fa-solid fa-check"></i></span>' : ''}
-        </button>`).join('');
+    openPop(document.querySelector('.team-chip'), opts.map(o => `
+        <button class="pop-row${team === o.id ? ' on' : ''}" onclick="setTeam('${o.id}')">
+            <img src="${o.logo}" alt="" onerror="this.style.visibility='hidden'">
+            <span class="pop-row-main"><strong>${esc(o.name)}</strong><small>${o.n ? o.n + '곡' : '음원 준비 중'}</small></span>
+            ${team === o.id ? '<i class="fa-solid fa-check chk"></i>' : ''}
+        </button>`).join(''));
+}
+function openSortPop() {
+    openPop(document.querySelector('.ple-sort'), PLE_SORTS.map(o => `
+        <button class="pop-row${pleSort === o.id ? ' on' : ''}" onclick="setPlEditSort('${o.id}')">
+            <span class="pop-row-main"><strong>${esc(o.name)}</strong><small>${esc(o.desc)}</small></span>
+            ${pleSort === o.id ? '<i class="fa-solid fa-check chk"></i>' : ''}
+        </button>`).join(''));
 }
 /* 화면 테마 — 기본은 기기 설정을 따라간다 */
 const sysDarkMQ = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
@@ -2591,11 +2623,12 @@ function setUiPref(v) {
     toast(uiPref === 'system' ? '기기 설정을 따릅니다' : `${UI_LABEL[uiPref]} 모드`);
 }
 if (sysDarkMQ) {
-    const onSys = () => { if (uiPref === 'system' && openedSheet && openedSheet.id === 'sheet-theme') renderThemeSheet(); };
+    const onSys = () => { if (uiPref === 'system' && pageStack[pageStack.length - 1] === 'theme') renderThemeSheet(); };
     if (sysDarkMQ.addEventListener) sysDarkMQ.addEventListener('change', onSys);
     else if (sysDarkMQ.addListener) sysDarkMQ.addListener(onSys);
 }
 function renderThemeSheet() {
+    if (!$('theme-list')) return;
     $('theme-list').innerHTML = ['system', 'light', 'dark'].map(v => `
         <button class="set-row" style="width:100%" onclick="setUiPref('${v}')">
             <span><strong>${UI_LABEL[v]}</strong><small>${v === 'system' ? `휴대폰 설정을 따라갑니다 (지금은 ${isDarkNow() ? '다크' : '라이트'})` : (v === 'light' ? '항상 밝은 화면' : '항상 어두운 화면')}</small></span>
@@ -2603,6 +2636,7 @@ function renderThemeSheet() {
         </button>`).join('');
 }
 function renderSetting() {
+    if (!$('setting-list')) return;
     $('setting-list').innerHTML = `
         <button class="set-row" style="width:100%" onclick="openSheet('theme')">
             <span><strong>화면 테마</strong><small>기본은 휴대폰 설정을 따라갑니다</small></span>
@@ -2628,6 +2662,7 @@ function renderSetting() {
         <div class="set-row"><span><small style="color:var(--text-3)">Copyright © 2026 엔조이 야구. All rights reserved.</small></span></div>`;
 }
 function renderNotice() {
+    if (!$('notice-body')) return;
     $('notice-body').innerHTML = `
         <div style="font-size:15px;font-weight:800;margin-bottom:10px">2026 시즌 응원가 안내</div>
         <p style="margin:0;font-size:13px;line-height:1.75;color:var(--text-2);font-weight:500">
@@ -2685,14 +2720,7 @@ function setPlEditFilter(id) { pleFilter = id; pleSel.clear(); renderPlEdit(); }
 function setPlEditSort(id) {
     pleSort = id;
     $('ple-sort-label').textContent = (PLE_SORTS.find(x => x.id === id) || PLE_SORTS[0]).name;
-    closeSheet(); renderPlEdit();
-}
-function renderSortSheet() {
-    $('sort-list').innerHTML = PLE_SORTS.map(o => `
-        <button class="set-row" style="width:100%" onclick="setPlEditSort('${o.id}')">
-            <span><strong>${esc(o.name)}</strong><small>${esc(o.desc)}</small></span>
-            ${pleSort === o.id ? '<span class="set-val"><i class="fa-solid fa-check"></i></span>' : ''}
-        </button>`).join('');
+    closePop(); renderPlEdit();
 }
 
 function pleVisible() {
@@ -2975,9 +3003,6 @@ window.addEventListener('DOMContentLoaded', () => {
     q.addEventListener('change', e => saveQuery(e.target.value.trim()));
     q.addEventListener('keydown', e => { if (e.key === 'Enter') { saveQuery(q.value.trim()); q.blur(); } });
     $('q-clear').addEventListener('click', () => { q.value = ''; runSearch(''); q.focus(); });
-
-    $('prompt-ok').addEventListener('click', submitPrompt);
-    $('prompt-input').addEventListener('keydown', e => { if (e.key === 'Enter') submitPrompt(); });
 
     const qq = $('qv-q');
     qq.addEventListener('input', e => { queueQuery = e.target.value.trim(); renderQueue(); });
