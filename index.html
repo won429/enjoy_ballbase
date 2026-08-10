@@ -1493,6 +1493,7 @@ document.addEventListener('click', e => {
 let audio = null;
 let queue = [], qIndex = -1, isPlaying = false, seeking = false, queueLabel = '재생목록';
 let shuffleOn = false, repeatMode = 'all';
+let failStreak = 0, pendingSeek = null, recordedUrl = '', failedUrl = '', cycleSeen = new Set();
 let cur = { url: '', label: '', artist: '', cover: '', portrait: false };
 
 const DEFAULT_LIST_LABELS = {
@@ -1503,6 +1504,7 @@ function playFrom(listId, i) {
     const list = lists[listId] || [];
     if (!list[i]) return;
     queue = list.slice(); qIndex = i;
+    cycleSeen.clear();
     queueLabel = listLabels[listId] || DEFAULT_LIST_LABELS[listId] || '재생목록';
     play(queue[i]);
 }
@@ -1510,6 +1512,7 @@ function playSongs(songs, shuffle, label) {
     if (!songs || !songs.length) { toast('재생할 곡이 없습니다.'); return; }
     queue = shuffle ? shuffled(songs) : songs.slice();
     qIndex = 0;
+    cycleSeen.clear();
     queueLabel = label || queueLabel || '재생목록';
     play(queue[0]);
 }
@@ -1518,10 +1521,19 @@ function play(song) {
     if (!audio) initAudio();
     cur = { url: song.url, label: song.label, artist: `${TEAM_FULL[song.team] || song.team} · ${song.catName}`, cover: song.cover, portrait: song.portrait };
 
+    pendingSeek = null;
+    recordedUrl = '';
+    failedUrl = '';
+    cycleSeen.add(song.url);
     audio.src = song.url;
     audio.play()
         .then(() => { isPlaying = true; paintPlay(); syncRows(); })
-        .catch(err => { if (err && err.name !== 'AbortError') console.error(err); });
+        .catch(err => {
+            if (!err) return;
+            if (err.name === 'AbortError') return;                 // 다음 곡을 눌러 취소된 경우
+            if (err.name === 'NotAllowedError') { toast('화면을 한 번 눌러 주세요'); return; }
+            handlePlayFailure(song.url);
+        });
 
     $('pb-cover').classList.add('on');
     const pbi = $('pb-cover-img');
@@ -1544,12 +1556,52 @@ function play(song) {
     qArt.onerror = () => coverFallback(qArt, song.team);
     qArt.src = song.cover; qArt.className = song.portrait ? 'portrait' : '';
 
-    pushRecent(song.url);
-    markPlayed(song.url);
     syncRows();
     if (queueOpen) renderQueue();
-    if (tabIndex === 3) renderLibrary();
     mediaSession(song);
+}
+
+/* 재생에 실패한 곡은 기록하지 않고 다음 곡으로 넘어간다.
+   전부 실패하면 무한히 돌지 않도록 멈춘다. */
+function handlePlayFailure(url) {
+    if (!cur.url) return;
+    if (url && url !== cur.url) return;              // 이미 다음 곡으로 넘어간 뒤 도착한 실패는 무시
+    if (failedUrl === cur.url) return;               // 같은 곡에 대해 한 번만
+    failedUrl = cur.url;
+    const failed = cur.label || '이 곡';
+    failStreak++;
+    if (!queue.length || failStreak >= Math.min(Math.max(queue.length, 1), 5)) {
+        failStreak = 0;
+        resetPlayerBar();
+        toast('재생할 수 있는 응원가가 없습니다');
+        return;
+    }
+    toast(`'${failed}' 재생에 실패해 다음 곡으로 넘어갑니다`);
+    nextSong();
+}
+function resetPlayerBar() {
+    isPlaying = false;
+    if (audio) { try { audio.pause(); audio.removeAttribute('src'); audio.load(); } catch (e) {} }
+    cur = { url: '', label: '', artist: '', cover: '', portrait: false };
+    $('pb-cover').classList.remove('on');
+    $('pb-title').textContent = '재생목록이 비었습니다.';
+    $('pb-title').classList.remove('on');
+    $('pb-artist').textContent = '';
+    $('pb-artist').classList.remove('on');
+    $('fp-fill').style.width = '0%';
+    $('fp-range').value = 0;
+    document.documentElement.style.setProperty('--progress', '0%');
+    setMediaState('paused');
+    paintPlay();
+    syncRows();
+}
+
+/* 재생 중인 곡이 목록에서 빠져도 다음 곡이 자연스럽게 이어지도록 위치를 다시 잡는다 */
+function reindexQueue(prevUrl, prevBeforeUrls) {
+    const i = queue.findIndex(s => s.url === prevUrl);
+    if (i !== -1) { qIndex = i; return; }
+    const survived = queue.filter(s => prevBeforeUrls.includes(s.url)).length;
+    qIndex = survived - 1;   // 다음 곡을 누르면 빠진 자리 바로 뒤부터 이어진다
 }
 function paintPlay() {
     $('pb-play').className = `fa-solid fa-${isPlaying ? 'pause' : 'play'}`;
@@ -1575,12 +1627,16 @@ function prevSong() {
 }
 function toggleShuffle() {
     shuffleOn = !shuffleOn;
+    cycleSeen.clear();
+    if (cur.url) cycleSeen.add(cur.url);
     $('fp-shuffle').classList.toggle('on', shuffleOn);
     $('qv-shuffle').classList.toggle('on', shuffleOn);
     toast(shuffleOn ? '셔플 재생 켜짐' : '셔플 재생 꺼짐');
 }
 function toggleRepeat() {
     repeatMode = repeatMode === 'all' ? 'one' : (repeatMode === 'one' ? 'off' : 'all');
+    cycleSeen.clear();
+    if (cur.url) cycleSeen.add(cur.url);
     $('fp-repeat').classList.toggle('on', repeatMode !== 'off');
     $('qv-repeat').classList.toggle('on', repeatMode !== 'off');
     $('fp-repeat-1').style.display = repeatMode === 'one' ? 'block' : 'none';
@@ -1679,10 +1735,39 @@ function initAudio() {
         updatePositionState();
         keepAudioAlive();
     });
-    audio.addEventListener('loadedmetadata', () => { durT.textContent = total(); updatePositionState(true); });
+    audio.addEventListener('loadedmetadata', () => {
+        durT.textContent = total();
+        updatePositionState(true);
+    });
+    // 실제로 소리가 나기 시작했을 때만 '최근 들은 / 많이 들은'에 기록한다
+    audio.addEventListener('playing', () => {
+        failStreak = 0;
+        if (cur.url && recordedUrl !== cur.url) {
+            recordedUrl = cur.url;
+            pushRecent(cur.url);
+            markPlayed(cur.url);
+            if (queueOpen) renderQueue();
+            if (tabIndex === 3) renderLibrary();
+        }
+    });
+    audio.addEventListener('canplay', applyPendingSeek);
+    audio.addEventListener('error', () => {
+        const src = audio.currentSrc || '';
+        if (!cur.url || !src.endsWith(cur.url)) return;   // 지난 곡의 뒤늦은 오류는 무시
+        handlePlayFailure(cur.url);
+    });
     audio.addEventListener('ended', () => {
         if (repeatMode === 'one') { audio.currentTime = 0; audio.play(); return; }
-        if (repeatMode === 'off' && !shuffleOn && qIndex === queue.length - 1) { isPlaying = false; paintPlay(); syncRows(); return; }
+        if (repeatMode === 'off') {
+            // 셔플일 때는 목록의 모든 곡을 한 번씩 들었으면 멈춘다
+            const done = shuffleOn ? queue.every(s => cycleSeen.has(s.url)) : qIndex === queue.length - 1;
+            if (done) {
+                isPlaying = false; paintPlay(); syncRows();
+                setMediaState('paused');
+                cycleSeen.clear();
+                return;
+            }
+        }
         nextSong();
     });
     range.addEventListener('input', e => {
@@ -1692,7 +1777,23 @@ function initAudio() {
         curT.textContent = fmtTime(t);
         durT.textContent = total();
     });
-    range.addEventListener('change', e => { seeking = false; if (audio.duration) audio.currentTime = (e.target.value / 100) * audio.duration; });
+    range.addEventListener('change', e => {
+        seeking = false;
+        const ratio = Number(e.target.value) / 100;
+        if (audio.duration) { audio.currentTime = ratio * audio.duration; updatePositionState(true); }
+        else pendingSeek = ratio;   // 곡 길이를 알게 되면 그때 이동한다
+    });
+}
+// 곡 길이를 모를 때 움직인 진행바는 재생 준비가 끝난 뒤 한 번만 반영한다
+function applyPendingSeek() {
+    if (pendingSeek === null) return;
+    if (!audio || !isFinite(audio.duration) || audio.duration <= 0 || audio.readyState < 3) return;
+    const ratio = pendingSeek;
+    pendingSeek = null;
+    try {
+        audio.currentTime = Math.min(ratio * audio.duration, Math.max(0, audio.duration - 0.1));
+        updatePositionState(true);
+    } catch (e) {}
 }
 
 /* ── 팀 / 탭 ───────────────────────────────────────────────── */
@@ -2539,10 +2640,11 @@ function removeSelected() {
     if (queueTab === 1) { quickPickList = quickPickList.filter((_, i) => !queueSel.has(i)); }
     else {
         const keepUrl = queue[qIndex] ? queue[qIndex].url : null;
+        const beforeUrls = queue.slice(0, Math.max(0, qIndex)).map(s => s.url);
         const shown = currentQueueSongs();
         const drop = new Set([...queueSel].map(i => shown[i] && shown[i].url).filter(Boolean));
         queue = queue.filter(s => !drop.has(s.url));
-        qIndex = Math.max(0, queue.findIndex(s => s.url === keepUrl));
+        reindexQueue(keepUrl, beforeUrls);
     }
     toast(`${queueSel.size}곡을 재생목록에서 뺐어요`);
     queueSel.clear();
@@ -2553,8 +2655,9 @@ function cleanQueue() {
     const before = queue.length;
     const seen = new Set();
     const keepUrl = queue[qIndex] ? queue[qIndex].url : null;
+    const beforeUrls = queue.slice(0, Math.max(0, qIndex)).map(s => s.url);
     queue = queue.filter(s => (seen.has(s.url) ? false : (seen.add(s.url), true)));
-    qIndex = Math.max(0, queue.findIndex(s => s.url === keepUrl));
+    reindexQueue(keepUrl, beforeUrls);
     renderQueue();
     toast(before === queue.length ? '정리할 중복 곡이 없어요' : `중복 ${before - queue.length}곡을 정리했어요`);
 }
@@ -2843,9 +2946,10 @@ function togglePlEditAll() {
 function deletePlEditSelected() {
     if (!pleSel.size) { toast('삭제할 곡을 선택해 주세요'); return; }
     const keepUrl = queue[qIndex] ? queue[qIndex].url : null;
+    const beforeUrls = queue.slice(0, Math.max(0, qIndex)).map(s => s.url);
     const n = pleSel.size;
     queue = queue.filter(s => !pleSel.has(s.url));
-    qIndex = Math.max(0, queue.findIndex(s => s.url === keepUrl));
+    reindexQueue(keepUrl, beforeUrls);
     pleSel.clear();
     if (!queue.length) { toast(`${n}곡을 삭제했어요`); closePlEdit(); return; }
     renderPlEdit();
@@ -2881,7 +2985,8 @@ document.addEventListener('pointermove', e => {
     const [moved] = queue.splice(pleDragFrom, 1);
     queue.splice(to, 0, moved);
     pleDragFrom = to;
-    qIndex = Math.max(0, queue.findIndex(s => s.url === cur.url));
+    const ci = queue.findIndex(s => s.url === cur.url);
+    if (ci !== -1) qIndex = ci;
     renderPlEdit();
     const again = document.querySelector(`[data-ple="${CSS.escape(moved.url)}"]`);
     if (again) again.classList.add('drag');
