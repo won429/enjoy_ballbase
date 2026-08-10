@@ -12,6 +12,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+      // 기본은 기기 설정(CSS의 prefers-color-scheme). 직접 고른 경우에만 속성으로 덮어쓴다
+      try {
+        var saved = localStorage.getItem('cheer_ui_theme');
+        if (saved === 'dark' || saved === 'light') document.documentElement.dataset.ui = saved;
+      } catch (e) {}
+    </script>
     <script src="players.js"></script>
     <script src="kia_songs.js"></script>
     <script src="cheer_songs.js"></script>
@@ -25,19 +32,80 @@
         button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
         img { display: block; }
 
+        /* 라이트가 기본. html[data-ui="dark"] 로 다크 전환 */
         :root {
             --point: #EA0029;
-            --point-soft: rgba(234, 0, 41, 0.22);
-            --bg: #000000;
-            --surface: #1C1C1E;
-            --surface-2: #232326;
-            --line: rgba(255, 255, 255, 0.09);
-            --text: #FFFFFF;
-            --text-2: rgba(255, 255, 255, 0.62);
-            --text-3: rgba(255, 255, 255, 0.38);
-            --player-bar: #1A1A1C;
+            --point-soft: rgba(234, 0, 41, 0.18);
+            --on-point: #FFFFFF;
+
+            --bg: #FFFFFF;
+            --bg-sub: #F4F5F7;
+            --surface: #F4F5F7;
+            --surface-2: #E8EAEE;
+            --cover-bg: #EDEFF3;
+            --input-bg: #F4F5F7;
+            --sheet-bg: #FFFFFF;
+            --player-bar: #F4F5F7;
+            --toast-bg: rgba(28,28,32,0.94);
+
+            --line: rgba(0,0,0,0.07);
+            --line-strong: rgba(0,0,0,0.16);
+            --press: rgba(0,0,0,0.05);
+            --overlay: rgba(0,0,0,0.42);
+
+            --text: #16181D;
+            --text-2: #5E646D;   /* 흰 배경 대비 6.3:1 */
+            --text-3: #767C86;   /* 흰 배경 대비 4.6:1 */
+            --nav-inactive: #6E747E;
+
             --nav-h: 66px;
             --bar-h: 56px;
+        }
+        /* 기기 설정이 어두움이면 자동으로 다크 (사용자가 라이트를 고른 경우 제외) */
+        @media (prefers-color-scheme: dark) {
+            html:not([data-ui="light"]) {
+            --bg: #050506;
+            --bg-sub: #131315;
+            --surface: #1C1C1E;
+            --surface-2: #232326;
+            --cover-bg: #131315;
+            --input-bg: #17171A;
+            --sheet-bg: #121214;
+            --player-bar: #1A1A1C;
+            --toast-bg: rgba(40,40,44,0.96);
+
+            --line: rgba(255,255,255,0.09);
+            --line-strong: rgba(255,255,255,0.2);
+            --press: rgba(255,255,255,0.06);
+            --overlay: rgba(0,0,0,0.62);
+
+            --text: #FFFFFF;
+            --text-2: rgba(255,255,255,0.62);
+            --text-3: rgba(255,255,255,0.38);
+            --nav-inactive: #8A8A8E;
+            }
+        }
+        /* 사용자가 다크를 직접 고른 경우 */
+        html[data-ui="dark"] {
+            --bg: #050506;
+            --bg-sub: #131315;
+            --surface: #1C1C1E;
+            --surface-2: #232326;
+            --cover-bg: #131315;
+            --input-bg: #17171A;
+            --sheet-bg: #121214;
+            --player-bar: #1A1A1C;
+            --toast-bg: rgba(40,40,44,0.96);
+
+            --line: rgba(255,255,255,0.09);
+            --line-strong: rgba(255,255,255,0.2);
+            --press: rgba(255,255,255,0.06);
+            --overlay: rgba(0,0,0,0.62);
+
+            --text: #FFFFFF;
+            --text-2: rgba(255,255,255,0.62);
+            --text-3: rgba(255,255,255,0.38);
+            --nav-inactive: #8A8A8E;
         }
         body[data-theme="KIA"]  { --point: #EA0029; --point-soft: rgba(234, 0, 41, 0.22); }
         body[data-theme="삼성"] { --point: #2F7BE0; --point-soft: rgba(47, 123, 224, 0.22); }
@@ -107,9 +175,9 @@
             gap: 7px;
             height: 34px;
             padding: 0 15px;
-            border: 1.5px solid rgba(255,255,255,0.9);
+            border: 1.5px solid var(--text);
             border-radius: 999px;
-            color: #fff;
+            color: var(--text);
             font-size: 14px;
             font-weight: 700;
             transition: transform .15s ease, border-color .2s ease, color .2s ease;
@@ -117,7 +185,7 @@
         .team-chip:active { transform: scale(0.95); }
         .team-chip i { font-size: 10px; opacity: 0.75; }
         .top-actions { display: flex; align-items: center; gap: 20px; }
-        .top-actions button { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; font-size: 21px; color: #fff; transition: transform .15s ease; }
+        .top-actions button { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; font-size: 21px; color: var(--text); transition: transform .15s ease; }
         .top-actions button:active { transform: scale(0.88); }
         .top-actions .dot { position: absolute; margin: -12px 0 0 12px; width: 6px; height: 6px; border-radius: 999px; background: var(--point); }
 
@@ -136,7 +204,7 @@
         .sec-tab { font-size: 15px; font-weight: 700; color: var(--text-3); white-space: nowrap; transition: color .2s ease; }
         .sec-tab.on { color: var(--point); }
         .sec-more { flex: 0 0 auto; font-size: 13px; font-weight: 600; color: var(--text-2); }
-        .sec-more:active { color: #fff; }
+        .sec-more:active { color: var(--text); }
 
         /* ── 히어로 카드 캐러셀 ─────────────────────────────────── */
         #hero-rail { display: flex; gap: 12px; padding: 0 18px 2px; scroll-snap-type: x mandatory; scroll-padding-left: 18px; }
@@ -221,27 +289,27 @@
             transition: background-color .18s ease, transform .15s ease;
         }
         .quick-cell:active { background: var(--surface-2); transform: scale(0.985); }
-        .quick-cover { flex: 0 0 44px; width: 44px; height: 44px; border-radius: 6px; overflow: hidden; background: #0d0d0f; display: flex; align-items: center; justify-content: center; padding: 4px; }
+        .quick-cover { flex: 0 0 44px; width: 44px; height: 44px; border-radius: 6px; overflow: hidden; background: var(--cover-bg); display: flex; align-items: center; justify-content: center; padding: 4px; }
         .quick-cover img { width: 100%; height: 100%; object-fit: contain; }
         .quick-cover img.portrait { object-fit: cover; object-position: top; transform: scale(1.12); padding: 0; }
         .quick-main { display: block; flex: 1; min-width: 0; }
-        .quick-title { display: block; font-size: 14px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .quick-title { display: block; font-size: 14px; font-weight: 800; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .quick-artist { display: block; margin-top: 2px; font-size: 12px; font-weight: 500; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .quick-go { flex: 0 0 22px; display: flex; align-items: center; justify-content: center; font-size: 15px; color: rgba(255,255,255,0.72); }
+        .quick-go { flex: 0 0 22px; display: flex; align-items: center; justify-content: center; font-size: 15px; color: var(--text-2); }
 
         /* ── 곡 리스트 ─────────────────────────────────────────── */
         .song-list { display: flex; flex-direction: column; padding: 0 8px; }
         .song-row { display: flex; align-items: center; gap: 12px; padding: 9px 10px; border-radius: 10px; cursor: pointer; transition: background-color .18s ease; }
-        .song-row:active { background: rgba(255,255,255,0.06); }
+        .song-row:active { background: var(--press); }
         .song-idx { flex: 0 0 22px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: var(--text-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
         .song-idx.is-text { flex: 0 0 26px; font-size: 10px; }
-        .song-cover { flex: 0 0 46px; width: 46px; height: 46px; border-radius: 6px; overflow: hidden; background: #131315; display: flex; align-items: center; justify-content: center; padding: 4px; }
+        .song-cover { flex: 0 0 46px; width: 46px; height: 46px; border-radius: 6px; overflow: hidden; background: var(--cover-bg); display: flex; align-items: center; justify-content: center; padding: 4px; }
         .song-cover img { width: 100%; height: 100%; object-fit: contain; }
         .song-cover img.portrait { object-fit: cover; object-position: top; transform: scale(1.12); padding: 0; }
         .song-main { flex: 1; min-width: 0; }
-        .song-title { font-size: 15px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .song-title { font-size: 15px; font-weight: 800; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .song-artist { margin-top: 3px; font-size: 12.5px; font-weight: 500; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .song-fav { flex: 0 0 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: rgba(255,255,255,0.3); transition: color .2s ease, transform .15s ease; }
+        .song-fav { flex: 0 0 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--text-3); transition: color .2s ease, transform .15s ease; }
         .song-fav.on { color: var(--point); }
         .song-fav:active { transform: scale(0.85); }
         .song-row.playing .song-title { color: var(--point); }
@@ -287,25 +355,29 @@
         .browse-cell { display: flex; flex-direction: column; align-items: flex-start; gap: 9px; height: 96px; padding: 15px 15px; border-radius: 14px; background: var(--surface); text-align: left; transition: background-color .18s ease, transform .15s ease; }
         .browse-cell:active { background: var(--surface-2); transform: scale(0.985); }
         .browse-cell i { font-size: 16px; color: var(--point); }
-        .browse-cell strong { font-size: 15px; font-weight: 800; color: #fff; }
+        .browse-cell strong { font-size: 15px; font-weight: 800; color: var(--text); }
         .browse-cell small { margin-top: auto; font-size: 11.5px; font-weight: 700; color: var(--text-3); }
 
         /* ── 검색 ─────────────────────────────────────────────── */
         .search-bar { display: flex; align-items: center; gap: 10px; height: 44px; margin: 4px 18px 0; padding: 0 14px; border-radius: 11px; background: var(--surface); }
         .search-bar i { font-size: 14px; color: var(--text-3); }
-        .search-bar input { flex: 1; min-width: 0; height: 100%; background: none; border: 0; outline: none; color: #fff; font-family: inherit; font-size: 14.5px; font-weight: 700; }
+        .search-bar input { flex: 1; min-width: 0; height: 100%; background: none; border: 0; outline: none; color: var(--text); font-family: inherit; font-size: 14.5px; font-weight: 700; }
         .search-bar input::placeholder { color: var(--text-3); font-weight: 600; }
         .search-bar button { width: 22px; height: 22px; display: none; align-items: center; justify-content: center; color: var(--text-3); }
         .search-bar button.on { display: flex; }
         .chip-row { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 18px; }
-        .chip { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 13px; border-radius: 999px; background: var(--surface); color: rgba(255,255,255,0.82); font-size: 12.5px; font-weight: 700; transition: background-color .18s ease; }
+        .chip { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 13px; border-radius: 999px; background: var(--surface); color: var(--text); font-size: 12.5px; font-weight: 700; transition: background-color .18s ease; }
         .chip:active { background: var(--surface-2); }
         .chip i { font-size: 10px; color: var(--text-3); }
 
         /* ── 목록 상세(오버레이) ────────────────────────────────── */
         #list-view {
-            position: absolute;
-            top: 0; left: 0; right: 0;
+            position: fixed;
+            top: 0;
+            left: 50%;
+            width: 100%;
+            max-width: 430px;
+            transform: translateX(-50%);
             /* 하단 플레이어 바와 탭은 계속 보이도록 그만큼 비워 둔다 */
             bottom: calc(var(--nav-h) + var(--bar-h) + env(safe-area-inset-bottom));
             z-index: 60;
@@ -326,6 +398,8 @@
         .btn-pill:active { transform: scale(0.96); }
         .btn-solid { background: #fff; color: #111; }
         .btn-ghost { background: rgba(255,255,255,0.14); color: #fff; }
+        /* 컬러 카드 밖(시트 등)에서는 테마 색을 따른다 */
+        .sheet .btn-ghost { background: var(--press); color: var(--text); }
 
         /* ── 하단 플레이어 바 ──────────────────────────────────── */
         #player-bar {
@@ -338,7 +412,7 @@
             height: var(--bar-h);
             padding: 0 8px 0 16px;
             background: var(--player-bar);
-            border-top: 1px solid rgba(255,255,255,0.05);
+            border-top: 1px solid var(--press);
         }
         #player-bar::before {
             content: '';
@@ -350,18 +424,18 @@
             transition: width .25s linear;
         }
         #pb-open { display: flex; align-items: center; gap: 11px; flex: 1; min-width: 0; height: 100%; text-align: left; }
-        #pb-cover { flex: 0 0 38px; width: 38px; height: 38px; border-radius: 5px; overflow: hidden; background: #0d0d0f; display: none; align-items: center; justify-content: center; padding: 3px; }
+        #pb-cover { flex: 0 0 38px; width: 38px; height: 38px; border-radius: 5px; overflow: hidden; background: var(--cover-bg); display: none; align-items: center; justify-content: center; padding: 3px; }
         #pb-cover.on { display: flex; }
         #pb-cover img { width: 100%; height: 100%; object-fit: contain; }
         #pb-cover img.portrait { object-fit: cover; object-position: top; transform: scale(1.12); padding: 0; }
         #pb-text { display: block; flex: 1; min-width: 0; }
         #pb-title { display: block; font-size: 14px; font-weight: 700; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        #pb-title.on { font-weight: 800; color: #fff; }
+        #pb-title.on { font-weight: 800; color: var(--text); }
         #pb-artist { margin-top: 2px; font-size: 11.5px; font-weight: 500; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: none; }
         #pb-artist.on { display: block; }
         .pb-ctrl { display: flex; align-items: center; flex: 0 0 auto; }
-        .pb-ctrl button { width: 42px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 17px; color: rgba(255,255,255,0.5); transition: color .2s ease, transform .15s ease; }
-        .pb-ctrl button.live { color: #fff; }
+        .pb-ctrl button { width: 42px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 17px; color: var(--text-3); transition: color .2s ease, transform .15s ease; }
+        .pb-ctrl button.live { color: var(--text); }
         .pb-ctrl button:active { transform: scale(0.88); }
         .pb-ctrl button.play { font-size: 21px; }
 
@@ -375,15 +449,100 @@
             height: calc(var(--nav-h) + env(safe-area-inset-bottom));
             background: var(--bg);
         }
-        #tabbar button { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; color: #8A8A8E; transition: color .2s ease, transform .15s ease; }
+        #tabbar button { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; color: var(--nav-inactive); transition: color .2s ease, transform .15s ease; }
         #tabbar button:active { transform: scale(0.94); }
         #tabbar .tb-ico { display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; }
         #tabbar button > span:last-child { font-size: 12px; font-weight: 700; letter-spacing: -0.04em; }
-        #tabbar button.on { color: #fff; }
+        #tabbar button.on { color: var(--text); }
         #tabbar button.on > span:last-child { font-weight: 800; }
 
+
+        /* ── 재생목록 편집 (전체 화면) ─────────────────────────── */
+        #pledit {
+            position: fixed;
+            top: 0; bottom: 0;
+            left: 50%;
+            width: 100%;
+            max-width: 430px;
+            z-index: 118;
+            display: flex; flex-direction: column;
+            background: var(--bg);
+            transform: translate(-50%, 100%);
+            opacity: 0; pointer-events: none;
+            transition: transform .3s cubic-bezier(0.2, 0.9, 0.2, 1), opacity .22s ease;
+        }
+        #pledit.on { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
+        .ple-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex: 0 0 auto; padding: 0 20px; height: 66px; padding-top: env(safe-area-inset-top); height: calc(66px + env(safe-area-inset-top)); }
+        .ple-top h2 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.05em; color: var(--text); }
+        .ple-done { font-size: 16px; font-weight: 800; color: var(--point); }
+        .ple-tools { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex: 0 0 auto; padding: 14px 20px 12px; }
+        .ple-sort { display: inline-flex; align-items: center; gap: 7px; font-size: 15px; font-weight: 700; color: var(--text); }
+        .ple-sort i { font-size: 11px; }
+        .ple-fold { font-size: 15px; font-weight: 700; color: var(--text); }
+        .ple-chips { display: flex; gap: 9px; flex: 0 0 auto; padding: 2px 20px 16px; overflow-x: auto; scroll-padding-left: 20px; }
+        .ple-chips::-webkit-scrollbar { display: none; }
+        .ple-chip { flex: 0 0 auto; height: 42px; padding: 0 19px; border-radius: 999px; border: 1.5px solid var(--line-strong); color: var(--text); font-size: 14.5px; font-weight: 700; letter-spacing: -0.03em; white-space: nowrap; transition: border-color .2s ease, color .2s ease; }
+        .ple-chip.on { border-color: var(--point); color: var(--point); font-weight: 800; }
+        .ple-body { flex: 1; min-height: 0; overflow-y: auto; padding: 0 14px 22px; }
+        .ple-group { border-radius: 14px; background: var(--surface); padding: 4px 0 10px; }
+        .ple-group.fold .ple-rows { display: none; }
+        .ple-group.fold .ple-foldico { transform: rotate(180deg); }
+        .ple-ghead { display: flex; align-items: center; gap: 14px; padding: 16px 16px 12px; }
+        .ple-ghead strong { flex: 1; min-width: 0; font-size: 17px; font-weight: 700; letter-spacing: -0.035em; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ple-ghead strong b { font-weight: 900; }
+        .ple-ghead .ple-foldico { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; color: var(--text-2); font-size: 15px; transition: transform .2s ease; }
+        .ple-check { flex: 0 0 26px; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border: 1.6px solid var(--line-strong); border-radius: 999px; font-size: 12px; color: transparent; transition: background-color .15s ease, border-color .15s ease; }
+        .sel > .ple-check { background: var(--point); border-color: var(--point); color: #fff; }
+        .ple-rows { display: flex; flex-direction: column; }
+        .ple-row { display: flex; align-items: center; gap: 13px; padding: 9px 16px; background: var(--surface); }
+        .ple-row:active { background: var(--surface-2); }
+        .ple-row.drag { opacity: .55; }
+        .ple-art { flex: 0 0 56px; width: 56px; height: 56px; border-radius: 6px; overflow: hidden; background: var(--cover-bg); display: flex; align-items: center; justify-content: center; padding: 5px; }
+        .ple-art img { width: 100%; height: 100%; object-fit: contain; }
+        .ple-art img.portrait { object-fit: cover; object-position: top; transform: scale(1.1); padding: 0; }
+        .ple-main { display: block; flex: 1; min-width: 0; }
+        .ple-title { display: block; font-size: 17px; font-weight: 700; letter-spacing: -0.035em; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ple-row.playing .ple-title { color: var(--point); }
+        .ple-artist { display: block; margin-top: 4px; font-size: 14.5px; font-weight: 500; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ple-drag { flex: 0 0 34px; height: 46px; display: flex; align-items: center; justify-content: center; color: var(--text-3); touch-action: none; cursor: grab; }
+        .ple-drag.off { opacity: .3; pointer-events: none; }
+        .ple-bottom { display: flex; align-items: center; justify-content: center; gap: 9px; flex: 0 0 auto; height: 64px; background: var(--point); color: #fff; font-size: 17px; font-weight: 800; padding-bottom: env(safe-area-inset-bottom); height: calc(64px + env(safe-area-inset-bottom)); transition: opacity .2s ease; }
+        .ple-bottom.off { opacity: .5; }
+
+        /* ── 보관함 ────────────────────────────────────────────── */
+        .lib-title { padding: 4px 20px 0; font-size: 25px; font-weight: 900; letter-spacing: -0.05em; color: var(--text); }
+        .lib-note { margin: 14px 20px 0; padding: 22px 18px; border-radius: 12px; background: var(--surface); color: var(--text-2); font-size: 14.5px; font-weight: 600; line-height: 1.55; text-align: center; white-space: pre-line; }
+        .lib-tabs { display: flex; gap: 22px; margin-top: 22px; padding: 0 20px; overflow-x: auto; border-bottom: 1px solid var(--line); }
+        .lib-tabs::-webkit-scrollbar { display: none; }
+        .lib-tab { position: relative; flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; padding-bottom: 11px; font-size: 16.5px; font-weight: 700; letter-spacing: -0.04em; color: var(--text-3); white-space: nowrap; }
+        .lib-tab.on { color: var(--text); font-weight: 800; }
+        .lib-tab.on::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2.5px; border-radius: 2px 2px 0 0; background: var(--point); }
+        .lib-hint { display: flex; align-items: center; gap: 7px; padding: 18px 20px 0; color: var(--text-2); font-size: 13.5px; font-weight: 600; }
+        .lib-hint i { font-size: 13px; color: var(--text-3); }
+        .lib-actions { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 6px; }
+        .lib-add { display: inline-flex; align-items: center; gap: 9px; font-size: 17px; font-weight: 700; color: var(--text); }
+        .lib-edit { font-size: 15px; font-weight: 700; color: var(--text-2); }
+        .lib-edit.on { color: var(--point); }
+        .lib-make { display: flex; align-items: center; gap: 15px; width: 100%; padding: 12px 20px; text-align: left; }
+        .lib-make-ico { flex: 0 0 66px; width: 66px; height: 66px; border-radius: 8px; background: var(--surface); display: flex; align-items: center; justify-content: center; color: var(--text); font-size: 21px; }
+        .lib-make-main { display: block; flex: 1; min-width: 0; }
+        .lib-make-main strong { display: block; font-size: 17px; font-weight: 700; letter-spacing: -0.035em; color: var(--text); }
+        .lib-make-main small { display: block; margin-top: 5px; font-size: 14px; font-weight: 500; color: var(--text-2); }
+        .lib-plrow { display: flex; align-items: center; gap: 15px; padding: 10px 20px; text-align: left; cursor: pointer; }
+        .lib-plrow-art { flex: 0 0 66px; width: 66px; height: 66px; border-radius: 6px; overflow: hidden; background: var(--cover-bg); display: flex; align-items: center; justify-content: center; padding: 6px; }
+        .lib-plrow-art img { width: 100%; height: 100%; object-fit: contain; }
+        .lib-plrow-art img.portrait { object-fit: cover; object-position: top; transform: scale(1.1); padding: 0; }
+        .lib-plrow-main { display: block; flex: 1; min-width: 0; }
+        .lib-plrow-main strong { display: flex; align-items: center; gap: 7px; font-size: 18px; font-weight: 700; letter-spacing: -0.04em; color: var(--text); }
+        .lib-plrow-main strong i { font-size: 13px; color: var(--text-2); }
+        .lib-plrow-main span { display: block; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .lib-plrow-main small { display: block; margin-top: 5px; font-size: 14px; font-weight: 500; color: var(--text-2); }
+        .lib-plrow-play { flex: 0 0 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 19px; color: var(--text); }
+        .lib-plrow-play:active { transform: scale(0.88); }
+        .lib-plrow-del { flex: 0 0 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 17px; color: var(--text-3); }
+
         /* ── 시트/모달 공통 ────────────────────────────────────── */
-        .sheet-mask { position: fixed; inset: 0; z-index: 110; display: none; background: rgba(0,0,0,0.62); backdrop-filter: blur(2px); }
+        .sheet-mask { position: fixed; inset: 0; z-index: 110; display: none; background: var(--overlay); backdrop-filter: blur(2px); }
         .sheet-mask.on { display: block; }
         .sheet {
             /* 뷰포트 하단에 고정 — #app 기준 절대배치는 일부 환경에서 위치가 어긋난다 */
@@ -397,7 +556,7 @@
             display: flex;
             flex-direction: column;
             border-radius: 18px 18px 0 0;
-            background: #121214;
+            background: var(--sheet-bg);
             /* 닫힌 시트는 아래로 밀고 투명 처리 — 높이가 낮은 시트가 화면에 걸리지 않도록 */
             transform: translate(-50%, 102%);
             opacity: 0;
@@ -406,13 +565,13 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
         .sheet.on { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
-        .sheet-grab { width: 38px; height: 4px; margin: 10px auto 4px; border-radius: 999px; background: rgba(255,255,255,0.2); }
+        .sheet-grab { width: 38px; height: 4px; margin: 10px auto 4px; border-radius: 999px; background: var(--line-strong); }
         .sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 18px 12px; }
         .sheet-head strong { font-size: 15px; font-weight: 800; }
         .sheet-head button { font-size: 12.5px; font-weight: 700; color: var(--text-2); }
         .sheet-body { overflow-y: auto; padding: 0 8px 18px; }
         .set-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 12px; border-radius: 10px; }
-        .set-row:active { background: rgba(255,255,255,0.05); }
+        .set-row:active { background: var(--press); }
         .set-row > span:first-child { flex: 1; min-width: 0; text-align: left; }
         .set-row strong { display: block; font-size: 14px; font-weight: 700; }
         .set-row small { display: block; margin-top: 3px; font-size: 11.5px; font-weight: 500; color: var(--text-2); }
@@ -420,16 +579,19 @@
 
         /* ── 전체 플레이어 ─────────────────────────────────────── */
         #full-player {
-            position: absolute;
-            inset: 0;
+            position: fixed;
+            top: 0; bottom: 0;
+            left: 50%;
+            width: 100%;
+            max-width: 430px;
             z-index: 100;
             overflow: hidden;
             background: #10141B;
-            transform: translateY(100%);
+            transform: translate(-50%, 100%);
             transition: transform .32s cubic-bezier(0.2, 0.9, 0.2, 1);
             pointer-events: none;
         }
-        #full-player.on { transform: translateY(0); pointer-events: auto; }
+        #full-player.on { transform: translate(-50%, 0); pointer-events: auto; }
 
         /* 앨범 아트에서 뽑아낸 배경 앰비언스 */
         #fp-bg { position: absolute; inset: -18%; z-index: 0; }
@@ -514,40 +676,52 @@
         .pl-list { display: flex; flex-direction: column; gap: 8px; padding: 0 18px; }
         .pl-row { display: flex; align-items: center; gap: 12px; padding: 9px 10px; border-radius: 12px; background: var(--surface); cursor: pointer; transition: background-color .18s ease, transform .15s ease; }
         .pl-row:active { background: var(--surface-2); transform: scale(0.985); }
-        .pl-cover { position: relative; flex: 0 0 48px; width: 48px; height: 48px; border-radius: 8px; overflow: hidden; background: #0f0f11; display: flex; align-items: center; justify-content: center; padding: 5px; }
+        .pl-cover { position: relative; flex: 0 0 48px; width: 48px; height: 48px; border-radius: 8px; overflow: hidden; background: var(--cover-bg); display: flex; align-items: center; justify-content: center; padding: 5px; }
         .pl-cover img { width: 100%; height: 100%; object-fit: contain; }
         .pl-cover img.portrait { object-fit: cover; object-position: top; transform: scale(1.1); padding: 0; }
         .pl-cover i { font-size: 16px; color: var(--point); }
         .pl-main { display: block; flex: 1; min-width: 0; }
-        .pl-main strong { display: block; font-size: 15px; font-weight: 800; letter-spacing: -0.03em; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pl-main strong { display: block; font-size: 15px; font-weight: 800; letter-spacing: -0.03em; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .pl-main small { display: block; margin-top: 3px; font-size: 12px; font-weight: 600; color: var(--text-2); }
-        .pl-kebab { flex: 0 0 32px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: rgba(255,255,255,0.45); }
-        .pl-kebab:active { color: #fff; }
-        .pl-new { display: flex; align-items: center; justify-content: center; gap: 8px; height: 48px; border-radius: 12px; border: 1.4px dashed rgba(255,255,255,0.22); color: var(--text-2); font-size: 13.5px; font-weight: 800; transition: color .2s ease, border-color .2s ease; }
-        .pl-new:active { color: #fff; border-color: rgba(255,255,255,0.45); }
+        .pl-kebab { flex: 0 0 32px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--text-3); }
+        .pl-kebab:active { color: var(--text); }
+        .pl-new { display: flex; align-items: center; justify-content: center; gap: 8px; height: 48px; border-radius: 12px; border: 1.4px dashed var(--line-strong); color: var(--text-2); font-size: 13.5px; font-weight: 800; transition: color .2s ease, border-color .2s ease; }
+        .pl-new:active { color: var(--text); border-color: var(--text-3); }
 
-        .prompt-input { width: 100%; height: 46px; padding: 0 14px; border-radius: 11px; border: 1.5px solid rgba(255,255,255,0.14); background: #17171A; color: #fff; font-family: inherit; font-size: 15px; font-weight: 700; outline: none; }
+        .prompt-input { width: 100%; height: 46px; padding: 0 14px; border-radius: 11px; border: 1.5px solid var(--line-strong); background: var(--input-bg); color: var(--text); font-family: inherit; font-size: 15px; font-weight: 700; outline: none; }
         .prompt-input:focus { border-color: var(--point); }
         .prompt-input::placeholder { color: var(--text-3); font-weight: 600; }
         .prompt-actions { display: flex; gap: 8px; margin-top: 14px; }
         .prompt-actions .btn-pill { flex: 1; height: 44px; }
 
-        .song-remove { flex: 0 0 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 15px; color: rgba(255,255,255,0.42); transition: color .2s ease, transform .15s ease; }
+        .song-remove { flex: 0 0 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 15px; color: var(--text-3); transition: color .2s ease, transform .15s ease; }
         .song-remove:active { color: var(--point); transform: scale(0.85); }
+
+
+        /* 라이트에서 다크로 고정되는 영역(전체 플레이어·재생목록)과의 경계 보정 */
+        html:not([data-ui="dark"]) #player-bar { border-top: 1px solid var(--line); }
+        html:not([data-ui="dark"]) .song-cover,
+        html:not([data-ui="dark"]) .quick-cover,
+        html:not([data-ui="dark"]) .pl-cover,
+        html:not([data-ui="dark"]) #pb-cover { border: 1px solid var(--line); }
+        html:not([data-ui="dark"]) .team-chip { border-color: var(--text); }
 
         /* ── 재생목록 전체 화면 ────────────────────────────────── */
         #queue-view {
-            position: absolute;
-            inset: 0;
+            position: fixed;
+            top: 0; bottom: 0;
+            left: 50%;
+            width: 100%;
+            max-width: 430px;
             z-index: 108;
             display: flex;
             flex-direction: column;
             background: #050506;
-            transform: translateY(100%);
+            transform: translate(-50%, 100%);
             transition: transform .3s cubic-bezier(0.2, 0.9, 0.2, 1);
             pointer-events: none;
         }
-        #queue-view.on { transform: translateY(0); pointer-events: auto; }
+        #queue-view.on { transform: translate(-50%, 0); pointer-events: auto; }
 
         .qv-top { display: flex; align-items: center; flex: 0 0 auto; height: 56px; padding: 0 10px; padding-top: env(safe-area-inset-top); height: calc(56px + env(safe-area-inset-top)); }
         .qv-top button { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #fff; transition: transform .15s ease; }
@@ -650,15 +824,15 @@
 
         /* ── 토스트 ───────────────────────────────────────────── */
         #toast {
-            position: absolute;
+            position: fixed;
             left: 50%;
             bottom: calc(var(--nav-h) + var(--bar-h) + 22px);
             z-index: 130;
             transform: translate(-50%, 10px);
             padding: 11px 18px;
             border-radius: 999px;
-            background: rgba(40,40,44,0.96);
-            color: #fff;
+            background: var(--toast-bg);
+            color: #FFFFFF;
             font-size: 13px;
             font-weight: 700;
             white-space: nowrap;
@@ -668,7 +842,7 @@
         }
         #toast.on { opacity: 1; transform: translate(-50%, 0); }
 
-        #loader { position: absolute; inset: 0; z-index: 150; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: var(--bg); transition: opacity .45s ease; }
+        #loader { position: fixed; inset: 0; z-index: 150; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: var(--bg); transition: opacity .45s ease; }
         #loader.off { opacity: 0; pointer-events: none; }
         #loader span { font-size: 12.5px; font-weight: 700; color: var(--text-3); letter-spacing: 0.08em; }
 
@@ -784,18 +958,11 @@
     <!-- ── 보관함 ─────────────────────────────────────────── -->
     <main id="screen-library" class="screen">
         <div class="screen-body scroll-y no-bar">
-            <section class="sec">
-                <div class="sec-head"><div class="sec-title"><h2>내 재생목록</h2></div><button class="sec-more" onclick="promptNewPlaylist()">새로 만들기</button></div>
-                <div id="lib-playlists" class="pl-list"></div>
-            </section>
-            <section class="sec">
-                <div class="sec-head"><div class="sec-title"><h2>좋아요한 응원가</h2></div><button class="sec-more" onclick="openList('fav')">전체보기</button></div>
-                <div id="lib-fav" class="song-list"></div>
-            </section>
-            <section class="sec">
-                <div class="sec-head"><div class="sec-title"><h2>최근 들은 응원가</h2></div><button class="sec-more" onclick="openList('recent')">전체보기</button></div>
-                <div id="lib-recent" class="song-list"></div>
-            </section>
+            <div class="lib-title">나의 응원 기록</div>
+            <div class="lib-note">내가 많이 듣고 좋아요한 응원가를 모은
+자동 리스트가 나타나요.</div>
+            <div class="lib-tabs" id="lib-tabs"></div>
+            <div id="lib-panel"></div>
         </div>
     </main>
 
@@ -966,7 +1133,7 @@
                         <path d="M12 21v-8M9 15.4l3-3 3 3"/>
                     </svg>
                 </button>
-                <button id="qv-edit-btn" onclick="toggleQueueEdit()">편집</button>
+                <button id="qv-edit-btn" onclick="openPlEdit()">편집</button>
             </div>
         </div>
 
@@ -974,7 +1141,7 @@
             <button class="icon" onclick="toggleQueueSearch()" aria-label="재생목록 검색"><i class="fa-solid fa-magnifying-glass"></i></button>
             <button class="icon" onclick="addTeamToQueue()" aria-label="곡 추가"><i class="fa-solid fa-plus"></i></button>
             <span class="sp"></span>
-            <button id="qv-select-btn" onclick="toggleQueueEdit()"><i class="fa-solid fa-check" style="font-size:14px"></i>선택곡</button>
+            <button id="qv-select-btn" onclick="openPlEdit()"><i class="fa-solid fa-check" style="font-size:14px"></i>선택곡</button>
             <button id="qv-fold-btn" onclick="toggleQueueFold()">그룹 접기</button>
         </div>
 
@@ -1005,6 +1172,35 @@
             <button class="side" id="qv-shuffle" onclick="toggleShuffle()" aria-label="셔플"><i class="fa-solid fa-shuffle"></i></button>
             <span class="qv-bar-art" onclick="closeQueue()"><img id="qv-bar-img" src="" alt=""></span>
         </div>
+    </div>
+
+    <!-- ── 재생목록 편집 (전체 화면) ──────────────────────── -->
+    <div id="pledit">
+        <div class="ple-top">
+            <h2>재생목록 편집</h2>
+            <button class="ple-done" onclick="closePlEdit()">완료</button>
+        </div>
+        <div class="ple-tools">
+            <button class="ple-sort" onclick="openSheet('sort')"><span id="ple-sort-label">내 설정 순</span><i class="fa-solid fa-chevron-down"></i></button>
+            <button class="ple-fold" id="ple-fold-btn" onclick="togglePlEditFold()">그룹 접기</button>
+        </div>
+        <div class="ple-chips no-bar" id="ple-chips"></div>
+        <div class="ple-body no-bar" id="ple-body"></div>
+        <button class="ple-bottom off" id="ple-del" onclick="deletePlEditSelected()">
+            <i class="fa-regular fa-trash-can"></i><span>삭제</span>
+        </button>
+    </div>
+
+    <div class="sheet" id="sheet-theme">
+        <div class="sheet-grab"></div>
+        <div class="sheet-head"><strong>화면 테마</strong><button onclick="closeSheet()">닫기</button></div>
+        <div class="sheet-body" id="theme-list"></div>
+    </div>
+
+    <div class="sheet" id="sheet-sort">
+        <div class="sheet-grab"></div>
+        <div class="sheet-head"><strong>정렬 기준</strong><button onclick="closeSheet()">닫기</button></div>
+        <div class="sheet-body" id="sort-list"></div>
     </div>
 
     <!-- ── 전체 플레이어 ──────────────────────────────────── -->
@@ -1304,7 +1500,7 @@ let cur = { url: '', label: '', artist: '', cover: '', portrait: false };
 
 const DEFAULT_LIST_LABELS = {
     'quick': '빠른 선곡', 'home-song-list': '홈 응원가', 'search-list': '검색 결과',
-    'lib-fav': '좋아요한 응원가', 'lib-recent': '최근 들은 응원가', 'lv-list': '응원가 목록'
+    'lib-list': '보관함', 'lv-list': '응원가 목록'
 };
 function playFrom(listId, i) {
     const list = lists[listId] || [];
@@ -1352,6 +1548,7 @@ function play(song) {
     qArt.src = song.cover; qArt.className = song.portrait ? 'portrait' : '';
 
     pushRecent(song.url);
+    markPlayed(song.url);
     syncRows();
     if (queueOpen) renderQueue();
     if (tabIndex === 3) renderLibrary();
@@ -1668,11 +1865,6 @@ document.addEventListener('click', e => {
 });
 
 /* ── 보관함 ────────────────────────────────────────────────── */
-function renderLibrary() {
-    renderPlaylistCards();
-    renderList('lib-fav', favorites.map(byUrl).filter(Boolean).slice(0, 6), { label: '좋아요한 응원가', empty: '아직 좋아요한 응원가가 없어요.\n곡 오른쪽 하트를 눌러보세요.', emptyIcon: 'fa-heart' });
-    renderList('lib-recent', recents.map(byUrl).filter(Boolean).slice(0, 6), { label: '최근 들은 응원가', empty: '최근 들은 응원가가 없습니다.', emptyIcon: 'fa-clock-rotate-left' });
-}
 
 /* ── 내 재생목록 (기기 저장) ───────────────────────────────── */
 const K_PL = 'cheer_playlists_v1';
@@ -1831,22 +2023,6 @@ function confirmDeletePlaylist(id) {
     });
 }
 
-/* 보관함의 재생목록 카드 */
-function renderPlaylistCards() {
-    const box = $('lib-playlists');
-    if (!box) return;
-    box.innerHTML = playlists.map(pl => {
-        const first = plSongs(pl)[0];
-        const cover = first
-            ? `<img src="${esc(first.cover)}" class="${first.portrait ? 'portrait' : ''}" loading="lazy" alt="" onerror="coverFallback(this, '${first.team}')">`
-            : `<i class="fa-solid fa-music"></i>`;
-        return `<div class="pl-row" onclick="openList('playlist','${pl.id}')">
-            <span class="pl-cover">${cover}</span>
-            <span class="pl-main"><strong>${esc(pl.name)}</strong><small>${pl.urls.length}곡</small></span>
-            <span class="pl-kebab" data-plmenu="${pl.id}"><i class="fa-solid fa-ellipsis-vertical"></i></span>
-        </div>`;
-    }).join('') + `<button class="pl-new" onclick="promptNewPlaylist()"><i class="fa-solid fa-plus"></i>새 재생목록 만들기</button>`;
-}
 
 /* 카드의 ⋮ / 목록에서 곡 빼기 */
 document.addEventListener('click', e => {
@@ -2231,6 +2407,8 @@ function openSheet(name) {
     if (name === 'more') renderMore();
     if (name === 'addto') renderAddTo();
     if (name === 'plmenu') renderPlMenu();
+    if (name === 'sort') renderSortSheet();
+    if (name === 'theme') renderThemeSheet();
     openedSheet = $('sheet-' + name);
     $('sheet-mask').classList.add('on');
     openedSheet.classList.add('on');
@@ -2252,8 +2430,45 @@ function renderTeamSheet() {
             ${team === o.id ? '<span class="set-val"><i class="fa-solid fa-check"></i></span>' : ''}
         </button>`).join('');
 }
+/* 화면 테마 — 기본은 기기 설정을 따라간다 */
+const sysDarkMQ = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+let uiPref = (function () {
+    try { const v = localStorage.getItem('cheer_ui_theme'); return (v === 'dark' || v === 'light') ? v : 'system'; }
+    catch (e) { return 'system'; }
+})();
+const UI_LABEL = { system: '기기 설정', light: '라이트', dark: '다크' };
+function applyUiTheme() {
+    // 'system'이면 속성을 지워 CSS의 prefers-color-scheme 이 그대로 동작하게 둔다
+    if (uiPref === 'system') delete document.documentElement.dataset.ui;
+    else document.documentElement.dataset.ui = uiPref;
+}
+const isDarkNow = () => uiPref === 'dark' || (uiPref === 'system' && Boolean(sysDarkMQ && sysDarkMQ.matches));
+function setUiPref(v) {
+    uiPref = ['system', 'light', 'dark'].includes(v) ? v : 'system';
+    try { if (uiPref === 'system') localStorage.removeItem('cheer_ui_theme'); else localStorage.setItem('cheer_ui_theme', uiPref); } catch (e) {}
+    applyUiTheme();
+    closeSheet();
+    renderSetting();
+    toast(uiPref === 'system' ? '기기 설정을 따릅니다' : `${UI_LABEL[uiPref]} 모드`);
+}
+if (sysDarkMQ) {
+    const onSys = () => { if (uiPref === 'system' && openedSheet && openedSheet.id === 'sheet-theme') renderThemeSheet(); };
+    if (sysDarkMQ.addEventListener) sysDarkMQ.addEventListener('change', onSys);
+    else if (sysDarkMQ.addListener) sysDarkMQ.addListener(onSys);
+}
+function renderThemeSheet() {
+    $('theme-list').innerHTML = ['system', 'light', 'dark'].map(v => `
+        <button class="set-row" style="width:100%" onclick="setUiPref('${v}')">
+            <span><strong>${UI_LABEL[v]}</strong><small>${v === 'system' ? `휴대폰 설정을 따라갑니다 (지금은 ${isDarkNow() ? '다크' : '라이트'})` : (v === 'light' ? '항상 밝은 화면' : '항상 어두운 화면')}</small></span>
+            ${uiPref === v ? '<span class="set-val"><i class="fa-solid fa-check"></i></span>' : ''}
+        </button>`).join('');
+}
 function renderSetting() {
     $('setting-list').innerHTML = `
+        <button class="set-row" style="width:100%" onclick="openSheet('theme')">
+            <span><strong>화면 테마</strong><small>기본은 휴대폰 설정을 따라갑니다</small></span>
+            <span class="set-val">${UI_LABEL[uiPref]}${uiPref === 'system' ? ` · ${isDarkNow() ? '다크' : '라이트'}` : ''}</span>
+        </button>` + `
         <button class="set-row" style="width:100%" onclick="toggleShuffle(); renderSetting();">
             <span><strong>셔플 재생</strong><small>목록을 무작위 순서로 재생합니다</small></span>
             <span class="set-val">${shuffleOn ? '켜짐' : '꺼짐'}</span>
@@ -2277,13 +2492,259 @@ function renderNotice() {
     $('notice-body').innerHTML = `
         <div style="font-size:15px;font-weight:800;margin-bottom:10px">2026 시즌 응원가 안내</div>
         <p style="margin:0;font-size:13px;line-height:1.75;color:var(--text-2);font-weight:500">
-            현재 <b style="color:#fff">KIA 타이거즈 · 삼성 라이온즈</b> 응원가 ${SONGS.length}곡을 제공합니다.<br><br>
-            · <b style="color:#fff">홈</b>에서 추천 묶음과 빠른 선곡을 확인하세요.<br>
-            · <b style="color:#fff">오늘 라인업</b>은 경기 당일 라인업이 발표되면 타순 순서대로 자동 정렬됩니다.<br>
+            현재 <b style="color:var(--text)">KIA 타이거즈 · 삼성 라이온즈</b> 응원가 ${SONGS.length}곡을 제공합니다.<br><br>
+            · <b style="color:var(--text)">홈</b>에서 추천 묶음과 빠른 선곡을 확인하세요.<br>
+            · <b style="color:var(--text)">오늘 라인업</b>은 경기 당일 라인업이 발표되면 타순 순서대로 자동 정렬됩니다.<br>
             · 좋아요와 최근 들은 기록은 이 기기에만 저장됩니다.<br><br>
             응원가는 각 구단의 자산이며, 팬 응원 목적으로만 이용해 주세요.
         </p>`;
 }
+
+/* ── 재생 기록(횟수·마지막 재생 시각) ──────────────────────── */
+const K_LOG = 'cheer_playlog_v1';
+let playLog = {};
+function loadPlayLog() { try { const v = JSON.parse(localStorage.getItem(K_LOG) || '{}'); playLog = (v && typeof v === 'object') ? v : {}; } catch (e) { playLog = {}; } }
+function markPlayed(url) {
+    if (!url) return;
+    const e = playLog[url] || { c: 0, t: 0 };
+    e.c += 1; e.t = Date.now();
+    playLog[url] = e;
+    try { localStorage.setItem(K_LOG, JSON.stringify(playLog)); } catch (err) {}
+}
+const playCount = url => (playLog[url] && playLog[url].c) || 0;
+const lastPlayed = url => (playLog[url] && playLog[url].t) || 0;
+
+/* ── 재생목록 편집 화면 ────────────────────────────────────── */
+const PLE_FILTERS = [
+    { id: 'all',    name: '전체' },
+    { id: 'never',  name: '한 번도 안 들은 곡' },
+    { id: 'old30',  name: '30일 동안 안 들은 곡' },
+    { id: 'today',  name: '오늘 들은 곡' }
+];
+const PLE_SORTS = [
+    { id: 'manual', name: '내 설정 순',   desc: '직접 끌어서 정한 순서' },
+    { id: 'title',  name: '곡 이름 순',   desc: '가나다 순' },
+    { id: 'most',   name: '많이 들은 순', desc: '재생 횟수가 많은 곡부터' },
+    { id: 'recent', name: '최근 들은 순', desc: '마지막으로 들은 곡부터' }
+];
+let pleOpen = false, pleFilter = 'all', pleSort = 'manual', pleFold = false;
+let pleSel = new Set(), pleDragFrom = -1;
+
+function openPlEdit() {
+    if (!queue.length) { toast('재생목록이 비었습니다.'); return; }
+    pleOpen = true; pleSel.clear(); pleFilter = 'all'; pleFold = false;
+    renderPlEdit();
+    $('pledit').classList.add('on');
+}
+function closePlEdit() { pleOpen = false; $('pledit').classList.remove('on'); renderQueue(); }
+function togglePlEditFold() {
+    pleFold = !pleFold;
+    $('ple-fold-btn').textContent = pleFold ? '그룹 펼치기' : '그룹 접기';
+    renderPlEdit();
+}
+function setPlEditFilter(id) { pleFilter = id; pleSel.clear(); renderPlEdit(); }
+function setPlEditSort(id) {
+    pleSort = id;
+    $('ple-sort-label').textContent = (PLE_SORTS.find(x => x.id === id) || PLE_SORTS[0]).name;
+    closeSheet(); renderPlEdit();
+}
+function renderSortSheet() {
+    $('sort-list').innerHTML = PLE_SORTS.map(o => `
+        <button class="set-row" style="width:100%" onclick="setPlEditSort('${o.id}')">
+            <span><strong>${esc(o.name)}</strong><small>${esc(o.desc)}</small></span>
+            ${pleSort === o.id ? '<span class="set-val"><i class="fa-solid fa-check"></i></span>' : ''}
+        </button>`).join('');
+}
+
+function pleVisible() {
+    const now = Date.now(), dayStart = new Date().setHours(0, 0, 0, 0);
+    let list = queue.slice();
+    if (pleFilter === 'never') list = list.filter(s => playCount(s.url) === 0);
+    else if (pleFilter === 'old30') list = list.filter(s => lastPlayed(s.url) < now - 30 * 864e5);
+    else if (pleFilter === 'today') list = list.filter(s => lastPlayed(s.url) >= dayStart);
+    if (pleSort === 'title') list.sort((a, b) => a.label.localeCompare(b.label, 'ko'));
+    else if (pleSort === 'most') list.sort((a, b) => playCount(b.url) - playCount(a.url));
+    else if (pleSort === 'recent') list.sort((a, b) => lastPlayed(b.url) - lastPlayed(a.url));
+    return list;
+}
+
+function renderPlEdit() {
+    if (!pleOpen) return;
+    $('ple-chips').innerHTML = PLE_FILTERS.map(f =>
+        `<button class="ple-chip${pleFilter === f.id ? ' on' : ''}" onclick="setPlEditFilter('${f.id}')">${esc(f.name)}</button>`).join('');
+
+    const list = pleVisible();
+    const parts = (queueLabel || '재생목록').trim().split(' ');
+    const title = parts.length > 1 ? `<b>${esc(parts[0])}</b> ${esc(parts.slice(1).join(' '))}` : `<b>${esc(parts[0])}</b>`;
+    const allSel = list.length > 0 && list.every(s => pleSel.has(s.url));
+    const canDrag = pleSort === 'manual' && pleFilter === 'all';
+
+    $('ple-body').innerHTML = list.length ? `<div class="ple-group${pleFold ? ' fold' : ''}">
+        <div class="ple-ghead${allSel ? ' sel' : ''}" onclick="togglePlEditAll()">
+            <span class="ple-check"><i class="fa-solid fa-check"></i></span>
+            <strong>${title}</strong>
+            <span class="ple-foldico" onclick="event.stopPropagation(); togglePlEditFold()"><i class="fa-solid fa-chevron-up"></i></span>
+        </div>
+        <div class="ple-rows" id="ple-rows">
+            ${list.map(sg => `<div class="ple-row${pleSel.has(sg.url) ? ' sel' : ''}${cur.url === sg.url ? ' playing' : ''}" data-ple="${esc(sg.url)}">
+                <span class="ple-check"><i class="fa-solid fa-check"></i></span>
+                <span class="ple-art">${coverImg(sg)}</span>
+                <span class="ple-main">
+                    <span class="ple-title">${esc(sg.label)}</span>
+                    <span class="ple-artist">${esc(TEAM_FULL[sg.team] || sg.team)}</span>
+                </span>
+                <span class="ple-drag${canDrag ? '' : ' off'}" data-pledrag="${esc(sg.url)}"><i class="fa-solid fa-bars"></i></span>
+            </div>`).join('')}
+        </div>
+    </div>` : `<div class="empty"><i class="fa-solid fa-filter"></i>조건에 맞는 곡이 없습니다.</div>`;
+
+    const del = $('ple-del');
+    del.classList.toggle('off', pleSel.size === 0);
+    del.querySelector('span').textContent = pleSel.size ? `삭제 ${pleSel.size}` : '삭제';
+}
+function togglePlEditAll() {
+    const list = pleVisible();
+    const allSel = list.length > 0 && list.every(s => pleSel.has(s.url));
+    if (allSel) list.forEach(s => pleSel.delete(s.url)); else list.forEach(s => pleSel.add(s.url));
+    renderPlEdit();
+}
+function deletePlEditSelected() {
+    if (!pleSel.size) { toast('삭제할 곡을 선택해 주세요'); return; }
+    const keepUrl = queue[qIndex] ? queue[qIndex].url : null;
+    const n = pleSel.size;
+    queue = queue.filter(s => !pleSel.has(s.url));
+    qIndex = Math.max(0, queue.findIndex(s => s.url === keepUrl));
+    pleSel.clear();
+    if (!queue.length) { toast(`${n}곡을 삭제했어요`); closePlEdit(); return; }
+    renderPlEdit();
+    toast(`${n}곡을 삭제했어요`);
+}
+
+/* 행 선택 */
+document.addEventListener('click', e => {
+    const row = e.target.closest('[data-ple]');
+    if (!row || e.target.closest('[data-pledrag]')) return;
+    const u = row.dataset.ple;
+    if (pleSel.has(u)) pleSel.delete(u); else pleSel.add(u);
+    renderPlEdit();
+});
+
+/* 손잡이로 순서 바꾸기 */
+document.addEventListener('pointerdown', e => {
+    const h = e.target.closest('[data-pledrag]');
+    if (!h || h.classList.contains('off')) return;
+    e.preventDefault();
+    pleDragFrom = queue.findIndex(s => s.url === h.dataset.pledrag);
+    const row = h.closest('.ple-row');
+    if (row) row.classList.add('drag');
+    h.setPointerCapture(e.pointerId);
+});
+document.addEventListener('pointermove', e => {
+    if (pleDragFrom < 0) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const row = el && el.closest ? el.closest('[data-ple]') : null;
+    if (!row) return;
+    const to = queue.findIndex(s => s.url === row.dataset.ple);
+    if (to < 0 || to === pleDragFrom) return;
+    const [moved] = queue.splice(pleDragFrom, 1);
+    queue.splice(to, 0, moved);
+    pleDragFrom = to;
+    qIndex = Math.max(0, queue.findIndex(s => s.url === cur.url));
+    renderPlEdit();
+    const again = document.querySelector(`[data-ple="${CSS.escape(moved.url)}"]`);
+    if (again) again.classList.add('drag');
+});
+document.addEventListener('pointerup', () => {
+    if (pleDragFrom < 0) return;
+    pleDragFrom = -1;
+    document.querySelectorAll('.ple-row.drag').forEach(r => r.classList.remove('drag'));
+    renderPlEdit();
+});
+
+/* ── 보관함 ────────────────────────────────────────────────── */
+const LIB_TABS = [
+    { id: 'list',   name: '내 리스트' },
+    { id: 'fav',    name: '좋아요', icon: 'fa-regular fa-heart' },
+    { id: 'most',   name: '많이 들은' },
+    { id: 'recent', name: '최근 감상' }
+];
+let libTab = 'list', libEdit = false;
+
+function setLibTab(id) { libTab = id; libEdit = false; renderLibrary(); }
+function toggleLibEdit() { libEdit = !libEdit; renderLibrary(); }
+
+function renderLibrary() {
+    const tabs = $('lib-tabs');
+    if (!tabs) return;
+    tabs.innerHTML = LIB_TABS.map(t =>
+        `<button class="lib-tab${libTab === t.id ? ' on' : ''}" onclick="setLibTab('${t.id}')">${t.icon ? `<i class="${t.icon}"></i>` : ''}${esc(t.name)}</button>`).join('');
+
+    const panel = $('lib-panel');
+    if (libTab === 'list') {
+        panel.innerHTML = `
+            <div class="lib-hint"><i class="fa-regular fa-circle-question"></i>내 리스트는 이 기기에만 저장됩니다.</div>
+            <div class="lib-actions">
+                <button class="lib-add" onclick="promptNewPlaylist()"><i class="fa-solid fa-plus"></i>리스트 추가</button>
+                <button class="lib-edit${libEdit ? ' on' : ''}" onclick="toggleLibEdit()">${libEdit ? '완료' : '편집'}</button>
+            </div>
+            <button class="lib-make" onclick="makeLineupPlaylist()">
+                <span class="lib-make-ico"><i class="fa-solid fa-list-ol"></i></span>
+                <span class="lib-make-main">
+                    <strong>오늘 라인업으로 만들기</strong>
+                    <small>오늘 타순 순서대로 리스트를 만들어 드립니다.</small>
+                </span>
+            </button>
+            ${playlists.length ? playlists.map(pl => {
+                const first = plSongs(pl)[0];
+                const cover = first
+                    ? `<img src="${esc(first.cover)}" class="${first.portrait ? 'portrait' : ''}" loading="lazy" alt="" onerror="coverFallback(this, '${first.team}')">`
+                    : `<i class="fa-solid fa-music" style="color:var(--text-3)"></i>`;
+                return `<div class="lib-plrow" onclick="openList('playlist','${pl.id}')">
+                    <span class="lib-plrow-art">${cover}</span>
+                    <span class="lib-plrow-main">
+                        <strong><i class="fa-solid fa-lock"></i><span>${esc(pl.name)}</span></strong>
+                        <small>${pl.urls.length}곡</small>
+                    </span>
+                    ${libEdit
+                        ? `<span class="lib-plrow-del" data-plmenu="${pl.id}"><i class="fa-solid fa-ellipsis-vertical"></i></span>`
+                        : `<span class="lib-plrow-play" data-plplay="${pl.id}"><i class="fa-solid fa-play"></i></span>`}
+                </div>`;
+            }).join('') : `<div class="empty" style="padding:34px 20px"><i class="fa-solid fa-list"></i>아직 만든 리스트가 없습니다.\n위 '리스트 추가'로 만들어 보세요.</div>`}`;
+        return;
+    }
+
+    let songs = [], empty = '';
+    if (libTab === 'fav') { songs = favorites.map(byUrl).filter(Boolean); empty = '아직 좋아요한 응원가가 없어요.\n곡 오른쪽 하트를 눌러보세요.'; }
+    else if (libTab === 'most') { songs = SONGS.filter(s => playCount(s.url) > 0).sort((a, b) => playCount(b.url) - playCount(a.url)); empty = '아직 들은 기록이 없습니다.'; }
+    else { songs = recents.map(byUrl).filter(Boolean); empty = '최근 들은 응원가가 없습니다.'; }
+
+    const label = LIB_TABS.find(t => t.id === libTab).name;
+    panel.innerHTML = `<div class="lib-actions"><span class="lib-add" style="font-size:15px;color:var(--text-2)">${songs.length}곡</span>
+        <button class="lib-edit" onclick="playSongs(lists['lib-list']||[], false, '${esc(label)}')">전체 재생</button></div>
+        <div id="lib-list" class="song-list"></div>`;
+    renderList('lib-list', songs, { label, empty, emptyIcon: libTab === 'fav' ? 'fa-heart' : 'fa-clock-rotate-left',
+        sub: s => libTab === 'most' ? `${s.team} · ${playCount(s.url)}회 재생` : `${s.team} · ${s.catName}` });
+}
+
+function makeLineupPlaylist() {
+    const t = team === 'all' ? 'KIA' : team;
+    const info = lineupInfo(t);
+    if (!info.songs || !info.songs.length) { toast(info.caption); return; }
+    const base = baseDate();
+    const name = `${t} ${base.getMonth() + 1}/${base.getDate()} 라인업`;
+    const pl = createPlaylist(name, info.songs.map(x => x.url));
+    renderLibrary();
+    toast(`'${pl.name}' 리스트를 만들었어요`);
+}
+
+document.addEventListener('click', e => {
+    const p = e.target.closest('[data-plplay]');
+    if (p) {
+        e.stopPropagation();
+        const pl = plById(p.dataset.plplay);
+        if (pl) playSongs(plSongs(pl), false, pl.name);
+    }
+});
 
 /* ── 오늘 라인업 ───────────────────────────────────────────── */
 let scheduleData = [], liveStore = {}, pollTimer = null;
@@ -2355,6 +2816,8 @@ async function syncLineup() {
 window.addEventListener('DOMContentLoaded', () => {
     readStore();
     loadPlaylists();
+    loadPlayLog();
+    applyUiTheme();
     buildIndex();
     initAudio();
 
