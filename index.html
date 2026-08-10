@@ -457,6 +457,10 @@
 
 
         /* ── 이퀄라이저 · 음장 모드 시트 ───────────────────────── */
+        .eq-notice { margin: 0 12px 14px; padding: 13px 14px; border-radius: 11px; background: var(--surface); color: var(--text-2); font-size: 12.5px; font-weight: 600; line-height: 1.6; }
+        .eq-notice b { color: var(--text); font-weight: 800; }
+        .eq-notice.warn { background: color-mix(in srgb, var(--point) 12%, transparent); }
+        .eq-notice button { display: block; margin-top: 9px; color: var(--point); font-size: 12.5px; font-weight: 800; }
         .eq-tabs { display: flex; gap: 20px; padding: 0 12px 14px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
         .eq-tab { position: relative; padding-bottom: 12px; margin-bottom: -15px; font-size: 15.5px; font-weight: 700; color: var(--text-3); }
         .eq-tab.on { color: var(--text); font-weight: 800; }
@@ -2327,7 +2331,24 @@ const SOUND_MODES = {
     studio:  { name: '스튜디오',    desc: '잔향을 걷어내고 또렷하게',    sec: 0.25, decay: 4.0, wet: 0.24, pre: 0,    dry: 0.96 }
 };
 
-const K_EQ = 'cheer_eq_v1';
+const K_EQ = 'cheer_eq_v1', K_BG = 'cheer_bg_priority';
+/* 음향 효과를 쓰면 소리가 Web Audio 를 거치는데, 휴대폰이 앱을 뒤로 보내면
+   이 엔진이 멈춰 백그라운드 재생이 끊긴다. 둘 중 무엇을 우선할지 사용자가 고른다. */
+let bgPriority = (function () { try { return localStorage.getItem(K_BG) !== 'off'; } catch (e) { return true; } })();
+function setBgPriority(on) {
+    bgPriority = Boolean(on);
+    try { localStorage.setItem(K_BG, bgPriority ? 'on' : 'off'); } catch (e) {}
+    if (bgPriority && !eqIsDefault()) {
+        eqPreset = 'flat'; eqGains = [0, 0, 0, 0, 0]; soundMode = 'off';
+        applyAudioFx();
+        toast('백그라운드 재생을 위해 음향 효과를 껐어요');
+    } else {
+        toast(bgPriority ? '백그라운드 재생을 우선합니다' : '음향 효과를 사용할 수 있어요');
+    }
+    saveEqSettings();
+    renderSetting();
+    renderEQ();
+}
 let audioCtx = null, eqBands = null, dryGain = null, wetGain = null, convolver = null, preDelay = null;
 let eqPreset = 'flat', eqGains = [0, 0, 0, 0, 0], soundMode = 'off', eqTab = 'eq';
 
@@ -2398,6 +2419,13 @@ function ensureAudioGraph() {
 }
 function applyAudioFx() {
     if (eqIsDefault() && !eqBands) return true;
+    if (bgPriority && !eqIsDefault()) {
+        // 백그라운드 재생 우선일 때는 오디오 엔진을 연결하지 않는다
+        eqPreset = 'flat'; eqGains = [0, 0, 0, 0, 0]; soundMode = 'off';
+        toast('백그라운드 재생 우선이 켜져 있어요. 설정에서 끄면 사용할 수 있어요');
+        renderEQ();
+        return false;
+    }
     if (!ensureAudioGraph()) { toast('이 환경에서는 음향 효과를 쓸 수 없어요'); return false; }
     eqGains.forEach((g, i) => { if (eqBands[i]) eqBands[i].gain.value = g; });
     const m = SOUND_MODES[soundMode] || SOUND_MODES.off;
@@ -2438,7 +2466,12 @@ function setEqTab(t) { eqTab = t; renderEQ(); }
 
 function renderEQ() {
     if (!$('eq-list')) return;
-    const head = `<div class="eq-tabs">
+    const notice = bgPriority
+        ? `<div class="eq-notice">지금은 <b>백그라운드 재생 우선</b>이라 음향 효과를 쓸 수 없어요.
+             <button onclick="setBgPriority(false)">효과 사용하기</button></div>`
+        : `<div class="eq-notice warn">음향 효과를 쓰는 동안에는 다른 앱으로 가면 소리가 멈출 수 있어요.
+             <button onclick="setBgPriority(true)">백그라운드 재생 우선으로</button></div>`;
+    const head = notice + `<div class="eq-tabs">
         <button class="eq-tab${eqTab === 'eq' ? ' on' : ''}" onclick="setEqTab('eq')">이퀄라이저</button>
         <button class="eq-tab${eqTab === 'mode' ? ' on' : ''}" onclick="setEqTab('mode')">음장 모드</button>
     </div>`;
@@ -2806,6 +2839,10 @@ function renderThemeSheet() {
 function renderSetting() {
     if (!$('setting-list')) return;
     $('setting-list').innerHTML = `
+        <button class="set-row" style="width:100%" onclick="setBgPriority(${bgPriority ? 'false' : 'true'})">
+            <span><strong>백그라운드 재생 우선</strong><small>다른 앱으로 가도 계속 재생됩니다. 끄면 EQ·음장 모드를 쓸 수 있지만 백그라운드 재생이 멈출 수 있어요</small></span>
+            <span class="set-val">${bgPriority ? '켜짐' : '꺼짐'}</span>
+        </button>
         <button class="set-row" style="width:100%" onclick="openSheet('theme')">
             <span><strong>화면 테마</strong><small>기본은 휴대폰 설정을 따라갑니다</small></span>
             <span class="set-val">${UI_LABEL[uiPref]}${uiPref === 'system' ? ` · ${isDarkNow() ? '다크' : '라이트'}` : ''}</span>
@@ -3155,6 +3192,8 @@ window.addEventListener('DOMContentLoaded', () => {
     loadPlaylists();
     loadPlayLog();
     loadEqSettings();
+    if (bgPriority) { eqPreset = 'flat'; eqGains = [0, 0, 0, 0, 0]; soundMode = 'off'; }
+    else if (!eqIsDefault()) applyAudioFx();
     applyUiTheme();
     buildIndex();
     initAudio();
