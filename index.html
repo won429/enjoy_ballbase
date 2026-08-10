@@ -391,6 +391,7 @@
         .lv-head span { flex: 1; min-width: 0; font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .lv-hero { position: relative; margin: 2px 18px 0; padding: 20px 18px; border-radius: 16px; overflow: hidden; }
         .lv-hero img { position: absolute; right: -12px; bottom: -18px; width: 104px; height: 104px; object-fit: contain; opacity: 0.2; }
+        .lv-hero img.art { right: -10px; bottom: -14px; width: 112px; height: 112px; border-radius: 14px; object-fit: cover; opacity: 0.42; }
         .lv-hero strong { position: relative; display: block; font-size: 22px; font-weight: 800; letter-spacing: -0.045em; color: #fff; white-space: pre-line; }
         .lv-hero small { position: relative; display: block; margin-top: 6px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.7); }
         .lv-actions { position: relative; display: flex; gap: 8px; margin-top: 16px; }
@@ -548,7 +549,8 @@
         .lib-make-main strong { display: block; font-size: 17px; font-weight: 700; letter-spacing: -0.035em; color: var(--text); }
         .lib-make-main small { display: block; margin-top: 5px; font-size: 14px; font-weight: 500; color: var(--text-2); }
         .lib-plrow { display: flex; align-items: center; gap: 15px; padding: 10px 20px; text-align: left; cursor: pointer; }
-        .lib-plrow-art { flex: 0 0 66px; width: 66px; height: 66px; border-radius: 6px; overflow: hidden; background: var(--cover-bg); display: flex; align-items: center; justify-content: center; padding: 6px; }
+        .lib-plrow-art { flex: 0 0 66px; width: 66px; height: 66px; border-radius: 8px; overflow: hidden; background: var(--cover-bg); display: flex; align-items: center; justify-content: center; }
+        .lib-plrow-art svg { width: 100%; height: 100%; display: block; }
         .lib-plrow-art img { width: 100%; height: 100%; object-fit: contain; }
         .lib-plrow-art img.portrait { object-fit: cover; object-position: top; transform: scale(1.1); padding: 0; }
         .lib-plrow-main { display: block; flex: 1; min-width: 0; }
@@ -2014,6 +2016,79 @@ document.addEventListener('click', e => {
 
 /* ── 보관함 ────────────────────────────────────────────────── */
 
+/* ── 재생목록 표지 자동 생성 ────────────────────────────────
+   재생목록마다 고유한 그래픽을 만든다. 같은 목록은 항상 같은 그림이 나오고,
+   이름을 바꿔도 유지된다(만든 시점의 id 로 그리기 때문). */
+const ART_PALETTES = [
+    ['#FF4D5A', '#8E0F26', '#FFD1D6'],
+    ['#3B82F6', '#12306E', '#CFE0FF'],
+    ['#F59E0B', '#7C3A06', '#FFE6B8'],
+    ['#10B981', '#064E3B', '#C6F5E4'],
+    ['#8B5CF6', '#3B1078', '#E0D4FF'],
+    ['#EC4899', '#6B1141', '#FFD5EA'],
+    ['#06B6D4', '#0B4757', '#CBF3FB'],
+    ['#F43F5E', '#5C0A1B', '#FFD6DD'],
+    ['#22C55E', '#14532D', '#D2F7DD'],
+    ['#6366F1', '#1E1B4B', '#DCDCFF'],
+    ['#EF4444', '#5B0B0B', '#FFD9D9'],
+    ['#0EA5E9', '#0A3B57', '#CDECFD']
+];
+function artSeed(str) {
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+}
+function artRng(seed) {
+    let x = seed || 1;
+    return () => { x ^= x << 13; x >>>= 0; x ^= x >>> 17; x ^= x << 5; x >>>= 0; return x / 4294967296; };
+}
+function playlistArt(id) {
+    const rnd = artRng(artSeed(String(id || 'x')));
+    const pal = ART_PALETTES[Math.floor(rnd() * ART_PALETTES.length)];
+    const [c1, c2, c3] = pal;
+    const kind = Math.floor(rnd() * 4);
+    const gid = 'g' + (artSeed(String(id)) % 100000);
+    const angle = Math.floor(rnd() * 90);
+    let shapes = '';
+
+    if (kind === 0) {
+        // 겹치는 원
+        for (let i = 0; i < 3; i++) {
+            const r = 22 + rnd() * 26;
+            shapes += `<circle cx="${(15 + rnd() * 70).toFixed(1)}" cy="${(15 + rnd() * 70).toFixed(1)}" r="${r.toFixed(1)}" fill="${i === 1 ? c3 : '#fff'}" opacity="${(0.14 + rnd() * 0.16).toFixed(2)}"/>`;
+        }
+    } else if (kind === 1) {
+        // 동심원 (레코드판)
+        const cx = 30 + rnd() * 40, cy = 30 + rnd() * 40;
+        for (let i = 5; i >= 1; i--) {
+            shapes += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${(i * 13).toFixed(1)}" fill="none" stroke="${i % 2 ? '#fff' : c3}" stroke-width="${(2 + rnd() * 3).toFixed(1)}" opacity="0.22"/>`;
+        }
+        shapes += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="7" fill="${c3}" opacity="0.85"/>`;
+    } else if (kind === 2) {
+        // 사선 줄무늬
+        const w = 7 + rnd() * 7;
+        for (let x = -60; x < 160; x += w * 2.2) {
+            shapes += `<rect x="${x.toFixed(1)}" y="-60" width="${w.toFixed(1)}" height="220" fill="#fff" opacity="${(0.10 + rnd() * 0.12).toFixed(2)}"/>`;
+        }
+        shapes = `<g transform="rotate(${25 + rnd() * 35} 50 50)">${shapes}</g>`;
+    } else {
+        // 큰 반원 / 호
+        for (let i = 0; i < 2; i++) {
+            const r = 40 + rnd() * 34, cx = rnd() * 100, cy = rnd() * 100;
+            shapes += `<path d="M${(cx - r).toFixed(1)} ${cy.toFixed(1)} a${r.toFixed(1)} ${r.toFixed(1)} 0 0 1 ${(r * 2).toFixed(1)} 0z" fill="${i ? c3 : '#fff'}" opacity="${(0.16 + rnd() * 0.14).toFixed(2)}"/>`;
+        }
+        shapes += `<circle cx="${(rnd() * 100).toFixed(1)}" cy="${(rnd() * 100).toFixed(1)}" r="10" fill="#fff" opacity="0.3"/>`;
+    }
+
+    return `<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="${gid}" gradientTransform="rotate(${angle})">
+            <stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/>
+        </linearGradient></defs>
+        <rect width="100" height="100" fill="url(#${gid})"/>${shapes}
+    </svg>`;
+}
+const playlistArtUri = id => 'data:image/svg+xml;utf8,' + encodeURIComponent(playlistArt(id).replace(/\s+/g, ' '));
+
 /* ── 내 재생목록 (기기 저장) ───────────────────────────────── */
 const K_PL = 'cheer_playlists_v1';
 let playlists = [];
@@ -2236,12 +2311,13 @@ function openList(kind, a, b) {
         songs = plSongs(pl);
         title = pl.name; sub = `${songs.length}곡 · 이 기기에 저장됨`;
         tone = TEAM_TONE[team] || '#2B2B31';
-        logo = songs[0] ? TEAM_LOGO[songs[0].team] : APP_LOGO;
+        logo = playlistArtUri(pl.id);
     }
     listState = { kind, a, b, songs };
     $('lv-topname').textContent = title.replace('\n', ' ');
     $('lv-hero').style.cssText = cardBg(tone);
     $('lv-hero-img').src = logo;
+    $('lv-hero-img').classList.toggle('art', kind === 'playlist');
     $('lv-title').textContent = title;
     $('lv-sub').textContent = sub;
     const soonTeam = (kind === 'cat' || kind === 'team') && a !== 'all' && !hasSongs(a);
@@ -3034,12 +3110,8 @@ function renderLibrary() {
                 </span>
             </button>
             ${playlists.length ? playlists.map(pl => {
-                const first = plSongs(pl)[0];
-                const cover = first
-                    ? `<img src="${esc(first.cover)}" class="${first.portrait ? 'portrait' : ''}" loading="lazy" alt="" onerror="coverFallback(this, '${first.team}')">`
-                    : `<i class="fa-solid fa-music" style="color:var(--text-3)"></i>`;
                 return `<div class="lib-plrow" onclick="openList('playlist','${pl.id}')">
-                    <span class="lib-plrow-art">${cover}</span>
+                    <span class="lib-plrow-art">${playlistArt(pl.id)}</span>
                     <span class="lib-plrow-main">
                         <strong><i class="fa-solid fa-lock"></i><span>${esc(pl.name)}</span></strong>
                         <small>${pl.urls.length}곡</small>
