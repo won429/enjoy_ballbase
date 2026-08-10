@@ -457,6 +457,27 @@
         #tabbar button.on > span:last-child { font-weight: 800; }
 
 
+
+        /* ── 이퀄라이저 · 음장 모드 시트 ───────────────────────── */
+        .eq-tabs { display: flex; gap: 20px; padding: 0 12px 14px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+        .eq-tab { position: relative; padding-bottom: 12px; margin-bottom: -15px; font-size: 15.5px; font-weight: 700; color: var(--text-3); }
+        .eq-tab.on { color: var(--text); font-weight: 800; }
+        .eq-tab.on::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2.5px; border-radius: 2px 2px 0 0; background: var(--point); }
+        .eq-chips { display: flex; gap: 7px; padding: 0 12px 12px; overflow-x: auto; }
+        .eq-chip { flex: 0 0 auto; height: 34px; padding: 0 14px; border-radius: 999px; border: 1.4px solid var(--line-strong); color: var(--text-2); font-size: 12.5px; font-weight: 700; white-space: nowrap; transition: border-color .2s ease, color .2s ease; }
+        .eq-chip.on { border-color: var(--point); color: var(--point); font-weight: 800; }
+        .eq-desc { padding: 0 14px 14px; color: var(--text-2); font-size: 12.5px; font-weight: 600; }
+        .eq-sliders { display: flex; flex-direction: column; gap: 4px; padding: 2px 14px 14px; }
+        .eq-band { display: flex; align-items: center; gap: 12px; }
+        .eq-band-name { flex: 0 0 62px; font-size: 12.5px; font-weight: 800; color: var(--text); }
+        .eq-band-name small { display: block; margin-top: 2px; font-size: 10px; font-weight: 600; color: var(--text-3); }
+        .eq-band input[type=range] { flex: 1; min-width: 0; height: 34px; -webkit-appearance: none; appearance: none; background: transparent; }
+        .eq-band input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 999px; background: var(--line-strong); }
+        .eq-band input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -7px; border-radius: 999px; background: var(--point); box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+        .eq-band input[type=range]::-moz-range-track { height: 4px; border-radius: 999px; background: var(--line-strong); }
+        .eq-band input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border: 0; border-radius: 999px; background: var(--point); }
+        .eq-band-val { flex: 0 0 34px; text-align: right; font-size: 12.5px; font-weight: 800; color: var(--text-2); font-variant-numeric: tabular-nums; }
+
         /* ── 재생목록 편집 (전체 화면) ─────────────────────────── */
         #pledit {
             position: fixed;
@@ -2137,49 +2158,167 @@ function playQuickPick() {
     toast('빠른 선곡으로 재생목록을 만들었어요');
 }
 
-/* ── 이퀄라이저(Web Audio) ─────────────────────────────────── */
-// 기본값에서는 오디오 그래프를 만들지 않는다. 프리셋을 고른 순간에만 연결해
-// 웹뷰 등 지원이 불안정한 환경에서 기본 재생 경로를 건드리지 않도록 한다.
+/* ── 이퀄라이저 · 음장 모드 (Web Audio) ────────────────────── */
+// 기본값에서는 오디오 그래프를 만들지 않는다. 사용자가 실제로 값을 바꾼 순간에만
+// 연결해 웹뷰 등 지원이 불안정한 환경에서 기본 재생 경로를 건드리지 않는다.
+const EQ_BANDS = [
+    { f: 60,    type: 'lowshelf',  label: '60',    unit: 'Hz',  name: '저음' },
+    { f: 230,   type: 'peaking',   label: '230',   unit: 'Hz',  name: '중저음' },
+    { f: 910,   type: 'peaking',   label: '910',   unit: 'Hz',  name: '중음' },
+    { f: 3600,  type: 'peaking',   label: '3.6',   unit: 'kHz', name: '중고음' },
+    { f: 14000, type: 'highshelf', label: '14',    unit: 'kHz', name: '고음' }
+];
 const EQ_PRESETS = {
-    flat:   { name: '기본',      desc: '원음 그대로',            gains: [0, 0, 0] },
-    bass:   { name: '저음 강화', desc: '북소리와 베이스를 두껍게', gains: [7, 0, -1] },
-    vocal:  { name: '보컬 강조', desc: '응원 구호가 또렷하게',    gains: [-2, 5, 1] },
-    treble: { name: '고음 강조', desc: '트럼펫과 함성을 밝게',    gains: [0, 0, 6] }
+    flat:     { name: '기본',       desc: '원음 그대로',              g: [0, 0, 0, 0, 0] },
+    bass:     { name: '저음 강화',  desc: '북소리와 베이스를 두껍게',  g: [7, 4, 0, -1, 0] },
+    treble:   { name: '고음 강조',  desc: '트럼펫과 함성을 밝게',      g: [0, -1, 0, 3, 6] },
+    vocal:    { name: '보컬 강조',  desc: '선창과 구호가 또렷하게',    g: [-2, 0, 4, 3, 1] },
+    cheer:    { name: '응원단',     desc: '북·꽹과리와 떼창을 앞으로', g: [5, 2, 3, 2, 1] },
+    outdoor:  { name: '야외',       desc: '탁 트인 곳에서 잘 들리게',  g: [4, 1, -1, 3, 4] },
+    earphone: { name: '이어폰',     desc: '이어폰·헤드폰용 균형',      g: [3, 1, -1, 2, 3] },
+    speaker:  { name: '스피커',     desc: '휴대폰 스피커 보정',        g: [-3, 2, 4, 3, -1] },
+    quiet:    { name: '조용히',     desc: '늦은 시간에 부드럽게',      g: [2, 0, -2, -2, -3] },
+    custom:   { name: '직접 설정',  desc: '슬라이더로 직접 조절',      g: null }
 };
-let audioCtx = null, eqBands = null, eqPreset = 'flat';
-function ensureEQ() {
+const SOUND_MODES = {
+    off:     { name: '일반',        desc: '음장 효과 없음',              sec: 0,    decay: 0,   wet: 0,    pre: 0 },
+    hall:    { name: '콘서트홀',    desc: '넓은 공연장의 풍성한 울림',   sec: 2.6,  decay: 2.2, wet: 0.28, pre: 0.02 },
+    stadium: { name: '야구장',      desc: '탁 트인 구장의 긴 잔향',      sec: 3.8,  decay: 1.7, wet: 0.34, pre: 0.06 },
+    stand:   { name: '응원석',      desc: '관중석 한가운데서 듣는 느낌', sec: 2.0,  decay: 2.0, wet: 0.30, pre: 0.03 },
+    club:    { name: '라이브 클럽', desc: '작고 밀도 높은 공간',         sec: 1.2,  decay: 2.8, wet: 0.22, pre: 0.01 },
+    studio:  { name: '스튜디오',    desc: '잔향을 걷어내고 또렷하게',    sec: 0.25, decay: 4.0, wet: 0.08, pre: 0 }
+};
+
+const K_EQ = 'cheer_eq_v1';
+let audioCtx = null, eqBands = null, dryGain = null, wetGain = null, convolver = null, preDelay = null;
+let eqPreset = 'flat', eqGains = [0, 0, 0, 0, 0], soundMode = 'off', eqTab = 'eq';
+
+function loadEqSettings() {
+    try {
+        const v = JSON.parse(localStorage.getItem(K_EQ) || '{}');
+        if (v && typeof v === 'object') {
+            if (EQ_PRESETS[v.preset]) eqPreset = v.preset;
+            if (Array.isArray(v.gains) && v.gains.length === 5) eqGains = v.gains.map(Number);
+            if (SOUND_MODES[v.mode]) soundMode = v.mode;
+        }
+    } catch (e) {}
+}
+function saveEqSettings() {
+    try { localStorage.setItem(K_EQ, JSON.stringify({ preset: eqPreset, gains: eqGains, mode: soundMode })); } catch (e) {}
+}
+const eqIsDefault = () => eqPreset === 'flat' && soundMode === 'off' && eqGains.every(g => g === 0);
+
+function makeImpulse(ctx, seconds, decay) {
+    const rate = ctx.sampleRate, len = Math.max(1, Math.floor(rate * seconds));
+    const buf = ctx.createBuffer(2, len, rate);
+    for (let c = 0; c < 2; c++) {
+        const d = buf.getChannelData(c);
+        for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay);
+    }
+    return buf;
+}
+
+function ensureAudioGraph() {
     if (eqBands) return true;
     try {
         const AC = window.AudioContext || window.webkitAudioContext;
         if (!AC || !audio) return false;
         audioCtx = new AC();
         const src = audioCtx.createMediaElementSource(audio);
-        const low = audioCtx.createBiquadFilter(); low.type = 'lowshelf'; low.frequency.value = 220;
-        const mid = audioCtx.createBiquadFilter(); mid.type = 'peaking'; mid.frequency.value = 1200; mid.Q.value = 1;
-        const high = audioCtx.createBiquadFilter(); high.type = 'highshelf'; high.frequency.value = 4500;
-        src.connect(low); low.connect(mid); mid.connect(high); high.connect(audioCtx.destination);
-        eqBands = [low, mid, high];
+
+        eqBands = EQ_BANDS.map(b => {
+            const f = audioCtx.createBiquadFilter();
+            f.type = b.type; f.frequency.value = b.f;
+            if (b.type === 'peaking') f.Q.value = 1.1;
+            f.gain.value = 0;
+            return f;
+        });
+        let node = src;
+        eqBands.forEach(f => { node.connect(f); node = f; });
+
+        dryGain = audioCtx.createGain(); dryGain.gain.value = 1;
+        wetGain = audioCtx.createGain(); wetGain.gain.value = 0;
+        preDelay = audioCtx.createDelay(0.2);
+        convolver = audioCtx.createConvolver();
+        convolver.buffer = makeImpulse(audioCtx, 2, 2);
+
+        node.connect(dryGain); dryGain.connect(audioCtx.destination);
+        node.connect(preDelay); preDelay.connect(convolver); convolver.connect(wetGain); wetGain.connect(audioCtx.destination);
         return true;
-    } catch (e) { audioCtx = null; eqBands = null; return false; }
+    } catch (e) {
+        audioCtx = null; eqBands = null;
+        return false;
+    }
+}
+function applyAudioFx() {
+    if (eqIsDefault() && !eqBands) return true;
+    if (!ensureAudioGraph()) { toast('이 환경에서는 음향 효과를 쓸 수 없어요'); return false; }
+    eqGains.forEach((g, i) => { if (eqBands[i]) eqBands[i].gain.value = g; });
+    const m = SOUND_MODES[soundMode] || SOUND_MODES.off;
+    if (m.wet > 0) {
+        convolver.buffer = makeImpulse(audioCtx, m.sec, m.decay);
+        preDelay.delayTime.value = m.pre;
+    }
+    wetGain.gain.value = m.wet;
+    dryGain.gain.value = 1 - m.wet * 0.35;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    $('fp-eq-btn').classList.toggle('on', !eqIsDefault());
+    saveEqSettings();
+    return true;
 }
 function setEQ(key) {
     if (!EQ_PRESETS[key]) return;
-    if (key !== 'flat' || eqBands) {
-        if (!ensureEQ()) { toast('이 환경에서는 이퀄라이저를 사용할 수 없어요'); return; }
-    }
     eqPreset = key;
-    if (eqBands) EQ_PRESETS[key].gains.forEach((g, i) => { eqBands[i].gain.value = g; });
-    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-    $('fp-eq-btn').classList.toggle('on', key !== 'flat');
+    if (EQ_PRESETS[key].g) eqGains = EQ_PRESETS[key].g.slice();
+    if (applyAudioFx()) toast(`${EQ_PRESETS[key].name} 적용`);
     renderEQ();
-    toast(`${EQ_PRESETS[key].name} 적용`);
 }
+function setEqBand(i, v) {
+    eqGains[i] = Number(v);
+    eqPreset = 'custom';
+    applyAudioFx();
+    const lab = document.getElementById('eqv' + i);
+    if (lab) lab.textContent = (eqGains[i] > 0 ? '+' : '') + eqGains[i];
+    document.querySelectorAll('[data-eqp]').forEach(b => b.classList.toggle('on', b.dataset.eqp === 'custom'));
+}
+function resetEQ() { setEQ('flat'); soundMode = 'off'; applyAudioFx(); renderEQ(); }
+function setSoundMode(key) {
+    if (!SOUND_MODES[key]) return;
+    soundMode = key;
+    if (applyAudioFx()) toast(`${SOUND_MODES[key].name}`);
+    renderEQ();
+}
+function setEqTab(t) { eqTab = t; renderEQ(); }
+
 function renderEQ() {
-    $('eq-list').innerHTML = Object.keys(EQ_PRESETS).map(k => `
-        <button class="eq-row" onclick="setEQ('${k}')">
-            <span><strong>${esc(EQ_PRESETS[k].name)}</strong><small>${esc(EQ_PRESETS[k].desc)}</small></span>
-            ${eqPreset === k ? '<span class="set-val"><i class="fa-solid fa-check"></i></span>' : ''}
-        </button>`).join('');
+    const head = `<div class="eq-tabs">
+        <button class="eq-tab${eqTab === 'eq' ? ' on' : ''}" onclick="setEqTab('eq')">이퀄라이저</button>
+        <button class="eq-tab${eqTab === 'mode' ? ' on' : ''}" onclick="setEqTab('mode')">음장 모드</button>
+    </div>`;
+
+    if (eqTab === 'mode') {
+        $('eq-list').innerHTML = head + Object.keys(SOUND_MODES).map(k => `
+            <button class="set-row" style="width:100%" onclick="setSoundMode('${k}')">
+                <span><strong>${esc(SOUND_MODES[k].name)}</strong><small>${esc(SOUND_MODES[k].desc)}</small></span>
+                ${soundMode === k ? '<span class="set-val"><i class="fa-solid fa-check"></i></span>' : ''}
+            </button>`).join('');
+        return;
+    }
+
+    $('eq-list').innerHTML = head
+        + `<div class="eq-chips no-bar">` + Object.keys(EQ_PRESETS).map(k =>
+            `<button class="eq-chip${eqPreset === k ? ' on' : ''}" data-eqp="${k}" onclick="setEQ('${k}')">${esc(EQ_PRESETS[k].name)}</button>`).join('') + `</div>`
+        + `<div class="eq-desc">${esc(EQ_PRESETS[eqPreset].desc)}</div>`
+        + `<div class="eq-sliders">` + EQ_BANDS.map((b, i) => `
+            <div class="eq-band">
+                <span class="eq-band-name">${esc(b.name)}<small>${b.label}${b.unit}</small></span>
+                <input type="range" min="-12" max="12" step="1" value="${eqGains[i]}" oninput="setEqBand(${i}, this.value)">
+                <span class="eq-band-val" id="eqv${i}">${eqGains[i] > 0 ? '+' : ''}${eqGains[i]}</span>
+            </div>`).join('') + `</div>`
+        + `<button class="set-row" style="width:100%" onclick="resetEQ()">
+                <span><strong>초기화</strong><small>이퀄라이저와 음장 모드를 끕니다</small></span>
+                <span class="set-val">되돌리기</span>
+           </button>`;
 }
 
 /* ── 곡 더보기 ─────────────────────────────────────────────── */
@@ -2817,6 +2956,7 @@ window.addEventListener('DOMContentLoaded', () => {
     readStore();
     loadPlaylists();
     loadPlayLog();
+    loadEqSettings();
     applyUiTheme();
     buildIndex();
     initAudio();
@@ -2825,6 +2965,7 @@ window.addEventListener('DOMContentLoaded', () => {
     $('chip-team').textContent = team === 'all' ? '전체' : team;
     $('fp-shuffle').classList.toggle('on', shuffleOn);
     $('fp-repeat').classList.toggle('on', repeatMode !== 'off');
+    $('fp-eq-btn').classList.toggle('on', !eqIsDefault());
     $('qv-shuffle').classList.toggle('on', shuffleOn);
     $('qv-repeat').classList.toggle('on', repeatMode !== 'off');
     if (localStorage.getItem('cheer_notice_seen')) $('notice-dot').style.display = 'none';
