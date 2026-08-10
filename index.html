@@ -606,11 +606,19 @@
             border: 1px solid var(--line);
             box-shadow: 0 18px 44px rgba(0,0,0,0.30), 0 2px 8px rgba(0,0,0,0.12);
             opacity: 0;
-            transform: scale(0.94);
+            transform: scale(0.88) translateY(-8px);
             pointer-events: none;
-            transition: opacity .16s ease, transform .16s cubic-bezier(0.2, 0.9, 0.2, 1);
+            transition: opacity .14s ease, transform .26s cubic-bezier(0.18, 1.25, 0.4, 1);
         }
-        #pop.on { opacity: 1; transform: scale(1); pointer-events: auto; }
+        #pop.on { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
+        #pop.on .pop-row { animation: pop-in .26s cubic-bezier(0.2, 0.9, 0.2, 1) both; }
+        @keyframes pop-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+        .pop-row { transition: background-color .15s ease; }
+        .pop-row:active { transform: scale(0.98); }
+        @media (prefers-reduced-motion: reduce) {
+            #pop { transition-duration: .01ms; }
+            #pop.on .pop-row { animation: none; }
+        }
         #pop::-webkit-scrollbar { display: none; }
         .pop-row { display: flex; align-items: center; gap: 11px; width: 100%; padding: 11px 12px; border-radius: 10px; text-align: left; }
         .pop-row:active { background: var(--press); }
@@ -1594,11 +1602,49 @@ function mediaSession(song) {
         album: '엔조이 야구 응원가',
         artwork: [{ src: art, sizes: '512x512', type: 'image/png' }, { src: art, sizes: '192x192', type: 'image/png' }]
     });
-    navigator.mediaSession.setActionHandler('play', () => audio && audio.play());
-    navigator.mediaSession.setActionHandler('pause', () => audio && audio.pause());
-    navigator.mediaSession.setActionHandler('previoustrack', prevSong);
-    navigator.mediaSession.setActionHandler('nexttrack', nextSong);
+    const set = (name, fn) => { try { navigator.mediaSession.setActionHandler(name, fn); } catch (e) {} };
+    set('play', () => { if (audio) { audio.play(); keepAudioAlive(); } });
+    set('pause', () => audio && audio.pause());
+    set('previoustrack', prevSong);
+    set('nexttrack', nextSong);
+    set('seekbackward', d => { if (audio) audio.currentTime = Math.max(0, audio.currentTime - ((d && d.seekOffset) || 10)); });
+    set('seekforward', d => { if (audio && audio.duration) audio.currentTime = Math.min(audio.duration, audio.currentTime + ((d && d.seekOffset) || 10)); });
+    set('seekto', d => { if (audio && d && typeof d.seekTime === 'number') { audio.currentTime = d.seekTime; updatePositionState(true); } });
+    set('stop', () => { if (audio) { audio.pause(); audio.currentTime = 0; } });
+    setMediaState('playing');
 }
+/* 잠금화면·알림창에 재생 상태와 진행 위치를 알린다.
+   이 정보가 없으면 OS가 백그라운드 오디오를 유지하지 않는 경우가 있다. */
+function setMediaState(state) {
+    if (!('mediaSession' in navigator)) return;
+    try { navigator.mediaSession.playbackState = state; } catch (e) {}
+}
+let lastPosPush = 0;
+function updatePositionState(force) {
+    if (!('mediaSession' in navigator) || !navigator.mediaSession.setPositionState) return;
+    if (!audio || !isFinite(audio.duration) || audio.duration <= 0) return;
+    const now = Date.now();
+    if (!force && now - lastPosPush < 900) return;
+    lastPosPush = now;
+    try {
+        navigator.mediaSession.setPositionState({
+            duration: audio.duration,
+            playbackRate: audio.playbackRate || 1,
+            position: Math.min(Math.max(0, audio.currentTime), audio.duration)
+        });
+    } catch (e) {}
+}
+/* 음향 효과를 켜면 소리가 Web Audio 를 거치는데, 화면이 꺼지거나 앱이 뒤로 가면
+   오디오 컨텍스트가 멈춰 소리만 사라질 수 있다. 재생 중이면 계속 되살린다. */
+function keepAudioAlive() {
+    if (audioCtx && audioCtx.state === 'suspended' && audio && !audio.paused) {
+        audioCtx.resume().catch(() => {});
+    }
+}
+document.addEventListener('visibilitychange', keepAudioAlive);
+window.addEventListener('pageshow', keepAudioAlive);
+window.addEventListener('focus', keepAudioAlive);
+
 function toAndroid(state) {
     if (window.AndroidBridge && window.AndroidBridge.updateMusicState) window.AndroidBridge.updateMusicState(state, cur.label);
 }
@@ -1612,8 +1658,16 @@ function initAudio() {
     const fill = $('fp-fill'), range = $('fp-range'), curT = $('fp-cur'), durT = $('fp-dur');
     const total = () => audio.duration ? fmtTime(audio.duration) : '00:00';
 
-    audio.addEventListener('play', () => { isPlaying = true; paintPlay(); syncRows(); toAndroid('PLAYING'); });
-    audio.addEventListener('pause', () => { isPlaying = false; paintPlay(); syncRows(); toAndroid('PAUSED'); });
+    audio.addEventListener('play', () => {
+        isPlaying = true; paintPlay(); syncRows();
+        setMediaState('playing'); updatePositionState(true); keepAudioAlive();
+        toAndroid('PLAYING');
+    });
+    audio.addEventListener('pause', () => {
+        isPlaying = false; paintPlay(); syncRows();
+        setMediaState('paused'); updatePositionState(true);
+        toAndroid('PAUSED');
+    });
     audio.addEventListener('timeupdate', () => {
         if (seeking || !audio.duration) return;
         const p = (audio.currentTime / audio.duration) * 100;
@@ -1622,8 +1676,10 @@ function initAudio() {
         document.documentElement.style.setProperty('--progress', p + '%');
         curT.textContent = fmtTime(audio.currentTime);
         durT.textContent = total();
+        updatePositionState();
+        keepAudioAlive();
     });
-    audio.addEventListener('loadedmetadata', () => { durT.textContent = total(); });
+    audio.addEventListener('loadedmetadata', () => { durT.textContent = total(); updatePositionState(true); });
     audio.addEventListener('ended', () => {
         if (repeatMode === 'one') { audio.currentTime = 0; audio.play(); return; }
         if (repeatMode === 'off' && !shuffleOn && qIndex === queue.length - 1) { isPlaying = false; paintPlay(); syncRows(); return; }
@@ -2162,12 +2218,12 @@ const EQ_PRESETS = {
     custom:   { name: '직접 설정',  desc: '슬라이더로 직접 조절',      g: null }
 };
 const SOUND_MODES = {
-    off:     { name: '일반',        desc: '음장 효과 없음',              sec: 0,    decay: 0,   wet: 0,    pre: 0 },
-    hall:    { name: '콘서트홀',    desc: '넓은 공연장의 풍성한 울림',   sec: 2.6,  decay: 2.2, wet: 0.28, pre: 0.02 },
-    stadium: { name: '야구장',      desc: '탁 트인 구장의 긴 잔향',      sec: 3.8,  decay: 1.7, wet: 0.34, pre: 0.06 },
-    stand:   { name: '응원석',      desc: '관중석 한가운데서 듣는 느낌', sec: 2.0,  decay: 2.0, wet: 0.30, pre: 0.03 },
-    club:    { name: '라이브 클럽', desc: '작고 밀도 높은 공간',         sec: 1.2,  decay: 2.8, wet: 0.22, pre: 0.01 },
-    studio:  { name: '스튜디오',    desc: '잔향을 걷어내고 또렷하게',    sec: 0.25, decay: 4.0, wet: 0.08, pre: 0 }
+    off:     { name: '일반',        desc: '음장 효과 없음',              sec: 0,    decay: 0,   wet: 0,    pre: 0,    dry: 1 },
+    hall:    { name: '콘서트홀',    desc: '넓은 공연장의 풍성한 울림',   sec: 2.6,  decay: 2.2, wet: 0.60, pre: 0.02, dry: 0.86 },
+    stadium: { name: '야구장',      desc: '탁 트인 구장의 긴 잔향',      sec: 3.8,  decay: 1.7, wet: 0.66, pre: 0.06, dry: 0.85 },
+    stand:   { name: '응원석',      desc: '관중석 한가운데서 듣는 느낌', sec: 2.0,  decay: 2.0, wet: 0.40, pre: 0.03, dry: 0.89 },
+    club:    { name: '라이브 클럽', desc: '작고 밀도 높은 공간',         sec: 1.2,  decay: 2.8, wet: 0.46, pre: 0.01, dry: 0.90 },
+    studio:  { name: '스튜디오',    desc: '잔향을 걷어내고 또렷하게',    sec: 0.25, decay: 4.0, wet: 0.24, pre: 0,    dry: 0.96 }
 };
 
 const K_EQ = 'cheer_eq_v1';
@@ -2194,7 +2250,14 @@ function makeImpulse(ctx, seconds, decay) {
     const buf = ctx.createBuffer(2, len, rate);
     for (let c = 0; c < 2; c++) {
         const d = buf.getChannelData(c);
-        for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay);
+        let energy = 0;
+        for (let i = 0; i < len; i++) {
+            const v = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay);
+            d[i] = v; energy += v * v;
+        }
+        // 잔향 길이와 무관하게 항상 같은 크기로 들리도록 에너지를 맞춘다
+        const norm = energy > 0 ? 1 / Math.sqrt(energy) : 1;
+        for (let i = 0; i < len; i++) d[i] *= norm;
     }
     return buf;
 }
@@ -2221,6 +2284,7 @@ function ensureAudioGraph() {
         wetGain = audioCtx.createGain(); wetGain.gain.value = 0;
         preDelay = audioCtx.createDelay(0.2);
         convolver = audioCtx.createConvolver();
+        convolver.normalize = false;   // 직접 정규화한 임펄스를 쓴다
         convolver.buffer = makeImpulse(audioCtx, 2, 2);
 
         node.connect(dryGain); dryGain.connect(audioCtx.destination);
@@ -2241,7 +2305,7 @@ function applyAudioFx() {
         preDelay.delayTime.value = m.pre;
     }
     wetGain.gain.value = m.wet;
-    dryGain.gain.value = 1 - m.wet * 0.35;
+    dryGain.gain.value = m.dry !== undefined ? m.dry : 1;
     if (audioCtx.state === 'suspended') audioCtx.resume();
     $('fp-eq-btn').classList.toggle('on', !eqIsDefault());
     saveEqSettings();
@@ -2568,6 +2632,7 @@ function closeSheet() {
 function openPop(anchor, html) {
     const pop = $('pop');
     pop.innerHTML = html;
+    [...pop.children].forEach((el, i) => { el.style.animationDelay = Math.min(i * 22, 200) + 'ms'; });
     $('pop-mask').classList.add('on');
     pop.classList.add('on');
     const a = anchor.getBoundingClientRect();
